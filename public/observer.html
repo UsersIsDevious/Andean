@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observer Page</title>
+</head>
+<body>
+  <label for="colorPicker">Select a color:</label>
+  <input type="color" id="colorPicker" value="#ff0000">
+  <button id="notifyButton">Notify Clients</button>
+
+  <script>
+    const button = document.getElementById('notifyButton');
+    const colorPicker = document.getElementById('colorPicker');
+
+    button.addEventListener('click', () => {
+      const selectedColor = colorPicker.value;
+      fetch('/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ color: selectedColor })
+      });
+    });
+  </script>
+</body>
+</html>
