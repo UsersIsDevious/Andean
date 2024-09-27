@@ -1,0 +1,15 @@
+{
+    "apexlegends" : {
+        "steam_path" : "",
+        "ea_path" : "",
+        "api_port" : "7777"
+    },
+    "database": {
+      "host": "localhost",
+      "port": 5432,
+      "name": "myapp_db"
+    },
+    "discord" : {
+        "bot_token" : ""
+    }
+  }
