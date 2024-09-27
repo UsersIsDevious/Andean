@@ -1,4 +1,5 @@
 const fs = require('fs');
+const server = require('./server');
 const { exec } = require('child_process');
 
 /**
@@ -14,6 +15,7 @@ function readConfig() {
         return null;
     }
 }
+
 /**
  * コマンドを実行する共通関数
  * @param {string} command - 実行したいコマンド
@@ -58,6 +60,7 @@ function runRegularCommand(command) {
  * @param {string} path - Apex Legendsのインストールパス
  */
 function startApexLegends(path) {
+
     if (!path) {
         console.error('Apex Legendsのパスが指定されていません。');
         return;
@@ -81,5 +84,17 @@ if (config) {
 //    console.log(`Database host: ${config.database.host}`);
     // Apex Legendsのパスを取得して起動
     const apexPath = config.apexlegends.path;
-    startApexLegends(apexPath);
+    //startApexLegends(apexPath);
 }
+
+
+// サーバーを起動
+server.startServer();
+
+// 一定時間ごとに色を送信する
+setInterval(() => {
+  const colors = ['red', 'green', 'blue', 'yellow'];
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  server.notifyClients(randomColor);
+  console.log(`Sent color: ${randomColor}`);
+}, 5000);

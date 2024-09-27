@@ -36,6 +36,18 @@ app.post('/notify', (req, res) => {
 });
 
 // サーバーの起動
-app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`);
-});
+function startServer() {
+  app.listen(port, () => {
+    console.log(`Server listening on http://localhost:${port}`);
+  });
+}
+
+// モジュールとしてエクスポート
+module.exports = { startServer, notifyClients };
+
+// クライアントに通知するための関数
+function notifyClients(color) {
+  clients.forEach(client => {
+    client.write(`data: { "color": "${color}" }\n\n`);
+  });
+}
