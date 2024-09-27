@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const main = require('./main');
 const port = 3000;
 
 // SSE クライアントの接続を管理するためのリスト
@@ -34,6 +35,12 @@ app.post('/notify', (req, res) => {
   });
   res.sendStatus(200);
 });
+
+// 停止ボタンが押された時に処理を終了する
+app.post('/stopServer', (req, res) => {
+  res.sendStatus(200);
+  main.stopServer()
+})
 
 // サーバーの起動
 function startServer() {
