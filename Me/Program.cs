@@ -280,6 +280,19 @@ class Program
                                 await SendTo(WeaponSwitched_Message);
                                 break;
 
+                            //ObserverEvents
+
+                            case "type.googleapis.com/rtech.liveapi.ObserverSwitched":
+                                var ObserverSwitched_Message = incoming.GameMessage.Unpack<ObserverSwitched>();
+                                await SendTo(ObserverSwitched_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.ObserverAnnotation":
+                                var ObserverAnnotation_Message = incoming.GameMessage.Unpack<ObserverAnnotation>();
+                                await SendTo(ObserverAnnotation_Message);
+                                break;
+
+
                             default:
                                 Console.WriteLine($"Unknown message type received: {incoming.GameMessage.TypeUrl}");
                                 break;
