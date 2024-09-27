@@ -79,7 +79,7 @@ class Program
                                 break;
 
                             case "type.googleapis.com/rtech.liveapi.Version":
-                                var Version_Message = incoming.GameMessage.Unpack<Version>();
+                                var Version_Message = incoming.GameMessage.Unpack<Rtech.Liveapi.Version>();
                                 await SendTo(Version_Message);
                                 break;
                                 
@@ -100,7 +100,7 @@ class Program
 
                             case "type.googleapis.com/rtech.liveapi.RequestStatus":
                                 var RequestStatus_Message = incoming.GameMessage.Unpack<RequestStatus>();
-                                await SendTo(RequestStatus);
+                                await SendTo(RequestStatus_Message);
                                 break;
 
                             //MatchInformation
@@ -192,7 +192,7 @@ class Program
 
                             case "type.googleapis.com/rtech.liveapi.PlayerRespawnTeam":
                                 var PlayerRespawnTeam_Message = incoming.GameMessage.Unpack<PlayerRespawnTeam>();
-                                await SendTo(PlayerRespawnTeam);
+                                await SendTo(PlayerRespawnTeam_Message);
                                 break;
                             
                             case "type.googleapis.com/rtech.liveapi.PlayerRevive":
