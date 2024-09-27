@@ -4,6 +4,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;  // JSON シリアライザーの参照
 using Rtech.Liveapi;  // Protobuf 生成されたクラスの名前空間
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -44,35 +45,234 @@ class Program
                 {
                     // Protobuf メッセージをデシリアライズ
                     var incoming = LiveAPIEvent.Parser.ParseFrom(buffer.AsMemory(0, result.Count).ToArray());
-                    Console.WriteLine($"Received Protobuf message: {incoming}");
+                    //Console.WriteLine($"Received Protobuf message: {incoming}");
 
                     // `gameMessage` の `TypeUrl` を取得して適切な関数を呼び出す
                     if (incoming.GameMessage != null)
                     {
                         switch (incoming.GameMessage.TypeUrl)
                         {
-                            case "type.googleapis.com/rtech.liveapi.WeaponSwitched":
-                                HandleWeaponSwitched(incoming.GameMessage.Unpack<WeaponSwitched>());
+                            //IntermediaryMessages
+                            case "type.googleapis.com/rtech.liveapi.Init":
+                                var Init_Message = incoming.GameMessage.Unpack<Init>();
+                                await SendTo(Init_Message);
                                 break;
 
-                            case "type.googleapis.com/rtech.liveapi.AmmoUsed":
-                                HandleAmmoUsed(incoming.GameMessage.Unpack<AmmoUsed>());
+                            case "type.googleapis.com/rtech.liveapi.Vector3":
+                                var Vector3_Message = incoming.GameMessage.Unpack<Vector3>();
+                                await SendTo(Vector3_Message);
                                 break;
 
-                            case "type.googleapis.com/rtech.liveapi.PlayerAbilityUsed":
-                                HandlePlayerAbilityUsed(incoming.GameMessage.Unpack<PlayerAbilityUsed>());
+                            case "type.googleapis.com/rtech.liveapi.Player":
+                                var Player_Message = incoming.GameMessage.Unpack<Player>();
+                                await SendTo(Player_Message);
                                 break;
+
+                            case "type.googleapis.com/rtech.liveapi.CustomMatch_LobbyPlayer":
+                                var CustomMatch_LobbyPlayer_Message = incoming.GameMessage.Unpack<CustomMatch_LobbyPlayer>();
+                                await SendTo(CustomMatch_LobbyPlayer_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.Datacenter":
+                                var Datacenter_Message = incoming.GameMessage.Unpack<Datacenter>();
+                                await SendTo(Datacenter_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.Version":
+                                var Version_Message = incoming.GameMessage.Unpack<Version>();
+                                await SendTo(Version_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.InventoryItem":
+                                var InventoryItem_Message = incoming.GameMessage.Unpack<InventoryItem>();
+                                await SendTo(InventoryItem_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.LoadoutConfiguration":
+                                var LoadoutConfiguration_Message = incoming.GameMessage.Unpack<LoadoutConfiguration>();
+                                await SendTo(LoadoutConfiguration_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.CustomMatch_LobbyPlayers":
+                                var CustomMatch_LobbyPlayers_Message = incoming.GameMessage.Unpack<CustomMatch_LobbyPlayers>();
+                                await SendTo(CustomMatch_LobbyPlayers_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.RequestStatus":
+                                var RequestStatus_Message = incoming.GameMessage.Unpack<RequestStatus>();
+                                await SendTo(RequestStatus);
+                                break;
+
+                            //MatchInformation
+
+                            case "type.googleapis.com/rtech.liveapi.MatchSetup":
+                                var MatchSetup_Message = incoming.GameMessage.Unpack<MatchSetup>();
+                                await SendTo(MatchSetup_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.GameStateChanged":
+                                var GameStateChanged_Message = incoming.GameMessage.Unpack<GameStateChanged>();
+                                await SendTo(GameStateChanged_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.CharacterSelected":
+                                var CharacterSelected_Message = incoming.GameMessage.Unpack<CharacterSelected>();
+                                await SendTo(CharacterSelected_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.MatchStateEnd":
+                                var MatchStateEnd_Message = incoming.GameMessage.Unpack<MatchStateEnd>();
+                                await SendTo(MatchStateEnd_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.RingStartClosing":
+                                var RingStartClosing_Message = incoming.GameMessage.Unpack<RingStartClosing>();
+                                await SendTo(RingStartClosing_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.RingFinishedClosing":
+                                var RingFinishedClosing_Message = incoming.GameMessage.Unpack<RingFinishedClosing>();
+                                await SendTo(RingFinishedClosing_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.PlayerDisconnected":
+                                var PlayerDisconnected_Message = incoming.GameMessage.Unpack<PlayerDisconnected>();
+                                await SendTo(PlayerDisconnected_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.PlayerStatChanged":
+                                var PlayerStatChanged_Message = incoming.GameMessage.Unpack<PlayerStatChanged>();
+                                await SendTo(PlayerStatChanged_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.PlayerUpgradeTierChanged":
+                                var PlayerUpgradeTierChanged_Message = incoming.GameMessage.Unpack<PlayerUpgradeTierChanged>();
+                                await SendTo(PlayerUpgradeTierChanged_Message);
+                                break;
+
+
+                            //CombatEvents
 
                             case "type.googleapis.com/rtech.liveapi.PlayerDamaged":
-                                HandlePlayerDamaged(incoming.GameMessage.Unpack<PlayerDamaged>());
+                                var PlayerDamaged_Message = incoming.GameMessage.Unpack<PlayerDamaged>();
+                                await SendTo(PlayerDamaged_Message);
                                 break;
 
+                            case "type.googleapis.com/rtech.liveapi.PlayerKilled":
+                                var PlayerKilled_Message = incoming.GameMessage.Unpack<PlayerKilled>();
+                                await SendTo(PlayerKilled_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.PlayerDowned":
+                                var PlayerDowned_Message = incoming.GameMessage.Unpack<PlayerDowned>();
+                                await SendTo(PlayerDowned_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.PlayerAssist":
+                                var PlayerAssist_Message = incoming.GameMessage.Unpack<PlayerAssist>();
+                                await SendTo(PlayerAssist_Message);
+                                break;
+                                
                             case "type.googleapis.com/rtech.liveapi.SquadEliminated":
-                                HandleSquadEliminated(incoming.GameMessage.Unpack<SquadEliminated>());
+                                var SquadEliminated_Message = incoming.GameMessage.Unpack<SquadEliminated>();
+                                await SendTo(SquadEliminated_Message);
                                 break;
 
-                            case "type.googleapis.com/rtech.liveapi.PlayerDisconnected":
-                                HandlePlayerDisconnected(incoming.GameMessage.Unpack<PlayerDisconnected>());
+                            case "type.googleapis.com/rtech.liveapi.GibraltarShieldAbsorbed":
+                                var GibraltarShieldAbsorbed_Message = incoming.GameMessage.Unpack<GibraltarShieldAbsorbed>();
+                                await SendTo(GibraltarShieldAbsorbed_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.RevenantForgedShadowDamaged":
+                                var RevenantForgedShadowDamaged_Message = incoming.GameMessage.Unpack<RevenantForgedShadowDamaged>();
+                                await SendTo(RevenantForgedShadowDamaged_Message);
+                                break;
+
+                            //InteractionEvents
+
+                            case "type.googleapis.com/rtech.liveapi.PlayerRespawnTeam":
+                                var PlayerRespawnTeam_Message = incoming.GameMessage.Unpack<PlayerRespawnTeam>();
+                                await SendTo(PlayerRespawnTeam);
+                                break;
+                            
+                            case "type.googleapis.com/rtech.liveapi.PlayerRevive":
+                                var PlayerRevive_Message = incoming.GameMessage.Unpack<PlayerRevive>();
+                                await SendTo(PlayerRevive_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.ArenasItemSelected":
+                                var ArenasItemSelected_Message = incoming.GameMessage.Unpack<ArenasItemSelected>();
+                                await SendTo(ArenasItemSelected_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.ArenasItemDeselected":
+                                var ArenasItemDeselected_Message = incoming.GameMessage.Unpack<ArenasItemDeselected>();
+                                await SendTo(ArenasItemDeselected_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.InventoryPickUp":
+                                var InventoryPickUp_Message = incoming.GameMessage.Unpack<InventoryPickUp>();
+                                await SendTo(InventoryPickUp_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.InventoryDrop":
+                                var InventoryDrop_Message = incoming.GameMessage.Unpack<InventoryDrop>();
+                                await SendTo(InventoryDrop_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.InventoryUse":
+                                var InventoryUse_Message = incoming.GameMessage.Unpack<InventoryUse>();
+                                await SendTo(InventoryUse_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.BannerCollected":
+                                var BannerCollected_Message = incoming.GameMessage.Unpack<BannerCollected>();
+                                await SendTo(BannerCollected_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.PlayerAbilityUsed":
+                                var PlayerAbilityUsed_Message = incoming.GameMessage.Unpack<PlayerAbilityUsed>();
+                                await SendTo(PlayerAbilityUsed_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.LegendUpgradeSelected":
+                                var LegendUpgradeSelected_Message = incoming.GameMessage.Unpack<LegendUpgradeSelected>();
+                                await SendTo(LegendUpgradeSelected_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.ZiplineUsed":
+                                var ZiplineUsed_Message = incoming.GameMessage.Unpack<ZiplineUsed>();
+                                await SendTo(ZiplineUsed_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.GrenadeThrown":
+                                var GrenadeThrown_Message = incoming.GameMessage.Unpack<GrenadeThrown>();
+                                await SendTo(GrenadeThrown_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.BlackMarketAction":
+                                var BlackMarketAction_Message = incoming.GameMessage.Unpack<BlackMarketAction>();
+                                await SendTo(BlackMarketAction_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.WraithPortal":
+                                var WraithPortal_Message = incoming.GameMessage.Unpack<WraithPortal>();
+                                await SendTo(WraithPortal_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.WarpGateUsed":
+                                var WarpGateUsed_Message = incoming.GameMessage.Unpack<WarpGateUsed>();
+                                await SendTo(WarpGateUsed_Message);
+                                break;
+                                
+                            case "type.googleapis.com/rtech.liveapi.AmmoUsed":
+                                var AmmoUsed_Message = incoming.GameMessage.Unpack<AmmoUsed>();
+                                await SendTo(AmmoUsed_Message);
+                                break;
+
+                            case "type.googleapis.com/rtech.liveapi.WeaponSwitched":
+                                var WeaponSwitched_Message = incoming.GameMessage.Unpack<WeaponSwitched>();
+                                await SendTo(WeaponSwitched_Message);
                                 break;
 
                             default:
@@ -95,54 +295,33 @@ class Program
         }
     }
 
-    // ---- 各メッセージの処理関数を定義 ----
-
-    private static void HandleWeaponSwitched(WeaponSwitched message)
+    // ---- メッセージを JSON に変換し、指定のポート (9238) に送信する関数 ----
+    private static async Task SendTo<T>(T message) where T : IMessage<T>
     {
-        Console.WriteLine("Parsed WeaponSwitched Message:");
-        Console.WriteLine($"Timestamp: {message.Timestamp}");
-        Console.WriteLine($"Player: {message.Player}");
-        Console.WriteLine($"Previous Weapon: {message.PreviousWeapon}");
-        Console.WriteLine($"Current Weapon: {message.CurrentWeapon}");
-    }
+        try
+        {
+            // WebSocket クライアントを作成し、ポート 9238 の WebSocket サーバーに接続
+            using (ClientWebSocket client = new ClientWebSocket())
+            {
+                Uri uri = new Uri("ws://127.0.0.1:9238");
+                await client.ConnectAsync(uri, CancellationToken.None);
+                Console.WriteLine("Connected to WebSocket client on port 9238.");
 
-    private static void HandleAmmoUsed(AmmoUsed message)
-    {
-        Console.WriteLine("Parsed AmmoUsed Message:");
-        Console.WriteLine($"Timestamp: {message.Timestamp}");
-        Console.WriteLine($"Player: {message.Player}");
-        Console.WriteLine($"Ammo Type: {message.AmmoType}");
-        Console.WriteLine($"Remaining Ammo: {message.RemainingAmmo}");
-    }
+                // メッセージを JSON 形式に変換
+                string jsonMessage = JsonConvert.SerializeObject(message);
+                Console.WriteLine($"Sending JSON message to port 9238: {jsonMessage}");
 
-    private static void HandlePlayerAbilityUsed(PlayerAbilityUsed message)
-    {
-        Console.WriteLine("Parsed PlayerAbilityUsed Message:");
-        Console.WriteLine($"Timestamp: {message.Timestamp}");
-        Console.WriteLine($"Player: {message.Player}");
-        Console.WriteLine($"Ability: {message.Ability}");
-    }
+                // JSON メッセージをバイナリ形式に変換して送信
+                var encodedMessage = Encoding.UTF8.GetBytes(jsonMessage);
+                await client.SendAsync(new ArraySegment<byte>(encodedMessage, 0, encodedMessage.Length), WebSocketMessageType.Text, true, CancellationToken.None);
 
-    private static void HandlePlayerDamaged(PlayerDamaged message)
-    {
-        Console.WriteLine("Parsed PlayerDamaged Message:");
-        Console.WriteLine($"Timestamp: {message.Timestamp}");
-        Console.WriteLine($"Player: {message.Player}");
-        Console.WriteLine($"Damage: {message.Damage}");
-    }
-
-    private static void HandleSquadEliminated(SquadEliminated message)
-    {
-        Console.WriteLine("Parsed SquadEliminated Message:");
-        Console.WriteLine($"Timestamp: {message.Timestamp}");
-        Console.WriteLine($"Squad: {message.Squad}");
-    }
-
-    private static void HandlePlayerDisconnected(PlayerDisconnected message)
-    {
-        Console.WriteLine("Parsed PlayerDisconnected Message:");
-        Console.WriteLine($"Timestamp: {message.Timestamp}");
-        Console.WriteLine($"Player: {message.Player}");
+                Console.WriteLine("Message sent successfully.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending message to port 9238: {ex.Message}");
+        }
     }
 
     static async Task Main(string[] args)
