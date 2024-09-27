@@ -135,6 +135,11 @@ class Program
                                 await SendTo(RingFinishedClosing_Message);
                                 break;
                                 
+                            case "type.googleapis.com/rtech.liveapi.PlayerConnected":
+                                var PlayerConnected_Message = incoming.GameMessage.Unpack<PlayerConnected>();
+                                await SendTo(PlayerConnected_Message);
+                                break;
+                                
                             case "type.googleapis.com/rtech.liveapi.PlayerDisconnected":
                                 var PlayerDisconnected_Message = incoming.GameMessage.Unpack<PlayerDisconnected>();
                                 await SendTo(PlayerDisconnected_Message);
