@@ -1,6 +1,7 @@
 {
     "apexlegends" : {
         "path" : "C:\\Program Files\\EA Games\\Apex\\r5apex.exe",
+        "proto_path" : "C:\\Program Files\\EA Games\\Apex\\LiveAPI",
         "steam_path" : "",
         "ea_path" : "",
         "api_port" : "7777"

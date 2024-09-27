@@ -1,0 +1,17 @@
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\WebSocketProtobufServer.csproj.AssemblyReference.cache
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\WebSocketProtobufServer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\WebSocketProtobufServer.AssemblyInfoInputs.cache
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\WebSocketProtobufServer.AssemblyInfo.cs
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\WebSocketProtobufServer.csproj.CoreCompileInputs.cache
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\bin\Debug\net8.0\WebSocketProtobufServer.exe
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\bin\Debug\net8.0\WebSocketProtobufServer.deps.json
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\bin\Debug\net8.0\WebSocketProtobufServer.runtimeconfig.json
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\bin\Debug\net8.0\WebSocketProtobufServer.dll
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\bin\Debug\net8.0\WebSocketProtobufServer.pdb
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\bin\Debug\net8.0\Google.Protobuf.dll
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\WebSocke.BB6F4B71.Up2Date
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\WebSocketProtobufServer.dll
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\refint\WebSocketProtobufServer.dll
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\WebSocketProtobufServer.pdb
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\WebSocketProtobufServer.genruntimeconfig.cache
+C:\Users\nick\Documents\test1\c#a\WebSocketProtobufServer\obj\Debug\net8.0\ref\WebSocketProtobufServer.dll
