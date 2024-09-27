@@ -1,0 +1,1 @@
+Scripts\python.exe liveapi_server.py
