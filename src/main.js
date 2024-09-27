@@ -14,15 +14,14 @@ function readConfig() {
         return null;
     }
 }
-
 /**
- * PowerShellコマンドを実行する関数
- * @param {string} command - 実行したいPowerShellコマンド
+ * コマンドを実行する共通関数
+ * @param {string} command - 実行したいコマンド
  * @returns {Promise<string>} - コマンドの出力を返すPromise
  */
-function runPowerShellCommand(command) {
+function runCommand(command) {
     return new Promise((resolve, reject) => {
-        exec(`powershell.exe -Command "${command}"`, (error, stdout, stderr) => {
+        exec(command, (error, stdout, stderr) => {
             if (error) {
                 reject(`エラー: ${error.message}`);
                 return;
@@ -36,18 +35,51 @@ function runPowerShellCommand(command) {
     });
 }
 
-'$found = Get-PSDrive -PSProvider FileSystem | ForEach-Object {Get-ChildItem -Path $_.Root -Recurse -Filter "r5apex.exe" -ErrorAction SilentlyContinue -First 1} | Where-Object { $_ -ne $null }if ($found) {Write-Output "Found at: $($found.FullName)"}'
-command_a = 'Get-PSDrive -PSProvider FileSystem | ForEach-Object {Get-ChildItem -Path $_.Root -Recurse -Filter "r5apex.exe" -ErrorAction SilentlyContinue}'
+/**
+ * PowerShellコマンドを実行する関数
+ * @param {string} command - 実行したいPowerShellコマンド
+ * @returns {Promise<string>} - コマンドの出力を返すPromise
+ */
+function runPowerShellCommand(command) {
+    return runCommand(`powershell.exe -Command "${command}"`);
+}
+
+/**
+ * 通常のコマンドを実行する関数
+ * @param {string} command - 実行したいコマンド
+ * @returns {Promise<string>} - コマンドの出力を返すPromise
+ */
+function runRegularCommand(command) {
+    return runCommand(command);
+}
+
+/**
+ * Apex Legendsを起動する関数
+ * @param {string} path - Apex Legendsのインストールパス
+ */
+function startApexLegends(path) {
+    if (!path) {
+        console.error('Apex Legendsのパスが指定されていません。');
+        return;
+    }
+    
+    const command = `"${path}"`; // パスが空でない場合に起動コマンドを構築
+    runRegularCommand(command)
+        .then(output => {
+            console.log('Apex Legendsが起動しました:', output);
+        })
+        .catch(err => {
+            console.error('Apex Legendsの起動中にエラーが発生しました:', err);
+        });
+}
+
 // 使用例
 const config = readConfig();
 
 if (config) {
-    // PowerShellコマンドの実行
-    runPowerShellCommand(command_a)
-        .then(output => {
-            console.log('コマンドの出力:', output);
-        })
-        .catch(err => {
-            console.error('エラー:', err);
-        });
+//    console.log(`App is running on port: ${config.port}`);
+//    console.log(`Database host: ${config.database.host}`);
+    // Apex Legendsのパスを取得して起動
+    const apexPath = config.apexlegends.path;
+    startApexLegends(apexPath);
 }

@@ -1,5 +1,6 @@
 {
     "apexlegends" : {
+        "path" : "C:\\Program Files\\EA Games\\Apex\\r5apex.exe",
         "steam_path" : "",
         "ea_path" : "",
         "api_port" : "7777"
@@ -13,4 +14,4 @@
         "bot_token" : ""
     },
     "output":"/output"
-  }
+}
