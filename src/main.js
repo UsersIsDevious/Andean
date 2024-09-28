@@ -91,6 +91,12 @@ if (config) {
 // サーバーを起動
 server.startServer();
 
+// サーバーの停止
+exports.stopServer = function (req, res) {
+    console.log(`Server stopped`);
+    process.exit(1);
+}
+
 // 一定時間ごとに色を送信する
 setInterval(() => {
   const colors = ['red', 'green', 'blue', 'yellow'];

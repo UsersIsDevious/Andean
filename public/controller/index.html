@@ -9,10 +9,18 @@
   <label for="colorPicker">Select a color:</label>
   <input type="color" id="colorPicker" value="#ff0000">
   <button id="notifyButton">Notify Clients</button>
+  <button id="stopServerButton">停止</button>
 
   <script>
     const button = document.getElementById('notifyButton');
+    const stopServerButton = document.getElementById('stopServerButton');
     const colorPicker = document.getElementById('colorPicker');
+
+    stopServerButton.addEventListener('click', () => {
+      fetch('/stopServer', {
+        method: 'POST'
+      })
+    })
 
     button.addEventListener('click', () => {
       const selectedColor = colorPicker.value;
