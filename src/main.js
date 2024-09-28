@@ -1,59 +1,28 @@
-const fs = require('fs');
+const pid = process.env.PID;  // 環境変数 PID を取得
+global.batPid = Number(pid);   // グローバル変数として設定
 const server = require('./server');
-const { exec } = require('child_process');
+const common = require('./common');
 
+console.log(pid)
+ 
 /**
- * config.jsonを読み込む関数
- * @returns {object} - configの内容
+ * 親のコマンドプロンプトを閉じる関数
+ * taskkill コマンドを使って親のコマンドプロンプトを閉じる
+ * "WINDOWTITLE eq %CD%" は、現在のディレクトリ名がウィンドウタイトルと一致するプロセスをターゲットにします
  */
-function readConfig() {
-    try {
-        const configData = fs.readFileSync('config.json', 'utf8');
-        return JSON.parse(configData);
-    } catch (error) {
-        console.error('Configファイルの読み込みエラー:', error);
-        return null;
-    }
-}
-
 /**
- * コマンドを実行する共通関数
- * @param {string} command - 実行したいコマンド
- * @returns {Promise<string>} - コマンドの出力を返すPromise
- */
-function runCommand(command) {
-    return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                reject(`エラー: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                reject(`stderr: ${stderr}`);
-                return;
-            }
-            resolve(stdout);
-        });
+function exit() {
+    exec('taskkill /f /fi "WINDOWTITLE eq %CD%" /t', function(err, stdout, stderr) {
+        if (err) {
+            // エラーが発生した場合は、エラーメッセージをコンソールに表示
+            console.error('エラーが発生しました: ' + err.message);
+            return;
+        }
+        // コマンドが成功した場合、親のバッチファイルを終了した旨をコンソールに表示
+        console.log('親のバッチファイルを終了しました。');
     });
-}
-
-/**
- * PowerShellコマンドを実行する関数
- * @param {string} command - 実行したいPowerShellコマンド
- * @returns {Promise<string>} - コマンドの出力を返すPromise
- */
-function runPowerShellCommand(command) {
-    return runCommand(`powershell.exe -Command "${command}"`);
-}
-
-/**
- * 通常のコマンドを実行する関数
- * @param {string} command - 実行したいコマンド
- * @returns {Promise<string>} - コマンドの出力を返すPromise
- */
-function runRegularCommand(command) {
-    return runCommand(command);
-}
+} 
+*/
 
 /**
  * Apex Legendsを起動する関数
@@ -77,7 +46,7 @@ function startApexLegends(path) {
 }
 
 // 使用例
-const config = readConfig();
+const config = common.readConfig();
 
 if (config) {
 //    console.log(`App is running on port: ${config.port}`);
@@ -91,16 +60,11 @@ if (config) {
 // サーバーを起動
 server.startServer();
 
-// サーバーの停止
-exports.stopServer = function (req, res) {
-    console.log(`Server stopped`);
-    process.exit(1);
-}
 
-// 一定時間ごとに色を送信する
+/* // 一定時間ごとに色を送信する
 setInterval(() => {
   const colors = ['red', 'green', 'blue', 'yellow'];
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
-  server.notifyClients(randomColor);
+  server.sendClients(`"color": "{${randomColor}}"`);
   console.log(`Sent color: ${randomColor}`);
-}, 5000);
+}, 5000); */

@@ -20,7 +20,20 @@
       fetch('/stopServer', {
         method: 'POST'
       })
-    })
+      .then(response => {
+        // ステータスが 200 の場合、サーバー停止成功とみなす
+        if (response.ok) {
+          //alert('サーバーが正常に停止されました。ページを閉じます。');
+          window.close(); // ページを閉じる
+        } else {
+          alert('サーバーの停止に失敗しました。');
+        }
+      })
+      .catch(error => {
+        console.error('サーバー停止リクエストに失敗しました:', error);
+        alert('サーバーの停止に失敗しました。');
+      });
+    });
 
     button.addEventListener('click', () => {
       const selectedColor = colorPicker.value;
