@@ -4,7 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SSE Example</title>
+  <base target="_top">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
   <style>
+    .leaflet-container {
+			height: 90vh;
+			width: 60vw;
+			max-width: 4096px;
+			max-height: 4096px;
+      margin: auto;
+      display: block;
+		}
     #colorButton {
       padding: 10px 20px;
       background-color: blue;
@@ -16,9 +29,68 @@
 </head>
 <body>
   <button id="colorButton">Click Me</button>
+  <div id="setMaxZoom">
+    <input type="range" id="setMaxZoomRange" name="setMaxZoom" min="0" max="10" value="5" step="1" />
+    <label id="setMaxZoomRangeText" for="setMaxZoomRange">最大ズームレベル : 5</label>
+  </div>
+  <div id='map'></div>
 
   <script>
     const button = document.getElementById('colorButton');
+    const setMaxZoom = document.querySelector(`#setMaxZoomRange`);
+
+    setMaxZoom.addEventListener(`input`, () => {
+      document.querySelector(`#setMaxZoomRangeText`).innerHTML = `最大ズームレベル : ${setMaxZoom.value}`;
+      updateMapConfig(false)
+    });
+
+    // マップデータの情報を設定
+    var mapImage = {
+      url:    'brokenMoon.png',
+      width:  4096,
+      height: 4096
+    };
+
+    // マップの大きさを設定
+    var mapBounds = L.latLngBounds(
+      [0, 0], // 左上の位置
+      [mapImage.height, mapImage.width] //右下の位置
+    );
+
+    
+    // var map = L.map('map', {
+    //   crs: L.CRS.Simple, // ピクセル座標系に変更する
+    //   center: [mapImage.height, mapImage.width],
+    //   minZoom: -3,
+    //   maxZoom: setMaxZoom.value,
+    //   maxBounds: mapBounds.pad(0) // マップ外をどれくらい表示するかの設定
+    // });
+
+    // マップの更新・設定を行う
+    function updateMapConfig(first) {
+      // マップがあったら削除する
+      if (map) {
+        console.log("DO!!!!")
+        map.remove();
+        map = null
+      };
+      // マップの詳細設定
+      var map = L.map('map', {
+        crs: L.CRS.Simple, // ピクセル座標系に変更する
+        center: [mapImage.height, mapImage.width],
+        minZoom: -3,
+        maxZoom: setMaxZoom.value,
+        maxBounds: mapBounds.pad(0) // マップ外をどれくらい表示するかの設定
+      });
+      map.fitBounds(mapBounds); // グループが全て収まる座標(マップ画像の中心)とズームで表示
+
+	    L.imageOverlay(mapImage.url, mapBounds).addTo(map); // 画像を扱えるようにする
+
+      var player_markers = L.layerGroup().addTo(map); // プレイヤーマーカー用のレイヤーグループを作成
+    }
+
+    // マップの初期設定を実行
+    updateMapConfig(true)
 
     // SSE を使ってサーバーからのイベントをリッスン
     const eventSource = new EventSource('/events');
