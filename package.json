@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "asyncio": "^0.0.2",
+    "google-protobuf": "^3.21.4",
+    "websockets": "^0.2.0",
+    "ws": "^8.18.0"
+  }
+}
