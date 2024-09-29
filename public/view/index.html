@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSE Example</title>
+  <style>
+    #colorButton {
+      padding: 10px 20px;
+      background-color: blue;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button id="colorButton">Click Me</button>
+
+  <script>
+    const button = document.getElementById('colorButton');
+
+    // SSE を使ってサーバーからのイベントをリッスン
+    const eventSource = new EventSource('/events');
+    
+    // サーバーからのメッセージを受信するイベントハンドラー
+    eventSource.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      console.log(data)
+      
+      // データに "color" プロパティが含まれていたらボタンの色を変更
+      if (data.color) {
+        //button.style.backgroundColor = data.color;
+        document.body.style.backgroundColor = data.color;
+      }
+      
+      // データに "message" プロパティが含まれていて、値が "stop" の場合、ページを閉じる
+      if (data.message === 'Server is shutting down.') {
+        alert('サーバーが停止されました。ページを閉じます。');
+        window.open('', '_self').close(); // ページを閉じる
+      }
+    };
+
+    // ボタンのクリック時にサーバーに色を送信
+    button.addEventListener('click', () => {
+      fetch('/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ color: 'green' })
+      });
+    });
+  </script>
+</body>
+</html>
