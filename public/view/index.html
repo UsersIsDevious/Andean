@@ -1,23 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SSE Example</title>
-  <base target="_top">
+  <title>view</title>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <style>
     .leaflet-container {
-			height: 90vh;
-			width: 60vw;
-			max-width: 4096px;
-			max-height: 4096px;
+      height: 90vh;
+      width: 60vw;
+      max-width: 4096px;
+      max-height: 4096px;
       margin: auto;
       display: block;
-		}
+    }
+
     #colorButton {
       padding: 10px 20px;
       background-color: blue;
@@ -27,6 +30,7 @@
     }
   </style>
 </head>
+
 <body>
   <button id="colorButton">Click Me</button>
   <div id="setMaxZoom">
@@ -46,8 +50,8 @@
 
     // マップデータの情報を設定
     var mapImage = {
-      url:    'brokenMoon.png',
-      width:  4096,
+      url: 'brokenMoon.png',
+      width: 4096,
       height: 4096
     };
 
@@ -57,7 +61,7 @@
       [mapImage.height, mapImage.width] //右下の位置
     );
 
-    
+
     // var map = L.map('map', {
     //   crs: L.CRS.Simple, // ピクセル座標系に変更する
     //   center: [mapImage.height, mapImage.width],
@@ -84,7 +88,7 @@
       });
       map.fitBounds(mapBounds); // グループが全て収まる座標(マップ画像の中心)とズームで表示
 
-	    L.imageOverlay(mapImage.url, mapBounds).addTo(map); // 画像を扱えるようにする
+      L.imageOverlay(mapImage.url, mapBounds).addTo(map); // 画像を扱えるようにする
 
       var player_markers = L.layerGroup().addTo(map); // プレイヤーマーカー用のレイヤーグループを作成
     }
@@ -92,14 +96,38 @@
     // マップの初期設定を実行
     updateMapConfig(true)
 
+
     // SSE を使ってサーバーからのイベントをリッスン
     const eventSource = new EventSource('/events');
-    eventSource.onmessage = function(event) {
+
+    // サーバーからのメッセージを受信するイベントハンドラー
+    eventSource.onmessage = function (event) {
       const data = JSON.parse(event.data);
+      console.log(data)
+
+      // データに "color" プロパティが含まれていたらボタンの色を変更
       if (data.color) {
-        button.style.backgroundColor = data.color;
+        //button.style.backgroundColor = data.color;
+        document.body.style.backgroundColor = data.color;
+      }
+
+      // データに "message" プロパティが含まれていて、値が "stop" の場合、ページを閉じる
+      if (data.message === 'Server is shutting down.') {
+        alert('サーバーが停止されました。ページを閉じます。');
+        window.open('', '_self').close(); // ページを閉じる
       }
     };
+    // ボタンのクリック時にサーバーに色を送信
+    button.addEventListener('click', () => {
+      fetch('/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ color: 'green' })
+      });
+    });
   </script>
 </body>
+
 </html>
