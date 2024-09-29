@@ -1,8 +1,4 @@
-const pid = process.env.PID;  // 環境変数 PID を取得
-global.batPid = Number(pid);   // グローバル変数として設定
 const common = require('./common');
-
-console.log(pid)
  
 /**
  * 親のコマンドプロンプトを閉じる関数
