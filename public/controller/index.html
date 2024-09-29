@@ -10,11 +10,26 @@
   <input type="color" id="colorPicker" value="#ff0000">
   <button id="notifyButton">Notify Clients</button>
   <button id="stopServerButton">停止</button>
+  <button id="getPlayerButton">playerデータ受信</button>
 
   <script>
     const button = document.getElementById('notifyButton');
     const stopServerButton = document.getElementById('stopServerButton');
     const colorPicker = document.getElementById('colorPicker');
+    const getPlayer = document.getElementById('getPlayerButton');
+
+
+    getPlayer.addEventListener('click', () => {
+      const selectedColor = colorPicker.value;
+      fetch('/api/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ color: selectedColor })
+      });
+    });
+
 
     stopServerButton.addEventListener('click', () => {
       fetch('/stopServer', {
