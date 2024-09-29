@@ -21,7 +21,7 @@
 
     getPlayer.addEventListener('click', () => {
       const selectedColor = colorPicker.value;
-      fetch('/api/', {
+      fetch('/api/create_lobby', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

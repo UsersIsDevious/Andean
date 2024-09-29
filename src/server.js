@@ -97,7 +97,7 @@ function apexLiveApiCall(res, req) {
 
     case 'create_lobby':
       // hgoe
-      apexCommon.hoge();
+      apexCommon.create_lobby();
       res.json({data:"a"});
       break;
 

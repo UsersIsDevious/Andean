@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const main = require('./main'); 
 const server = require('./server');
+const websocketServer = require('./websocketServer')
 const { exec } = require('child_process');
 const readline = require('readline');
 
@@ -10,8 +11,8 @@ const readline = require('readline');
 // メイン関数でサーバーを開始
 function startAllServers() {
     // HTTP サーバーと WebSocket サーバーを同時に起動
-    httpServer.startServer();
-    webSocketServer.startWebSocketServer();
+    server.startServer();
+    websocketServer.createWebSocketServer(7777);
 }
 
 
@@ -55,10 +56,12 @@ function saveLog(message, logFileName = 'app.log') {
  */
 function readConfig() {
     try {
-        const configData = fs.readFileSync('./config.json', 'utf8');
+        // __dirname は現在のファイルのディレクトリを指す
+        const configPath = path.join(__dirname, '..', 'config.json');
+        const configData = fs.readFileSync(configPath, 'utf8');
         return JSON.parse(configData);
     } catch (error) {
-        console.error('Configファイルの読み込みエラー:', error);
+        console.error(`Configファイルの読み込みエラー (パス: ${path.join(__dirname, '..', 'config.json')}):`, error.message);
         return null;
     }
 }
@@ -104,6 +107,7 @@ function runRegularCommand(command) {
 
 
 module.exports = { 
+    startAllServers,
     readConfig, 
     runCommand,
     runPowerShellCommand,

@@ -2,24 +2,23 @@ const WebSocket = require('ws');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./messageTypes'); 
 
-// WebSocketサーバーの作成
-const wss = createWebSocketServer(7777);
-
-// WebSocketの接続イベントの処理
-wss.on('connection', (ws) => {
-  console.log('Connected!');
-  ws.on('message', (message) => handleIncomingMessage(message, ws));
-});
-
 /**
  * WebSocketサーバーを作成する共通関数
  * @param {number} port WebSocketサーバーのポート番号
  * @returns {WebSocket.Server} WebSocketサーバー
  */
 function createWebSocketServer(port) {
-  return new WebSocket.Server({ port }, () => {
+  const wss = new WebSocket.Server({ port }, () => {
     console.log(`WebSocket server is running on port ${port}...`);
   });
+
+  // WebSocketの接続イベントの処理
+  wss.on('connection', (ws) => {
+    console.log('Connected!');
+    ws.on('message', (message) => handleIncomingMessage(message, ws));
+  });
+
+  return wss;
 }
 
 /**

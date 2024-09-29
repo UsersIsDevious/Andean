@@ -1,6 +1,5 @@
 const pid = process.env.PID;  // 環境変数 PID を取得
 global.batPid = Number(pid);   // グローバル変数として設定
-const server = require('./server');
 const common = require('./common');
 
 console.log(pid)
@@ -58,8 +57,8 @@ if (config) {
 
 
 // サーバーを起動
-server.startServer();
-
+//server.startServer();
+common.startAllServers();
 
 /* // 一定時間ごとに色を送信する
 setInterval(() => {
