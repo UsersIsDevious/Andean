@@ -4,14 +4,9 @@ const server = require('./server');
 const { exec } = require('child_process');
 const readline = require('readline');
 
-
-
 function exit(){
     process.exit(1);
 }
-
-
-
 
 /**
  * config.jsonを読み込む関数
