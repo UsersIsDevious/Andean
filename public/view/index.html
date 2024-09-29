@@ -110,13 +110,14 @@
         //button.style.backgroundColor = data.color;
         document.body.style.backgroundColor = data.color;
       }
-
+        
       // データに "message" プロパティが含まれていて、値が "stop" の場合、ページを閉じる
       if (data.message === 'Server is shutting down.') {
         alert('サーバーが停止されました。ページを閉じます。');
         window.open('', '_self').close(); // ページを閉じる
       }
     };
+      
     // ボタンのクリック時にサーバーに色を送信
     button.addEventListener('click', () => {
       fetch('/notify', {

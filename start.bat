@@ -6,4 +6,7 @@ start http://localhost:3000/view
 start http://localhost:3000/controller
 
 REM binフォルダ内のnode.exeを使用してserver.jsを実行
-bin\node.exe src\server.js
+bin\node.exe src\main.js
+
+REM Node.js 実行後にバッチファイルを終了
+exit
