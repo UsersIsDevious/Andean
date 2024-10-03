@@ -1,6 +1,6 @@
 const {
     Init, Vector3, Player, CustomMatch_LobbyPlayer, Datacenter, Version, InventoryItem, LoadoutConfiguration,
-    CustomMatch_LobbyPlayers, RequestStatus, MatchSetup, GameStateChanged, CharacterSelected, MatchStateEnd, RingStartClosing,
+    CustomMatch_LobbyPlayers, RequestStatus, Response, MatchSetup, GameStateChanged, CharacterSelected, MatchStateEnd, RingStartClosing,
     RingFinishedClosing, PlayerConnected, PlayerDisconnected, PlayerStatChanged, PlayerUpgradeTierChanged, PlayerDamaged,
     PlayerKilled, PlayerDowned, PlayerAssist, SquadEliminated, GibraltarShieldAbsorbed, RevenantForgedShadowDamaged,
     PlayerRespawnTeam, PlayerRevive, ArenasItemSelected, ArenasItemDeselected, InventoryPickUp, InventoryDrop, InventoryUse,
@@ -19,6 +19,7 @@ const {
     'type.googleapis.com/rtech.liveapi.LoadoutConfiguration': LoadoutConfiguration,
     'type.googleapis.com/rtech.liveapi.CustomMatch_LobbyPlayers': CustomMatch_LobbyPlayers,
     'type.googleapis.com/rtech.liveapi.RequestStatus': RequestStatus,
+    'type.googleapis.com/rtech.liveapi.Response': Response,
     'type.googleapis.com/rtech.liveapi.MatchSetup': MatchSetup,
     'type.googleapis.com/rtech.liveapi.GameStateChanged': GameStateChanged,
     'type.googleapis.com/rtech.liveapi.CharacterSelected': CharacterSelected,

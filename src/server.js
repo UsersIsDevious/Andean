@@ -23,7 +23,6 @@ app.get('/events', (req, res) => {
 // API用 エンドポイント
 app.get('/api', (req, res) => {
   apexLiveApiCall(res, req); // SSEクライアントの初期設定
-  res.sendStatus(200)  // リクエストが成功したことをクライアントに通知
 });
 
 /**

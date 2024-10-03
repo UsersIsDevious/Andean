@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
-const messageTypes = require('./messageTypes'); 
+const messageTypes = require('./messageTypes');
+const apexCommon = require('./apexCommon');
 
 /**
  * WebSocketサーバーを作成する共通関数
@@ -15,6 +16,7 @@ function createWebSocketServer(port) {
   // WebSocketの接続イベントの処理
   wss.on('connection', (ws) => {
     console.log('Connected!');
+    apexCommon.setWebSocket(ws)
     ws.on('message', (message) => handleIncomingMessage(message, ws));
   });
 

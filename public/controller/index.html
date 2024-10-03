@@ -34,11 +34,7 @@
 
     createLobby.addEventListener('click', () => {
       fetch('/api?param=create_lobby', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        // body: JSON.stringify({ color: selectedColor })
+        method: 'GET'
       });
     });
 
