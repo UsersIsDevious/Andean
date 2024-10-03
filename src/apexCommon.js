@@ -1,3 +1,5 @@
+const wss = require('./common');
+
 const { 
     Request,
     CustomMatch_CreateLobby 

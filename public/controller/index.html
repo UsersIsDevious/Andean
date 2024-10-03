@@ -34,7 +34,7 @@
 
     createLobby.addEventListener('click', () => {
       fetch('/api?param=create_lobby', {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         },

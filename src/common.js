@@ -12,7 +12,7 @@ const readline = require('readline');
 function startAllServers() {
     // HTTP サーバーと WebSocket サーバーを同時に起動
     server.startServer();
-    websocketServer.createWebSocketServer(7777);
+    exports.wss = websocketServer.createWebSocketServer(7777);
 }
 
 
