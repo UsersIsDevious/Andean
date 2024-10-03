@@ -11,17 +11,19 @@
   <button id="notifyButton">Notify Clients</button>
   <button id="stopServerButton">停止</button>
   <button id="getPlayerButton">playerデータ受信</button>
+  <button id="createLobbyButton">ロビー作成</button>
 
   <script>
     const button = document.getElementById('notifyButton');
     const stopServerButton = document.getElementById('stopServerButton');
     const colorPicker = document.getElementById('colorPicker');
     const getPlayer = document.getElementById('getPlayerButton');
+    const createLobby = document.getElementById('createLobbyButton')
 
 
     getPlayer.addEventListener('click', () => {
       const selectedColor = colorPicker.value;
-      fetch('/api/create_lobby', {
+      fetch('/api/get_player', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -30,6 +32,15 @@
       });
     });
 
+    createLobby.addEventListener('click', () => {
+      fetch('/api?param=create_lobby', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // body: JSON.stringify({ color: selectedColor })
+      });
+    });
 
     stopServerButton.addEventListener('click', () => {
       fetch('/stopServer', {
