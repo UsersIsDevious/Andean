@@ -11,8 +11,9 @@ const readline = require('readline');
 // メイン関数でサーバーを開始
 function startAllServers() {
     // HTTP サーバーと WebSocket サーバーを同時に起動
-    server.startServer();
-    websocketServer.createWebSocketServer(7777);
+    webs = server.startServer();
+    ws = websocketServer.createWebSocketServer(7777);
+    return {"server" : webs , "websocketServer" : ws}
 }
 
 
