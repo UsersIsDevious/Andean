@@ -22,7 +22,7 @@ app.get('/events', (req, res) => {
 
 // API用 エンドポイント
 app.get('/api', (req, res) => {
-  apexLiveApiCall(res, req); // SSEクライアントの初期設定
+  apexCommon.apexLiveApiCall(res, req); // SSEクライアントの初期設定
 });
 
 /**
@@ -70,131 +70,6 @@ function stopServer() {
     });
   } else {
     console.log('サーバーは起動していません。');
-  }
-}
-
-
-/**
- * API エンドポイント用の処理関数
- * @param {Response} res - クライアントに対するレスポンスオブジェクト
- * @param {Request} req - クライアントのリクエストオブジェクト
- */
-function apexLiveApiCall(res, req) {
-  // リクエストのクエリパラメーターを取得（例：/API?param=value）
-  const queryParam = req.query.param;
-
-  // リクエストされたパラメーターに応じた処理を実行
-  switch (queryParam) {
-    case 'status':
-      // クライアントに現在のサーバーステータスを返す
-      res.json({ status: 'Server is running', clientsCount: clients.length });
-      break;
-
-    case 'clients':
-      // 現在接続中のクライアント数を返す
-      res.json({ clientsCount: clients.length });
-      break;
-
-    case 'create_lobby':
-      // カスタムマッチのロビーを作成
-      apexCommon.create_lobby(req);
-      res.json({data:"Make match lobby!!"});
-      break;
-
-    case 'get_players':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case '/get_data/{type}':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'get_data':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'schedule_autostart':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'change_camera':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'pause_toggle':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'set_ready':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'set_matchmaking':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'set_team':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'kick_player':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'set_settings':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'send_chat':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'get_player_names':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'get_hardware_names':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    case 'get_nucleus_hashes':
-      // hgoe
-      apexCommon.hoge();
-      res.json({data:"a"});
-      break;
-
-    default:
-      // デフォルトのレスポンス
-      res.json({ message: 'APIエンドポイントにアクセスしました。', query: queryParam });
-      break;
   }
 }
 

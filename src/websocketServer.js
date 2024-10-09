@@ -16,7 +16,7 @@ function createWebSocketServer(port) {
   // WebSocketの接続イベントの処理
   wss.on('connection', (ws) => {
     console.log('Connected!');
-    apexCommon.setWebSocket(ws)
+    apexCommon.setWebSocket(ws);
     ws.on('message', (message) => handleIncomingMessage(message, ws));
   });
 
