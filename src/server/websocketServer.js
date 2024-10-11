@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
-const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
-const messageTypes = require('./messageTypes');
+const { LiveAPIEvent } = require('../../bin/events_pb'); // 必要なメッセージ型をインポート
+const messageTypes = require('../utils/messageTypes');
 
 let wss;  // WebSocket サーバーインスタンス
 
@@ -86,11 +86,34 @@ function broadcastToAllClients(message) {
   });
 }
 
+/**
+ * WebSocket サーバーを停止する関数
+ * @returns {Promise} - WebSocket サーバーの停止を表す Promise
+ */
+function stopServer() {
+  return new Promise((resolve, reject) => {
+    if (websocketServer) {
+      websocketServer.close((err) => {
+        if (err) {
+          console.error('WebSocket サーバー停止時にエラーが発生しました:', err);
+          reject(err);
+        } else {
+          console.log('WebSocket サーバーが正常に停止しました。');
+          resolve();
+        }
+      });
+    } else {
+      resolve(); // サーバーが起動していない場合は即時解決
+    }
+  });
+}
+
 // モジュールとしてエクスポート
 module.exports = {
   handleIncomingMessage,
   createWebSocketServer,
   handleMessage,
   sendToClient,
-  broadcastToAllClients
+  broadcastToAllClients,
+  stopServer
 };

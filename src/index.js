@@ -1,5 +1,6 @@
-const { startAllServers } = require('./utils/common');
+const common = require('./utils/common');
+const httpServer = require('./server/httpServer');
+const websocketServer = require('./server/websocketServer');
 
-// サーバーの起動
-const servers = startAllServers();
-console.log("All servers are up and running:", servers);
+// サーバーをすべて起動
+common.startAllServers(httpServer, websocketServer);

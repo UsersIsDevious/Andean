@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 
+
 /**
  * サーバー（HTTP, WebSocket）の起動を管理する関数
  * @param {Object} httpServer - HTTPサーバーのインスタンス
@@ -15,13 +16,6 @@ function startAllServers(httpServer, websocketServer) {
   };
   console.log("All servers are up and running:", servers);
   return servers;
-}
-
-/**
- * アプリケーションを終了する関数
- */
-function exit() {
-  process.exit(1);
 }
 
 /**
@@ -106,5 +100,4 @@ module.exports = {
   runPowerShellCommand,
   runRegularCommand,
   saveLog,
-  exit
 };
