@@ -1,7 +1,8 @@
 const WebSocket = require('ws');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./messageTypes');
-const apexCommon = require('./apexCommon');
+
+let wss;  // WebSocket サーバーインスタンス
 
 /**
  * WebSocketサーバーを作成する共通関数
@@ -9,14 +10,18 @@ const apexCommon = require('./apexCommon');
  * @returns {WebSocket.Server} WebSocketサーバー
  */
 function createWebSocketServer(port) {
-  const wss = new WebSocket.Server({ port }, () => {
+  wss = new WebSocket.Server({ port }, () => {
     console.log(`WebSocket server is running on port ${port}...`);
   });
 
   // WebSocketの接続イベントの処理
   wss.on('connection', (ws) => {
     console.log('Connected!');
-    apexCommon.setWebSocket(ws);
+
+    // 接続中のクライアントにウェルカムメッセージを送信
+    //sendToClient(ws, 'Welcome to the WebSocket server!');
+
+    // メッセージ受信イベントの設定
     ws.on('message', (message) => handleIncomingMessage(message, ws));
   });
 
@@ -30,16 +35,13 @@ function createWebSocketServer(port) {
  */
 function handleIncomingMessage(message, ws) {
   try {
-    // 受信メッセージをLiveAPIEventとしてデコード
     const liveAPIEvent = LiveAPIEvent.deserializeBinary(message);
     console.log('LiveAPIEvent:', liveAPIEvent.toObject());
 
-    // `gamemessage` の value (google.protobuf.Any) を取得
     const gamemessage = liveAPIEvent.getGamemessage();
     const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得
     const valueBinary = gamemessage.getValue_asU8(); // バイナリ値を取得
 
-    // メッセージタイプに基づいたデシリアライズと処理の呼び出し
     if (messageTypes[typeUrl]) {
       const messageInstance = messageTypes[typeUrl].deserializeBinary(valueBinary);
       handleMessage(messageInstance, messageTypes[typeUrl].name);
@@ -61,8 +63,34 @@ function handleMessage(message, messageType) {
   console.log(`Received ${messageType} message:`, message.toObject());
 }
 
+/**
+ * クライアントにメッセージを送信する関数
+ * @param {WebSocket} ws - 対象クライアントの WebSocket インスタンス
+ * @param {string} message - 送信するメッセージ
+ */
+function sendToClient(ws, message) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(message);
+  }
+}
+
+/**
+ * 全ての接続中クライアントにメッセージを送信する関数
+ * @param {string} message - 送信するメッセージ
+ */
+function broadcastToAllClients(message) {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
+  });
+}
+
+// モジュールとしてエクスポート
 module.exports = {
   handleIncomingMessage,
   createWebSocketServer,
-  handleMessage
+  handleMessage,
+  sendToClient,
+  broadcastToAllClients
 };

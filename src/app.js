@@ -1,4 +1,4 @@
-const common = require('./common');
+const common = require('./utils/common');
  
 /**
  * 親のコマンドプロンプトを閉じる関数

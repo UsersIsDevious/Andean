@@ -6,7 +6,7 @@ const {
     PlayerRespawnTeam, PlayerRevive, ArenasItemSelected, ArenasItemDeselected, InventoryPickUp, InventoryDrop, InventoryUse,
     BannerCollected, PlayerAbilityUsed, LegendUpgradeSelected, ZiplineUsed, GrenadeThrown, BlackMarketAction, WraithPortal,
     WarpGateUsed, AmmoUsed, WeaponSwitched, ObserverSwitched, ObserverAnnotation
-  } = require('../bin/events_pb');
+  } = require('../../bin/events_pb');
   
   const messageTypes = {
     'type.googleapis.com/rtech.liveapi.Init': Init,

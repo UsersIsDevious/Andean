@@ -1,7 +1,7 @@
 const { 
     Request, ChangeCamera, PauseToggle, CustomMatch_CreateLobby, CustomMatch_JoinLobby, CustomMatch_LeaveLobby, CustomMatch_SetReady, CustomMatch_SetMatchmaking,
     CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings
-} = require('../bin/events_pb'); // Requestをインポート
+} = require('../../bin/events_pb'); // Requestをインポート
 
 let wssInstance;
 
