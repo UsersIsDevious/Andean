@@ -6,20 +6,26 @@
   <title>Observer Page</title>
 </head>
 <body>
+  <div>
   <label for="colorPicker">Select a color:</label>
   <input type="color" id="colorPicker" value="#ff0000">
   <button id="notifyButton">Notify Clients</button>
+  </div>
+  <div>
+  <label for="tokenInput">Enter Token:</label>
+  <input type="text" id="tokenInput" placeholder="Enter lobby token">
+  <button id="createLobbyButton">ロビー作成</button>
+  </div>
   <button id="stopServerButton">停止</button>
   <button id="getPlayerButton">playerデータ受信</button>
-  <button id="createLobbyButton">ロビー作成</button>
 
   <script>
     const button = document.getElementById('notifyButton');
     const stopServerButton = document.getElementById('stopServerButton');
     const colorPicker = document.getElementById('colorPicker');
     const getPlayer = document.getElementById('getPlayerButton');
-    const createLobby = document.getElementById('createLobbyButton')
-
+    const createLobby = document.getElementById('createLobbyButton');
+    const tokenInput = document.getElementById('tokenInput');
 
     getPlayer.addEventListener('click', () => {
       const selectedColor = colorPicker.value;
@@ -33,8 +39,13 @@
     });
 
     createLobby.addEventListener('click', () => {
-      fetch('/api?param=create_lobby', {
-        method: 'GET'
+      const token = tokenInput.value;
+      fetch('/api/create_lobby', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token: token }) // tokenを送信
       });
     });
 
@@ -43,9 +54,7 @@
         method: 'POST'
       })
       .then(response => {
-        // ステータスが 200 の場合、サーバー停止成功とみなす
         if (response.ok) {
-          //alert('サーバーが正常に停止されました。ページを閉じます。');
           window.close(); // ページを閉じる
         } else {
           alert('サーバーの停止に失敗しました。');

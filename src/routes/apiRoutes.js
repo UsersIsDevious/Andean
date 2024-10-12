@@ -3,6 +3,6 @@ const apiController = require('../controllers/apiController');
 
 const router = express.Router();
 
-router.get('/api', apiController.handleApiRequest);
+router.post('/api/:operation', apiController.handleApiRequest);
 
 module.exports = router;

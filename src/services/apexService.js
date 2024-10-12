@@ -7,10 +7,10 @@ const apexCommon = require('./apexCommon')
  */
 function apexLiveApiCall(req, res) {
     // リクエストのクエリパラメーターを取得（例：/API?param=value）
-    const queryParam = req.query.param;
+    const operation = req.params.operation;
   
     // リクエストされたパラメーターに応じた処理を実行
-    switch (queryParam) {
+    switch (operation) {
       case 'status':
         // クライアントに現在のサーバーステータスを返す
         res.json({ status: 'Server is running', clientsCount: clients.length });
@@ -22,6 +22,7 @@ function apexLiveApiCall(req, res) {
         break;
   
       case 'create_lobby':
+        console.log(req.body.token)
         // カスタムマッチのロビーを作成
         apexCommon.create_lobby(req);
         res.json({data:"Make match lobby!!"});
