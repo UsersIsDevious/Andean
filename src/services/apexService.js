@@ -1,3 +1,5 @@
+const apexCommon = require('./apexCommon')
+
 /**
  * API エンドポイント用の処理関数
  * @param {Request} req - クライアントのリクエストオブジェクト
@@ -21,7 +23,7 @@ function apexLiveApiCall(req, res) {
   
       case 'create_lobby':
         // カスタムマッチのロビーを作成
-        create_lobby(req);
+        apexCommon.create_lobby(req);
         res.json({data:"Make match lobby!!"});
         break;
   
