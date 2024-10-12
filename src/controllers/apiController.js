@@ -1,5 +1,5 @@
 // src/controllers/apiController.js
-const apexService = require('../services/apexCommon');
+const apexService = require('../services/apexService');
 
 /**
  * API 用のエンドポイントを処理する関数

@@ -2,6 +2,7 @@ const {
     Request, ChangeCamera, PauseToggle, CustomMatch_CreateLobby, CustomMatch_JoinLobby, CustomMatch_LeaveLobby, CustomMatch_SetReady, CustomMatch_SetMatchmaking,
     CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings
 } = require('../../bin/events_pb'); // Requestをインポート
+const websocketServer = require('../server/websocketServer')
 
 
 // "ActionsCase": getActionsCase,
@@ -58,9 +59,9 @@ const {
 
 
 // リクエスト処理はここで実行される
-function requester(request) {
+function serialized_request(request) {
     const serialized = request.serializeBinary();
-    wssInstance.send(serialized);  // シリアライズされたリクエストをWebSocket経由で送信
+    websocketServer.broadcastToAllClients(serialized);  // シリアライズされたリクエストをWebSocket経由で送信
 }
 
 // ロビー作成
@@ -69,9 +70,10 @@ function create_lobby() {
     const createLobby = new CustomMatch_CreateLobby();  // CustomMatch_CreateLobbyオブジェクトを作成
     req.setCustommatchCreatelobby(createLobby);  // これをするとなぜか作成できる。set~とかget~は上のリストに途中まで書いてある
     req.setWithack(true);  // ack（確認応答）を要求
-    requester(req)  // これ以降の処理はすべて共通のため関数化した
+    serialized_request(req)  // これ以降の処理はすべて共通のため関数化した
 };
 
 // モジュールとしてエクスポート
 module.exports = {
+    create_lobby
 };
