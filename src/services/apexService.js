@@ -1,9 +1,9 @@
 /**
  * API エンドポイント用の処理関数
- * @param {Response} res - クライアントに対するレスポンスオブジェクト
  * @param {Request} req - クライアントのリクエストオブジェクト
+ * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
-function apexLiveApiCall(res, req) {
+function apexLiveApiCall(req, res) {
     // リクエストのクエリパラメーターを取得（例：/API?param=value）
     const queryParam = req.query.param;
   
