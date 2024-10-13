@@ -4,7 +4,8 @@ const sseRoutes = require('../routes/sseRoutes');   // SSE ルート
 const apiRoutes = require('../routes/apiRoutes');   // API ルート
 const serverRoutes = require('../routes/serverRoutes'); // サーバー制御ルート
 const bodyParser = require('body-parser');
-
+const { createSSRApp } = require('vue');
+const { renderToString } = require('@vue/server-renderer');
 const app = express();
 const port = 3000;
 
@@ -14,7 +15,18 @@ const port = 3000;
 function configureServer() {
     app.use(bodyParser.json());
     app.use(express.static(path.join(__dirname, '../../public')));
-
+    // 動的なページルート
+    app.get('/app/:page', async (req, res) => {
+        const pageName = req.params.page;
+        const app = createSSRApp(require(`../../client/pages/${pageName}/index.vue`).default);
+        const appContent = await renderToString(app);
+        res.send(`
+          <!DOCTYPE html>
+          <html lang="ja">
+          <body>${appContent}</body>
+          </html>
+        `);
+      });
     // ルート設定
     app.use(sseRoutes);
     app.use(apiRoutes);
