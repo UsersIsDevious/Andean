@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observer Page</title>
+</head>
+<body>
+  <div>
+  <label for="colorPicker">Select a color:</label>
+  <input type="color" id="colorPicker" value="#ff0000">
+  <button id="notifyButton">Notify Clients</button>
+  </div>
+  <div>
+  <label for="tokenInput">ロビーに参加する場合はコードを入力してください:</label>
+  <input type="text" id="tokenInput" placeholder="Enter lobby token">
+  <button id="startLobbyButton">ロビー作成or参加</button>
+  </div>
+  <button id="stopServerButton">停止</button>
+  <button id="getPlayerButton">playerデータ受信</button>
+  <button id="startGameButton">Start Game</button>
+
+  <script>
+    const button = document.getElementById('notifyButton');
+    const stopServer = document.getElementById('stopServerButton');
+    const colorPicker = document.getElementById('colorPicker');
+    const getPlayer = document.getElementById('getPlayerButton');
+    const startLobby = document.getElementById('startLobbyButton');
+    const tokenInput = document.getElementById('tokenInput');
+    const startGame = document.getElementById('startGameButton');
+
+    getPlayer.addEventListener('click', () => {
+      const selectedColor = colorPicker.value;
+      fetch('/api/get_player', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ color: selectedColor })
+      });
+    });
+
+    startLobby.addEventListener('click', () => {
+      const token = tokenInput.value;
+      if (token == "") {
+        fetch('/api/create_lobby', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        });
+      } else {
+        fetch('/api/join_lobby', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: token }) // tokenを送信
+        });
+      }
+    });
+
+    startGame.addEventListener('click', () => {
+      fetch('/startGame', {
+        method: 'POST'
+      })
+      .then(response => {
+        if (!response.ok) {
+          alert('ゲームを起動に失敗しました。');
+        }
+      })
+      .catch(error => {
+        console.error('ゲーム起動リクエストに失敗しました:', error);
+        alert('ゲームを起動に失敗しました。');
+      });
+    })
+
+    stopServer.addEventListener('click', () => {
+      fetch('/stopServer', {
+        method: 'POST'
+      })
+      .then(response => {
+        if (response.ok) {
+          window.close(); // ページを閉じる
+        } else {
+          alert('サーバーの停止に失敗しました。');
+        }
+      })
+      .catch(error => {
+        console.error('サーバー停止リクエストに失敗しました:', error);
+        alert('サーバーの停止に失敗しました。');
+      });
+    });
+
+    button.addEventListener('click', () => {
+      const selectedColor = colorPicker.value;
+      fetch('/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ color: selectedColor })
+      });
+    });
+  </script>
+</body>
+</html>
