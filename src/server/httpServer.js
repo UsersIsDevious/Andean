@@ -5,8 +5,14 @@ const apiRoutes = require('../routes/apiRoutes');   // API ルート
 const serverRoutes = require('../routes/serverRoutes'); // サーバー制御ルート
 const bodyParser = require('body-parser');
 
+const next = require('next');
+const dev = process.env.NODE_ENV !== 'production';
+const nextApp = next({ dev, dir: './' });
+const handle = nextApp.getRequestHandler();
+
 const app = express();
 const port = 3000;
+let server;  // サーバーインスタンスをここで宣言
 
 /**
  * サーバーのミドルウェアとルート設定を行う関数
@@ -19,6 +25,11 @@ function configureServer() {
     app.use(sseRoutes);
     app.use(apiRoutes);
     app.use(serverRoutes);
+    
+    // Next.js のリクエストを処理するハンドラを追加
+    app.all('*', (req, res) => {
+        return handle(req, res);  // 正しく Next.js のハンドラを呼び出す
+    });
 }
 
 /**
@@ -26,9 +37,11 @@ function configureServer() {
  * @returns {Object} - HTTP サーバーインスタンス
  */
 function startServer() {
-    configureServer();
-    return app.listen(port, () => {
-        console.log(`HTTP Server is running on http://localhost:${port}`);
+    return nextApp.prepare().then(() => {  // Next.js の準備ができてからサーバーを開始
+        configureServer();
+        server = app.listen(port, () => {  // サーバーインスタンスを `server` に代入
+            console.log(`HTTP Server is running on http://localhost:${port}`);
+        });
     });
 }
 
