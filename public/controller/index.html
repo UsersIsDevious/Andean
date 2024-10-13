@@ -12,9 +12,9 @@
   <button id="notifyButton">Notify Clients</button>
   </div>
   <div>
-  <label for="tokenInput">Enter Token:</label>
+  <label for="tokenInput">ロビーに参加する場合はコードを入力してください:</label>
   <input type="text" id="tokenInput" placeholder="Enter lobby token">
-  <button id="createLobbyButton">ロビー作成</button>
+  <button id="createLobbyButton">ロビー作成or参加</button>
   </div>
   <button id="stopServerButton">停止</button>
   <button id="getPlayerButton">playerデータ受信</button>
@@ -40,13 +40,22 @@
 
     createLobby.addEventListener('click', () => {
       const token = tokenInput.value;
-      fetch('/api/create_lobby', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ token: token }) // tokenを送信
-      });
+      if (token == "") {
+        fetch('/api/create_lobby', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        });
+      } else {
+        fetch('/api/join_lobby', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: token }) // tokenを送信
+        });
+      }
     });
 
     stopServerButton.addEventListener('click', () => {

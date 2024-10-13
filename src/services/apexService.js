@@ -22,9 +22,15 @@ function apexLiveApiCall(req, res) {
         break;
   
       case 'create_lobby':
+        // カスタムマッチのロビーを作成
+        apexCommon.create_lobby();
+        res.json({data:"Make match lobby!!"});
+        break;
+
+      case 'join_lobby':
         console.log(req.body.token)
         // カスタムマッチのロビーを作成
-        apexCommon.create_lobby(req);
+        apexCommon.join_lobby(req.body.token);
         res.json({data:"Make match lobby!!"});
         break;
   
