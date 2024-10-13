@@ -1,0 +1,23 @@
+swc-win32-x64-msvc/
+# macOS 特有のファイル
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOSでタイムマシンによって作成されるファイル
+.Spotlight-V100
+.Trashes
+
+# macOSで作成されるリソースフォークやメタデータファイル
+._*
+
+# `.VolumeIcon.icns` ファイルはドライブにアイコンを設定するために使われます
+.VolumeIcon.icns
+
+# `com.apple.timemachine.donotpresent` ファイルはタイムマシンのバックアップ除外に使われます
+com.apple.timemachine.donotpresent
+
+# クラウド同期サービスによる一時ファイル
+.fseventsd
+.TemporaryItems
+.apdisk
