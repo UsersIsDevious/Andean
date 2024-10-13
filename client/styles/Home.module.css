@@ -1,0 +1,7 @@
+/* styles/Home.module.css */
+.leaflet-container {
+    height: 90vh;
+    width: 60vw;
+    margin: auto;
+  }
+  
