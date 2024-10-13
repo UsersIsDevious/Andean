@@ -34,7 +34,7 @@ function startApexLegends() {
             return;
         }
     } else {
-        config = common.readConfig();
+        config = common.readConfig('../../config.json');
     }
     
     const command = `"${config.apexlegends.path}" + ${config.apexlegends.option}`; // パスが空でない場合に起動コマンドを構築
@@ -49,8 +49,8 @@ function startApexLegends() {
 
 
 // サーバーを起動
-//server.startServer();
-common.startAllServers();
+// server.startServer();
+// common.startAllServers();
 
 /* // 一定時間ごとに色を送信する
 setInterval(() => {
