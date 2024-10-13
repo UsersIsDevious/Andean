@@ -1,5 +1,5 @@
 const common = require('./utils/common');
-let config = common.readConfig();
+let config = common.readConfig('../../config.json');
  
 /**
  * 親のコマンドプロンプトを閉じる関数
