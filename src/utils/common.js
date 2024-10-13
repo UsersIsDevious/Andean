@@ -32,7 +32,7 @@ function saveLog(message, logFileName = 'app.log') {
     if (err) {
       console.error('ログの保存に失敗しました:', err);
     } else {
-      console.log('ログを保存しました:', logMessage.trim());
+      //console.log('ログを保存しました:', logMessage.trim());
     }
   });
 }

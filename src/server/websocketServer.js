@@ -1,8 +1,10 @@
 const WebSocket = require('ws');
 const { LiveAPIEvent } = require('../../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('../utils/messageTypes');
+const { saveLog } = require('../utils/common')
 
 let wss;  // WebSocket サーバーインスタンス
+let fileName; 
 
 /**
  * WebSocketサーバーを作成する共通関数
@@ -10,6 +12,8 @@ let wss;  // WebSocket サーバーインスタンス
  * @returns {WebSocket.Server} WebSocketサーバー
  */
 function createWebSocketServer(port) {
+  fileName = new Date().toISOString().replace(/[:.]/g, '-') + '.txt';
+
   wss = new WebSocket.Server({ port }, () => {
     console.log(`WebSocket server is running on port ${port}...`);
   });
@@ -60,6 +64,7 @@ function handleIncomingMessage(message, ws) {
  * @param {string} messageType メッセージの種類
  */
 function handleMessage(message, messageType) {
+  saveLog(message.toObject(),fileName);
   console.log(`Received ${messageType} message:`, message.toObject());
 }
 
