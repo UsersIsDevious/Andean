@@ -76,7 +76,7 @@ function create_lobby() {
 function join_lobby(token) {
     const req = new Request();
     const joinlobby = new CustomMatch_JoinLobby();
-    join_lobby.roleToken = token
+    joinlobby.setRoletoken(token)
     req.setCustommatchJoinlobby(joinlobby);
     serialized_request(req)
 }
