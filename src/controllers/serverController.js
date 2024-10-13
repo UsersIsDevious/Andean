@@ -1,5 +1,6 @@
 const { sendClients } = require('./sseController'); // SSE のクライアント管理関数をインポート
 const common = require('../utils/shutdownManager');
+const app = require('../app')
 
 /**
  * ボタンが押された時に色をクライアントに送信するエンドポイント
@@ -22,4 +23,15 @@ function stopServer(req, res) {
   common.shutdownServers(); // すべてのサーバーを停止
 }
 
-module.exports = { handleNotify, stopServer };
+/**
+ * ゲームを起動するエンドポイント
+ * @param {Request} req - クライアントのリクエストオブジェクト
+ * @param {Response} res - クライアントに対するレスポンスオブジェクト
+ */
+function startGame(req, res) {
+  res.sendStatus(200);
+  app.startApexLegends()
+}
+
+
+module.exports = { handleNotify, stopServer, startGame };

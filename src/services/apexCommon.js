@@ -73,6 +73,7 @@ function create_lobby() {
     serialized_request(req)  // これ以降の処理はすべて共通のため関数化した
 };
 
+// ロビー参加
 function join_lobby(token) {
     const req = new Request();
     const joinlobby = new CustomMatch_JoinLobby();

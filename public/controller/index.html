@@ -14,18 +14,20 @@
   <div>
   <label for="tokenInput">ロビーに参加する場合はコードを入力してください:</label>
   <input type="text" id="tokenInput" placeholder="Enter lobby token">
-  <button id="createLobbyButton">ロビー作成or参加</button>
+  <button id="startLobbyButton">ロビー作成or参加</button>
   </div>
   <button id="stopServerButton">停止</button>
   <button id="getPlayerButton">playerデータ受信</button>
+  <button id="startGameButton">Start Game</button>
 
   <script>
     const button = document.getElementById('notifyButton');
-    const stopServerButton = document.getElementById('stopServerButton');
+    const stopServer = document.getElementById('stopServerButton');
     const colorPicker = document.getElementById('colorPicker');
     const getPlayer = document.getElementById('getPlayerButton');
-    const createLobby = document.getElementById('createLobbyButton');
+    const startLobby = document.getElementById('startLobbyButton');
     const tokenInput = document.getElementById('tokenInput');
+    const startGame = document.getElementById('startGameButton');
 
     getPlayer.addEventListener('click', () => {
       const selectedColor = colorPicker.value;
@@ -38,7 +40,7 @@
       });
     });
 
-    createLobby.addEventListener('click', () => {
+    startLobby.addEventListener('click', () => {
       const token = tokenInput.value;
       if (token == "") {
         fetch('/api/create_lobby', {
@@ -58,7 +60,22 @@
       }
     });
 
-    stopServerButton.addEventListener('click', () => {
+    startGame.addEventListener('click', () => {
+      fetch('/startGame', {
+        method: 'POST'
+      })
+      .then(response => {
+        if (!response.ok) {
+          alert('ゲームを起動に失敗しました。');
+        }
+      })
+      .catch(error => {
+        console.error('ゲーム起動リクエストに失敗しました:', error);
+        alert('ゲームを起動に失敗しました。');
+      });
+    })
+
+    stopServer.addEventListener('click', () => {
       fetch('/stopServer', {
         method: 'POST'
       })

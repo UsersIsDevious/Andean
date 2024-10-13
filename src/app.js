@@ -1,4 +1,5 @@
 const common = require('./utils/common');
+let config = common.readConfig();
  
 /**
  * 親のコマンドプロンプトを閉じる関数
@@ -21,34 +22,29 @@ function exit() {
 
 /**
  * Apex Legendsを起動する関数
- * @param {string} path - Apex Legendsのインストールパス
  */
-function startApexLegends(path) {
-
-    if (!path) {
-        console.error('Apex Legendsのパスが指定されていません。');
-        return;
+function startApexLegends() {
+    if (config) {
+        if (!config.apexlegends.path) {
+            console.error('Apex Legendsのパスが指定されていません。');
+            return;
+        }
+        if (!config.apexlegends.option) {
+            console.error('Apex Legendsの起動オプションが指定されていません。');
+            return;
+        }
+    } else {
+        config = common.readConfig();
     }
     
-    const command = `"${path}"`; // パスが空でない場合に起動コマンドを構築
-    runRegularCommand(command)
+    const command = `"${config.apexlegends.path}" + ${config.apexlegends.option}`; // パスが空でない場合に起動コマンドを構築
+    common.runRegularCommand(command)
         .then(output => {
             console.log('Apex Legendsが起動しました:', output);
         })
         .catch(err => {
             console.error('Apex Legendsの起動中にエラーが発生しました:', err);
         });
-}
-
-// 使用例
-const config = common.readConfig();
-
-if (config) {
-//    console.log(`App is running on port: ${config.port}`);
-//    console.log(`Database host: ${config.database.host}`);
-    // Apex Legendsのパスを取得して起動
-    const apexPath = config.apexlegends.path;
-    //startApexLegends(apexPath);
 }
 
 
@@ -63,3 +59,5 @@ setInterval(() => {
   server.sendClients(`"color": "{${randomColor}}"`);
   console.log(`Sent color: ${randomColor}`);
 }, 5000); */
+
+module.exports = { startApexLegends }

@@ -31,7 +31,7 @@ function apexLiveApiCall(req, res) {
         console.log(req.body.token)
         // カスタムマッチのロビーを作成
         apexCommon.join_lobby(req.body.token);
-        res.json({data:"Make match lobby!!"});
+        res.json({data:"Join match lobby!!"});
         break;
   
       case 'get_players':
