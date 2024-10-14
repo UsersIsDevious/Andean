@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>経過時間の表示</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .timer {
+            font-size: 48px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="timer" id="timer">00:00:00</div>
+
+    <script>
+        // 指定されたUnixタイムスタンプ（秒単位）をミリ秒単位に変換
+        const startTimestamp = 1727621822;
+        const timestamp = startTimestamp * 1000;
+
+        function updateElapsedTime() {
+            const now = Date.now(); // 現在時刻（ミリ秒）
+            const elapsed = now - timestamp; // 経過時間を計算
+
+            // 経過時間を日、時、分、秒に変換
+            const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+
+            // 2桁表示を維持するために文字列としてフォーマット
+            const formattedTime = 
+                (days > 0 ? String(days) + "日 " : "") + // 日の表示は必要な時のみ
+                String(hours).padStart(2, '0') + ":" + 
+                String(minutes).padStart(2, '0') + ":" + 
+                String(seconds).padStart(2, '0');
+
+            // HTMLに表示
+            document.getElementById("timer").textContent = formattedTime;
+        }
+
+        // 1秒ごとに経過時間を更新
+        setInterval(updateElapsedTime, 1000);
+
+        // ページ読み込み時にすぐ表示を更新
+        updateElapsedTime();
+    </script>
+</body>
+</html>

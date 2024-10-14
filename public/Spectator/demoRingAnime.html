@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaflet と Turf.js を使った円の縮小アニメーション（スライダー制御）</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    #map {
+      width: 600px;
+      height: 400px;
+      margin-bottom: 10px;
+    }
+    #controls {
+      margin: 10px;
+    }
+    #slider {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h2>Leaflet と Turf.js を使った円の縮小アニメーション（スライダー制御）</h2>
+  <div id="map"></div>
+  <div id="controls">
+    <label for="lat">中心の緯度:</label>
+    <input type="text" id="lat" value="35.681236"><br>
+    <label for="lng">中心の経度:</label>
+    <input type="text" id="lng" value="139.767125"><br>
+    <label for="outerRadius">外側の半径 (m):</label>
+    <input type="text" id="outerRadius" value="500"><br>
+    <label for="innerRadius">内側の初期半径 (m):</label>
+    <input type="text" id="innerRadius" value="300"><br>
+    <label for="targetRadius">縮小後の半径 (m):</label>
+    <input type="text" id="targetRadius" value="100"><br>
+    <label for="duration">縮小までの時間 (秒):</label>
+    <input type="text" id="duration" value="3"><br>
+    <button onclick="startShrinkAnimation()">アニメーション開始</button>
+  </div>
+  <div>
+    <label for="slider">アニメーション経過時間:</label>
+    <input type="range" id="slider" min="0" max="1" step="0.01" value="0">
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <!-- Turf.js の読み込み -->
+  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
+
+  <script>
+    let map;
+    let innerCircleLayer;
+    let outerCircleLayer;
+    let animationTimer;
+    let startTime = 0;
+
+    // 地図の初期化
+    function initializeMap(lat, lng) {
+      map = L.map('map').setView([lat, lng], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(map);
+    }
+
+    // ドーナツ型の円を描画する
+    function drawDonut(lat, lng, innerRadius, outerRadius) {
+      const center = [lng, lat]; // Turf.js は [経度, 緯度]
+      
+      const outerCircle = turf.circle(center, outerRadius / 1000, { steps: 64, units: 'kilometers' });
+      const innerCircle = turf.circle(center, innerRadius / 1000, { steps: 64, units: 'kilometers' });
+
+      const donut = turf.difference(outerCircle, innerCircle);
+
+      if (outerCircleLayer) map.removeLayer(outerCircleLayer);
+      outerCircleLayer = L.geoJSON(donut, {
+        style: {
+          color: 'red',
+          fillColor: 'red',
+          fillOpacity: 0.3,
+          weight: 2,
+        },
+      }).addTo(map);
+
+      if (innerCircleLayer) map.removeLayer(innerCircleLayer);
+      innerCircleLayer = L.geoJSON(innerCircle, {
+        style: {
+          color: 'blue',
+          fillOpacity: 0.0,
+          weight: 1,
+        },
+      }).addTo(map);
+    }
+
+    // スライダーでアニメーションを制御
+    function updateRadiusBySlider(lat, lng, initialRadius, targetRadius) {
+      const sliderValue = parseFloat(document.getElementById('slider').value);
+      const currentRadius = initialRadius - (initialRadius - targetRadius) * sliderValue;
+      drawDonut(lat, lng, currentRadius, document.getElementById('outerRadius').value);
+    }
+
+    // アニメーション開始
+    function startShrinkAnimation() {
+      const lat = parseFloat(document.getElementById('lat').value);
+      const lng = parseFloat(document.getElementById('lng').value);
+      const outerRadius = parseFloat(document.getElementById('outerRadius').value);
+      const innerRadius = parseFloat(document.getElementById('innerRadius').value);
+      const targetRadius = parseFloat(document.getElementById('targetRadius').value);
+      const duration = parseFloat(document.getElementById('duration').value);
+
+      // マップと円を初期化
+      initializeMap(lat, lng);
+      drawDonut(lat, lng, innerRadius, outerRadius);
+
+      // スライダーの設定を変更
+      document.getElementById('slider').max = duration;
+
+      // アニメーションをスライダー制御できるようにする
+      const slider = document.getElementById('slider');
+      slider.addEventListener('input', () => updateRadiusBySlider(lat, lng, innerRadius, targetRadius));
+
+      // 自動アニメーション開始
+      startTime = 0;
+      clearInterval(animationTimer);
+      animationTimer = setInterval(() => {
+        startTime += 0.1;
+        if (startTime > duration) {
+          clearInterval(animationTimer);
+          startTime = duration;
+        }
+        slider.value = startTime;
+        updateRadiusBySlider(lat, lng, innerRadius, targetRadius);
+      }, 100);
+    }
+  </script>
+</body>
+</html>
