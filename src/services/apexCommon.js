@@ -1,8 +1,8 @@
 const { 
     Request, ChangeCamera, PauseToggle, CustomMatch_CreateLobby, CustomMatch_JoinLobby, CustomMatch_LeaveLobby, CustomMatch_SetReady, CustomMatch_SetMatchmaking,
     CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings
-} = require('../../bin/events_pb'); // Requestをインポート
-const websocketServer = require('../server/websocketServer')
+} = require('../../bin/events_pb'); // events_pb.jsからRequest関連の機能をインポート
+const websocketServer = require('../server/websocketServer') // WebSocketサーバーとの通信
 
 
 // "ActionsCase": getActionsCase,
@@ -58,31 +58,199 @@ const websocketServer = require('../server/websocketServer')
 //  力尽きた。もし続きが必要なら「proto.rtech.liveapi.Request.prototype.」をevents_pb.jsで調べれば検索できる
 
 
-// リクエスト処理はここで実行される
+/**
+ * シリアライズされたリクエストをWebSocket経由でクライアントに送信
+ * @param {Request} request - リクエストオブジェクト
+ */
 function serialized_request(request) {
-    request.setWithack(true);  // ack（確認応答）を要求
+    request.setWithack(true);  // 確認応答を要求
     const serialized = request.serializeBinary();
-    websocketServer.broadcastToAllClients(serialized);  // シリアライズされたリクエストをWebSocket経由で送信
+    websocketServer.broadcastToAllClients(serialized);  // シリアライズされたデータをWebSocket経由で送信
 }
 
-// ロビー作成
-function create_lobby() {
-    const req = new Request();  // Requestオブジェクトを作成
-    const createLobby = new CustomMatch_CreateLobby();  // CustomMatch_CreateLobbyオブジェクトを作成
-    req.setCustommatchCreatelobby(createLobby);  // これをするとなぜか作成できる。set~とかget~は上のリストに途中まで書いてある
-    serialized_request(req)  // これ以降の処理はすべて共通のため関数化した
-};
+/**
+ * カメラを指定されたターゲットに変更
+ * @param {string} type - 'poi'または'name'を指定
+ * @param {string} value - PlayerOfInterestのタイプまたはプレイヤー名
+ */
+function change_camera(type, value) {
+    const req = new Request();
+    const changeCamera = new ChangeCamera();
 
-// ロビー参加
+    if (type === 'poi') {
+        const poi = new PlayerOfInterest();
+        poi.setType(value); // 例: 'KILL_LEADER' などのプレイヤータイプを指定
+        changeCamera.setPoi(poi);
+    } else if (type === 'name') {
+        changeCamera.setName(value); // プレイヤーの名前を指定
+    }
+
+    req.setChangecam(changeCamera);
+    serialized_request(req);
+}
+
+/**
+ * ポーズの切り替え
+ */
+function pause_toggle() {
+    const req = new Request();
+    const pauseToggle = new PauseToggle();
+    req.setPausetoggle(pauseToggle);
+    serialized_request(req);
+}
+
+/**
+ * カスタムマッチロビーを作成
+ */
+function create_lobby() {
+    const req = new Request();
+    const createLobby = new CustomMatch_CreateLobby();
+    req.setCustommatchCreatelobby(createLobby);
+    serialized_request(req);
+}
+
+/**
+ * カスタムマッチロビーに参加
+ * @param {string} token - ロビー参加のためのトークン
+ */
 function join_lobby(token) {
     const req = new Request();
-    const joinlobby = new CustomMatch_JoinLobby();
-    joinlobby.setRoletoken(token)
-    req.setCustommatchJoinlobby(joinlobby);
-    serialized_request(req)
+    const joinLobby = new CustomMatch_JoinLobby();
+    joinLobby.setRoletoken(token);
+    req.setCustommatchJoinlobby(joinLobby);
+    serialized_request(req);
 }
 
-// モジュールとしてエクスポート
+/**
+ * カスタムマッチロビーから退出
+ */
+function leave_lobby() {
+    const req = new Request();
+    const leaveLobby = new CustomMatch_LeaveLobby();
+    req.setCustommatchLeavelobby(leaveLobby);
+    serialized_request(req);
+}
+
+/**
+ * 試合の準備完了状態を設定
+ * @param {boolean} ready - trueで準備完了、falseで準備未完了を設定
+ */
+function set_ready(ready) {
+    const req = new Request();
+    const setReady = new CustomMatch_SetReady();
+    setReady.setReady(ready); // Boolean型（trueまたはfalse）
+    req.setCustommatchSetready(setReady);
+    serialized_request(req);
+}
+
+/**
+ * マッチメイキングの有効/無効を設定
+ * @param {boolean} enabled - trueでマッチメイキング有効、falseで無効
+ */
+function set_matchmaking(enabled) {
+    const req = new Request();
+    const setMatchmaking = new CustomMatch_SetMatchmaking();
+    setMatchmaking.setEnabled(enabled); // Boolean型（trueまたはfalse）
+    req.setCustommatchSetmatchmaking(setMatchmaking);
+    serialized_request(req);
+}
+
+/**
+ * チームを設定
+ * @param {number} teamId - 設定するチームID
+ */
+function set_team(teamId) {
+    const req = new Request();
+    const setTeam = new CustomMatch_SetTeam();
+    setTeam.setTeamid(teamId);
+    req.setCustommatchSetteam(setTeam);
+    serialized_request(req);
+}
+
+/**
+ * プレイヤーをキック
+ * @param {number} playerId - キックするプレイヤーのID
+ */
+function kick_player(playerId) {
+    const req = new Request();
+    const kickPlayer = new CustomMatch_KickPlayer();
+    kickPlayer.setPlayerid(playerId);
+    req.setCustommatchKickplayer(kickPlayer);
+    serialized_request(req);
+}
+
+/**
+ * 試合設定を適用
+ * @param {Object} settings - 設定オブジェクト
+ */
+function set_settings(settings) {
+    const req = new Request();
+    const setSettings = new CustomMatch_SetSettings();
+    setSettings.setSettings(settings); // 試合設定のオブジェクト
+    req.setCustommatchSetsettings(setSettings);
+    serialized_request(req);
+}
+
+/**
+ * チャットメッセージを送信
+ * @param {string} message - 送信するメッセージ
+ */
+function send_chat(message) {
+    const req = new Request();
+    const sendChat = new CustomMatch_SendChat();
+    sendChat.setMessage(message);
+    req.setCustommatchSendchat(sendChat);
+    serialized_request(req);
+}
+
+/**
+ * ロビープレイヤー情報を取得
+ */
+function get_lobby_players() {
+    const req = new Request();
+    const getLobbyPlayers = new CustomMatch_GetLobbyPlayers();
+    req.setCustommatchGetlobbyplayers(getLobbyPlayers);
+    serialized_request(req);
+}
+
+/**
+ * チーム名を設定
+ * @param {number} teamId - チームID
+ * @param {string} name - 設定するチーム名
+ */
+function set_team_name(teamId, name) {
+    const req = new Request();
+    const setTeamName = new CustomMatch_SetTeamName();
+    setTeamName.setTeamid(teamId);
+    setTeamName.setTeamname(name);
+    req.setCustommatchSetteamname(setTeamName);
+    serialized_request(req);
+}
+
+/**
+ * 試合設定を取得
+ */
+function get_match_settings() {
+    const req = new Request();
+    const getSettings = new CustomMatch_GetSettings();
+    req.setCustommatchGetsettings(getSettings);
+    serialized_request(req);
+}
+
+// モジュールとして関数をエクスポート
 module.exports = {
-    create_lobby, join_lobby
+    change_camera,
+    pause_toggle,
+    create_lobby,
+    join_lobby,
+    leave_lobby,
+    set_ready,
+    set_matchmaking,
+    set_team,
+    kick_player,
+    set_settings,
+    send_chat,
+    get_lobby_players,
+    set_team_name,
+    get_match_settings
 };
