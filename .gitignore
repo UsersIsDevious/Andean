@@ -1,4 +1,5 @@
 swc-win32-x64-msvc/
+client/.next/
 # macOS 特有のファイル
 .DS_Store
 .AppleDouble
