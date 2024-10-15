@@ -27,6 +27,26 @@ class Player {
         this.mainWeapon = mainWeapon;        // string
         this.subWeapon = subWeapon;          // string
     }
+    getStatus() {
+        return {
+            name: this.name,
+            teamId: this.teamId,
+            pos: { x: this.pos.x, y: this.pos.y, z: this.pos.z },
+            angles: { x: this.angles.x, y: this.angles.y, z: this.angles.z },
+            currentHealth: this.currentHealth,
+            maxHealth: this.maxHealth,
+            shieldHealth: this.shieldHealth,
+            shieldMaxHealth: this.shieldMaxHealth,
+            nucleusHash: this.nucleusHash,
+            hardwareName: this.hardwareName,
+            teamName: this.teamName,
+            squadIndex: this.squadIndex,
+            character: this.character,
+            skin: this.skin,
+            mainWeapon: this.mainWeapon,
+            subWeapon: this.subWeapon
+        };
+    }
 
     // プレイヤーのステータスを表示するメソッド
     printStatus() {
@@ -57,7 +77,8 @@ class Player {
 // Vector3のインスタンス作成
 const playerPosition = new Vector3(10, 20, 30);
 const playerAngles = new Vector3(90, 0, 0);
-
+// プレイヤーのステータスをオブジェクトとして取得
+const playerStatus = player.getStatus();
 // Playerのインスタンス作成
 const player = new Player(
     "JohnDoe", 1, playerPosition, playerAngles, 100, 100, 50, 50,
