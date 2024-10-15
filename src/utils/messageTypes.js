@@ -2,7 +2,7 @@ const {
     Init, Vector3, Player, CustomMatch_LobbyPlayer, Datacenter, Version, InventoryItem, LoadoutConfiguration,
     CustomMatch_LobbyPlayers, RequestStatus, Response, MatchSetup, GameStateChanged, CharacterSelected, MatchStateEnd, RingStartClosing,
     RingFinishedClosing, PlayerConnected, PlayerDisconnected, PlayerStatChanged, PlayerUpgradeTierChanged, PlayerDamaged,
-    PlayerKilled, PlayerDowned, PlayerAssist, SquadEliminated, GibraltarShieldAbsorbed, RevenantForgedShadowDamaged,
+    PlayerKilled, PlayerDowned, PlayerAssist, SquadEliminated, GibraltarShieldAbsorbed, RevenantForgedShadowDamaged, ChangeCamera, PauseToggle, CustomMatch_SetSettings,
     PlayerRespawnTeam, PlayerRevive, ArenasItemSelected, ArenasItemDeselected, InventoryPickUp, InventoryDrop, InventoryUse,
     BannerCollected, PlayerAbilityUsed, LegendUpgradeSelected, ZiplineUsed, GrenadeThrown, BlackMarketAction, WraithPortal,
     WarpGateUsed, AmmoUsed, WeaponSwitched, ObserverSwitched, ObserverAnnotation
@@ -37,6 +37,9 @@ const {
     'type.googleapis.com/rtech.liveapi.SquadEliminated': SquadEliminated,
     'type.googleapis.com/rtech.liveapi.GibraltarShieldAbsorbed': GibraltarShieldAbsorbed,
     'type.googleapis.com/rtech.liveapi.RevenantForgedShadowDamaged': RevenantForgedShadowDamaged,
+    'type.googleapis.com/rtech.liveapi.ChangeCamera': ChangeCamera,
+    'type.googleapis.com/rtech.liveapi.PauseToggle': PauseToggle,
+    'type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings': CustomMatch_SetSettings,
     'type.googleapis.com/rtech.liveapi.PlayerRespawnTeam': PlayerRespawnTeam,
     'type.googleapis.com/rtech.liveapi.PlayerRevive': PlayerRevive,
     'type.googleapis.com/rtech.liveapi.ArenasItemSelected': ArenasItemSelected,
