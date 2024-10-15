@@ -1,38 +1,27 @@
-// components/Map.js
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 
-export default function Map({ zoomLevel }) {
-  useEffect(() => {
-    // Leaflet が読み込まれているか確認してからマップを初期化
-    if (typeof window !== 'undefined' && window.L) {
-      const mapImage = {
-        url: 'brokenMoon.png',
-        width: 4096,
-        height: 4096,
-      };
+const Map = dynamic(() => import('react-leaflet').then((mod) => mod.Map), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then((mod) => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import('react-leaflet').then((mod) => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), { ssr: false });
 
-      const mapBounds = window.L.latLngBounds(
-        [0, 0], // 左上の位置
-        [mapImage.height, mapImage.width] // 右下の位置
-      );
+const MyMapComponent = () => {
+  const [location, setLocation] = useState([51.505, -0.09]); // デフォルトの位置
 
-      const map = window.L.map('map', {
-        crs: window.L.CRS.Simple,
-        center: [mapImage.height / 2, mapImage.width / 2],
-        minZoom: -3,
-        maxZoom: zoomLevel,
-        maxBounds: mapBounds.pad(0),
-      });
+  return (
+    <Map center={location} zoom={13} style={{ height: '500px', width: '100%' }}>
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+      <Marker position={location}>
+        <Popup>
+          A pretty CSS3 popup. <br /> Easily customizable.
+        </Popup>
+      </Marker>
+    </Map>
+  );
+};
 
-      window.L.imageOverlay(mapImage.url, mapBounds).addTo(map);
-      map.fitBounds(mapBounds);
-
-      // コンポーネントがアンマウントされた時にマップをクリーンアップ
-      return () => {
-        map.remove();
-      };
-    }
-  }, [zoomLevel]);
-
-  return <div id="map" style={{ height: '90vh', width: '60vw', margin: 'auto' }} />;
-}
+export default MyMapComponent;
