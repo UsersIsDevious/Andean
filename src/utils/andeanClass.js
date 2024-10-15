@@ -24,6 +24,8 @@ class Player {
         this.squadIndex = squadIndex;        // uint32
         this.character = character;          // string
         this.skin = skin;                    // string
+        this.mainWeapon = mainWeapon;        // string
+        this.subWeapon = subWeapon;          // string
     }
 
     // プレイヤーのステータスを表示するメソッド
@@ -31,6 +33,24 @@ class Player {
         console.log(`${this.name} (Team: ${this.teamName}, Squad: ${this.squadIndex})`);
         console.log(`Health: ${this.currentHealth}/${this.maxHealth}, Shield: ${this.shieldHealth}/${this.shieldMaxHealth}`);
         console.log(`Position: (${this.pos.x}, ${this.pos.y}, ${this.pos.z}), Angles: (${this.angles.x}, ${this.angles.y}, ${this.angles.z})`);
+    }
+    // メインウェポンを変更する関数
+    changeMainWeapon(newMainWeapon) {
+        this.mainWeapon = newMainWeapon;
+        console.log(`${this.name} has changed main weapon to: ${this.mainWeapon}`);
+    }
+
+    // サブウェポンを変更する関数
+    changeSubWeapon(newSubWeapon) {
+        this.subWeapon = newSubWeapon;
+        console.log(`${this.name} has changed sub weapon to: ${this.subWeapon}`);
+    }
+
+    // 両方のウェポンを変更する関数
+    changeWeapons(newMainWeapon, newSubWeapon) {
+        this.mainWeapon = newMainWeapon;
+        this.subWeapon = newSubWeapon;
+        console.log(`${this.name} has changed main weapon to: ${this.mainWeapon} and sub weapon to: ${this.subWeapon}`);
     }
 }
 
@@ -40,6 +60,6 @@ const playerAngles = new Vector3(90, 0, 0);
 
 // Playerのインスタンス作成
 const player = new Player(
-    "JohnDoe", 1, playerPosition, playerAngles, 100, 100, 50, 50, 
+    "JohnDoe", 1, playerPosition, playerAngles, 100, 100, 50, 50,
     "abc123", "Alienware", "TeamAlpha", 1, "Warrior", "GoldenArmor"
 );
