@@ -64,7 +64,7 @@ function handleIncomingMessage(message, ws) {
  * @param {string} messageType メッセージの種類
  */
 function handleMessage(message, messageType) {
-  saveLog(message.toObject(),fileName);
+  saveLog(JSON.stringify(message.toObject()),fileName);
   console.log(`Received ${messageType} message:`, message.toObject());
 }
 
