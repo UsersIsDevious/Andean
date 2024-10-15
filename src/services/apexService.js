@@ -29,10 +29,10 @@ function apexLiveApiCall(req, res) {
       break;
 
     case 'pause_toggle':
-      console.log("[PAUSE_TOGGLE] Pause game");
+      console.log("[PAUSE_TOGGLE] PRETIMER: " + req.body.preTimer);
       // ポーズの開始/終了
-      apexCommon.toggle_pause();
-      res.json({ operation: 'pause_toggle', message: "Pause toggled" });
+      apexCommon.pause_toggle(req.body.preTimer);
+      res.json({ operation: 'pause_toggle', preTimer: req.body.preTimer });
       break;
 
     case 'create_lobby':
@@ -71,24 +71,24 @@ function apexLiveApiCall(req, res) {
       break;
 
     case 'set_team':
-      console.log("[SET_TEAM] TEAM_ID: " + req.body.teamId);
+      console.log("[SET_TEAM] TEAM_ID: " + req.body.teamId + "  TARGET_HARDWARE_NAME: " + req.body.targetHardwareName + "  TARGET_NUCLEUS_HASH: " + req.body.targetNucleushash);
       // チームの設定
-      apexCommon.set_team(req.body.teamId);
-      res.json({ operation: 'set_team', teamId: req.body.teamId });
+      apexCommon.set_team(req.body.teamId, req.body.targetHardwareName, req.body.targetNucleushash);
+      res.json({ operation: 'set_team', teamId: req.body.teamId, targetHardwareName: req.body.targetHardwareName, targetNucleushash: req.body.targetNucleushash });
       break;
 
     case 'kick_player':
-      console.log("[KICK_PLAYER] PLAYER_ID: " + req.body.playerId);
+      console.log(`[KICK_PLAYER] TARGET_HARDWARE_NAME: ${req.body.targetHardwareName}  TARGET_NUCLEUS_HASH: ${req.body.targetNucleushash}`);
       // プレイヤーをキック
-      apexCommon.kick_player(req.body.playerId);
-      res.json({ operation: 'kick_player', playerId: req.body.playerId });
+      apexCommon.kick_player(req.body.targetHardwareName, req.body.targetNucleushash);
+      res.json({ operation: 'kick_player', targetHardwareName: req.body.targetHardwareName, targetNucleushash: req.body.targetNucleushash });
       break;
 
     case 'set_settings':
-      console.log("[SET_SETTINGS] SETTINGS: " + JSON.stringify(req.body.settings));
+      console.log(`[SET_SETTINGS] MATCH_NAME: ${req.body.matchName}  ADMIN_CHAT: ${req.body.adminChat}  TEAM_RENAME: ${req.body.teamRename}  SELF_ASSIGN: ${req.body.selfAssign}  AIM_ASSIST: ${req.body.aimAssist}  ANON_MODE: ${req.body.anonMode}`);
       // 試合設定を適用
-      apexCommon.set_settings(req.body.settings);
-      res.json({ operation: 'set_settings', settings: req.body.settings });
+      apexCommon.set_settings(req.body.matchName, req.body.adminChat, req.body.teamRename, req.body.selfAssign, req.body.aimAssist, req.body.anonMode);
+      res.json({ operation: 'set_settings', matchName: req.body.matchName, adminChat: req.body.adminChat, teamRename: req.body.teamRename, selfAssign: req.body.selfAssign, aimAssist: req.body.aimAssist, anonMode: req.body.anonMode });
       break;
 
     case 'send_chat':
@@ -106,10 +106,10 @@ function apexLiveApiCall(req, res) {
       break;
 
     case 'set_team_name':
-      console.log("[SET_TEAM_NAME] TEAM_ID: " + req.body.teamId + " NAME: " + req.body.name);
+      console.log("[SET_TEAM_NAME] TEAM_ID: " + req.body.teamId + " NAME: " + req.body.teamName);
       // チーム名を設定
-      apexCommon.set_team_name(req.body.teamId, req.body.name);
-      res.json({ operation: 'set_team_name', teamId: req.body.teamId, name: req.body.name });
+      apexCommon.set_team_name(req.body.teamId, req.body.teamName);
+      res.json({ operation: 'set_team_name', teamId: req.body.teamId, teamName: req.body.teamName });
       break;
 
     case 'get_match_settings':

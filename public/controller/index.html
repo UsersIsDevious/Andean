@@ -7,36 +7,179 @@
 </head>
 <body>
   <div>
-  <label for="colorPicker">Select a color:</label>
-  <input type="color" id="colorPicker" value="#ff0000">
-  <button id="notifyButton">Notify Clients</button>
-  </div>
-  <div>
-  <label for="tokenInput">ロビーに参加する場合はコードを入力してください:</label>
-  <input type="text" id="tokenInput" placeholder="Enter lobby token">
-  <button id="startLobbyButton">ロビー作成or参加</button>
+    <label for="tokenInput">ロビーに参加する場合はコードを入力してください:</label>
+    <input type="text" id="tokenInput" placeholder="Enter lobby token">
+    <button id="startLobbyButton">ロビー作成or参加</button>
   </div>
   <button id="stopServerButton">停止</button>
-  <button id="getPlayerButton">playerデータ受信</button>
   <button id="startGameButton">Start Game</button>
 
+  <!-- 追加ボタン -->
+  <button id="changeCameraButton">カメラを変更</button>
+  <button id="pauseToggleButton">ポーズ切り替え</button>
+  <button id="setReadyButton">準備完了</button>
+  <button id="setMatchmakingButton">マッチメイキング設定</button>
+  <button id="setTeamButton">チーム設定</button>
+  <button id="kickPlayerButton">プレイヤーをキック</button>
+  <button id="setSettingsButton">試合設定を適用</button>
+  <button id="sendChatButton">チャット送信</button>
+  <button id="getLobbyPlayersButton">ロビープレイヤー取得</button>
+  <button id="setTeamNameButton">チーム名設定</button>
+  <button id="getMatchSettingsButton">試合設定取得</button>
+
   <script>
-    const button = document.getElementById('notifyButton');
     const stopServer = document.getElementById('stopServerButton');
-    const colorPicker = document.getElementById('colorPicker');
-    const getPlayer = document.getElementById('getPlayerButton');
     const startLobby = document.getElementById('startLobbyButton');
     const tokenInput = document.getElementById('tokenInput');
     const startGame = document.getElementById('startGameButton');
 
-    getPlayer.addEventListener('click', () => {
-      const selectedColor = colorPicker.value;
-      fetch('/api/get_player', {
+    const changeCameraButton = document.getElementById('changeCameraButton');
+    const pauseToggleButton = document.getElementById('pauseToggleButton');
+    const setReadyButton = document.getElementById('setReadyButton');
+    const setMatchmakingButton = document.getElementById('setMatchmakingButton');
+    const setTeamButton = document.getElementById('setTeamButton');
+    const kickPlayerButton = document.getElementById('kickPlayerButton');
+    const setSettingsButton = document.getElementById('setSettingsButton');
+    const sendChatButton = document.getElementById('sendChatButton');
+    const getLobbyPlayersButton = document.getElementById('getLobbyPlayersButton');
+    const setTeamNameButton = document.getElementById('setTeamNameButton');
+    const getMatchSettingsButton = document.getElementById('getMatchSettingsButton');
+
+    // カメラを変更
+    changeCameraButton.addEventListener('click', () => {
+      const targetType = 'poi';  // ここでターゲットタイプを指定
+      const targetValue = 'NEXT';  // ここでターゲット値を指定
+      fetch('/api/change_camera', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ color: selectedColor })
+        body: JSON.stringify({ targetType: targetType, targetValue: targetValue })
+      });
+    });
+
+    // ポーズ切り替え
+    pauseToggleButton.addEventListener('click', () => {
+      const preTimer = 5;
+      fetch('/api/pause_toggle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ preTimer: preTimer })
+      });
+    });
+
+    // 準備完了設定
+    setReadyButton.addEventListener('click', () => {
+      const ready = true;  // ここで準備完了を指定
+      fetch('/api/set_ready', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ready: ready })
+      });
+    });
+
+    // マッチメイキング設定
+    setMatchmakingButton.addEventListener('click', () => {
+      const enabled = true;  // マッチメイキング有効化
+      fetch('/api/set_matchmaking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ enabled: enabled })
+      });
+    });
+
+    // チーム設定
+    setTeamButton.addEventListener('click', () => {
+      const teamId = 2;  // ここでチームIDを指定
+      const targetHardwareName = "PC_STEAM";
+      const targetNucleushash = "bf1cf745d561bf844de867bb0042aee2";
+      fetch('/api/set_team', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ teamId: teamId, targetHardwareName: targetHardwareName, targetNucleushash: targetNucleushash })
+      });
+    });
+
+    // プレイヤーをキック
+    kickPlayerButton.addEventListener('click', () => {
+      const targetHardwareName = "PC";
+      const targetNucleushash = "ee7daf86d19170f8f9e73a0d80c700a2";
+      fetch('/api/kick_player', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ targetHardwareName: targetHardwareName, targetNucleushash: targetNucleushash })
+      });
+    });
+
+    // 試合設定を適用
+    setSettingsButton.addEventListener('click', () => {
+      const matchName = "TEST 1";  // 現在のマッチプレイリスト名を指定
+      const adminChat = true;  // チャットを管理者のみに制限
+      const teamRename = true;  // チーム名の変更をプレイヤーに許可する
+      const selfAssign = true;  // チーム変更をプレイヤーに許可する
+      const aimAssist = false;  // すべてのプレイヤーはPCエイムアシスト値を使用する
+      const anonMode = false;  // 他のプレイヤーに対し名前を非表示
+      fetch('/api/set_settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ matchName: matchName, adminChat: adminChat, teamRename: teamRename, selfAssign: selfAssign, aimAssist: aimAssist, anonMode: anonMode })
+      });
+    });
+
+    // チャットメッセージを送信
+    sendChatButton.addEventListener('click', () => {
+      const message = "Hello, this is a test message";  // ここでチャットメッセージを指定
+      fetch('/api/send_chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: message })
+      });
+    });
+
+    // ロビープレイヤー情報を取得
+    getLobbyPlayersButton.addEventListener('click', () => {
+      fetch('/api/get_lobby_players', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    });
+
+    // チーム名設定
+    setTeamNameButton.addEventListener('click', () => {
+      const teamId = 2;  // ここでチームIDを指定
+      const teamName = "Team Alpha";  // ここでチーム名を指定
+      fetch('/api/set_team_name', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ teamId: teamId, teamName: teamName })
+      });
+    });
+
+    // 試合設定の取得
+    getMatchSettingsButton.addEventListener('click', () => {
+      fetch('/api/get_match_settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
     });
 
@@ -73,7 +216,7 @@
         console.error('ゲーム起動リクエストに失敗しました:', error);
         alert('ゲームを起動に失敗しました。');
       });
-    })
+    });
 
     stopServer.addEventListener('click', () => {
       fetch('/stopServer', {
@@ -89,17 +232,6 @@
       .catch(error => {
         console.error('サーバー停止リクエストに失敗しました:', error);
         alert('サーバーの停止に失敗しました。');
-      });
-    });
-
-    button.addEventListener('click', () => {
-      const selectedColor = colorPicker.value;
-      fetch('/notify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ color: selectedColor })
       });
     });
   </script>

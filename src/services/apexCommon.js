@@ -1,6 +1,6 @@
 const { 
     Request, ChangeCamera, PauseToggle, CustomMatch_CreateLobby, CustomMatch_JoinLobby, CustomMatch_LeaveLobby, CustomMatch_SetReady, CustomMatch_SetMatchmaking,
-    CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings
+    CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings, PlayerOfInterest, Player
 } = require('../../bin/events_pb'); // events_pb.jsからRequest関連の機能をインポート
 const websocketServer = require('../server/websocketServer') // WebSocketサーバーとの通信
 
@@ -78,9 +78,8 @@ function change_camera(type, value) {
     const changeCamera = new ChangeCamera();
 
     if (type === 'poi') {
-        const poi = new PlayerOfInterest();
-        poi.setType(value); // 例: 'KILL_LEADER' などのプレイヤータイプを指定
-        changeCamera.setPoi(poi);
+        const poi_value = PlayerOfInterest[value]; // 例: 'KILL_LEADER' などのプレイヤータイプを指定
+        changeCamera.setPoi(poi_value);
     } else if (type === 'name') {
         changeCamera.setName(value); // プレイヤーの名前を指定
     }
@@ -92,9 +91,10 @@ function change_camera(type, value) {
 /**
  * ポーズの切り替え
  */
-function pause_toggle() {
+function pause_toggle(preTimer) {
     const req = new Request();
     const pauseToggle = new PauseToggle();
+    pauseToggle.setPretimer(preTimer)
     req.setPausetoggle(pauseToggle);
     serialized_request(req);
 }
@@ -138,7 +138,7 @@ function leave_lobby() {
 function set_ready(ready) {
     const req = new Request();
     const setReady = new CustomMatch_SetReady();
-    setReady.setReady(ready); // Boolean型（trueまたはfalse）
+    setReady.setIsready(ready); // Boolean型（trueまたはfalse）
     req.setCustommatchSetready(setReady);
     serialized_request(req);
 }
@@ -159,10 +159,12 @@ function set_matchmaking(enabled) {
  * チームを設定
  * @param {number} teamId - 設定するチームID
  */
-function set_team(teamId) {
+function set_team(teamId, targetHardwareName, targetNucleushash) {
     const req = new Request();
     const setTeam = new CustomMatch_SetTeam();
     setTeam.setTeamid(teamId);
+    setTeam.setTargethardwarename(targetHardwareName);
+    setTeam.setTargetnucleushash(targetNucleushash);
     req.setCustommatchSetteam(setTeam);
     serialized_request(req);
 }
@@ -171,22 +173,33 @@ function set_team(teamId) {
  * プレイヤーをキック
  * @param {number} playerId - キックするプレイヤーのID
  */
-function kick_player(playerId) {
+function kick_player(targetHardwareName, targetNucleushash) {
     const req = new Request();
     const kickPlayer = new CustomMatch_KickPlayer();
-    kickPlayer.setPlayerid(playerId);
+    kickPlayer.setTargethardwarename(targetHardwareName);
+    kickPlayer.setTargetnucleushash(targetNucleushash);
     req.setCustommatchKickplayer(kickPlayer);
     serialized_request(req);
 }
 
 /**
  * 試合設定を適用
- * @param {Object} settings - 設定オブジェクト
+ * @param {String} matchName - 現在のマッチプレイリスト名を指定
+ * @param {boolean} adminChat - チャットを管理者のみに制限
+ * @param {boolean} teamRename - チーム名の変更をプレイヤーに許可する
+ * @param {boolean} selfAssign - チーム変更をプレイヤーに許可する
+ * @param {boolean} aimAssist - すべてのプレイヤーはPCエイムアシスト値を使用する
+ * @param {boolean} anonMode - 他のプレイヤーに対し名前を非表示
  */
-function set_settings(settings) {
+function set_settings(matchName, adminChat, teamRename, selfAssign, aimAssist, anonMode) {
     const req = new Request();
     const setSettings = new CustomMatch_SetSettings();
-    setSettings.setSettings(settings); // 試合設定のオブジェクト
+    setSettings.setPlaylistname(matchName);
+    setSettings.setAdminchat(adminChat);
+    setSettings.setTeamrename(teamRename);
+    setSettings.setSelfassign(selfAssign);
+    setSettings.setAimassist(aimAssist);
+    setSettings.setAnonmode(anonMode);
     req.setCustommatchSetsettings(setSettings);
     serialized_request(req);
 }
@@ -198,7 +211,7 @@ function set_settings(settings) {
 function send_chat(message) {
     const req = new Request();
     const sendChat = new CustomMatch_SendChat();
-    sendChat.setMessage(message);
+    sendChat.setText(message);
     req.setCustommatchSendchat(sendChat);
     serialized_request(req);
 }
