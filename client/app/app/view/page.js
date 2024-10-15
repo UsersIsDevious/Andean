@@ -7,8 +7,8 @@ import ColorButton from '../../../components/ColorButton';
 import ZoomControl from '../../../components/ZoomControl';
 
 
-
 const LeafletMap = dynamic(() => import('../../../components/LeafletMap'), { ssr: false });
+const MapWithDonut = dynamic(() => import('../../../components/MapWithDonut'), { ssr: false });
 
 export default function Home() {
 
@@ -28,6 +28,7 @@ export default function Home() {
       <div>
         <ColorButton />
         <LeafletMap /> {/* LeafletMapコンポーネントを表示 */}
+        <MapWithDonut />
       </div>
     </>
   );

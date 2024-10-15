@@ -1,3 +1,4 @@
+import '../styles/globals.css';
 export const metadata = {
   title: 'Andean',
   description: 'Create by UID',
