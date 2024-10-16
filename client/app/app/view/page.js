@@ -9,7 +9,7 @@ import ZoomControl from '../../../components/ZoomControl';
 
 const LeafletMap = dynamic(() => import('../../../components/LeafletMap'), { ssr: false });
 const MapWithDonut = dynamic(() => import('@/components/MapWithDonut'), { ssr: false });
-const Map = dynamic(() => import('@/components/ring/ringmap'), { ssr: false });
+const Map = dynamic(() => import('@/components/ring/ringMap'), { ssr: false });
 
 export default function Home() {
 
