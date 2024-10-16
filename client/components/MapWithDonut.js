@@ -1,63 +1,108 @@
-'use client';  // クライアントサイドでのみ実行することを明示
+'use client';
 
-import { useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import 'leaflet/dist/leaflet.css';
+import { useEffect, useState } from 'react';
+import * as turf from '@turf/turf';
 
-const LeafletDonutMap = () => {
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
+const Polygon = dynamic(() => import('react-leaflet').then(mod => mod.Polygon), { ssr: false });
+
+const DonutPolygonMap = () => {
+  const [outerRadius, setOuterRadius] = useState(100); // 外側の円の半径
+  const [innerRadius, setInnerRadius] = useState(50);  // 内側の円の半径
+  const [outerXOffset, setOuterXOffset] = useState(0); // 外側の円のX軸オフセット
+  const [outerYOffset, setOuterYOffset] = useState(0); // 外側の円のY軸オフセット
+  const [innerXOffset, setInnerXOffset] = useState(0); // 内側の円のX軸オフセット
+  const [innerYOffset, setInnerYOffset] = useState(0); // 内側の円のY軸オフセット
+  const [donutPolygon, setDonutPolygon] = useState(null);
+
   useEffect(() => {
-    // Leaflet と Turf.js をクライアントサイドで読み込む
-    const L = require('leaflet');
-    const turf = require('@turf/turf');
+    const outerCenter = turf.point([outerXOffset, outerYOffset]); // 外側の円の中心
+    const innerCenter = turf.point([innerXOffset, innerYOffset]); // 内側の円の中心
 
-    // 地図の初期化
-    const map = L.map('map').setView([35.681236, 139.767125], 13);
+    // 外側の円と内側の円を作成
+    const outerCircle = turf.circle(outerCenter, outerRadius, { units: 'kilometers' });
+    const innerCircle = turf.circle(innerCenter, innerRadius, { units: 'kilometers' });
 
-    // OpenStreetMap タイルレイヤーの追加
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    // ドーナツ型ポリゴンを手動で作成
+    const donut = turf.polygon([outerCircle.geometry.coordinates[0], innerCircle.geometry.coordinates[0]]);
 
-    // 中心座標
-    const center = [139.767125, 35.681236]; // [経度, 緯度] の順
+    // ポリゴン座標をLeaflet用に変換
+    const coordinates = donut.geometry.coordinates.map(ring =>
+      ring.map(coord => [coord[1], coord[0]])
+    );
 
-    // 外側の円を作成（10キロメートル半径）
-    const outerCircle = turf.circle(center, 10, {
-      steps: 64,
-      units: 'kilometers',
-    });
+    setDonutPolygon(coordinates);
+  }, [outerRadius, innerRadius, outerXOffset, outerYOffset, innerXOffset, innerYOffset]); // 状態が変更されるたびにポリゴンを再計算
 
-    // 内側の円を作成（0.3キロメートル半径）
-    const innerCircle = turf.circle(center, 0.3, {
-      steps: 64,
-      units: 'kilometers',
-    });
+  return (
+    <div>
+      <h2>Outer Radius: {outerRadius} km</h2>
+      <input
+        type="range"
+        min="50"
+        max="200"
+        step="0.1"
+        value={outerRadius}
+        onChange={(e) => setOuterRadius(Number(e.target.value))}
+      />
+      <h2>Outer Circle X Offset: {outerXOffset} km</h2>
+      <input
+        type="range"
+        min="-10"
+        max="10"
+        step="0.1"
+        value={outerXOffset}
+        onChange={(e) => setOuterXOffset(Number(e.target.value))}
+      />
+      <h2>Outer Circle Y Offset: {outerYOffset} km</h2>
+      <input
+        type="range"
+        min="-10"
+        max="10"
+        step="0.1"
+        value={outerYOffset}
+        onChange={(e) => setOuterYOffset(Number(e.target.value))}
+      />
 
-    // outerCircle と innerCircle が Polygon か確認
-    if (outerCircle.geometry.type === 'Polygon' && innerCircle.geometry.type === 'Polygon') {
-      // 外側の円から内側の円を差し引いてドーナツ型を作成
-      const donut = turf.difference(outerCircle, innerCircle);
+      <h2>Inner Radius: {innerRadius} km</h2>
+      <input
+        type="range"
+        min="10"
+        max="100"
+        step="0.1"
+        value={innerRadius}
+        onChange={(e) => setInnerRadius(Number(e.target.value))}
+      />
+      <h2>Inner Circle X Offset: {innerXOffset} km</h2>
+      <input
+        type="range"
+        min="-10"
+        max="10"
+        step="0.1"
+        value={innerXOffset}
+        onChange={(e) => setInnerXOffset(Number(e.target.value))}
+      />
+      <h2>Inner Circle Y Offset: {innerYOffset} km</h2>
+      <input
+        type="range"
+        min="-10"
+        max="10"
+        step="0.1"
+        value={innerYOffset}
+        onChange={(e) => setInnerYOffset(Number(e.target.value))}
+      />
 
-      if (donut) {
-        // GeoJSON レイヤーとして地図に追加
-        L.geoJSON(donut, {
-          style: {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0.3,
-            weight: 2,
-          },
-        }).addTo(map);
-      } else {
-        console.error('Difference operation failed: donut is null');
-      }
-    } else {
-      console.error('Invalid features: outerCircle or innerCircle is not a Polygon');
-    }
-  }, []);
-
-  return <div id="map" style={{ width: '100%', height: '500px' }} />;
+      <MapContainer center={[0, 0]} zoom={4} style={{ height: '400px', width: '100%' }}>
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+        />
+        {donutPolygon && <Polygon positions={donutPolygon} color="blue" />}
+      </MapContainer>
+    </div>
+  );
 };
 
-export default dynamic(() => Promise.resolve(LeafletDonutMap), { ssr: false });
+export default DonutPolygonMap;
