@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button'; // shadcn/ui の Button コンポーネントをインポート
 import { Input } from '@/components/ui/input';   // shadcn/ui の Input コンポーネントをインポート
-import { Container, Grid } from '@/components/ui/layout'; // Container や Grid をインポート
 
 export default function Home() {
   const [token, setToken] = useState('');
@@ -165,114 +164,100 @@ export default function Home() {
   };
 
   return (
-    <Container className="p-6">
-      <Grid className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-        <Input 
-          id="tokenInput" 
-          placeholder="Enter lobby token" 
-          value={token} 
-          onChange={(e) => setToken(e.target.value)} 
+    <div className="p-6">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+        <Input
+          id="tokenInput"
+          placeholder="Enter lobby token"
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
           className="mb-4"
         />
-
-        <Button 
-          onClick={handleStartLobby} 
+        <Button
+          onClick={handleStartLobby}
           className="w-full"
         >
           ロビー作成or参加
         </Button>
-
-        <Button 
-          onClick={handleStopServer} 
+        <Button
+          onClick={handleStopServer}
           className="w-full"
         >
           停止
         </Button>
-
-        <Button 
-          onClick={handleStartGame} 
+        <Button
+          onClick={handleStartGame}
           className="w-full"
         >
           Start Game
         </Button>
-
-        <Button 
-          onClick={handleChangeCamera} 
+        <Button
+          onClick={handleChangeCamera}
           className="w-full"
         >
           カメラを変更
         </Button>
-
-        <Button 
-          onClick={handlePauseToggle} 
+        <Button
+          onClick={handlePauseToggle}
           className="w-full"
         >
           ポーズ切り替え
         </Button>
-
-        <Button 
-          onClick={handleSetReady} 
+        <Button
+          onClick={handleSetReady}
           className="w-full"
         >
           準備完了
         </Button>
-
-        <Button 
-          onClick={handleSetMatchmaking} 
+        <Button
+          onClick={handleSetMatchmaking}
           className="w-full"
         >
           マッチメイキング設定
         </Button>
-
-        <Button 
-          onClick={handleSetTeam} 
+        <Button
+          onClick={handleSetTeam}
           className="w-full"
         >
           チーム設定
         </Button>
-
-        <Button 
-          onClick={handleKickPlayer} 
+        <Button
+          onClick={handleKickPlayer}
           className="w-full"
         >
           プレイヤーをキック
         </Button>
-
-        <Button 
-          onClick={handleSetSettings} 
+        <Button
+          onClick={handleSetSettings}
           className="w-full"
         >
           試合設定を適用
         </Button>
-
-        <Button 
-          onClick={handleSendChat} 
+        <Button
+          onClick={handleSendChat}
           className="w-full"
         >
           チャット送信
         </Button>
-
-        <Button 
-          onClick={handleGetLobbyPlayers} 
+        <Button
+          onClick={handleGetLobbyPlayers}
           className="w-full"
         >
           ロビープレイヤー取得
         </Button>
-
-        <Button 
-          onClick={handleSetTeamName} 
+        <Button
+          onClick={handleSetTeamName}
           className="w-full"
         >
           チーム名設定
         </Button>
-
-        <Button 
-          onClick={handleGetMatchSettings} 
+        <Button
+          onClick={handleGetMatchSettings}
           className="w-full"
         >
           試合設定取得
         </Button>
-      </Grid>
-    </Container>
+      </div>
+    </div>
   );
 }
