@@ -64,10 +64,10 @@ function apexLiveApiCall(req, res) {
       break;
 
     case 'set_matchmaking':
-      console.log("[SET_MATCHMAKING] ENABLED: " + req.body.enabled);
+      console.log("[SET_MATCHMAKING] MATCHMAKING: " + req.body.matchmaking);
       // マッチメイキングを設定
-      apexCommon.set_matchmaking(req.body.enabled);
-      res.json({ operation: 'set_matchmaking', enabled: req.body.enabled });
+      apexCommon.set_matchmaking(req.body.matchmaking);
+      res.json({ operation: 'set_matchmaking', matchmaking: req.body.matchmaking });
       break;
 
     case 'set_team':

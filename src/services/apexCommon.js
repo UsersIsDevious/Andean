@@ -145,12 +145,12 @@ function set_ready(ready) {
 
 /**
  * マッチメイキングの有効/無効を設定
- * @param {boolean} enabled - trueでマッチメイキング有効、falseで無効
+ * @param {boolean} matchmaking - trueでマッチメイキング有効、falseで無効
  */
-function set_matchmaking(enabled) {
+function set_matchmaking(matchmaking) {
     const req = new Request();
     const setMatchmaking = new CustomMatch_SetMatchmaking();
-    setMatchmaking.setEnabled(enabled); // Boolean型（trueまたはfalse）
+    setMatchmaking.setEnabled(matchmaking); // Boolean型（trueまたはfalse）
     req.setCustommatchSetmatchmaking(setMatchmaking);
     serialized_request(req);
 }
