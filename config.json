@@ -2,7 +2,7 @@
     "apexlegends" : {
         "path" : "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Apex Legends\\r5apex.exe",
         "api_port" : "7777",
-        "option" : "+miles_language english +cl_showpos 1 +cl_liveapi_enabled 1 +cl_liveapi_ws_servers \"ws://127.0.0.1:7777\" +cl_liveapi_enabled 1"
+        "option" : "+miles_language english +cl_showpos 1 +cl_liveapi_enabled 1 +cl_liveapi_ws_servers \"ws://127.0.0.1:7777\""
     },
     "database": {
       "host": "localhost",
