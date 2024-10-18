@@ -1,6 +1,6 @@
 const { 
     Request, ChangeCamera, PauseToggle, CustomMatch_CreateLobby, CustomMatch_JoinLobby, CustomMatch_LeaveLobby, CustomMatch_SetReady, CustomMatch_SetMatchmaking,
-    CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings, PlayerOfInterest, Player
+    CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings, PlayerOfInterest, CustomMatch_SetSpawnPoint
 } = require('../../bin/events_pb'); // events_pb.jsからRequest関連の機能をインポート
 const websocketServer = require('../server/websocketServer') // WebSocketサーバーとの通信
 
@@ -250,6 +250,20 @@ function get_match_settings() {
     serialized_request(req);
 }
 
+/**
+ * チーム名を設定
+ * @param {number} teamId - チームID
+ * @param {number} landmark - 設定するランドマークの番号
+ */
+function set_spawn_point(teamId, landmark) {
+    const req = new Request();
+    const setSpawnPoint = new CustomMatch_SetSpawnPoint();
+    setSpawnPoint.setTeamid(teamId);
+    setSpawnPoint.setSpawnpoint(landmark);
+    req.setCustommatchSetspawnpoint(setSpawnPoint);
+    serialized_request(req);
+}
+
 // モジュールとして関数をエクスポート
 module.exports = {
     change_camera,
@@ -265,5 +279,6 @@ module.exports = {
     send_chat,
     get_lobby_players,
     set_team_name,
-    get_match_settings
+    get_match_settings,
+    set_spawn_point
 };

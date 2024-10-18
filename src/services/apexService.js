@@ -119,6 +119,13 @@ function apexLiveApiCall(req, res) {
       res.json({ operation: 'get_match_settings', message: "Match settings fetched" });
       break;
 
+    case 'set_spawn_point':
+      console.log(`[SET_SPAWN_POINT] TEAMID: ${req.body.teamId}  LANDMARK: ${req.body.landmark}`);
+      // チームごとにスポーンポイントを設定
+      apexCommon.set_spawn_point(req.body.teamId, req.body.landmark);
+      res.json({ operation: 'set_spawn_point', teamId: req.body.teamId, landmark: req.body.landmark });
+      break;
+
     default:
       // デフォルトのレスポンス
       res.json({ message: 'APIエンドポイントにアクセスしました。', query: req.query });

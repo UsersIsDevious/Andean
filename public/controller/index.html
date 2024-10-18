@@ -26,6 +26,8 @@
   <button id="getLobbyPlayersButton">ロビープレイヤー取得</button>
   <button id="setTeamNameButton">チーム名設定</button>
   <button id="getMatchSettingsButton">試合設定取得</button>
+  <button id="setSpawnPointButton">スポーンポイントを設定</button>
+  <button id="debugButton">デバッグ用ボタン</button>
 
   <script>
     const stopServer = document.getElementById('stopServerButton');
@@ -44,6 +46,9 @@
     const getLobbyPlayersButton = document.getElementById('getLobbyPlayersButton');
     const setTeamNameButton = document.getElementById('setTeamNameButton');
     const getMatchSettingsButton = document.getElementById('getMatchSettingsButton');
+    const setSpawnPointButton = document.getElementById('setSpawnPointButton');
+    const debugButton = document.getElementById('debugButton');
+    let debug = false;
 
     // カメラを変更
     changeCameraButton.addEventListener('click', () => {
@@ -183,6 +188,18 @@
       });
     });
 
+    setSpawnPointButton.addEventListener('click', () => {
+      const teamId = 2;  // ここでチームIDを指定
+      const landmark = 2;  // ここでランドマークを指定
+      fetch('/api/set_spawn_point', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ teamId: teamId, landmark: landmark })
+      });
+    });
+
     startLobby.addEventListener('click', () => {
       const token = tokenInput.value;
       if (token == "") {
@@ -234,6 +251,29 @@
         alert('サーバーの停止に失敗しました。');
       });
     });
+
+    debugButton.addEventListener('click', () => {
+      if (debug === false) {
+        debug = true;
+      } else {
+        debug = false;
+      }
+    })
+
+    // 一定時間ごとに色を送信する
+    setInterval(() => {
+      if (debug === true) {
+        const targetType = 'poi';  // ここでターゲットタイプを指定
+        const targetValue = 'CLOSEST_ENEMY';  // ここでターゲット値を指定
+        fetch('/api/change_camera', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ targetType: targetType, targetValue: targetValue })
+        });
+      }
+    }, 10);
   </script>
 </body>
 </html>
