@@ -50,7 +50,7 @@ const DonutPolygonMap = () => {
   const addMarker = () => {
     setMarkers([
       ...markers,
-      { id: markers.length, x: 2048, y: 2048 }, // デフォルトの位置で追加
+      { id: markers.length, x: 2048, y: 2048, rotation: 0, imageUrl: '/path/to/your/image.png', text: 'Sample Text' }, // デフォルトの位置と回転角度で追加
     ]);
   };
 
@@ -68,13 +68,19 @@ const DonutPolygonMap = () => {
   // 画像全体が映るように最小ズームを計算
   const minZoom = Math.log2(1024 / 4096); // 約 -2
 
-  // カスタム DOM 要素用の DivIcon
-  const customIcon = new DivIcon({
-    html: `<div style="background-color: red; width: 20px; height: 20px; border-radius: 50%;"></div>`,
-    className: '',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-  });
+  // カスタム DOM 要素用の DivIcon（画像とテキストを表示）
+  const createCustomIcon = (rotation, imageUrl, text) => {
+    return new DivIcon({
+      html: `
+        <div style="text-align: center; transform: rotate(${rotation}deg);">
+          <img src="${imageUrl}" alt="Icon" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
+          <p style="margin: 0;">${text}</p>
+        </div>`,
+      className: '',
+      iconSize: [50, 70], // アイコンのサイズを適切に設定
+      iconAnchor: [25, 35], // 中心に配置
+    });
+  };
 
   return (
     <div>
@@ -170,6 +176,18 @@ const DonutPolygonMap = () => {
                 setMarkers(newMarkers);
               }}
             />
+            <p>Rotation: {marker.rotation}°</p>
+            <input
+              type="range"
+              min="0"
+              max="360"
+              step="1"
+              value={marker.rotation}
+              onChange={(e) => {
+                const newMarkers = markers.map(m => m.id === marker.id ? { ...m, rotation: Number(e.target.value) } : m);
+                setMarkers(newMarkers);
+              }}
+            />
             <button onClick={() => removeMarker(marker.id)}>Remove Marker</button>
           </div>
         ))}
@@ -190,7 +208,11 @@ const DonutPolygonMap = () => {
         {donutPolygon && <Polygon positions={donutPolygon} color="blue" />}
         {/* マーカーのレンダリング */}
         {markers.map(marker => (
-          <Marker key={marker.id} position={[marker.y, marker.x]} icon={customIcon} />
+          <Marker
+            key={marker.id}
+            position={[marker.y, marker.x]}
+            icon={createCustomIcon(marker.rotation, marker.imageUrl, marker.text)}
+          />
         ))}
       </MapContainer>
     </div>

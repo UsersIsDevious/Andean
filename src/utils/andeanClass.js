@@ -16,11 +16,74 @@ class Vector3 {
         this.z = z;
     }
 }
+/**
+ * @class Item
+ * @description プレイヤーが保有するアイテムを表すクラス
+ */
+class Item {
+    /**
+     * @param {string} name アイテムの名前
+     * @param {number} level アイテムのレベル
+     * @param {number} quantity アイテムの保有数
+     */
+    constructor(name, level, quantity) {
+        this.name = name;       // string: アイテムの名前
+        this.level = level;     // number: アイテムのレベル
+        this.quantity = quantity; // number: アイテムの保有数
+    }
+
+    /**
+     * アイテムの詳細を返す
+     * @returns {Object} アイテムのステータス
+     */
+    getItemStatus() {
+        return {
+            name: this.name,
+            level: this.level,
+            quantity: this.quantity
+        };
+    }
+}
+
+/**
+ * @class Inventory
+ * @description プレイヤーが持つインベントリを表すクラス
+ */
+class Inventory {
+    constructor() {
+        this.items = []; // Array<Item>: アイテムのリスト
+    }
+
+    /**
+     * インベントリにアイテムを追加する
+     * @param {Item} item 追加するアイテム
+     */
+    addItem(item) {
+        this.items.push(item);
+    }
+
+    /**
+     * インベントリ内のアイテムを取得する
+     * @param {string} itemName 取得するアイテムの名前
+     * @returns {Item|undefined} 見つかったアイテム、またはundefined
+     */
+    getItem(itemName) {
+        return this.items.find(item => item.name === itemName);
+    }
+
+    /**
+     * インベントリのステータスを返す
+     * @returns {Array<Object>} インベントリ内のアイテムのステータス
+     */
+    getInventoryStatus() {
+        return this.items.map(item => item.getItemStatus());
+    }
+}
 
 // Playerクラスの定義
 /**
- * プレイヤー情報を保持するクラス
- * @class
+ * @class Player
+ * @description プレイヤーを表すクラス。インベントリとゲーム内でのステータスを保持する。
  */
 class Player {
     /**
@@ -41,6 +104,13 @@ class Player {
      * @param {string} skin - キャラクタースキン名
      * @param {string} mainWeapon - メインウェポン
      * @param {string} subWeapon - サブウェポン
+     * @param {Inventory} inventory - インベントリー
+     * @param {number} kills - キル数
+     * @param {number} killAssists - キルアシスト数
+     * @param {number} downs - ダウンさせた数
+     * @param {number} damageDealt - 敵に与えたダメージ総数
+     * @param {number} damageReceived - くらったダメージ総数
+     * 
      */
     constructor(name, teamId, pos, angles, currentHealth, maxHealth, shieldHealth, shieldMaxHealth, nucleusHash, hardwareName, teamName, squadIndex, character, skin) {
         this.name = name;
@@ -57,6 +127,12 @@ class Player {
         this.squadIndex = squadIndex;
         this.character = character;
         this.skin = skin;
+        this.inventory = new Inventory();    // インベントリーを追加
+        this.kills = 0;                     // キル数
+        this.killAssists = 0;               // キルアシスト数
+        this.downs = 0;                     // ダウンさせた数
+        this.damageDealt = 0;               // 敵に与えたダメージ総数
+        this.damageReceived = 0;            // くらったダメージ総数
     }
 
     /**
@@ -80,6 +156,46 @@ class Player {
             character: this.character,
             skin: this.skin
         };
+    }
+
+    /**
+     * キル数を増加させるメソッド
+     * @param {number} amount 増加させるキル数
+     */
+    addKill(amount = 1) {
+        this.kills += amount;
+    }
+
+    /**
+     * キルアシスト数を増加させるメソッド
+     * @param {number} amount 増加させるキルアシスト数
+     */
+    addKillAssist(amount = 1) {
+        this.killAssists += amount;
+    }
+
+    /**
+     * ダウンさせた数を増加させるメソッド
+     * @param {number} amount 増加させるダウン数
+     */
+    addDown(amount = 1) {
+        this.downs += amount;
+    }
+
+    /**
+     * 敵に与えたダメージを増加させるメソッド
+     * @param {number} amount 増加させるダメージ量
+     */
+    addDamageDealt(amount) {
+        this.damageDealt += amount;
+    }
+
+    /**
+     * くらったダメージを増加させるメソッド
+     * @param {number} amount 増加させるダメージ量
+     */
+    addDamageReceived(amount) {
+        this.damageReceived += amount;
     }
 
     /**
@@ -118,6 +234,22 @@ class Player {
         this.mainWeapon = newMainWeapon;
         this.subWeapon = newSubWeapon;
         console.log(`${this.name} has changed main weapon to: ${this.mainWeapon} and sub weapon to: ${this.subWeapon}`);
+    }
+
+    /**
+     * プレイヤーにアイテムを追加する
+     * @param {Item} item 追加するアイテム
+     */
+    addItemToInventory(item) {
+        this.inventory.addItem(item);
+    }
+
+    /**
+     * プレイヤーのインベントリのステータスを取得する
+     * @returns {Array<Object>} インベントリ内のアイテムのステータス
+     */
+    getInventoryStatus() {
+        return this.inventory.getInventoryStatus();
     }
 }
 // Datacenterクラスの定義
@@ -215,55 +347,80 @@ class CustomMatch {
      */
     constructor(matchName) {
         this.matchName = matchName;
-        this.players = [];  // プレイヤーのリスト (最大60人)
+        this.players = {};  // プレイヤーのリスト (最大60人) 連想配列に変更　チームにnucleusHashのみ保存
+        this.teams = {};    // チームの連想配列 (teamIdをキーにする)
         this.maxPlayers = 60;
     }
 
-    /**
+     /**
      * プレイヤーを追加するメソッド
-     * @param {Player} player - 追加するプレイヤー
+     * @param {Player} player 追加するプレイヤー
      */
-    addPlayer(player) {
-        if (this.players.length >= this.maxPlayers) {
+     addPlayer(player) {
+        if (Object.keys(this.players).length >= this.maxPlayers) {
             console.log("Cannot add more players, the match is full.");
+        } else if (this.players[player.nucleusHash]) {
+            console.log(`Player with nucleusHash ${player.nucleusHash} is already in the match.`);
         } else {
-            this.players.push(player);
+            this.players[player.nucleusHash] = player;
             console.log(`${player.name} has joined the match.`);
+
+             // チームにプレイヤーを追加
+             if (!this.teams[player.teamId]) {
+                // チームが存在しない場合は新しく作成する
+                this.teams[player.teamId] = new Team(player.teamName, player.teamId);
+            }
+            this.teams[player.teamId].addPlayer(player.nucleusHash);
         }
     }
 
     /**
      * プレイヤーを削除するメソッド
-     * @param {string} playerName - 削除するプレイヤーの名前
+     * @param {string} nucleusHash プレイヤーのnucleusHash
      */
-    removePlayer(playerName) {
-        const index = this.players.findIndex(p => p.name === playerName);
-        if (index !== -1) {
-            const removedPlayer = this.players.splice(index, 1)[0];
+    removePlayer(nucleusHash) {
+        if (this.players[nucleusHash]) {
+            const removedPlayer = this.players[nucleusHash];
+            delete this.players[nucleusHash];
             console.log(`${removedPlayer.name} has been removed from the match.`);
         } else {
-            console.log(`Player ${playerName} not found in the match.`);
+            console.log(`Player with nucleusHash ${nucleusHash} not found in the match.`);
         }
     }
 
     /**
-     * 現在のプレイヤー数を返すメソッド
+     * 現在のプレイヤー数を返す
      * @returns {number} 現在のプレイヤー数
      */
     getPlayerCount() {
-        return this.players.length;
+        return Object.keys(this.players).length;
+    }
+
+    /**
+     * 特定のプレイヤーを取得するメソッド
+     * @param {string} nucleusHash プレイヤーのnucleusHash
+     * @returns {Object|null} 見つかったプレイヤーのステータス、見つからなければnull
+     */
+    getPlayer(nucleusHash) {
+        const player = this.players[nucleusHash];
+        if (player) {
+            return player;
+        } else {
+            console.log(`Player with nucleusHash ${nucleusHash} not found.`);
+            return null;
+        }
     }
 
     /**
      * マッチのステータスを取得するメソッド
-     * @returns {Object} マッチのステータス情報
+     * @returns {Object} マッチのステータスとプレイヤーリスト
      */
     getMatchStatus() {
         return {
             matchName: this.matchName,
-            playerCount: this.players.length,
+            playerCount: this.getPlayerCount(),
             maxPlayers: this.maxPlayers,
-            players: this.players.map(player => player.getStatus())
+            players: Object.values(this.players).map(player => player.getStatus())
         };
     }
 }
