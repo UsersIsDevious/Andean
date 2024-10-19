@@ -194,12 +194,12 @@ function kick_player(targetHardwareName, targetNucleushash) {
 function set_settings(matchName, adminChat, teamRename, selfAssign, aimAssist, anonMode) {
     const req = new Request();
     const setSettings = new CustomMatch_SetSettings();
-    setSettings.setPlaylistname(matchName);
+    // setSettings.setPlaylistname(matchName);
     setSettings.setAdminchat(adminChat);
-    setSettings.setTeamrename(teamRename);
-    setSettings.setSelfassign(selfAssign);
-    setSettings.setAimassist(aimAssist);
-    setSettings.setAnonmode(anonMode);
+    // setSettings.setTeamrename(teamRename);
+    // setSettings.setSelfassign(selfAssign);
+    // setSettings.setAimassist(aimAssist);
+    // setSettings.setAnonmode(anonMode);
     req.setCustommatchSetsettings(setSettings);
     serialized_request(req);
 }

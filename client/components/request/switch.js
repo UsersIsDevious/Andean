@@ -40,30 +40,30 @@ export default function Home() {
     }
   };
 
-  // サーバー停止
-  const handleStopServer = () => {
-    fetch('/stopServer', { method: 'POST' })
-      .then(response => {
-        if (response.ok) window.close();
-        else alert('サーバーの停止に失敗しました。');
-      })
-      .catch(error => {
-        console.error('サーバー停止リクエストに失敗しました:', error);
-        alert('サーバーの停止に失敗しました。');
-      });
-  };
+  // // サーバー停止
+  // const handleStopServer = () => {
+  //   fetch('/stopServer', { method: 'POST' })
+  //     .then(response => {
+  //       if (response.ok) window.close();
+  //       else alert('サーバーの停止に失敗しました。');
+  //     })
+  //     .catch(error => {
+  //       console.error('サーバー停止リクエストに失敗しました:', error);
+  //       alert('サーバーの停止に失敗しました。');
+  //     });
+  // };
 
-  // ゲーム開始
-  const handleStartGame = () => {
-    fetch('/startGame', { method: 'POST' })
-      .then(response => {
-        if (!response.ok) alert('ゲームを起動に失敗しました。');
-      })
-      .catch(error => {
-        console.error('ゲーム起動リクエストに失敗しました:', error);
-        alert('ゲームを起動に失敗しました。');
-      });
-  };
+  // // ゲーム開始
+  // const handleStartGame = () => {
+  //   fetch('/startGame', { method: 'POST' })
+  //     .then(response => {
+  //       if (!response.ok) alert('ゲームを起動に失敗しました。');
+  //     })
+  //     .catch(error => {
+  //       console.error('ゲーム起動リクエストに失敗しました:', error);
+  //       alert('ゲームを起動に失敗しました。');
+  //     });
+  // };
 
   // カメラを変更
   const handleChangeCamera = async () => {
@@ -83,23 +83,23 @@ export default function Home() {
     });
   };
 
-  // 準備完了
-  const handleSetReady = async () => {
-    await fetch('/api/set_ready', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ready: true }),
-    });
-  };
+  // // 準備完了
+  // const handleSetReady = async () => {
+  //   await fetch('/api/set_ready', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({ ready: true }),
+  //   });
+  // };
 
-  // マッチメイキング設定
-  const handleSetMatchmaking = async () => {
-    await fetch('/api/set_matchmaking', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ enabled: true }),
-    });
-  };
+  // // マッチメイキング設定
+  // const handleSetMatchmaking = async () => {
+  //   await fetch('/api/set_matchmaking', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({ enabled: true }),
+  //   });
+  // };
 
   // チーム設定
   const handleSetTeam = async () => {
@@ -164,7 +164,7 @@ export default function Home() {
   return (
     <div className="p-6">
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-        <Input
+        {/* <Input
           id="tokenInput"
           placeholder="Enter lobby token"
           value={token}
@@ -176,8 +176,8 @@ export default function Home() {
           className="w-full"
         >
           ロビー作成or参加
-        </Button>
-        <Button
+        </Button> */}
+        {/* <Button
           onClick={handleStopServer}
           className="w-full"
         >
@@ -188,20 +188,20 @@ export default function Home() {
           className="w-full"
         >
           Start Game
-        </Button>
+        </Button> */}
         <Button
           onClick={handleChangeCamera}
           className="w-full"
         >
           カメラを変更
         </Button>
-        <Button
+        {/* <Button
           onClick={handlePauseToggle}
           className="w-full"
         >
           ポーズ切り替え
-        </Button>
-        <Button
+        </Button> */}
+        {/* <Button
           onClick={handleSetReady}
           className="w-full"
         >
@@ -212,7 +212,7 @@ export default function Home() {
           className="w-full"
         >
           マッチメイキング設定
-        </Button>
+        </Button> */}
         <Button
           onClick={handleSetTeam}
           className="w-full"

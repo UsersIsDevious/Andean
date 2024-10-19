@@ -13,6 +13,14 @@ import {
 
 export default function Home() {
   const [token, setToken] = useState('');
+  const [targetType, setTargetType] = useState('poi');
+  const [targetValue, setTargetValue] = useState('NEXT');
+  const [preTimer, setPreTimer] = useState(5);
+  const [handleSetTeam_teamId, setHandleSetTeam_teamId] = useState();
+  const [handleSetTeam_targetHardwareName, setHandleSetTeam_targetHardwareName] = useState('');
+  const [handleSetTeam_targetNucleushash, setHandleSetTeam_targetNucleushash] = useState('');
+  const [handleKickPlayer_targetHardwareName, setHandleKickPlayer_targetHardwareName] = useState('')
+  const [handleKickPlayer_targetNucleushash, setHandleKickPlayer_targetNucleushash] = useState('')
 
   // ロビー作成または参加
   const handleStartLobby = async () => {
@@ -29,7 +37,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ token: token }),
       });
     }
   };
@@ -39,7 +47,7 @@ export default function Home() {
     await fetch('/api/change_camera', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ targetType: 'poi', targetValue: 'NEXT' }),
+      body: JSON.stringify({ targetType: targetType, targetValue: targetValue }),
     });
   };
 
@@ -48,7 +56,7 @@ export default function Home() {
     await fetch('/api/pause_toggle', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ preTimer: 5 }),
+      body: JSON.stringify({ preTimer: preTimer }),
     });
   };
 
@@ -58,9 +66,9 @@ export default function Home() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        teamId: 2,
-        targetHardwareName: "PC_STEAM",
-        targetNucleushash: "bf1cf745d561bf844de867bb0042aee2",
+        teamId: handleSetTeam_teamId,
+        targetHardwareName: handleSetTeam_targetHardwareName,
+        targetNucleushash: handleSetTeam_targetNucleushash,
       }),
     });
   };
@@ -71,8 +79,8 @@ export default function Home() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        targetHardwareName: "PC",
-        targetNucleushash: "ee7daf86d19170f8f9e73a0d80c700a2",
+        targetHardwareName: handleKickPlayer_targetHardwareName,
+        targetNucleushash: handleKickPlayer_targetNucleushash,
       }),
     });
   };
@@ -139,18 +147,6 @@ export default function Home() {
           className="w-full"
         >
           ポーズ切り替え
-        </Button>
-        <Button
-          onClick={handleSetReady}
-          className="w-full"
-        >
-          準備完了
-        </Button>
-        <Button
-          onClick={handleSetMatchmaking}
-          className="w-full"
-        >
-          マッチメイキング設定
         </Button>
         <Button
           onClick={handleSetTeam}

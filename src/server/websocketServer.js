@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const { LiveAPIEvent } = require('../../bin/events_pb'); // 必要なメッセージ型をインポート
+const { LiveAPIEvent, Response } = require('../../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('../utils/messageTypes');
 const { saveLog } = require('../utils/common')
 
@@ -48,7 +48,14 @@ function handleIncomingMessage(message, ws) {
 
     if (messageTypes[typeUrl]) {
       const messageInstance = messageTypes[typeUrl].deserializeBinary(valueBinary);
-      handleMessage(messageInstance, messageTypes[typeUrl].name);
+      handleMessage(messageInstance, typeUrl.replace("type.googleapis.com/rtech.liveapi.", ""));
+      if (messageInstance.toString().includes('type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings')) {
+        const result = messageInstance.toObject().result;
+        const responseTypeUrl = result.typeUrl; // typeUrlを取得
+        const responseValueBinary = result.value; // valueを取得
+        const responseInstance = messageTypes[responseTypeUrl].deserializeBinary(responseValueBinary);
+        handleMessage(responseInstance, responseTypeUrl.replace("type.googleapis.com/rtech.liveapi.", ""));
+      }
     } else {
       console.log(`Unknown message type received: ${typeUrl}`);
     }
