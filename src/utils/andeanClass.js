@@ -112,7 +112,7 @@ class Player {
      * @param {number} damageReceived - くらったダメージ総数
      * 
      */
-    constructor(name, teamId, pos, angles, currentHealth, maxHealth, shieldHealth, shieldMaxHealth, nucleusHash, hardwareName, teamName, squadIndex, character, skin) {
+    constructor(name, teamId, nucleusHash, hardwareName) {
         this.name = name;
         this.teamId = teamId;
         this.pos = pos;

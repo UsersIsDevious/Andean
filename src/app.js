@@ -1,6 +1,8 @@
 const common = require('./utils/common');
 let config = common.readConfig('../../config.json');
 
+
+
 /**
  * 親のコマンドプロンプトを閉じる関数
  * taskkill コマンドを使って親のコマンドプロンプトを閉じる
@@ -60,8 +62,17 @@ setInterval(() => {
   console.log(`Sent color: ${randomColor}`);
 }, 5000); */
 
+
+function start_custom(){
+    player1 = new Player("ninngenn", 1, "hjogehoge", "PC-Steam")
+    match = new CustomMatch("much名")
+    player1.teamId = 1;
+    match.addPlayer(player1)
+}
+
+start_custom()
+
 async function update() {
-    console.log(Object.keys(common.getServerList().websocketServer_web));
     await common.getServerList().websocketServer_web.broadcastToAllClients("a")
 }
 
