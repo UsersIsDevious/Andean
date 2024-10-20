@@ -386,7 +386,7 @@ class CustomMatch {
             // チームにプレイヤーを追加
             if (!this.teams[player.teamId]) {
                 // チームが存在しない場合は新しく作成する
-                this.teams[player.teamId] = new Team(player.teamName, player.teamId);
+                this.teams[player.teamId] = [player.teamId];
             }
             this.teams[player.teamId].addPlayer(player.nucleusHash);
         }
