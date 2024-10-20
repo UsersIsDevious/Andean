@@ -112,7 +112,7 @@ class Player {
      * @param {number} damageReceived - くらったダメージ総数
      * 
      */
-    constructor(name, teamId, nucleusHash, hardwareName) {
+    constructor(name, teamId, nucleusHash, hardwareName,teamName,squadIndex) {
         this.name = name;
         this.teamId = teamId;
         this.pos = new Vector3();
@@ -123,8 +123,8 @@ class Player {
         this.shieldMaxHealth = 0;
         this.nucleusHash = nucleusHash;
         this.hardwareName = hardwareName;
-        this.teamName = 0;
-        this.squadIndex = 0;
+        this.teamName = teamName;
+        this.squadIndex = squadIndex;
         this.character = "";
         this.skin = "";
         this.inventory = new Inventory();    // インベントリーを追加
@@ -136,20 +136,53 @@ class Player {
         this.isAlive = true;
     }
 
+
+    /**
+     * プレイヤーの位置と角度を更新する関数
+     * @param {Vector3} newPos 新しい座標
+     * @param {Vector3} newAngles 新しい角度
+     */
+    updatePositionAndAngles(newPos, newAngles) {
+        this.pos = newPos;
+        this.angles = newAngles;
+    }
+
+    /**
+     * プレイヤーの体力とシールドを更新する関数
+     * @param {number} newCurrentHealth 新しい現在の体力
+     * @param {number} newMaxHealth 新しい最大体力
+     * @param {number} newShieldHealth 新しいシールドの体力
+     * @param {number} newShieldMaxHealth 新しい最大シールド体力
+     */
+    updateHealthAndShields(newCurrentHealth, newMaxHealth, newShieldHealth, newShieldMaxHealth) {
+        this.currentHealth = newCurrentHealth;
+        this.maxHealth = newMaxHealth;
+        this.shieldHealth = newShieldHealth;
+        this.shieldMaxHealth = newShieldMaxHealth;
+    }
+    /**
+     * プレイヤーのチーム情報、キャラクター、スキンを更新する関数
+     * @param {string} newCharacter 新しいキャラクター
+     * @param {string} newSkin 新しいスキン
+     */
+    updateCharacter(newCharacter, newSkin) {
+        this.character = newCharacter;
+        this.skin = newSkin;
+    }
+
     /**
      * プレイヤーの生存状態を変更するメソッド
      * @param {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
      */
     setAliveStatus(status) {
         this.isAlive = status;
-        console.log(`${this.name} is now ${status ? 'alive' : 'dead'}.`);
     }
 
     /**
      * プレイヤーの生存状態を返すメソッド
      * @returns {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
      */
-    getAliveStatus(status) {
+    getAliveStatus() {
         return this.isAlive
     }
 
@@ -214,15 +247,6 @@ class Player {
      */
     addDamageReceived(amount) {
         this.damageReceived += amount;
-    }
-
-    /**
-     * プレイヤーのステータスを表示するメソッド
-     */
-    printStatus() {
-        console.log(`${this.name} (Team: ${this.teamName}, Squad: ${this.squadIndex})`);
-        console.log(`Health: ${this.currentHealth}/${this.maxHealth}, Shield: ${this.shieldHealth}/${this.shieldMaxHealth}`);
-        console.log(`Position: (${this.pos.x}, ${this.pos.y}, ${this.pos.z}), Angles: (${this.angles.x}, ${this.angles.y}, ${this.angles.z})`);
     }
 
     /**
@@ -365,6 +389,8 @@ class CustomMatch {
      */
     constructor(matchName) {
         this.matchName = matchName;
+        this.startTimeStamp = "";
+        this.endTimeStamp = "";
         this.players = {};  // プレイヤーのリスト (最大60人) 連想配列に変更　チームにnucleusHashのみ保存
         this.teams = {};    // チームの連想配列 (teamIdをキーにする)
         this.maxPlayers = 60;
