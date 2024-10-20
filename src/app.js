@@ -72,13 +72,13 @@ setInterval(() => {
  * @param {String} category
  * @param {Object} msg
  */
-function analyze_message(category, msg) {
-    switch (category) {
-        case 'Init':
+function analyze_message(msg) {
+    switch (msg.category) {
+        case 'init':
             if (msg.platform != "") { break; }
             match = new CustomMatch(`${msg.timestamp}`)  // web側で名前の指定があれば適用する
             break;
-        case 'ObserverSwitched':
+        case 'observerSwitched':
             for (let i = 0; i < msg.targetteamList; i++) {
                 const targetJson = msg.targetteamList[i]
                 const targetObj = match.getPlayer(msg.targetteamList[i].nucleushash)

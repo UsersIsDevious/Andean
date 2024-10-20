@@ -74,7 +74,7 @@ function handleIncomingMessage(message, ws) {
 function handleMessage(message, messageType) {
   saveLog(JSON.stringify(message.toObject()),fileName);
   console.log(`Received ${messageType} message:`, message.toObject());
-  analyze_message(messageType, message.toObject())
+  analyze_message(message.toObject())
 }
 
 /**
