@@ -1,6 +1,7 @@
 const common = require('./utils/common');
-let config = common.readConfig('../../config.json');
 const {Player,CustomMatch} = require('./utils/andeanClass');
+let config = common.readConfig('../../config.json');
+
 
 
 /**
