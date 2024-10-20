@@ -125,7 +125,7 @@ export default function Home() {
                             <>実行済み <CheckIcon className="ml-2 h-5 w-5" /></>
                         ) : (
                             <>
-                                <PowerIcon className="mr-2 h-5 w-5" /> サーバーシャットダウン
+                                <PowerIcon className="mr-2 h-5 w-5" /> システム終了
                             </>
                         )}
                     </Button>

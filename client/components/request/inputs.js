@@ -10,7 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PowerIcon, PlayIcon, UsersIcon, Cog6ToothIcon, CheckIcon, NoSymbolIcon, ArrowsRightLeftIcon } from '@heroicons/react/24/solid';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { PowerIcon, UsersIcon, Cog6ToothIcon, CheckIcon } from '@heroicons/react/24/solid';
 
 export default function Home() {
   const [token, setToken] = useState(''); 
@@ -78,7 +85,7 @@ export default function Home() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        teamId: handleSetTeam_teamId,
+        teamId: handleSetTeam_teamId + 1,
         targetHardwareName: handleSetTeam_targetHardwareName,
         targetNucleushash: handleSetTeam_targetNucleushash,
       }),
@@ -127,7 +134,7 @@ export default function Home() {
     await fetch('/api/set_team_name', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamId: handleSetTeamName_teamId, teamName: teamName }),
+      body: JSON.stringify({ teamId: handleSetTeamName_teamId + 1, teamName: teamName }),
     });
   };
 
@@ -136,7 +143,7 @@ export default function Home() {
     await fetch('/api/set_spawn_point', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ teamId: handleSetSpawnPoint_teamId, landmark: landmark }),
+      body: JSON.stringify({ teamId: handleSetSpawnPoint_teamId + 1, landmark: landmark }),
     });
   };
 
@@ -165,13 +172,16 @@ export default function Home() {
 
                 {/* TargetType & TargetValue */}
                 <div className="grid grid-cols-3 gap-2">
-                  <Input
-                    id="targetTypeInput"
-                    placeholder="Enter target type"
-                    value={targetType}
-                    onChange={(e) => setTargetType(e.target.value)}
-                    className="mb-4 text-white bg-gray-700"
-                  />
+                  <Select onValueChange={(value) => setTargetType(value)}>
+                    <SelectTrigger className="w-full bg-gray-700 text-white">
+                      <SelectValue value={targetType} placeholder="POI" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 text-white">
+                      <SelectItem value="poi">POI</SelectItem>
+                      <SelectItem value="name">NAME</SelectItem>
+                    </SelectContent>
+                  </Select>
+
                   <Input
                     id="targetValueInput"
                     placeholder="Enter target value"
@@ -179,6 +189,7 @@ export default function Home() {
                     onChange={(e) => setTargetValue(e.target.value)}
                     className="mb-4 text-white bg-gray-700"
                   />
+
                   <Button onClick={handleChangeCamera} className="bg-white text-black">
                     <Cog6ToothIcon className="mr-2 h-5 w-5" /> カメラを変更
                   </Button>
@@ -188,9 +199,15 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-2">
                   <Input
                     id="preTimerInput"
-                    placeholder="Enter pre-timer"
+                    inputMode="numeric"
+                    placeholder="Enter pre-timer (secound)"
                     value={preTimer}
-                    onChange={(e) => setPreTimer(e.target.value)}
+                    onChange={(e) => {
+                      const onlyNumberRegex = new RegExp(/^[0-9]*$/); // 数値ならture
+                      if (onlyNumberRegex.test(e.target.value)) {
+                        setPreTimer(e.target.value);; // 数値を反映する
+                      }
+                    }}
                     className="mb-4 text-white bg-gray-700"
                   />
                   <Button onClick={handlePauseToggle} className="bg-white text-black">
@@ -202,9 +219,15 @@ export default function Home() {
                 <div className="grid grid-cols-4 gap-2">
                   <Input
                     id="handleSetTeamInput"
+                    inputMode="numeric"
                     placeholder="Enter team ID"
                     value={handleSetTeam_teamId}
-                    onChange={(e) => setHandleSetTeam_teamId(e.target.value)}
+                    onChange={(e) => {
+                      const onlyNumberRegex = new RegExp(/^[0-9]*$/); // 数値ならture
+                      if (onlyNumberRegex.test(e.target.value)) {
+                        setHandleSetTeam_teamId(e.target.value); // 数値を反映する
+                      }
+                    }}
                     className="mb-4 text-white bg-gray-700"
                   />
                   <Input
@@ -248,7 +271,7 @@ export default function Home() {
                 </div>
 
                 {/* 試合設定適用 */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <Input
                     id="matchNameInput"
                     placeholder="Enter match name"
@@ -256,41 +279,43 @@ export default function Home() {
                     onChange={(e) => setMatchName(e.target.value)}
                     className="mb-4 text-white bg-gray-700"
                   />
-                  <Input
-                    id="adminChatInput"
-                    type="checkbox"
-                    checked={adminChat}
-                    onChange={(e) => setAdminChat(e.target.checked)}
-                    className="mb-4"
-                  /> 管理者チャット
-                  <Input
-                    id="teamRenameInput"
-                    type="checkbox"
-                    checked={teamRename}
-                    onChange={(e) => setTeamRename(e.target.checked)}
-                    className="mb-4"
-                  /> チーム名変更
-                  <Input
-                    id="selfAssignInput"
-                    type="checkbox"
-                    checked={selfAssign}
-                    onChange={(e) => setSelfAssign(e.target.checked)}
-                    className="mb-4"
-                  /> 自己割当
-                  <Input
-                    id="aimAssistInput"
-                    type="checkbox"
-                    checked={aimAssist}
-                    onChange={(e) => setAimAssist(e.target.checked)}
-                    className="mb-4"
-                  /> エイムアシスト
-                  <Input
-                    id="anonModeInput"
-                    type="checkbox"
-                    checked={anonMode}
-                    onChange={(e) => setAnonMode(e.target.checked)}
-                    className="mb-4"
-                  /> 匿名モード
+                  <div className="grid grid-cols-1 gap-2 text-white">
+                    <Input
+                      id="adminChatInput"
+                      type="checkbox"
+                      checked={adminChat}
+                      onChange={(e) => setAdminChat(e.target.checked)}
+                      className="mb-4"
+                    /> 管理者チャット
+                    <Input
+                      id="teamRenameInput"
+                      type="checkbox"
+                      checked={teamRename}
+                      onChange={(e) => setTeamRename(e.target.checked)}
+                      className="mb-4"
+                    /> チーム名変更
+                    <Input
+                      id="selfAssignInput"
+                      type="checkbox"
+                      checked={selfAssign}
+                      onChange={(e) => setSelfAssign(e.target.checked)}
+                      className="mb-4"
+                    /> 自己割当
+                    <Input
+                      id="aimAssistInput"
+                      type="checkbox"
+                      checked={aimAssist}
+                      onChange={(e) => setAimAssist(e.target.checked)}
+                      className="mb-4"
+                    /> エイムアシスト
+                    <Input
+                      id="anonModeInput"
+                      type="checkbox"
+                      checked={anonMode}
+                      onChange={(e) => setAnonMode(e.target.checked)}
+                      className="mb-4"
+                    /> 匿名モード
+                  </div>
                   <Button onClick={handleSetSettings} className="bg-white text-black">
                     <Cog6ToothIcon className="mr-2 h-5 w-5" /> 試合設定適用
                   </Button>
@@ -313,6 +338,19 @@ export default function Home() {
                 {/* チーム名設定 */}
                 <div className="grid grid-cols-2 gap-2">
                   <Input
+                    id="handleSetTeamInput"
+                    inputMode="numeric"
+                    placeholder="Enter team ID"
+                    value={handleSetTeamName_teamId}
+                    onChange={(e) => {
+                      const onlyNumberRegex = new RegExp(/^[0-9]*$/); // 数値ならture
+                      if (onlyNumberRegex.test(e.target.value)) {
+                        setHandleSetTeamName_teamId(e.target.value); // 数値を反映する
+                      }
+                    }}
+                    className="mb-4 text-white bg-gray-700"
+                  />
+                  <Input
                     id="teamNameInput"
                     placeholder="Enter team name"
                     value={teamName}
@@ -328,9 +366,15 @@ export default function Home() {
                 <div className="grid grid-cols-3 gap-2">
                   <Input
                     id="teamIdInput"
+                    inputMode="numeric"
                     placeholder="Enter team ID"
                     value={handleSetSpawnPoint_teamId}
-                    onChange={(e) => setHandleSetSpawnPoint_teamId(e.target.value)}
+                    onChange={(e) => {
+                      const onlyNumberRegex = new RegExp(/^[0-9]*$/); // 数値ならture
+                      if (onlyNumberRegex.test(e.target.value)) {
+                        setHandleSetSpawnPoint_teamId(e.target.value); // 数値を反映する
+                      }
+                    }}
                     className="mb-4 text-white bg-gray-700"
                   />
                   <Input

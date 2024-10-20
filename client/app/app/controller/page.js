@@ -7,7 +7,7 @@ const Inputs = dynamic(() => import('../../../components/request/inputs'), { ssr
 export default function Home() {
 
   return (
-    <div>
+    <div className="grid grid-cols-2 gap-4">
       <Buttons />
       <Inputs />
     </div>

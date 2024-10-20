@@ -1,0 +1,1 @@
+[2024-10-20T06:23:33.701Z] {"timestamp":1729405413,"category":"init","gameversion":"Build ID: R5pc_r5-221_J42_CL7664928_2024_10_01_16_39","apiversion":{"majorNum":2,"minorNum":2,"buildStamp":946017,"revision":""},"platform":"PC_STEAM","name":""}
