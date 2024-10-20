@@ -64,10 +64,10 @@ function apexLiveApiCall(req, res) {
       break;
 
     case 'set_matchmaking':
-      console.log("[SET_MATCHMAKING] ENABLED: " + req.body.enabled);
+      console.log("[SET_MATCHMAKING] MATCHMAKING: " + req.body.matchmaking);
       // マッチメイキングを設定
-      apexCommon.set_matchmaking(req.body.enabled);
-      res.json({ operation: 'set_matchmaking', enabled: req.body.enabled });
+      apexCommon.set_matchmaking(req.body.matchmaking);
+      res.json({ operation: 'set_matchmaking', matchmaking: req.body.matchmaking });
       break;
 
     case 'set_team':
@@ -117,6 +117,13 @@ function apexLiveApiCall(req, res) {
       // 試合設定を取得
       apexCommon.get_match_settings();
       res.json({ operation: 'get_match_settings', message: "Match settings fetched" });
+      break;
+
+    case 'set_spawn_point':
+      console.log(`[SET_SPAWN_POINT] TEAMID: ${req.body.teamId}  LANDMARK: ${req.body.landmark}`);
+      // チームごとにスポーンポイントを設定
+      apexCommon.set_spawn_point(req.body.teamId, req.body.landmark);
+      res.json({ operation: 'set_spawn_point', teamId: req.body.teamId, landmark: req.body.landmark });
       break;
 
     default:

@@ -3,7 +3,7 @@ REM スクリプトがあるディレクトリに移動
 cd /d "%~dp0"
 
 start http://localhost:3000/app/view
-start http://localhost:3000/controller
+start http://localhost:3000/app/controller
 
 REM binフォルダ内のnode.exeを使用してserver.jsを実行
 bin\node.exe src\index.js

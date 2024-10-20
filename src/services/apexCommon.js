@@ -1,6 +1,6 @@
 const { 
     Request, ChangeCamera, PauseToggle, CustomMatch_CreateLobby, CustomMatch_JoinLobby, CustomMatch_LeaveLobby, CustomMatch_SetReady, CustomMatch_SetMatchmaking,
-    CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings, PlayerOfInterest, Player
+    CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings, PlayerOfInterest, CustomMatch_SetSpawnPoint
 } = require('../../bin/events_pb'); // events_pb.jsからRequest関連の機能をインポート
 const { servers } = require('../utils/common');
 
@@ -145,12 +145,12 @@ function set_ready(ready) {
 
 /**
  * マッチメイキングの有効/無効を設定
- * @param {boolean} enabled - trueでマッチメイキング有効、falseで無効
+ * @param {boolean} matchmaking - trueでマッチメイキング有効、falseで無効
  */
-function set_matchmaking(enabled) {
+function set_matchmaking(matchmaking) {
     const req = new Request();
     const setMatchmaking = new CustomMatch_SetMatchmaking();
-    setMatchmaking.setEnabled(enabled); // Boolean型（trueまたはfalse）
+    setMatchmaking.setEnabled(matchmaking); // Boolean型（trueまたはfalse）
     req.setCustommatchSetmatchmaking(setMatchmaking);
     serialized_request(req);
 }
@@ -194,12 +194,12 @@ function kick_player(targetHardwareName, targetNucleushash) {
 function set_settings(matchName, adminChat, teamRename, selfAssign, aimAssist, anonMode) {
     const req = new Request();
     const setSettings = new CustomMatch_SetSettings();
-    setSettings.setPlaylistname(matchName);
+    // setSettings.setPlaylistname(matchName);
     setSettings.setAdminchat(adminChat);
-    setSettings.setTeamrename(teamRename);
-    setSettings.setSelfassign(selfAssign);
-    setSettings.setAimassist(aimAssist);
-    setSettings.setAnonmode(anonMode);
+    // setSettings.setTeamrename(teamRename);
+    // setSettings.setSelfassign(selfAssign);
+    // setSettings.setAimassist(aimAssist);
+    // setSettings.setAnonmode(anonMode);
     req.setCustommatchSetsettings(setSettings);
     serialized_request(req);
 }
@@ -250,6 +250,20 @@ function get_match_settings() {
     serialized_request(req);
 }
 
+/**
+ * チーム名を設定
+ * @param {number} teamId - チームID
+ * @param {number} landmark - 設定するランドマークの番号
+ */
+function set_spawn_point(teamId, landmark) {
+    const req = new Request();
+    const setSpawnPoint = new CustomMatch_SetSpawnPoint();
+    setSpawnPoint.setTeamid(teamId);
+    setSpawnPoint.setSpawnpoint(landmark);
+    req.setCustommatchSetspawnpoint(setSpawnPoint);
+    serialized_request(req);
+}
+
 // モジュールとして関数をエクスポート
 module.exports = {
     change_camera,
@@ -265,5 +279,6 @@ module.exports = {
     send_chat,
     get_lobby_players,
     set_team_name,
-    get_match_settings
+    get_match_settings,
+    set_spawn_point
 };
