@@ -443,18 +443,12 @@ class CustomMatch {
     }
 }
 
-// Vector3のインスタンス作成
-const playerPosition = new Vector3(10, 20, 30);
-const playerAngles = new Vector3(90, 0, 0);
-
-// Playerのインスタンス作成
-/**
- * プレイヤーオブジェクトを生成し、ステータスを取得する例
- */
-const player = new Player(
-    "JohnDoe", 1, playerPosition, playerAngles, 100, 100, 50, 50,
-    "abc123", "Alienware", "TeamAlpha", 1, "Warrior", "GoldenArmor"
-);
-
-// プレイヤーのステータスをオブジェクトとして取得
-const playerStatus = player.getStatus();
+module.exports = {
+    Vector3,
+    Item,
+    Inventory,
+    Player,
+    Datacenter,
+    Version,
+    CustomMatch
+};
