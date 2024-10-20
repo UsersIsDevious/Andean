@@ -1,7 +1,11 @@
 const common = require('./utils/common');
 const { Player, CustomMatch, Vector3 } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
-
+/**
+ * CustomMatch object
+ * @type {CustomMatch}
+ */
+let match;
 
 
 /**
@@ -63,10 +67,36 @@ setInterval(() => {
   console.log(`Sent color: ${randomColor}`);
 }, 5000); */
 
+/**
+ * メッセージを分析し、要素を抽出する。
+ * @param {String} category
+ * @param {Object} msg
+ */
+function analyze_message(category, msg) {
+    switch (category) {
+        case 'Init':
+            if (msg.platform != "") { break; }
+            match = new CustomMatch(`${msg.timestamp}`)  // web側で名前の指定があれば適用する
+            break;
+        case 'ObserverSwitched':
+            for (let i = 0; i < msg.targetteamList; i++) {
+                const targetJson = msg.targetteamList[i]
+                const targetObj = match.getPlayer(msg.targetteamList[i].nucleushash)
+                
+                targetObj.updatePositionAndAngles(targetJson.pos.x, targetJson.pos.y, targetJson.pos.z, targetJson.angles.y)
+                targetObj.updateHealthAndShields(targetJson.currenthealth, targetJson.maxhealth, targetJson.shieldhealth, targetJson.shieldmaxhealth)
+                console.log(JSON.stringify(targetObj))
+            }
+            break;
+        default:
+            // console.log("Unknown Type Message")
+            break;
+    }
+}
 
-function start_custom(){
-    player1 = new Player("ninngenn", 1, "hjogehoge", "PC-Steam")
+function start_custom() {
     match = new CustomMatch("much名")
+    player1 = new Player("ninngenn", 1, "hjogehoge", "PC-Steam")
     player1.teamId = 1;
     match.addPlayer(player1)
     console.log(JSON.stringify(match))
@@ -78,9 +108,9 @@ async function update() {
     await common.getServerList().websocketServer_web.broadcastToAllClients("a")
 }
 
-const intervalId = setInterval(() => {
-    update();
-//}, 16);
-}, 1000);
+// const intervalId = setInterval(() => {
+//     update();
+// //}, 16);
+// }, 1000);
 
-module.exports = { startApexLegends }
+module.exports = { startApexLegends, analyze_message }

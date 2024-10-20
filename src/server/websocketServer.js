@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const { LiveAPIEvent, Response } = require('../../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('../utils/messageTypes');
+const { analyze_message } = require('../app')
 const { saveLog } = require('../utils/common')
 
 let wss;  // WebSocket サーバーインスタンス
@@ -73,6 +74,7 @@ function handleIncomingMessage(message, ws) {
 function handleMessage(message, messageType) {
   saveLog(JSON.stringify(message.toObject()),fileName);
   console.log(`Received ${messageType} message:`, message.toObject());
+  analyze_message(messageType, message.toObject())
 }
 
 /**
@@ -91,8 +93,11 @@ function sendToClient(ws, message) {
  * @param {string} message - 送信するメッセージ
  */
 function broadcastToAllClients(message) {
+  console.log("ここまでは北", message)
   wss.clients.forEach((client) => {
+    console.log("こんなclientがいるらしい", client)
     if (client.readyState === WebSocket.OPEN) {
+      console.log("ここまで来てるなら遅れていなきゃおかしい")
       client.send(message);
     }
   });
@@ -127,5 +132,6 @@ module.exports = {
   handleMessage,
   sendToClient,
   broadcastToAllClients,
-  stopServer
+  stopServer,
+  wss
 };

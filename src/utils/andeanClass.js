@@ -15,6 +15,17 @@ class Vector3 {
         this.y = y;
         this.z = z;
     }
+    /**
+     * 座標を更新する関数
+     * @param {number} newX 新しいx座標
+     * @param {number} newY 新しいy座標
+     * @param {number} newZ 新しいz座標
+     */
+    updateValues(newX, newY, newZ) {
+        this.x = newX;
+        this.y = newY;
+        this.z = newZ;
+    }
 }
 /**
  * @class Item
@@ -177,11 +188,13 @@ class Player {
 
     /**
      * プレイヤーの位置と角度を更新する関数
-     * @param {Vector3} newPos 新しい座標
-     * @param {Vector3} newAngles 新しい角度
+     * @param {number} x 新しいx座標
+     * @param {number} y 新しいy座標
+     * @param {number} z 新しいz座標
+     * @param {number} newAngles 新しい角度
      */
-    updatePositionAndAngles(newPos, newAngles) {
-        this.pos = newPos;
+    updatePositionAndAngles(x, y, z, newAngles) {
+        this.pos.updateValues(x, y, z);
         this.angles = newAngles;
     }
 
@@ -481,7 +494,7 @@ class CustomMatch {
     /**
      * 特定のプレイヤーを取得するメソッド
      * @param {string} nucleusHash プレイヤーのnucleusHash
-     * @returns {Object|null} 見つかったプレイヤーのステータス、見つからなければnull
+     * @returns {Player|null} 見つかったプレイヤーのステータス、見つからなければnull
      */
     getPlayer(nucleusHash) {
         const player = this.players[nucleusHash];
