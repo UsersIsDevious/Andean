@@ -1,6 +1,8 @@
 const common = require('./utils/common');
 const { Player, CustomMatch, Vector3 } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
+const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
+const messageTypes = require('./utils/messageTypes');
 /**
  * CustomMatch object
  * @type {CustomMatch}
@@ -55,6 +57,7 @@ function startApexLegends() {
 }
 
 
+
 // サーバーを起動
 // server.startServer();
 // common.startAllServers();
@@ -82,7 +85,7 @@ function analyze_message(category, msg) {
             for (let i = 0; i < msg.targetteamList; i++) {
                 const targetJson = msg.targetteamList[i]
                 const targetObj = match.getPlayer(msg.targetteamList[i].nucleushash)
-                
+
                 targetObj.updatePositionAndAngles(targetJson.pos.x, targetJson.pos.y, targetJson.pos.z, targetJson.angles.y)
                 targetObj.updateHealthAndShields(targetJson.currenthealth, targetJson.maxhealth, targetJson.shieldhealth, targetJson.shieldmaxhealth)
                 console.log(JSON.stringify(targetObj))
@@ -112,5 +115,40 @@ async function update() {
 //     update();
 // //}, 16);
 // }, 1000);
+
+// サーバーが全て起動した後に呼ばれる処理
+common.registerOnServersStarted((servers) => {
+    console.log("サーバーが全て起動しました！", servers);
+    // メッセージ処理用のコールバック関数を設定
+    common.getServerList().websocketServer.setHandleMessageCallback((message, ws) => {
+        const liveAPIEvent = LiveAPIEvent.deserializeBinary(message);
+        console.log('LiveAPIEvent:', liveAPIEvent.toObject());
+
+        const gamemessage = liveAPIEvent.getGamemessage();
+        const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得
+        const valueBinary = gamemessage.getValue_asU8(); // バイナリ値を取得
+
+        if (messageTypes[typeUrl]) {
+            const messageInstance = messageTypes[typeUrl].deserializeBinary(valueBinary);
+            handleMessage(messageInstance, typeUrl.replace("type.googleapis.com/rtech.liveapi.", ""));
+            if (messageInstance.toString().includes('type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings')) {
+                const result = messageInstance.toObject().result;
+                const responseTypeUrl = result.typeUrl; // typeUrlを取得
+                const responseValueBinary = result.value; // valueを取得
+                const responseInstance = messageTypes[responseTypeUrl].deserializeBinary(responseValueBinary);
+                handleMessage(responseInstance, responseTypeUrl.replace("type.googleapis.com/rtech.liveapi.", ""));
+            }
+        } else {
+            console.log(`Unknown message type received: ${typeUrl}`);
+        }
+        // 必要な処理をここに追加
+    });
+});
+
+function handleMessage(message, messageType){
+    common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName)
+    console.log(`Received ${messageType} message:`, message.toObject());
+    analyze_message(messageType, message.toObject())
+}
 
 module.exports = { startApexLegends, analyze_message }

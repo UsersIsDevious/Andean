@@ -193,8 +193,8 @@ class Player {
      * @param {number} z 新しいz座標
      * @param {number} newAngles 新しい角度
      */
-    updatePositionAndAngles(x, y, z, newAngles) {
-        this.pos.updateValues(x, y, z);
+    updatePositionAndAngles(newPos, newAngles) {
+        this.pos = newPos;
         this.angles = newAngles;
     }
 

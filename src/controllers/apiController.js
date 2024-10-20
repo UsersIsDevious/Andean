@@ -1,5 +1,6 @@
 // src/controllers/apiController.js
 const apexService = require('../services/apexService');
+const sendComponent = require('../services/sendComponent');
 
 /**
  * API 用のエンドポイントを処理する関数
@@ -7,7 +8,14 @@ const apexService = require('../services/apexService');
  * @param {Response} res - HTTP レスポンスオブジェクト
  */
 function handleApiRequest(req, res) {
-  apexService.apexLiveApiCall(req, res);
+  const { slug } = req.query;
+  
+  // /view/* のリクエストを特定
+  if (slug === 'view') {
+    sendComponent.sendComponentToClients("mapView");
+  } else {
+    apexService.apexLiveApiCall(req, res); 
+  }
 }
 
 module.exports = { handleApiRequest };

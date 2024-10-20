@@ -3,7 +3,20 @@ const path = require('path');
 const { exec } = require('child_process');
 let servers = {}; // サーバーリストを保持するオブジェクト
 
+// コールバックリストを保持
+let onServersStartedCallbacks = [];
 
+/**
+ * サーバーが全て立ち上がった時に呼ばれるコールバックを登録する関数
+ * @param {Function} callback - サーバーが立ち上がった際に実行したい関数
+ */
+function registerOnServersStarted(callback) {
+  if (typeof callback === 'function') {
+    onServersStartedCallbacks.push(callback);
+  } else {
+    console.error("登録しようとしたものが関数ではありません:", callback);
+  }
+}
 
 /**
  * サーバーリストを取得する関数
@@ -24,17 +37,25 @@ function getServerList() {
  * @param {Object} websocketServer - WebSocketサーバーのインスタンス
  * @returns {Object} - 起動したサーバーのインスタンス
  */
-function startAllServers(httpServer, websocketServer,websocketServer1) {
+function startAllServers(httpServer, websocketServer, websocketServer_web) {
   const servers_res = {
     httpServer: httpServer.startServer(),
-    websocketServer: websocketServer.createWebSocketServer(7777),
-    websocketServer_web: websocketServer1.createWebSocketServer(8888)
+    websocketServer: websocketServer,
+    websocketServer_web: websocketServer_web
   };
   servers = {
     httpServer: httpServer,
     websocketServer: websocketServer,
-    websocketServer_web: websocketServer1
+    websocketServer_web: websocketServer_web
   }
+  // 登録されたコールバックを全て呼び出す
+  onServersStartedCallbacks.forEach(callback => {
+    try {
+      callback(servers);  // サーバーオブジェクトを引数として渡す
+    } catch (error) {
+      console.error("コールバック実行中にエラーが発生しました:", error);
+    }
+  });
   console.log("All servers are up and running:", servers);
   return servers_res;
 }
@@ -122,4 +143,5 @@ module.exports = {
   runRegularCommand,
   saveLog,
   getServerList,
+  registerOnServersStarted,
 };
