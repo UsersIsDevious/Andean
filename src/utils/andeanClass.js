@@ -33,6 +33,14 @@ class Item {
     }
 
     /**
+     * アイテムの個数を変更する
+     * @param {number} newQuantity 新しい個数
+     */
+    setQuantity(newQuantity) {
+        this.quantity = newQuantity;
+    }
+
+    /**
      * アイテムの詳細を返す
      * @returns {Object} アイテムのステータス
      */
@@ -63,12 +71,42 @@ class Inventory {
     }
 
     /**
+     * アイテムを所持しているか確認し、なければ追加、あれば所持数を更新する
+     * @param {string} itemName アイテムの名前
+     * @param {number} quantity 追加または更新するアイテムの個数
+     * @param {number} level アイテムのレベル
+     */
+    addOrUpdateItem(itemName, quantity, level) {
+        const existingItem = this.getItem(itemName, level);
+        if (existingItem) {
+            // 同じ名前とレベルのアイテムが既に存在する場合は、所持数を更新
+            const newQuantity = existingItem.quantity + quantity;
+            existingItem.setQuantity(newQuantity);
+            console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingItem.quantity}.`);
+        } else {
+            // アイテムが存在しない場合は、新規追加
+            const newItem = new Item(itemName, level, quantity);
+            this.addItem(newItem);
+            console.log(`${itemName} (Level ${level}) has been added with a quantity of ${quantity}.`);
+        }
+    }
+
+    /**
      * インベントリ内のアイテムを取得する
+     * 名前とレベルの両方で一致するアイテムを検索する
      * @param {string} itemName 取得するアイテムの名前
+     * @param {number} level 取得するアイテムのレベル
      * @returns {Item|undefined} 見つかったアイテム、またはundefined
      */
-    getItem(itemName) {
-        return this.items.find(item => item.name === itemName);
+    getItem(itemName, level) {
+        return this.items.find(item => item.name === itemName && item.level === level);
+    }
+
+    /**
+     * インベントリを空にする関数
+     */
+    clearInventory() {
+        this.items = []; // 配列を空にする
     }
 
     /**
@@ -112,7 +150,7 @@ class Player {
      * @param {number} damageReceived - くらったダメージ総数
      * 
      */
-    constructor(name, teamId, nucleusHash, hardwareName,teamName,squadIndex) {
+    constructor(name, teamId, nucleusHash, hardwareName, teamName, squadIndex) {
         this.name = name;
         this.teamId = teamId;
         this.pos = new Vector3();

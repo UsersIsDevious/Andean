@@ -93,7 +93,7 @@ const WebSocketGame = () => {
         playerInfo.name
       ));
       setPlayers(newPlayers);
-    } else if (data.type === 'playerUpdate') {
+    } else if (data.type === 'Update') {
       // プレーヤー位置更新の処理
       const { id, x, y, rotation } = data;
       setPlayers((prevPlayers) =>
