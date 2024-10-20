@@ -1,5 +1,5 @@
 const common = require('./utils/common');
-const {Player,CustomMatch} = require('./utils/andeanClass');
+const { Player, CustomMatch, Vector3 } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
 
 
@@ -69,6 +69,7 @@ function start_custom(){
     match = new CustomMatch("much名")
     player1.teamId = 1;
     match.addPlayer(player1)
+    console.log(JSON.stringify(match))
 }
 
 start_custom()
