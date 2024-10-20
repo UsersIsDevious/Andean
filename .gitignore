@@ -1,5 +1,6 @@
 swc-win32-x64-msvc/
 client/.next/
+log/
 
 # macOS 特有のファイル
 .DS_Store
