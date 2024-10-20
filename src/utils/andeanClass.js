@@ -126,7 +126,7 @@ class Player {
         this.teamName = 0;
         this.squadIndex = 0;
         this.character = "";
-        this.skin = skin;
+        this.skin = "";
         this.inventory = new Inventory();    // インベントリーを追加
         this.kills = 0;                     // キル数
         this.killAssists = 0;               // キルアシスト数
