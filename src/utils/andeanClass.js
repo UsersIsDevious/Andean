@@ -91,7 +91,7 @@ class Player {
      * @param {string} name - プレイヤー名
      * @param {number} teamId - チームID (uint32)
      * @param {Vector3} pos - プレイヤーの位置
-     * @param {Vector3} angles - プレイヤーの視角
+     * @param {number} angles - プレイヤーの視角
      * @param {number} currentHealth - 現在の体力 (uint32)
      * @param {number} maxHealth - 最大体力 (uint32)
      * @param {number} shieldHealth - 現在のシールド体力 (uint32)
@@ -115,17 +115,17 @@ class Player {
     constructor(name, teamId, nucleusHash, hardwareName) {
         this.name = name;
         this.teamId = teamId;
-        this.pos = pos;
-        this.angles = angles;
-        this.currentHealth = currentHealth;
-        this.maxHealth = maxHealth;
-        this.shieldHealth = shieldHealth;
-        this.shieldMaxHealth = shieldMaxHealth;
+        this.pos = new Vector3();
+        this.angles = 0;
+        this.currentHealth = 0;
+        this.maxHealth = 0;
+        this.shieldHealth = 0;
+        this.shieldMaxHealth = 0;
         this.nucleusHash = nucleusHash;
         this.hardwareName = hardwareName;
-        this.teamName = teamName;
-        this.squadIndex = squadIndex;
-        this.character = character;
+        this.teamName = 0;
+        this.squadIndex = 0;
+        this.character = "";
         this.skin = skin;
         this.inventory = new Inventory();    // インベントリーを追加
         this.kills = 0;                     // キル数
