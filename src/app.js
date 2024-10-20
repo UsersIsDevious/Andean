@@ -1,6 +1,6 @@
 const common = require('./utils/common');
 let config = common.readConfig('../../config.json');
- 
+
 /**
  * 親のコマンドプロンプトを閉じる関数
  * taskkill コマンドを使って親のコマンドプロンプトを閉じる
@@ -36,7 +36,7 @@ function startApexLegends() {
     } else {
         config = common.readConfig('../../config.json');
     }
-    
+
     const command = `"${config.apexlegends.path}" + ${config.apexlegends.option}`; // パスが空でない場合に起動コマンドを構築
     common.runRegularCommand(command)
         .then(output => {
@@ -59,5 +59,15 @@ setInterval(() => {
   server.sendClients(`"color": "{${randomColor}}"`);
   console.log(`Sent color: ${randomColor}`);
 }, 5000); */
+
+async function update() {
+    console.log(Object.keys(common.getServerList().websocketServer_web));
+    await common.getServerList().websocketServer_web.broadcastToAllClients("a")
+}
+
+const intervalId = setInterval(() => {
+    update();
+//}, 16);
+}, 1000);
 
 module.exports = { startApexLegends }

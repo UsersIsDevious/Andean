@@ -1,7 +1,22 @@
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+let servers = {}; // サーバーリストを保持するオブジェクト
 
+
+
+/**
+ * サーバーリストを取得する関数
+ * @returns {Object} - 現在のサーバーリスト
+ */
+function getServerList() {
+  if (Object.keys(servers).length > 0) {
+    return servers;
+  } else {
+    console.error("サーバーがまだ起動していません");
+    return null;
+  }
+}
 
 /**
  * サーバー（HTTP, WebSocket）の起動を管理する関数
@@ -9,13 +24,19 @@ const { exec } = require('child_process');
  * @param {Object} websocketServer - WebSocketサーバーのインスタンス
  * @returns {Object} - 起動したサーバーのインスタンス
  */
-function startAllServers(httpServer, websocketServer) {
-  const servers = {
+function startAllServers(httpServer, websocketServer,websocketServer1) {
+  const servers_res = {
     httpServer: httpServer.startServer(),
-    websocketServer: websocketServer.createWebSocketServer(7777)
+    websocketServer: websocketServer.createWebSocketServer(7777),
+    websocketServer_web: websocketServer1.createWebSocketServer(8888)
   };
+  servers = {
+    httpServer: httpServer,
+    websocketServer: websocketServer,
+    websocketServer_web: websocketServer1
+  }
   console.log("All servers are up and running:", servers);
-  return servers;
+  return servers_res;
 }
 
 /**
@@ -100,4 +121,5 @@ module.exports = {
   runPowerShellCommand,
   runRegularCommand,
   saveLog,
+  getServerList,
 };

@@ -4,77 +4,113 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { CRS, DivIcon } from 'leaflet';
 
+// React Leaflet のコンポーネントをダイナミックインポート
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
 const ImageOverlay = dynamic(() => import('react-leaflet').then(mod => mod.ImageOverlay), { ssr: false });
-const Polygon = dynamic(() => import('react-leaflet').then(mod => mod.Polygon), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
 
-// 円の座標をピクセルベースで生成する関数
-const createCircleCoords = (centerX, centerY, radius, numPoints = 64) => {
-  const angleStep = (2 * Math.PI) / numPoints;
-  const coordinates = [];
-  for (let i = 0; i < numPoints; i++) {
-    const angle = i * angleStep;
-    const x = centerX + radius * Math.cos(angle);
-    const y = centerY + radius * Math.sin(angle);
-    coordinates.push([y, x]); // [y, x] = [lat, lng] の順に
+// プレーヤークラス
+class Player {
+  constructor(id, x, y, rotation, imageUrl, name) {
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.rotation = rotation;
+    this.imageUrl = imageUrl;
+    this.name = name;
   }
-  return coordinates;
-};
 
-const DonutPolygonMap = () => {
-  // 外側の円のパラメータ
-  const [outerRadius, setOuterRadius] = useState(500); // 初期半径
-  const [outerXOffset, setOuterXOffset] = useState(2048); // 初期Xオフセット
-  const [outerYOffset, setOuterYOffset] = useState(2048); // 初期Yオフセット
+  // プレーヤーの座標や回転を更新するメソッド
+  updatePosition(x, y, rotation) {
+    this.x = x;
+    this.y = y;
+    this.rotation = rotation;
+  }
+}
 
-  // 内側の円のパラメータ
-  const [innerRadius, setInnerRadius] = useState(200); // 初期半径
-  const [innerXOffset, setInnerXOffset] = useState(2048); // 初期Xオフセット
-  const [innerYOffset, setInnerYOffset] = useState(2048); // 初期Yオフセット
+// マップクラス
+class GameMap {
+  constructor(imageUrl, bounds) {
+    this.imageUrl = imageUrl;
+    this.bounds = bounds;
+  }
 
-  // マーカーのリスト (動的に増減)
-  const [markers, setMarkers] = useState([]);
+  // マップ情報を更新するメソッド
+  updateMap(imageUrl, bounds) {
+    this.imageUrl = imageUrl;
+    this.bounds = bounds;
+  }
+}
 
-  const [donutPolygon, setDonutPolygon] = useState(null);
+const WebSocketGame = () => {
+  const [players, setPlayers] = useState([]);
+  const [gameMap, setGameMap] = useState(null);
+  const [ws, setWs] = useState(null);
 
-  // 円の座標を生成
   useEffect(() => {
-    const outerCircleCoords = createCircleCoords(outerXOffset, outerYOffset, outerRadius);
-    const innerCircleCoords = createCircleCoords(innerXOffset, innerYOffset, innerRadius);
-    const donutCoords = [outerCircleCoords, innerCircleCoords];
-    setDonutPolygon(donutCoords);
-  }, [outerRadius, innerRadius, outerXOffset, outerYOffset, innerXOffset, innerYOffset]);
+    // WebSocketの接続を初期化
+    const socket = new WebSocket('ws://localhost:8888');
+    setWs(socket);
 
-  // マーカー追加
-  const addMarker = () => {
-    setMarkers([
-      ...markers,
-      { id: markers.length, x: 2048, y: 2048, rotation: 0, imageUrl: '/path/to/your/image.png', text: 'Sample Text' }, // デフォルトの位置と回転角度で追加
-    ]);
+    // WebSocketのメッセージ受信
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      handleServerMessage(data);
+    };
+
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+  
+
+    // WebSocket切断時の処理
+    socket.onclose = () => {
+      console.log('WebSocket closed');
+    };
+
+    return () => {
+      //socket.close(); // クリーンアップ時にWebSocket接続を閉じる
+    };
+  }, []);
+
+  // サーバーからのメッセージを処理
+  const handleServerMessage = (data) => {
+    if (data.type === 'init') {
+      // Initメッセージの処理：マップ情報とプレーヤー数を受け取る
+      const { mapImageUrl, mapBounds, players: serverPlayers } = data;
+      
+      // マップ情報を更新
+      const newMap = new GameMap(mapImageUrl, mapBounds);
+      setGameMap(newMap);
+
+      // プレーヤーの作成
+      const newPlayers = serverPlayers.map(playerInfo => new Player(
+        playerInfo.id,
+        playerInfo.x,
+        playerInfo.y,
+        playerInfo.rotation,
+        playerInfo.imageUrl,
+        playerInfo.name
+      ));
+      setPlayers(newPlayers);
+    } else if (data.type === 'playerUpdate') {
+      // プレーヤー位置更新の処理
+      const { id, x, y, rotation } = data;
+      setPlayers((prevPlayers) =>
+        prevPlayers.map(player =>
+          player.id === id ? { ...player, x, y, rotation } : player
+        )
+      );
+    }
   };
-
-  // マーカー削除
-  const removeMarker = (id) => {
-    setMarkers(markers.filter(marker => marker.id !== id));
-  };
-
-  // 4096×4096の画像URL（適切なパスに置き換えてください）
-  const imageUrl = '/img/brokenMoon.png';
-
-  // 画像の範囲 (4096×4096)
-  const imageBounds = [[0, 0], [4096, 4096]];
-
-  // 画像全体が映るように最小ズームを計算
-  const minZoom = Math.log2(1024 / 4096); // 約 -2
 
   // カスタム DOM 要素用の DivIcon（画像とテキストを表示）
-  const createCustomIcon = (rotation, imageUrl, text) => {
+  const createCustomIcon = (rotation, imageUrl, name) => {
     return new DivIcon({
       html: `
         <div style="text-align: center; transform: rotate(${rotation}deg);">
           <img src="${imageUrl}" alt="Icon" style="width: 50px; height: 50px; display: block; margin: 0 auto;" />
-          <p style="margin: 0;">${text}</p>
+          <p style="margin: 0;">${name}</p>
         </div>`,
       className: '',
       iconSize: [50, 70], // アイコンのサイズを適切に設定
@@ -84,139 +120,31 @@ const DonutPolygonMap = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: '20px' }}>
-        <h2>Outer Radius: {outerRadius} pixels</h2>
-        <input
-          type="range"
-          min="100"
-          max="2000"
-          step="10"
-          value={outerRadius}
-          onChange={(e) => setOuterRadius(Number(e.target.value))}
-        />
-
-        <h2>Outer Circle X Offset: {outerXOffset} px</h2>
-        <input
-          type="range"
-          min="0"
-          max="4096"
-          step="10"
-          value={outerXOffset}
-          onChange={(e) => setOuterXOffset(Number(e.target.value))}
-        />
-
-        <h2>Outer Circle Y Offset: {outerYOffset} px</h2>
-        <input
-          type="range"
-          min="0"
-          max="4096"
-          step="10"
-          value={outerYOffset}
-          onChange={(e) => setOuterYOffset(Number(e.target.value))}
-        />
-
-        <h2>Inner Radius: {innerRadius} pixels</h2>
-        <input
-          type="range"
-          min="50"
-          max="1000"
-          step="10"
-          value={innerRadius}
-          onChange={(e) => setInnerRadius(Number(e.target.value))}
-        />
-
-        <h2>Inner Circle X Offset: {innerXOffset} px</h2>
-        <input
-          type="range"
-          min="0"
-          max="4096"
-          step="10"
-          value={innerXOffset}
-          onChange={(e) => setInnerXOffset(Number(e.target.value))}
-        />
-
-        <h2>Inner Circle Y Offset: {innerYOffset} px</h2>
-        <input
-          type="range"
-          min="0"
-          max="4096"
-          step="10"
-          value={innerYOffset}
-          onChange={(e) => setInnerYOffset(Number(e.target.value))}
-        />
-
-        {/* マーカー追加ボタン */}
-        <button onClick={addMarker}>Add Marker</button>
-
-        {/* マーカーのスライダーコントロール */}
-        {markers.map((marker, index) => (
-          <div key={marker.id}>
-            <h3>Marker {marker.id}</h3>
-            <p>X Position: {marker.x}</p>
-            <input
-              type="range"
-              min="0"
-              max="4096"
-              step="10"
-              value={marker.x}
-              onChange={(e) => {
-                const newMarkers = markers.map(m => m.id === marker.id ? { ...m, x: Number(e.target.value) } : m);
-                setMarkers(newMarkers);
-              }}
+      {/* マップとプレーヤーの表示 */}
+      {gameMap && (
+        <MapContainer
+          center={[2048, 2048]} // 初期座標を適切に設定
+          zoom={-2} // 初期ズーム
+          minZoom={-2} // 最小ズーム
+          maxZoom={2} // 最大ズーム
+          zoomSnap={0.1} // スナップ
+          crs={CRS.Simple} // ピクセル座標系を使用
+          style={{ height: '1024px', width: '1024px' }} // マップの表示サイズ
+          maxBounds={gameMap.bounds} // マップの範囲を制限
+        >
+          <ImageOverlay url={gameMap.imageUrl} bounds={gameMap.bounds} />
+          {/* プレーヤーのレンダリング */}
+          {players.map(player => (
+            <Marker
+              key={player.id}
+              position={[player.y, player.x]}
+              icon={createCustomIcon(player.rotation, player.imageUrl, player.name)}
             />
-            <p>Y Position: {marker.y}</p>
-            <input
-              type="range"
-              min="0"
-              max="4096"
-              step="10"
-              value={marker.y}
-              onChange={(e) => {
-                const newMarkers = markers.map(m => m.id === marker.id ? { ...m, y: Number(e.target.value) } : m);
-                setMarkers(newMarkers);
-              }}
-            />
-            <p>Rotation: {marker.rotation}°</p>
-            <input
-              type="range"
-              min="0"
-              max="360"
-              step="1"
-              value={marker.rotation}
-              onChange={(e) => {
-                const newMarkers = markers.map(m => m.id === marker.id ? { ...m, rotation: Number(e.target.value) } : m);
-                setMarkers(newMarkers);
-              }}
-            />
-            <button onClick={() => removeMarker(marker.id)}>Remove Marker</button>
-          </div>
-        ))}
-      </div>
-
-      {/* Leaflet マップ */}
-      <MapContainer
-        center={[2048, 2048]} // 画像の中心座標
-        zoom={minZoom} // 最小ズームを初期ズームに設定
-        minZoom={minZoom} // 画像全体が見える最小ズームレベル
-        maxZoom={2} // ズームインはある程度制限
-        zoomSnap={0.1} // スナップを細かく調整
-        crs={CRS.Simple} // カスタム座標系
-        style={{ height: '1024px', width: '1024px' }} // マップのサイズを1024pxに設定
-        maxBounds={imageBounds} // 画像の範囲を制限
-      >
-        <ImageOverlay url={imageUrl} bounds={imageBounds} />
-        {donutPolygon && <Polygon positions={donutPolygon} color="blue" />}
-        {/* マーカーのレンダリング */}
-        {markers.map(marker => (
-          <Marker
-            key={marker.id}
-            position={[marker.y, marker.x]}
-            icon={createCustomIcon(marker.rotation, marker.imageUrl, marker.text)}
-          />
-        ))}
-      </MapContainer>
+          ))}
+        </MapContainer>
+      )}
     </div>
   );
 };
 
-export default DonutPolygonMap;
+export default WebSocketGame;

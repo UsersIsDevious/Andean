@@ -2,7 +2,7 @@ const {
     Request, ChangeCamera, PauseToggle, CustomMatch_CreateLobby, CustomMatch_JoinLobby, CustomMatch_LeaveLobby, CustomMatch_SetReady, CustomMatch_SetMatchmaking,
     CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings, PlayerOfInterest, Player
 } = require('../../bin/events_pb'); // events_pb.jsからRequest関連の機能をインポート
-const websocketServer = require('../server/websocketServer') // WebSocketサーバーとの通信
+const { servers } = require('../utils/common');
 
 
 // "ActionsCase": getActionsCase,
@@ -65,7 +65,7 @@ const websocketServer = require('../server/websocketServer') // WebSocketサー�
 function serialized_request(request) {
     request.setWithack(true);  // 確認応答を要求
     const serialized = request.serializeBinary();
-    websocketServer.broadcastToAllClients(serialized);  // シリアライズされたデータをWebSocket経由で送信
+    servers["websocketServer"].broadcastToAllClients(serialized);  // シリアライズされたデータをWebSocket経由で送信
 }
 
 /**

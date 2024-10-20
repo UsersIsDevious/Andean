@@ -1,4 +1,4 @@
-// Vector3クラスの定義 (x, y, z座標を持つ)
+
 /**
  * 3次元ベクトルを表すクラス
  * @class
@@ -133,6 +133,24 @@ class Player {
         this.downs = 0;                     // ダウンさせた数
         this.damageDealt = 0;               // 敵に与えたダメージ総数
         this.damageReceived = 0;            // くらったダメージ総数
+        this.isAlive = true;
+    }
+
+    /**
+     * プレイヤーの生存状態を変更するメソッド
+     * @param {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
+     */
+    setAliveStatus(status) {
+        this.isAlive = status;
+        console.log(`${this.name} is now ${status ? 'alive' : 'dead'}.`);
+    }
+
+    /**
+     * プレイヤーの生存状態を返すメソッド
+     * @returns {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
+     */
+    getAliveStatus(status) {
+        return this.isAlive
     }
 
     /**
@@ -352,11 +370,11 @@ class CustomMatch {
         this.maxPlayers = 60;
     }
 
-     /**
-     * プレイヤーを追加するメソッド
-     * @param {Player} player 追加するプレイヤー
-     */
-     addPlayer(player) {
+    /**
+    * プレイヤーを追加するメソッド
+    * @param {Player} player 追加するプレイヤー
+    */
+    addPlayer(player) {
         if (Object.keys(this.players).length >= this.maxPlayers) {
             console.log("Cannot add more players, the match is full.");
         } else if (this.players[player.nucleusHash]) {
@@ -365,8 +383,8 @@ class CustomMatch {
             this.players[player.nucleusHash] = player;
             console.log(`${player.name} has joined the match.`);
 
-             // チームにプレイヤーを追加
-             if (!this.teams[player.teamId]) {
+            // チームにプレイヤーを追加
+            if (!this.teams[player.teamId]) {
                 // チームが存在しない場合は新しく作成する
                 this.teams[player.teamId] = new Team(player.teamName, player.teamId);
             }
