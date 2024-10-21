@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 
-const Map = dynamic(() => import('@/components/ring/ringMap'), { ssr: false });
+const Map = dynamic(() => import('@/components/ring_2/ringMap'), { ssr: false });
 
 export default function Home() {
 

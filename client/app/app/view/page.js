@@ -23,9 +23,15 @@ const Home = () => {
         setComponentName(data.componentName); // 受け取ったデータに基づいて表示するコンポーネントを変更
       }
 
-      // typeが"dataupdate"の場合、mapの情報を操作
+      // マップの初期化（muchiniの場合）
+      if (data.type === 'muchini') {
+        setComponentName('MapComponent'); // マップ表示用コンポーネントを表示
+        setMapData(data.mapData); // マップの初期化データをセット
+      }
+
+      // プレイヤーの座標変更（dataupdateの場合）
       if (data.type === 'dataupdate') {
-        setMapData(data.mapData);
+        setPlayerData(data.playerData); // プレイヤーの座標変更データをセット
       }
 
       // メッセージのtypeも保持
