@@ -161,7 +161,7 @@ class Player {
      * @param {number} damageReceived - くらったダメージ総数
      * 
      */
-    constructor(name, teamId, nucleusHash, hardwareName, teamName, squadIndex) {
+    constructor(name, teamId, nucleusHash, hardwareName) {
         this.name = name;
         this.teamId = teamId;
         this.pos = new Vector3();
@@ -172,8 +172,8 @@ class Player {
         this.shieldMaxHealth = 0;
         this.nucleusHash = nucleusHash;
         this.hardwareName = hardwareName;
-        this.teamName = teamName;
-        this.squadIndex = squadIndex;
+        this.teamName = "";
+        this.squadIndex = -1;
         this.character = "";
         this.skin = "";
         this.inventory = new Inventory();    // インベントリーを追加
@@ -211,6 +211,7 @@ class Player {
         this.shieldHealth = newShieldHealth;
         this.shieldMaxHealth = newShieldMaxHealth;
     }
+
     /**
      * プレイヤーのチーム情報、キャラクター、スキンを更新する関数
      * @param {string} newCharacter 新しいキャラクター
@@ -227,6 +228,22 @@ class Player {
      */
     setAliveStatus(status) {
         this.isAlive = status;
+    }
+
+    /**
+     * チーム名を変更するメソッド
+     * @param {String} teamName チーム名を入力してチーム名を変更
+     */
+    setTeamName(teamName) {
+        this.teamName = teamName;
+    }
+
+    /**
+     * チーム内のインデックスを変更するメソッド
+     * @param {number} index 変更する値を入力して、その値に変更する
+     */
+    setSquadIndex(index) {
+        this.squadIndex = index;
     }
 
     /**
