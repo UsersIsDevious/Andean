@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { CRS, DivIcon } from 'leaflet';
+import { FaLocationArrow } from 'react-icons/fa';
 import ControlPanel from './ControlPanel';
 import MarkerList from './MarkerList';
 import { createCircleCoords } from './utils';
@@ -21,6 +22,34 @@ const DonutPolygonMap = ({ mapData, playerData }) => {
   const [markers, setMarkers] = useState([]);
   const [donutPolygon, setDonutPolygon] = useState(null);
   const [imageUrl, setImageUrl] = useState('/img/brokenMoon.png'); // 初期画像
+  // チームに応じた色のクラスを返す関数
+  const getTeamColorClass = (team) => {
+    switch (team) {
+      case 'red':
+        return 'text-red-500'; // Tailwindのクラスを使用
+      case 'blue':
+        return 'text-blue-500';
+      case 'green':
+        return 'text-green-500';
+      default:
+        return 'text-gray-500';
+    }
+  };
+
+  // プレイヤーアイコンをカスタマイズする関数
+  const createCustomIcon = (rotation, team) => {
+    const teamColorClass = getTeamColorClass(team); // チームの色クラスを取得
+    return new DivIcon({
+      html: `
+        <div class="flex items-center justify-center transform rotate-${rotation}" style="width: 50px; height: 50px;">
+          <FaLocationArrow class="w-8 h-8 ${teamColorClass}" />
+        </div>
+      `,
+      className: '', // カスタムクラスの設定
+      iconSize: [50, 50],
+      iconAnchor: [25, 25], // マーカーの中心をアンカーに設定
+    });
+  };
 
   // マップ初期化データの適用
   useEffect(() => {
@@ -43,7 +72,7 @@ const DonutPolygonMap = ({ mapData, playerData }) => {
         prevMarkers.map((marker) => {
           const player = playerData.find(p => p.id === marker.id);
           return player
-            ? { ...marker, x: player.x, y: player.y, rotation: player.rotation }
+            ? { ...marker, x: player.x, y: player.y, rotation: player.rotation, team: player.team }
             : marker;
         })
       );
@@ -55,19 +84,6 @@ const DonutPolygonMap = ({ mapData, playerData }) => {
     const innerCircleCoords = createCircleCoords(innerXOffset, innerYOffset, innerRadius);
     setDonutPolygon([outerCircleCoords, innerCircleCoords]);
   }, [outerRadius, outerXOffset, outerYOffset, innerRadius, innerXOffset, innerYOffset]);
-
-  const createCustomIcon = (rotation, imageUrl, text) => {
-    return new DivIcon({
-      html: `
-        <div style="text-align: center; transform: rotate(${rotation}deg);">
-          <img src="${imageUrl}" alt="Icon" style="width: 50px; height: 50px;" />
-          <p>${text}</p>
-        </div>`,
-      className: '',
-      iconSize: [50, 70],
-      iconAnchor: [25, 35],
-    });
-  };
 
   const imageBounds = [[0, 0], [4096, 4096]];
   const minZoom = Math.log2(1024 / 4096);
@@ -86,7 +102,7 @@ const DonutPolygonMap = ({ mapData, playerData }) => {
       >
         <ImageOverlay url={imageUrl} bounds={imageBounds} />
         {donutPolygon && <Polygon positions={donutPolygon} color="blue" />}
-        <MarkerList markers={markers} createCustomIcon={createCustomIcon} />
+        <MarkerList markers={markers} createCustomIcon={(rotation, team) => createCustomIcon(rotation, team)} />
       </MapContainer>
     </div>
   );
