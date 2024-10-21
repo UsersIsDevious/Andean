@@ -1,8 +1,5 @@
 const WebSocket = require('ws');
-const { LiveAPIEvent } = require('../../bin/events_pb'); // 必要なメッセージ型をインポート
-const messageTypes = require('../utils/messageTypes');
-const { analyze_message } = require('../app')
-const { saveLog } = require('../utils/common')
+
 
 class WebSocketServer {
   constructor(port) {
@@ -55,19 +52,6 @@ class WebSocketServer {
       console.error('Error decoding message:', error);
       console.log('Raw message:', message.toString('base64'));
     }
-  }
-
-  /**
-   * メッセージを処理する
-   * @param {Object} message - デコードされたメッセージオブジェクト
-   * @param {string} messageType メッセージの種類
-   * @param {WebSocket} ws - 送信元のWebSocketインスタンス
-   */
-  handleMessage(message, messageType, ws) {
-    // ログを保存
-    saveLog(JSON.stringify(message.toObject()), this.fileName);
-    console.log(`Processed message on port ${this.port}:`, message.toObject());
-    analyze_message(messageType, message.toObject())
   }
 
   /**

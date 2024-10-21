@@ -3,6 +3,7 @@ const { Player, CustomMatch, Vector3 } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
+
 /**
  * CustomMatch object
  * @type {CustomMatch}
@@ -145,7 +146,14 @@ common.registerOnServersStarted((servers) => {
     });
 });
 
-function handleMessage(message, messageType){
+/**
+ * メッセージを処理する
+ * @param {Object} message - デコードされたメッセージオブジェクト
+ * @param {string} messageType メッセージの種類
+ * @param {WebSocket} ws - 送信元のWebSocketインスタンス
+ */
+function handleMessage(message, messageType) {
+    // ログを保存
     common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName)
     console.log(`Received ${messageType} message:`, message.toObject());
     analyze_message(messageType, message.toObject())
