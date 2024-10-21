@@ -4,12 +4,6 @@ let config = common.readConfig('../../config.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
 
-/**
- * CustomMatch object
- * @type {CustomMatch}
- */
-let match;
-
 
 /**
  * 親のコマンドプロンプトを閉じる関数
@@ -76,25 +70,56 @@ setInterval(() => {
  * @param {String} category
  * @param {Object} msg
  */
-function analyze_message(msg) {
-    switch (msg.category) {
-        case 'init':
+function analyze_message(category, msg) {
+    switch (category) {
+        case 'Init':
             if (msg.platform != "") { break; }
-            match = new CustomMatch(`${msg.timestamp}`)  // web側で名前の指定があれば適用する
+            let match = new CustomMatch(`${msg.timestamp}`)  // web側で名前の指定があれば適用する
             break;
-        case 'observerSwitched':
-            for (let i = 0; i < msg.targetteamList; i++) {
-                const targetJson = msg.targetteamList[i]
-                const targetObj = match.getPlayer(msg.targetteamList[i].nucleushash)
-
-                targetObj.updatePositionAndAngles(targetJson.pos.x, targetJson.pos.y, targetJson.pos.z, targetJson.angles.y)
-                targetObj.updateHealthAndShields(targetJson.currenthealth, targetJson.maxhealth, targetJson.shieldhealth, targetJson.shieldmaxhealth)
-                console.log(JSON.stringify(targetObj))
+        case 'ObserverSwitched':
+            for (let i = 0; i < msg.targetteamList.length; i++) {
+                const targetJson = msg.targetteamList[i];
+                const playerObj = match.getPlayer(targetJson.nucleushash)
+                updatePlayer(targetJson, playerObj)
+                console.log(JSON.stringify(playerObj))
             }
+            break;
+        case 'CustomMatch_LobbyPlayers':
+            let lobby = new CustomMatch("lobby")
+            for (let i = 0; i < msg.playersList.length; i++) {
+                const targetJson = msg.playersList[i];
+                const playerObj = Player(targetJson.name, targetJson.teamid, targetJson.nucleushash, targetJson.hardwarename)
+                lobby.addPlayer(playerObj)
+            }
+            break;
+        case 'CharacterSelected':
+            const targetJson = msg.player;
+            const playerObj = match.getPlayer(targetJson.nucleushash)
+            updatePlayer(targetJson, playerObj, True)
             break;
         default:
             // console.log("Unknown Type Message")
             break;
+    }
+}
+
+/**
+ * Playerクラスのオブジェクトを更新する
+ * @param {Object} json
+ * @param {Player} obj
+ * @param {Boolean} characterSelected
+ */
+function updatePlayer(json, obj, characterSelected=False) {
+    obj.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y)
+    obj.updateHealthAndShields(json.currenthealth, json.maxhealth, json.shieldhealth, json.shieldmaxhealth)
+    if (obj.getStatus().teamName === "") {
+        obj.setTeamName(json.teamname)
+    }
+    if (obj.getStatus().squadIndex === -1) {
+        obj.setSquadIndex(json.squadindex)
+    }
+    if (characterSelected) {
+        obj.updateCharacter(json.character, json.skin)
     }
 }
 
@@ -156,7 +181,7 @@ function handleMessage(message, messageType) {
     // ログを保存
     common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName)
     console.log(`Received ${messageType} message:`, message.toObject());
-    analyze_message(message.toObject())
+    analyze_message(messageType, message.toObject())
 }
 
 module.exports = { startApexLegends, analyze_message }

@@ -65,9 +65,7 @@ const { getServerList, wss } = require('../utils/common');
 function serialized_request(request) {
     request.setWithack(true);  // 確認応答を要求
     const serialized = request.serializeBinary();
-    console.log(getServerList().websocketServer.wss)
-    // getServerList().websocketServer.broadcastToAllClients(serialized);  // シリアライズされたデータをWebSocket経由で送信
-    console.log(getServerList().websocketServer.broadcastToAllClients(serialized))
+    getServerList().websocketServer.broadcastToAllClients(serialized);  // シリアライズされたデータをWebSocket経由で送信
 }
 
 /**
