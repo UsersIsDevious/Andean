@@ -56,7 +56,6 @@ function startAllServers(httpServer, websocketServer, websocketServer_web) {
       console.error("コールバック実行中にエラーが発生しました:", error);
     }
   });
-  console.log("All servers are up and running:", servers);
   return servers_res;
 }
 

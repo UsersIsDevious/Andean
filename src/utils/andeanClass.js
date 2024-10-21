@@ -453,12 +453,12 @@ class CustomMatch {
     */
     addPlayer(player) {
         if (Object.keys(this.players).length >= this.maxPlayers) {
-            console.log("Cannot add more players, the match is full.");
+            //console.log("Cannot add more players, the match is full.");
         } else if (this.players[player.nucleusHash]) {
-            console.log(`Player with nucleusHash ${player.nucleusHash} is already in the match.`);
+            //console.log(`Player with nucleusHash ${player.nucleusHash} is already in the match.`);
         } else {
             this.players[player.nucleusHash] = player;
-            console.log(`${player.name} has joined the match.`);
+            //console.log(`${player.name} has joined the match.`);
 
             // チームにプレイヤーを追加
             if (!this.teams[player.teamId]) {

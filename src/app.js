@@ -103,7 +103,7 @@ function start_custom() {
     player1 = new Player("ninngenn", 1, "hjogehoge", "PC-Steam")
     player1.teamId = 1;
     match.addPlayer(player1)
-    console.log(JSON.stringify(match))
+    //console.log(JSON.stringify(match))
 }
 
 start_custom()
@@ -119,7 +119,7 @@ async function update() {
 
 // サーバーが全て起動した後に呼ばれる処理
 common.registerOnServersStarted((servers) => {
-    console.log("サーバーが全て起動しました！", servers);
+    console.log("サーバーが全て起動しました！");
     // メッセージ処理用のコールバック関数を設定
     common.getServerList().websocketServer.setHandleMessageCallback((message, ws) => {
         const liveAPIEvent = LiveAPIEvent.deserializeBinary(message);
