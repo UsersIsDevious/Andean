@@ -156,7 +156,7 @@ function handleMessage(message, messageType) {
     // ログを保存
     common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName)
     console.log(`Received ${messageType} message:`, message.toObject());
-    analyze_message(messageType, message.toObject())
+    analyze_message(message.toObject())
 }
 
 module.exports = { startApexLegends, analyze_message }
