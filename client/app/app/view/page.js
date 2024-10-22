@@ -1,4 +1,5 @@
 "use client";
+import RootLayout from '@/app/layout';
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 // 事前にインポート可能なコンポーネントを登録しておく
@@ -17,7 +18,7 @@ const Home = () => {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      
+
       // WebSocketのメッセージタイプが"rendering"の場合のみコンポーネントを更新
       if (data.type === 'rendering' && components[data.componentName]) {
         setComponentName(data.componentName); // 受け取ったデータに基づいて表示するコンポーネントを変更
@@ -51,13 +52,17 @@ const Home = () => {
   const isMapComponent = componentName === 'MapComponent';
 
   return (
-    <div>
-      {isMapComponent ? (
-        <ComponentToRender mapData={mapData} /> // mapDataを渡す
-      ) : (
-        <ComponentToRender /> // mapDataは渡さない
-      )}
-    </div>
+    <>
+      <RootLayout title="Andean | view">
+        <div>
+          {isMapComponent ? (
+            <ComponentToRender mapData={mapData} /> // mapDataを渡す
+          ) : (
+            <ComponentToRender /> // mapDataは渡さない
+          )}
+        </div>
+      </RootLayout>
+    </>
   );
 };
 

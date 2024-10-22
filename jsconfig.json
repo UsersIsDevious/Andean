@@ -1,8 +1,10 @@
 {
-    "compilerOptions": {
-      "baseUrl": "client",
-      "paths": {
-        "@/*": ["*"]
-      }
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["client/*"],
+      "@components/*": ["client/components/*"],
+      "@pages/*": ["client/pages/*"]
     }
   }
+}
