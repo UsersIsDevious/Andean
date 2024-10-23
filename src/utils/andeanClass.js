@@ -159,7 +159,8 @@ class Player {
      * @param {number} downs - ダウンさせた数
      * @param {number} damageDealt - 敵に与えたダメージ総数
      * @param {number} damageReceived - くらったダメージ総数
-     * 
+     * @param {Boolean} isAlive - 生存状態
+     * @param {Boolean} isOnline - 接続状態
      */
     constructor(name, teamId, nucleusHash, hardwareName) {
         this.name = name;
@@ -183,6 +184,7 @@ class Player {
         this.damageDealt = 0;               // 敵に与えたダメージ総数
         this.damageReceived = 0;            // くらったダメージ総数
         this.isAlive = true;
+        this.isOnline = true;
     }
 
 
@@ -193,8 +195,8 @@ class Player {
      * @param {number} z 新しいz座標
      * @param {number} newAngles 新しい角度
      */
-    updatePositionAndAngles(newPos, newAngles) {
-        this.pos = newPos;
+    updatePositionAndAngles(x, y, z, newAngles) {
+        this.pos.updateValues(x, y, z)
         this.angles = newAngles;
     }
 
@@ -227,6 +229,14 @@ class Player {
      * @param {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
      */
     setAliveStatus(status) {
+        this.isAlive = status;
+    }
+
+    /**
+     * プレイヤーの生存状態を変更するメソッド
+     * @param {boolean} status プレイヤーが接続している場合はtrue、切断している場合はfalse
+     */
+    setOnlineStatus(status) {
         this.isAlive = status;
     }
 
@@ -365,15 +375,11 @@ class Player {
 // Datacenterクラスの定義
 /**
  * データセンターを表すクラス
- * @class
+ * @param {number} timestamp - タイムスタンプ (uint64)
+ * @param {string} category - カテゴリー名
+ * @param {string} name - データセンター名
  */
 class Datacenter {
-    /**
-     * @constructor
-     * @param {number} timestamp - タイムスタンプ (uint64)
-     * @param {string} category - カテゴリー名
-     * @param {string} name - データセンター名
-     */
     constructor(timestamp, category, name) {
         this.timestamp = timestamp;
         this.category = category;
@@ -462,6 +468,15 @@ class CustomMatch {
         this.players = {};  // プレイヤーのリスト (最大60人) 連想配列に変更　チームにnucleusHashのみ保存
         this.teams = {};    // チームの連想配列 (teamIdをキーにする)
         this.maxPlayers = 60;
+        this.gameState = "";  // gameStateChangedを格納
+        this.mapName = "";  // マップ名を格納
+        this.playlistName = "";  // マッチ名を格納 (例) World's Edge（リングなし）
+        this.playlistDesc = "";  // マッチ説明を格納 (例) 最後の1部隊になるまで戦い抜け
+        this.datacenter = {};  // Datacenterクラスをのオブジェクトを格納
+        this.aimassiston = true;  // エイムアシストの設定値を格納
+        this.anonymousMode = false;  // 匿名モードの設定値を格納
+        this.serverId = "";  // サーバーIDを格納
+        this.startingLoadout = new Inventory();  // 初期配布のアイテムを追加するInventoryインスタンスを作成
     }
 
     /**
@@ -484,6 +499,34 @@ class CustomMatch {
             }
             this.teams[player.teamId].push(player.nucleusHash);
         }
+    }
+
+    /**
+     * ゲームステータスを設定するメソッド
+     * @param {String} state ゲームステータス
+     */
+    setGameState(state) {
+        this.gameState = state;
+    }
+
+    /**
+     * マッチセットアップ情報を設定するメソッド
+     * @param {String} mapName マップ名
+     * @param {String} playlistName 
+     * @param {String} playlistDesc
+     * @param {Datacenter} datacenter
+     * @param {Boolean} aimassiston
+     * @param {Boolean} anonymousMode
+     * @param {String} serverId
+     */
+    setMatchSetup(mapName, playlistName, playlistDesc, datacenter, aimassiston, anonymousMode, serverId) {
+        this.mapName = mapName;
+        this.playlistName = playlistName;
+        this.playlistDesc = playlistDesc;
+        this.datacenter = datacenter;
+        this.aimassiston = aimassiston;
+        this.anonymousMode = anonymousMode;
+        this.serverId = serverId;
     }
 
     /**

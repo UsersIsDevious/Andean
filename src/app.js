@@ -1,6 +1,7 @@
 const common = require('./utils/common');
-const { Player, CustomMatch, Vector3 } = require('./utils/andeanClass');
+const { Player, CustomMatch, Datacenter, Item } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
+const language = common.readConfig('../../locals/ja.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
 
@@ -69,36 +70,142 @@ setInterval(() => {
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
  * @param {Object} msg
+ * @type {CustomMatch}
  */
+let match
 function analyze_message(category, msg) {
     switch (category) {
-        case 'Init':
+        case "Init":
             if (msg.platform != "") { break; }
-            let match = new CustomMatch(`${msg.timestamp}`)  // web側で名前の指定があれば適用する
+            match = new CustomMatch(`${msg.timestamp}`)  // web側で名前の指定があれば適用する
             break;
-        case 'ObserverSwitched':
-            for (let i = 0; i < msg.targetteamList.length; i++) {
-                const targetJson = msg.targetteamList[i];
-                const playerObj = match.getPlayer(targetJson.nucleushash)
-                updatePlayer(targetJson, playerObj)
-                console.log(JSON.stringify(playerObj))
-            }
+        case "Vector3":
             break;
-        case 'CustomMatch_LobbyPlayers':
+        case "Player":
+            break;
+        case "CustomMatch_LobbyPlayer":
+            break;
+        case "Datacenter":
+            break;
+        case "Version":
+            break;
+        case "InventoryItem":
+            break;
+        case "LoadoutConfiguration":
+            break;
+        case "CustomMatch_LobbyPlayers":
             let lobby = new CustomMatch("lobby")
             for (let i = 0; i < msg.playersList.length; i++) {
-                const targetJson = msg.playersList[i];
-                const playerObj = Player(targetJson.name, targetJson.teamid, targetJson.nucleushash, targetJson.hardwarename)
-                lobby.addPlayer(playerObj)
+                lobby.addPlayer(new Player(msg.playersList[i].name, msg.playersList[i].teamid, msg.playersList[i].nucleushash, msg.playersList[i].hardwarename))
             }
             break;
-        case 'CharacterSelected':
-            const targetJson = msg.player;
-            const playerObj = match.getPlayer(targetJson.nucleushash)
-            updatePlayer(targetJson, playerObj, True)
+        case "RequestStatus":
+            break;
+        case "Response":
+            break;
+        case "MatchSetup":
+            if (msg.startingloadout.weaponsList != []) {
+                for (let i = 0; i < msg.startingloadout.weaponsList.length; i++) {
+                    match.startingLoadout.addItem(new Item(msg.startingloadout.weaponsList[i].item, checkItemLevel(msg.startingloadout.weaponsList[i].item), msg.startingloadout.weaponsList[i].quantity));
+                }
+            }
+            if (msg.startingloadout.equipmentList != []) {
+                for (let i = 0; i < msg.startingloadout.equipmentList.length; i++) {
+                    match.startingLoadout.addItem(new Item(msg.startingloadout.equipmentList[i].item, checkItemLevel(msg.startingloadout.equipmentList[i].item), msg.startingloadout.equipmentList[i].quantity));
+                }
+            }
+            match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, new Datacenter(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name), msg.aimassiston, msg.anonymousmode, msg.serverid);
+            break;
+        case "GameStateChanged":
+            try {
+                match.setGameState(msg.state);   
+            } catch (error) {
+                lobby.setGameState(msg.state);
+            }
+            break;
+        case "CharacterSelected":
+            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash), true);
+            break;
+        case "MatchStateEnd":
+            break;
+        case "RingStartClosing":
+            break;
+        case "RingFinishedClosing":
+            break;
+        case "PlayerConnected":
+            match.addPlayer(new Player(msg.player.name, msg.player.teamid, msg.player.nucleushash, msg.player.hardwarename));
+            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash));
+            break;
+        case "PlayerDisconnected":
+            break;
+        case "PlayerStatChanged":
+            break;
+        case "PlayerUpgradeTierChanged":
+            break;
+        case "PlayerDamaged":
+            break;
+        case "PlayerKilled":
+            break;
+        case "PlayerDowned":
+            break;
+        case "PlayerAssist":
+            break;
+        case "SquadEliminated":
+            break;
+        case "GibraltarShieldAbsorbed":
+            break;
+        case "RevenantForgedShadowDamaged":
+            break;
+        case "ChangeCamera":
+            break;
+        case "PauseToggle":
+            break;
+        case "CustomMatch_SetSettings":
+            break;
+        case "PlayerRespawnTeam":
+            break;
+        case "PlayerRevive":
+            break;
+        case "ArenasItemSelected":
+            break;
+        case "ArenasItemDeselected":
+            break;
+        case "InventoryPickUp":
+            break;
+        case "InventoryDrop":
+            break;
+        case "InventoryUse":
+            break;
+        case "BannerCollected":
+            break;
+        case "PlayerAbilityUsed":
+            break;
+        case "LegendUpgradeSelected":
+            break;
+        case "ZiplineUsed":
+            break;
+        case "GrenadeThrown":
+            break;
+        case "BlackMarketAction":
+            break;
+        case "WraithPortal":
+            break;
+        case "WarpGateUsed":
+            break;
+        case "AmmoUsed":
+            break;
+        case "WeaponSwitched":
+            break;
+        case "ObserverSwitched":
+            for (let i = 0; i < msg.targetteamList.length; i++) {
+                updatePlayer(msg.targetteamList[i], match.getPlayer(msg.targetteamList[i].nucleushash));
+                console.log(JSON.stringify(match.getPlayer(msg.targetteamList[i].nucleushash)));
+            }
+            break;
+        case "ObserverAnnotation":
             break;
         default:
-            // console.log("Unknown Type Message")
+            console.log("Unknown Type Message")
             break;
     }
 }
@@ -109,29 +216,31 @@ function analyze_message(category, msg) {
  * @param {Player} obj
  * @param {Boolean} characterSelected
  */
-function updatePlayer(json, obj, characterSelected=False) {
-    obj.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y)
-    obj.updateHealthAndShields(json.currenthealth, json.maxhealth, json.shieldhealth, json.shieldmaxhealth)
+function updatePlayer(json, obj, characterSelected=false) {
+    obj.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y);
+    obj.updateHealthAndShields(json.currenthealth, json.maxhealth, json.shieldhealth, json.shieldmaxhealth);
     if (obj.getStatus().teamName === "") {
-        obj.setTeamName(json.teamname)
+        obj.setTeamName(json.teamname);
     }
     if (obj.getStatus().squadIndex === -1) {
-        obj.setSquadIndex(json.squadindex)
+        obj.setSquadIndex(json.squadindex);
     }
     if (characterSelected) {
-        obj.updateCharacter(json.character, json.skin)
+        obj.updateCharacter(json.character, json.skin);
     }
 }
 
-function start_custom() {
-    match = new CustomMatch("much名")
-    player1 = new Player("ninngenn", 1, "hjogehoge", "PC-Steam")
-    player1.teamId = 1;
-    match.addPlayer(player1)
-    //console.log(JSON.stringify(match))
+
+/**
+ * アイテム名からレベルをチェックする
+ * @param {String} name
+ */
+function checkItemLevel(name) {
+    let level = new RegExp(`/\(${language.item.level_label} (\d+)\)/g`).exec( name );
+    if (level == null) { level = 1 };
+    return level;
 }
 
-start_custom()
 
 async function update() {
     await common.getServerList().websocketServer_web.broadcastToAllClients("a")
