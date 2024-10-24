@@ -573,8 +573,20 @@ class CustomMatch {
     getMatchStatus() {
         return {
             matchName: this.matchName,
-            playerCount: this.getPlayerCount(),
+            startTimeStamp: this.startTimeStamp,
+            endTimeStamp: this.endTimeStamp,
+            gameState: this.gameState,
+            mapName: this.mapName,
+            playlistName: this.playlistName,
+            playlistDesc: this.playlistDesc,
+            datacenter: this.datacenter,
+            aimassiston: this.aimassiston,
+            anonymousMode: this.anonymousMode,
+            serverId: this.serverId,
+            startingLoadout: this.startingLoadout,
             maxPlayers: this.maxPlayers,
+            playerCount: this.getPlayerCount(),
+            teams: this.teams,
             players: Object.values(this.players).map(player => player.getStatus())
         };
     }

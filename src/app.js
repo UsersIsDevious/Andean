@@ -199,7 +199,6 @@ function analyze_message(category, msg) {
         case "ObserverSwitched":
             for (let i = 0; i < msg.targetteamList.length; i++) {
                 updatePlayer(msg.targetteamList[i], match.getPlayer(msg.targetteamList[i].nucleushash));
-                console.log(JSON.stringify(match.getPlayer(msg.targetteamList[i].nucleushash)));
             }
             break;
         case "ObserverAnnotation":
