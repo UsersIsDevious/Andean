@@ -171,6 +171,12 @@ function analyze_message(category, msg) {
         case "ArenasItemDeselected":
             break;
         case "InventoryPickUp":
+            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash));
+            if (Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item) != undefined) {
+                
+            } else {
+
+            }
             break;
         case "InventoryDrop":
             break;

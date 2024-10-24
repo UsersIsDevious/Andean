@@ -185,6 +185,7 @@ class Player {
         this.damageReceived = 0;            // くらったダメージ総数
         this.isAlive = true;
         this.isOnline = true;
+        this.weaponList = {};
     }
 
 
@@ -325,6 +326,22 @@ class Player {
      */
     addDamageReceived(amount) {
         this.damageReceived += amount;
+    }
+
+    /**
+     * 武器リストに武器を追加
+     * @param {Weapon} weapon 武器インスタンス
+     */
+    addWeapon(weapon) {
+        this.weaponList[weapon.name] = weapon;
+    }
+
+    /**
+     * 武器リストにから武器を削除
+     * @param {String} name 内部の武器名
+     */
+    removeWeapon(name) {
+        delete this.weaponList[name];
     }
 
     /**
@@ -592,6 +609,30 @@ class CustomMatch {
     }
 }
 
+// Weaponクラスの定義
+/**
+ * 武器に関するクラス
+ * @param {number} name - 内部の武器名
+ * @param {number} level - 武器のレベル
+ */
+class Weapon {
+    constructor(name, level) {
+        this.name = name;
+        this.level = level;
+        this.maxMagazine = 0; // AmmoUsedで使用された最大の弾数を格納
+    }
+
+    /**
+     * AmmoUsedで使用された最大の弾数を返す
+     * @returns {number} AmmoUsedで使用された最大の弾数
+     */
+    getMaxMagazine() {
+        return {
+            maxMagazine: this.maxMagazine
+        };
+    }
+}
+
 module.exports = {
     Vector3,
     Item,
@@ -599,5 +640,6 @@ module.exports = {
     Player,
     Datacenter,
     Version,
-    CustomMatch
+    CustomMatch,
+    Weapon
 };
