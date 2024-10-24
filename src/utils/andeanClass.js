@@ -619,7 +619,12 @@ class CustomMatch {
     }
 
     writeLog() {
-        const logData = this.getInfo();
+        const logData = JSON.stringify(this, (key, value) => {
+            if (typeof value === 'function') {
+              return undefined; // メソッドをJSONに含めない
+            }
+            return value;
+          }, 2);;
     
         // 既存のログファイルを読み込み、データを追記して保存
         fs.readFile(path.join(__dirname, `../../output/${this.matchName}_${this.startTimeStamp}.json`), 'utf8', (err, data) => {
