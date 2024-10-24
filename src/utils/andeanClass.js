@@ -497,6 +497,7 @@ class CustomMatch {
         this.serverId = "";  // サーバーIDを格納
         this.startingLoadout = new Inventory();  // 初期配布のアイテムを追加するInventoryインスタンスを作成
         this.startLogging();
+        this.logInterval = 1000;
     }
 
     /**
