@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 
 /**
  * 3次元ベクトルを表すクラス
@@ -494,6 +496,7 @@ class CustomMatch {
         this.anonymousMode = false;  // 匿名モードの設定値を格納
         this.serverId = "";  // サーバーIDを格納
         this.startingLoadout = new Inventory();  // 初期配布のアイテムを追加するInventoryインスタンスを作成
+        this.startLogging();
     }
 
     /**
@@ -607,6 +610,38 @@ class CustomMatch {
             players: Object.values(this.players).map(player => player.getStatus())
         };
     }
+
+    startLogging() {
+        this.logTimer = setInterval(() => {
+          this.writeLog();
+        }, this.logInterval);
+    }
+
+    writeLog() {
+        const logData = this.getInfo();
+    
+        // 既存のログファイルを読み込み、データを追記して保存
+        fs.readFile(path.join(__dirname, `../../output/${this.matchName}_${this.startTimeStamp}.json`), 'utf8', (err, data) => {
+          let logs = [];
+    
+          if (!err && data) {
+            // 既存のJSONデータをパースしてログリストに追加
+            logs = JSON.parse(data);
+          }
+    
+          // 新しいログデータを追加
+          logs.push(logData);
+    
+          // JSON形式でファイルに書き込む
+          fs.writeFile(logFilePath, JSON.stringify(logs, null, 2), (err) => {
+            if (err) {
+              console.error('ログファイルへの書き込みエラー:', err);
+            } else {
+              console.log('JSON形式でログにデータが記載されました');
+            }
+          });
+        });
+      }
 }
 
 // Weaponクラスの定義

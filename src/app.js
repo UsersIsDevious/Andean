@@ -285,6 +285,7 @@ common.registerOnServersStarted((servers) => {
     });
 });
 
+
 /**
  * メッセージを処理する
  * @param {Object} message - デコードされたメッセージオブジェクト
