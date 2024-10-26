@@ -1,41 +1,39 @@
-import { useState, useEffect } from "react";
+"use client"
+import { useState } from "react";
 
 export default function WebSocketPage() {
   const [socket, setSocket] = useState(null);
   const [message, setMessage] = useState("");
-  const [channelNumber, setChannelNumber] = useState("");
+  const [port, setPort] = useState("");
 
-  // WebSocket接続の初期化
-  useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080"); // WebSocketサーバーのURL
-    setSocket(ws);
+  // WebSocket接続を作成する関数
+  const connectToWebSocket = () => {
+    if (!port) {
+      console.error("ポート番号を入力してください");
+      return;
+    }
 
+    const ws = new WebSocket(`ws://localhost:${port}`); // 入力されたポートに接続
     ws.onopen = () => {
-      console.log("WebSocket接続が確立されました");
+      console.log(`WebSocket接続がポート ${port} に確立されました`);
+      setSocket(ws); // WebSocketインスタンスをセット
     };
 
     ws.onclose = () => {
-      console.log("WebSocket接続が切断されました");
+      console.log(`WebSocket接続がポート ${port} から切断されました`);
+      setSocket(null); // WebSocketインスタンスをクリア
     };
 
     ws.onerror = (error) => {
       console.error("WebSocketエラー:", error);
     };
-
-    return () => {
-      ws.close(); // コンポーネントがアンマウントされる時にWebSocketを閉じる
-    };
-  }, []);
+  };
 
   // メッセージを送信する関数
   const sendMessage = () => {
     if (socket && socket.readyState === WebSocket.OPEN) {
-      const data = {
-        channel: channelNumber,
-        message: message,
-      };
-      socket.send(JSON.stringify(data));
-      console.log("送信されたメッセージ:", data);
+      socket.send(JSON.stringify({"data":{message}}));
+      console.log("送信されたメッセージ:", message);
     } else {
       console.error("WebSocket接続が開かれていません");
     }
@@ -45,13 +43,14 @@ export default function WebSocketPage() {
     <div className="container">
       <h1>WebSocket メッセージ送信</h1>
       <div>
-        <label>チャンネル番号:</label>
+        <label>ポート番号:</label>
         <input
           type="text"
-          value={channelNumber}
-          onChange={(e) => setChannelNumber(e.target.value)}
-          placeholder="送信先のチャンネル番号を入力"
+          value={port}
+          onChange={(e) => setPort(e.target.value)}
+          placeholder="WebSocketサーバーのポート番号を入力"
         />
+        <button onClick={connectToWebSocket}>接続</button>
       </div>
       <div>
         <label>メッセージ:</label>
@@ -62,7 +61,7 @@ export default function WebSocketPage() {
           placeholder="送信するメッセージを入力"
         />
       </div>
-      <button onClick={sendMessage}>メッセージを送信</button>
+      <button onClick={sendMessage} disabled={!socket}>メッセージを送信</button>
     </div>
   );
 }

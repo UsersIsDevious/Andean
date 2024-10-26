@@ -9,8 +9,7 @@ const components = {
 };
 const Home = () => {
   const [componentName, setComponentName] = useState('DefaultComponent'); // 初期値としてデフォルトコンポーネント
-  const [messageType, setMessageType] = useState(null); // WebSocketからのtype
-  const [mapData, setMapData] = useState({}); // mapの情報を保持するstate
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     // WebSocket接続を開始
@@ -18,6 +17,7 @@ const Home = () => {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log(data)
 
       // WebSocketのメッセージタイプが"rendering"の場合のみコンポーネントを更新
       if (data.type === 'rendering' && components[data.componentName]) {
@@ -27,16 +27,8 @@ const Home = () => {
       // マップの初期化（muchiniの場合）
       if (data.type === 'muchini') {
         setComponentName('MapComponent'); // マップ表示用コンポーネントを表示
-        setMapData(data.mapData); // マップの初期化データをセット
+        setMessage(data);
       }
-
-      // プレイヤーの座標変更（dataupdateの場合）
-      if (data.type === 'dataupdate') {
-        setPlayerData(data.playerData); // プレイヤーの座標変更データをセット
-      }
-
-      // メッセージのtypeも保持
-      setMessageType(data.type);
     };
 
     // クリーンアップ
@@ -56,7 +48,7 @@ const Home = () => {
       <RootLayout title="Andean | view">
         <div>
           {isMapComponent ? (
-            <ComponentToRender mapData={mapData} /> // mapDataを渡す
+            <ComponentToRender message={message}  /> // mapDataを渡す
           ) : (
             <ComponentToRender /> // mapDataは渡さない
           )}

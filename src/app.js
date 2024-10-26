@@ -283,6 +283,13 @@ common.registerOnServersStarted((servers) => {
         }
         // 必要な処理をここに追加
     });
+    common.getServerList().websocketServer_web.setHandleMessageCallback((message, ws) => {
+        console.log(JSON.stringify(message))
+        console.log(message)
+        console.log(JSON.parse(message))
+        console.log(JSON.parse(message).data.message)
+        common.getServerList().websocketServer_web.broadcastToAllClients(JSON.parse(message).data.message)
+    })
 });
 
 

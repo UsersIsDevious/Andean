@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { CRS, DivIcon } from 'leaflet';
-import { FaLocationArrow } from 'react-icons/fa';
 import ControlPanel from './ControlPanel';
 import MarkerList from './MarkerList';
 import { createCircleCoords } from './utils';
@@ -11,8 +10,18 @@ const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapCo
 const ImageOverlay = dynamic(() => import('react-leaflet').then(mod => mod.ImageOverlay), { ssr: false });
 const Polygon = dynamic(() => import('react-leaflet').then(mod => mod.Polygon), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-const DonutPolygonMap = ({ mapData, playerData }) => {
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon.src,
+  iconRetinaUrl: markerIcon2x.src,
+  shadowUrl: markerShadow.src,
+});
+const DonutPolygonMap = ({ message }) => {
   const [outerRadius, setOuterRadius] = useState(500);
   const [outerXOffset, setOuterXOffset] = useState(2048);
   const [outerYOffset, setOuterYOffset] = useState(2048);
@@ -21,63 +30,7 @@ const DonutPolygonMap = ({ mapData, playerData }) => {
   const [innerYOffset, setInnerYOffset] = useState(2048);
   const [markers, setMarkers] = useState([]);
   const [donutPolygon, setDonutPolygon] = useState(null);
-  const [imageUrl, setImageUrl] = useState('/img/brokenMoon.png'); // 初期画像
-  // チームに応じた色のクラスを返す関数
-  const getTeamColorClass = (team) => {
-    switch (team) {
-      case 'red':
-        return 'text-red-500'; // Tailwindのクラスを使用
-      case 'blue':
-        return 'text-blue-500';
-      case 'green':
-        return 'text-green-500';
-      default:
-        return 'text-gray-500';
-    }
-  };
-
-  // プレイヤーアイコンをカスタマイズする関数
-  const createCustomIcon = (rotation, team) => {
-    const teamColorClass = getTeamColorClass(team); // チームの色クラスを取得
-    return new DivIcon({
-      html: `
-        <div class="flex items-center justify-center transform rotate-${rotation}" style="width: 50px; height: 50px;">
-          <FaLocationArrow class="w-8 h-8 ${teamColorClass}" />
-        </div>
-      `,
-      className: '', // カスタムクラスの設定
-      iconSize: [50, 50],
-      iconAnchor: [25, 25], // マーカーの中心をアンカーに設定
-    });
-  };
-
-  // マップ初期化データの適用
-  useEffect(() => {
-    if (mapData) {
-      setOuterRadius(mapData.outerRadius || outerRadius);
-      setOuterXOffset(mapData.outerXOffset || outerXOffset);
-      setOuterYOffset(mapData.outerYOffset || outerYOffset);
-      setInnerRadius(mapData.innerRadius || innerRadius);
-      setInnerXOffset(mapData.innerXOffset || innerXOffset);
-      setInnerYOffset(mapData.innerYOffset || innerYOffset);
-      setImageUrl(mapData.imageUrl || imageUrl); // 画像のURLを設定
-      setMarkers(mapData.markers || markers); // 初期マーカーの設定
-    }
-  }, [mapData]);
-
-  // プレイヤーデータの更新
-  useEffect(() => {
-    if (playerData) {
-      setMarkers((prevMarkers) =>
-        prevMarkers.map((marker) => {
-          const player = playerData.find(p => p.id === marker.id);
-          return player
-            ? { ...marker, x: player.x, y: player.y, rotation: player.rotation, team: player.team }
-            : marker;
-        })
-      );
-    }
-  }, [playerData]);
+  const [imageUrl, setImageUrl] = useState('/path/to/your/default/image.png');
 
   useEffect(() => {
     const outerCircleCoords = createCircleCoords(outerXOffset, outerYOffset, outerRadius);
@@ -85,11 +38,64 @@ const DonutPolygonMap = ({ mapData, playerData }) => {
     setDonutPolygon([outerCircleCoords, innerCircleCoords]);
   }, [outerRadius, outerXOffset, outerYOffset, innerRadius, innerXOffset, innerYOffset]);
 
-  const imageBounds = [[0, 0], [4096, 4096]];
+  // WebSocketから受信したメッセージに基づいて処理を行う
+  useEffect(() => {
+    if (message) {
+      if (message.type === 'map') {
+        setImageUrl(message.mapImageUrl);
+      } else if (message.type === 'playerUpdate') {
+        setMarkers(message.players);
+      } else if (message.type === 'addpin') {
+        // `addpin`メッセージを受け取った場合、指定された位置にマーカーを追加
+        const { x, y } = message; // x, y座標が含まれていると仮定
+        addPinMarker(x, y);
+      }
+    }
+  }, [message]);
+
+  const addPinMarker = (x, y) => {
+    setMarkers((prevMarkers) => [
+      ...prevMarkers,
+      { id: prevMarkers.length, x: x, y: y, rotation: 0, imageUrl: '', text: '' } // 標準マーカー
+    ]);
+  };
+
+  const removeMarker = (id) => {
+    setMarkers(markers.filter(marker => marker.id !== id));
+  };
+
+  const imageBounds = [[0, 0], [4096, 4096]];  // 画像の座標系に合わせた範囲
   const minZoom = Math.log2(1024 / 4096);
+
+  const createCustomIcon = (rotation, imageUrl, text) => {
+    return new DivIcon({
+      html: `
+        <div style="text-align: center; transform: rotate(${rotation}deg);">
+          <div style="width: 20px; height: 20px; background-color: red; border-radius: 50%;"></div>
+          <p>${text}</p>
+        </div>`,
+      className: '',
+      iconSize: [20, 20], // アイコンのサイズを適切に設定
+      iconAnchor: [10, 10], // 中心に配置
+    });
+  };
 
   return (
     <div>
+      <ControlPanel
+        outerRadius={outerRadius}
+        setOuterRadius={setOuterRadius}
+        outerXOffset={outerXOffset}
+        setOuterXOffset={setOuterXOffset}
+        outerYOffset={outerYOffset}
+        setOuterYOffset={setOuterYOffset}
+        innerRadius={innerRadius}
+        setInnerRadius={setInnerRadius}
+        innerXOffset={innerXOffset}
+        setInnerXOffset={setInnerXOffset}
+        innerYOffset={innerYOffset}
+        setInnerYOffset={setInnerYOffset}
+      />
       <MapContainer
         center={[2048, 2048]}
         zoom={minZoom}
@@ -100,9 +106,18 @@ const DonutPolygonMap = ({ mapData, playerData }) => {
         style={{ height: '1024px', width: '1024px' }}
         maxBounds={imageBounds}
       >
+        <Marker position={[1024, 1024]}>
+        </Marker>
         <ImageOverlay url={imageUrl} bounds={imageBounds} />
         {donutPolygon && <Polygon positions={donutPolygon} color="blue" />}
-        <MarkerList markers={markers} createCustomIcon={(rotation, team) => createCustomIcon(rotation, team)} />
+        {/* マーカーの描画 */}
+        {markers.map(marker => (
+          <Marker
+            key={marker.id}
+            position={[marker.y, marker.x]} // Leafletの座標系に合わせて[x, y]形式
+            icon={createCustomIcon(marker.rotation, marker.imageUrl, marker.text)}
+          />
+        ))}
       </MapContainer>
     </div>
   );
