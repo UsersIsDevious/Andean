@@ -25,28 +25,47 @@ const MapComponent = ({ webSocketData }) => {
   
       // WebSocket データの type によって動作を切り替える
       switch (webSocketData.type) {
-        case 'updateMap':
+        case 'map_init':
           // マップ画像を置き換える
           setMapImage(webSocketData.mapImageUrl);
-          break;
-        case 'movePlayers':
-          // 複数のプレイヤーの位置を更新する (players データに id をキーとして保存)
-          const updatedPlayers = { ...players };
+          
+          // プレイヤーを初期化して人数分のマーカーを作成
+          const initialPlayers = {};
           webSocketData.players.forEach((player) => {
-            updatedPlayers[player.id] = {
+            initialPlayers[player.id] = {
               lat: player.lat,
               lng: player.lng,
               name: player.name,
               team: player.team,
-              rotation: player.rotation, // 回転角度を追加
+              rotation: player.rotation, // rotation 情報を追加
             };
+          });
+          setPlayers(initialPlayers);
+          break;
+  
+        case 'map_update':
+          // プレイヤーの座標変更や削除
+          const updatedPlayers = { ...players };
+          webSocketData.updates.forEach((update) => {
+            if (update.action === 'move') {
+              // 座標の変更
+              if (updatedPlayers[update.id]) {
+                updatedPlayers[update.id].lat = update.lat;
+                updatedPlayers[update.id].lng = update.lng;
+                updatedPlayers[update.id].rotation = update.rotation; // rotation を更新
+              }
+            } else if (update.action === 'remove') {
+              // プレイヤーの削除
+              delete updatedPlayers[update.id];
+            }
           });
           setPlayers(updatedPlayers);
           break;
+  
         default:
           console.log('Unknown WebSocket data type');
       }
-    }, [webSocketData]);
+    }, [webSocketData]); // players を依存配列から外す
   
     // チームに応じてアイコンの色を決定する関数
     const getTeamColor = (team) => {
@@ -67,19 +86,25 @@ const MapComponent = ({ webSocketData }) => {
     // カスタム DivIcon を作成
     const createCustomIcon = (player) => {
       const color = getTeamColor(player.team); // チームに応じた色を取得
-      const rotationStyle = {
-        transform: `rotate(${player.rotation}deg)`, // 回転スタイルを適用
-        transition: 'transform 0.3s ease', // 回転のアニメーションを設定
-      };
+      const rotation = player.rotation || 0; // rotation 情報を取得
+      const iconHtml = ReactDOMServer.renderToString(
+        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+          <FaLocationArrow
+            style={{
+              color: color,
+              fontSize: '24px',
+              transform: `rotate(${rotation}deg)`, // 回転を適用
+              transition: 'transform 0.3s ease',
+            }}
+          />
+          <span style={{ color: 'black', fontSize: '14px', fontWeight: 'bold' }}>{player.name}</span>
+        </div>
+      );
   
       return L.divIcon({
         className: 'custom-icon',
-        html: ReactDOMServer.renderToString(
-          <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-            <FaLocationArrow style={{ color: color, fontSize: '24px', ...rotationStyle }} />
-            <span style={{ color: 'black', fontSize: '14px', fontWeight: 'bold' }}>{player.name}</span>
-          </div>
-        ),
+        html: iconHtml,
+        iconAnchor: [12, 24], // アイコンのアンカーを設定 (アイコンの中央下に合わせる)
       });
     };
   
@@ -108,3 +133,4 @@ const MapComponent = ({ webSocketData }) => {
   };
   
   export default MapComponent;
+  
