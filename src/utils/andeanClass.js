@@ -187,7 +187,7 @@ class Player {
         this.damageReceived = 0;            // くらったダメージ総数
         this.isAlive = true;
         this.isOnline = true;
-        this.weaponList = {};
+        this.weaponList = [];
     }
 
 
@@ -496,8 +496,9 @@ class CustomMatch {
         this.anonymousMode = false;  // 匿名モードの設定値を格納
         this.serverId = "";  // サーバーIDを格納
         this.startingLoadout = new Inventory();  // 初期配布のアイテムを追加するInventoryインスタンスを作成
-        this.startLogging();
-        this.logInterval = 1000;
+        this.eventLists = [];
+        this.ringStatus = "idle";  // start, active, finish, idle
+        this.ring = new Ring();
     }
 
     /**
@@ -528,6 +529,22 @@ class CustomMatch {
      */
     setGameState(state) {
         this.gameState = state;
+    }
+
+    /**
+     * マッチ開始時刻を設定するメソッド
+     * @param {String} timestamp ゲームステータス
+     */
+    setStartTimeStamp(timestamp) {
+        this.startTimeStamp = timestamp;
+    }
+
+    /**
+     * マッチ終了時刻を設定するメソッド
+     * @param {String} timestamp ゲームステータス
+     */
+    setEndTimeStamp(timestamp) {
+        this.endTimeStamp = timestamp;
     }
 
     /**
@@ -611,43 +628,6 @@ class CustomMatch {
             players: Object.values(this.players).map(player => player.getStatus())
         };
     }
-
-    startLogging() {
-        this.logTimer = setInterval(() => {
-          this.writeLog();
-        }, this.logInterval);
-    }
-
-    writeLog() {
-        const logData = JSON.stringify(this, (key, value) => {
-            if (typeof value === 'function') {
-              return undefined; // メソッドをJSONに含めない
-            }
-            return value;
-          }, 2);;
-    
-        // 既存のログファイルを読み込み、データを追記して保存
-        fs.readFile(path.join(__dirname, `../../output/${this.matchName}_${this.startTimeStamp}.json`), 'utf8', (err, data) => {
-          let logs = [];
-    
-          if (!err && data) {
-            // 既存のJSONデータをパースしてログリストに追加
-            logs = JSON.parse(data);
-          }
-    
-          // 新しいログデータを追加
-          logs.push(logData);
-    
-          // JSON形式でファイルに書き込む
-          fs.writeFile(logFilePath, JSON.stringify(logs, null, 2), (err) => {
-            if (err) {
-              console.error('ログファイルへの書き込みエラー:', err);
-            } else {
-              console.log('JSON形式でログにデータが記載されました');
-            }
-          });
-        });
-      }
 }
 
 // Weaponクラスの定義
@@ -674,6 +654,63 @@ class Weapon {
     }
 }
 
+
+// Eventクラスの定義
+/**
+ * Eventに関するクラス
+ * @param {number} timestamp - 内部の武器名
+ * @param {number} endtimestamp - 武器のレベル
+ * @param {String} eventType
+ * @param {Object} object
+ * @param {}
+ */
+class Event {
+    constructor(name, level) {
+        this.name = name;
+        this.level = level;
+        this.maxMagazine = 0; // AmmoUsedで使用された最大の弾数を格納
+    }
+
+    /**
+     * AmmoUsedで使用された最大の弾数を返す
+     * @returns {number} AmmoUsedで使用された最大の弾数
+     */
+    getMaxMagazine() {
+        return {
+            maxMagazine: this.maxMagazine
+        };
+    }
+}
+
+
+// Ringクラスの定義
+/**
+ * Ringに関するクラス
+ * @param {number} timestamp - 内部の武器名
+ * @param {number} endtimestamp - 武器のレベル
+ * @param {String} eventType
+ * @param {Object} object
+ * @param {}
+ */
+class Ring {
+    constructor(name, level) {
+        this.name = name;
+        this.level = level;
+        this.maxMagazine = 0; // AmmoUsedで使用された最大の弾数を格納
+    }
+
+    /**
+     * AmmoUsedで使用された最大の弾数を返す
+     * @returns {number} AmmoUsedで使用された最大の弾数
+     */
+    getMaxMagazine() {
+        return {
+            maxMagazine: this.maxMagazine
+        };
+    }
+}
+
+
 module.exports = {
     Vector3,
     Item,
@@ -682,5 +719,6 @@ module.exports = {
     Datacenter,
     Version,
     CustomMatch,
-    Weapon
+    Weapon,
+    Event
 };

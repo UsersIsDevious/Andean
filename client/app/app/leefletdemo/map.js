@@ -7,6 +7,7 @@ import L from 'leaflet';
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import ControlPanel from '@/components/ring_2/ControlPanel';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -30,6 +31,8 @@ const MapComponent = ({ webSocketData }) => {
     const [innerYOffset, setInnerYOffset] = useState(2048);
     const [donutPolygon, setDonutPolygon] = useState(null);
     const bounds = [[0, 0], [4096, 4096]];
+
+    const [imageUrl, setImageUrl] = useState('/default-image.png'); // 初期値
 
     useEffect(() => {
         const outerCircleCoords = createCircleCoords(outerXOffset, outerYOffset, outerRadius);
@@ -125,27 +128,58 @@ const MapComponent = ({ webSocketData }) => {
         });
     };
 
+    const handleInputChange = (e) => {
+        setImageUrl(e.target.value); // ユーザーが入力した値をimageUrlに設定
+    };
+
     return (
-        <div>
-            <MapContainer
-                center={[2048, 2048]} // マップの中心
-                zoom={Math.log2(1024 / 4096)} // 1024x1024 表示に最適なズーム
-                minZoom={Math.log2(1024 / 4096)}
-                maxZoom={2}
-                maxBounds={bounds}
-                style={{ height: '1024px', width: '1024px' }}
-                crs={L.CRS.Simple}
-            >
-                <ImageOverlay url={mapImage} bounds={bounds} />
-                {donutPolygon && <Polygon positions={donutPolygon} color="orange" />}
-                {Object.keys(players).map((playerId) => (
-                    <Marker
-                        key={playerId}
-                        position={[players[playerId].lat, players[playerId].lng]}
-                        icon={createCustomIcon(players[playerId])} // カスタムアイコンを適用
-                    />
-                ))}
-            </MapContainer>
+        <div class="relative w-[1024px] h-[1024px]">
+            <div class="absolute z-0">
+                <MapContainer
+                    center={[2048, 2048]} // マップの中心
+                    zoom={Math.log2(1024 / 4096)} // 1024x1024 表示に最適なズーム
+                    minZoom={Math.log2(1024 / 4096)}
+                    maxZoom={2}
+                    maxBounds={bounds}
+                    style={{ height: '1024px', width: '1024px' }}
+                    crs={L.CRS.Simple}
+                >
+                    <ImageOverlay url={mapImage} bounds={bounds}/>
+                    {donutPolygon && <Polygon positions={donutPolygon} color="orange" />}
+                    {Object.keys(players).map((playerId) => (
+                        <Marker
+                            key={playerId}
+                            position={[players[playerId].lat, players[playerId].lng]}
+                            icon={createCustomIcon(players[playerId])} // カスタムアイコンを適用
+                        />
+                    ))}
+                </MapContainer>
+            </div>
+            <img src={imageUrl} 
+            class="absolute top-0 left-0 w-[100%] h-[100%] opacity-50 z-20 pointer-events-none" 
+            alt="Semi-transparent overlay" />
+            <div class="absolute left-[1040px]">
+                <ControlPanel
+                    outerRadius={outerRadius}
+                    setOuterRadius={setOuterRadius}
+                    outerXOffset={outerXOffset}
+                    setOuterXOffset={setOuterXOffset}
+                    outerYOffset={outerYOffset}
+                    setOuterYOffset={setOuterYOffset}
+                    innerRadius={innerRadius}
+                    setInnerRadius={setInnerRadius}
+                    innerXOffset={innerXOffset}
+                    setInnerXOffset={setInnerXOffset}
+                    innerYOffset={innerYOffset}
+                    setInnerYOffset={setInnerYOffset}
+                />
+                <input
+                    type="text"
+                    placeholder="画像URLを入力してください"
+                    onChange={handleInputChange}
+                    style={{ width: '300px', padding: '8px', marginBottom: '20px' }}
+                />
+            </div>
         </div>
     );
 };

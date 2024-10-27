@@ -1,5 +1,5 @@
 const common = require('./utils/common');
-const { Player, CustomMatch, Datacenter, Item } = require('./utils/andeanClass');
+const { Player, CustomMatch, Datacenter, Item, Weapon } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
 const language = common.readConfig('../../locals/ja.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
@@ -79,19 +79,19 @@ function analyze_message(category, msg) {
             if (msg.platform != "") { break; }
             match = new CustomMatch(`${msg.timestamp}`)  // web側で名前の指定があれば適用する
             break;
-        case "Vector3":
+        case "Vector3":  // 今のところ何もイベント発生しない
             break;
-        case "Player":
+        case "Player":  // 今のところ何もイベント発生しない
             break;
-        case "CustomMatch_LobbyPlayer":
+        case "CustomMatch_LobbyPlayer":  // 今のところ何もイベント発生しない
             break;
-        case "Datacenter":
+        case "Datacenter":  // 今のところ何もイベント発生しない
             break;
-        case "Version":
+        case "Version":  // 今のところ何もイベント発生しない
             break;
-        case "InventoryItem":
+        case "InventoryItem":  // 今のところ何もイベント発生しない
             break;
-        case "LoadoutConfiguration":
+        case "LoadoutConfiguration":  // 今のところ何もイベント発生しない
             break;
         case "CustomMatch_LobbyPlayers":
             let lobby = new CustomMatch("lobby")
@@ -99,7 +99,7 @@ function analyze_message(category, msg) {
                 lobby.addPlayer(new Player(msg.playersList[i].name, msg.playersList[i].teamid, msg.playersList[i].nucleushash, msg.playersList[i].hardwarename))
             }
             break;
-        case "RequestStatus":
+        case "RequestStatus":  // 今のところ何もイベント発生しない
             break;
         case "Response":
             break;
@@ -118,6 +118,7 @@ function analyze_message(category, msg) {
             break;
         case "GameStateChanged":
             try {
+                if (msg.state === "Playing") { match.setStartTimeStamp(msg.timestamp) };
                 match.setGameState(msg.state);   
             } catch (error) {
                 lobby.setGameState(msg.state);
@@ -173,9 +174,9 @@ function analyze_message(category, msg) {
         case "InventoryPickUp":
             updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash));
             if (Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item) != undefined) {
-                
+                match.getPlayer(msg.player.nucleushash).weaponList.push(new Weapon(Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item), checkItemLevel(Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item))))
             } else {
-
+                match.getPlayer(msg.player.nucleushash).inventory.addItem(new Item(msg.item, checkItemLevel(msg.item), msg.item.quantity));
             }
             break;
         case "InventoryDrop":

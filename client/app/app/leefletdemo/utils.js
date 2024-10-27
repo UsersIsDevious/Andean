@@ -1,4 +1,4 @@
-export const createCircleCoords = (centerX, centerY, radius, numPoints = 64) => {
+export const createCircleCoords = (centerX, centerY, radius, numPoints = 256) => {
     const angleStep = (2 * Math.PI) / numPoints;
     const coordinates = [];
     for (let i = 0; i < numPoints; i++) {

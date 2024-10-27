@@ -54,7 +54,7 @@ export default function WebSocketPage() {
       </div>
       <div>
         <label>メッセージ:</label>
-        <input
+        <textarea className="w-max h-max"
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}

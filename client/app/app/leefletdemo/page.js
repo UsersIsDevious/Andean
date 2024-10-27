@@ -24,7 +24,6 @@ const HomePage = () => {
 
   return (
     <div>
-      <h1>WebSocket Controlled Map</h1>
       {/* WebSocket からのデータを MapComponent に渡す */}
       <MapWithNoSSR webSocketData={webSocketData} />
     </div>

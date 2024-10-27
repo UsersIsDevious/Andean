@@ -277,7 +277,7 @@
     setInterval(() => {
       if (debug === true) {
         const targetType = 'poi';  // ここでターゲットタイプを指定
-        const targetValue = 'CLOSEST_ENEMY';  // ここでターゲット値を指定
+        const targetValue = 'NEXT';  // ここでターゲット値を指定
         fetch('/api/change_camera', {
           method: 'POST',
           headers: {
@@ -286,7 +286,7 @@
           body: JSON.stringify({ targetType: targetType, targetValue: targetValue })
         });
       }
-    }, 10);
+    }, 65);
   </script>
 </body>
 

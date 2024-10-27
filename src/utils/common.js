@@ -68,7 +68,8 @@ function startAllServers(httpServer, websocketServer, websocketServer_web) {
 function saveLog(message, logFileName = 'app.log') {
   const timestamp = new Date().toISOString();
   const logFilePath = path.join(__dirname, '../../log/', logFileName);
-  const logMessage = `[${timestamp}] ${message}\n`;
+  // const logMessage = `[${timestamp}] ${message}\n`;
+  const logMessage = `${message},\n`;
 
   fs.appendFile(logFilePath, logMessage, (err) => {
     if (err) {

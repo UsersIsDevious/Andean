@@ -14,13 +14,13 @@ const ControlPanel = ({
         <input type="range" min="0" max="4096" step="10" value={outerYOffset} onChange={(e) => setOuterYOffset(Number(e.target.value))} />
   
         <h2>Inner Radius: {innerRadius} pixels</h2>
-        <input type="range" min="50" max="1000" step="10" value={innerRadius} onChange={(e) => setInnerRadius(Number(e.target.value))} />
+        <input type="range" min="50" max="4096" step="1" value={innerRadius} onChange={(e) => setInnerRadius(Number(e.target.value))} />
   
         <h2>Inner Circle X Offset: {innerXOffset} px</h2>
-        <input type="range" min="0" max="4096" step="10" value={innerXOffset} onChange={(e) => setInnerXOffset(Number(e.target.value))} />
+        <input type="range" min="0" max="4096" step="1" value={innerXOffset} onChange={(e) => setInnerXOffset(Number(e.target.value))} />
   
         <h2>Inner Circle Y Offset: {innerYOffset} px</h2>
-        <input type="range" min="0" max="4096" step="10" value={innerYOffset} onChange={(e) => setInnerYOffset(Number(e.target.value))} />
+        <input type="range" min="0" max="4096" step="1" value={innerYOffset} onChange={(e) => setInnerYOffset(Number(e.target.value))} />
   
         <button onClick={addMarker}>Add Marker</button>
       </div>
