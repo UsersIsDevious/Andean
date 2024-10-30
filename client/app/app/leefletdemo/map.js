@@ -87,6 +87,32 @@ const MapComponent = ({ webSocketData }) => {
         }
     }, [webSocketData]); // players を依存配列から外す
 
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+          if (event.key === 'w') {
+            setInnerYOffset((prevValue) => prevValue + 1);
+          } else if (event.key === 's') {
+            setInnerYOffset((prevValue) => prevValue - 1);
+          } else if (event.key === 'd') {
+            setInnerXOffset((prevValue) => prevValue + 1);
+          } else if (event.key === 'a') {
+            setInnerXOffset((prevValue) => prevValue - 1);
+          } else if (event.key === 'e') {
+            setInnerRadius((prevValue) => prevValue + 1);
+          } else if (event.key === 'q') {
+            setInnerRadius((prevValue) => prevValue - 1);
+          } 
+        };
+    
+        // キー押下イベントのリスナーを追加
+        window.addEventListener('keydown', handleKeyDown);
+    
+        // クリーンアップでリスナーを削除
+        return () => {
+          window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
     // チームに応じてアイコンの色を決定する関数
     const getTeamColor = (team) => {
         switch (team) {
@@ -133,8 +159,8 @@ const MapComponent = ({ webSocketData }) => {
     };
 
     return (
-        <div class="relative w-[1024px] h-[1024px]">
-            <div class="absolute z-0">
+        <div className="relative w-[1024px] h-[1024px]">
+            <div className="absolute z-0">
                 <MapContainer
                     center={[2048, 2048]} // マップの中心
                     zoom={Math.log2(1024 / 4096)} // 1024x1024 表示に最適なズーム
@@ -156,9 +182,9 @@ const MapComponent = ({ webSocketData }) => {
                 </MapContainer>
             </div>
             <img src={imageUrl} 
-            class="absolute top-0 left-0 w-[100%] h-[100%] opacity-50 z-20 pointer-events-none" 
+            className="absolute top-0 left-0 w-[100%] h-[100%] opacity-50 z-20 pointer-events-none" 
             alt="Semi-transparent overlay" />
-            <div class="absolute left-[1040px]">
+            <div className="absolute left-[1040px]">
                 <ControlPanel
                     outerRadius={outerRadius}
                     setOuterRadius={setOuterRadius}
