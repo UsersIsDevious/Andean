@@ -4,6 +4,8 @@ let config = common.readConfig('../../config.json');
 const language = common.readConfig('../../locals/ja.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
+const sendMapData = require('./services/sendMapData')
+const apexCommon = require('./services/apexCommon')
 
 
 /**
@@ -74,7 +76,8 @@ setInterval(() => {
  */
 let match
 function analyze_message(category, msg) {
-    switch (category) {
+    console.log("メッセージタイプ" + category)
+    switch (category.toString()) {
         case "Init":
             if (msg.platform != "") { break; }
             match = new CustomMatch(`${msg.timestamp}`)  // web側で名前の指定があれば適用する
@@ -115,6 +118,7 @@ function analyze_message(category, msg) {
                 }
             }
             match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, new Datacenter(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name), msg.aimassiston, msg.anonymousmode, msg.serverid);
+            sendMapData.sendMapInitialization(msg.map, match)
             break;
         case "GameStateChanged":
             try {
@@ -211,7 +215,7 @@ function analyze_message(category, msg) {
         case "ObserverAnnotation":
             break;
         default:
-            console.log("Unknown Type Message")
+            console.warn("Unknown Type Message")
             break;
     }
 }
@@ -219,20 +223,20 @@ function analyze_message(category, msg) {
 /**
  * Playerクラスのオブジェクトを更新する
  * @param {Object} json
- * @param {Player} obj
+ * @param {Player} player
  * @param {Boolean} characterSelected
  */
-function updatePlayer(json, obj, characterSelected=false) {
-    obj.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y);
-    obj.updateHealthAndShields(json.currenthealth, json.maxhealth, json.shieldhealth, json.shieldmaxhealth);
-    if (obj.getStatus().teamName === "") {
-        obj.setTeamName(json.teamname);
+function updatePlayer(json, player, characterSelected=false) {
+    player.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y);
+    player.updateHealthAndShields(json.currenthealth, json.maxhealth, json.shieldhealth, json.shieldmaxhealth);
+    if (player.getStatus().teamName === "") {
+        player.setTeamName(json.teamname);
     }
-    if (obj.getStatus().squadIndex === -1) {
-        obj.setSquadIndex(json.squadindex);
+    if (player.getStatus().squadIndex === -1) {
+        player.setSquadIndex(json.squadindex);
     }
     if (characterSelected) {
-        obj.updateCharacter(json.character, json.skin);
+        player.updateCharacter(json.character, json.skin);
     }
 }
 
@@ -247,15 +251,23 @@ function checkItemLevel(name) {
     return level;
 }
 
-
-async function update() {
-    await common.getServerList().websocketServer_web.broadcastToAllClients("a")
+function getPlayerStatus(match) {
+    if (match.gameState == "Playing") {
+        for (const teamId in match.teams) {
+            apexCommon.change_camera("name", match.getPlayer(match.teams[teamId][0]).name);
+        }
+        sendMapData.sendPlayerPositionUpdate(match);
+    }
 }
 
-// const intervalId = setInterval(() => {
-//     update();
-// //}, 16);
-// }, 1000);
+async function update() {
+    if (match) { getPlayerStatus(match) }
+}
+
+const intervalId = setInterval(() => {
+    update();
+// }, 16);
+}, 1000);
 
 // サーバーが全て起動した後に呼ばれる処理
 common.registerOnServersStarted((servers) => {
@@ -263,7 +275,7 @@ common.registerOnServersStarted((servers) => {
     // メッセージ処理用のコールバック関数を設定
     common.getServerList().websocketServer.setHandleMessageCallback((message, ws) => {
         const liveAPIEvent = LiveAPIEvent.deserializeBinary(message);
-        console.log('LiveAPIEvent:', liveAPIEvent.toObject());
+        // console.log('LiveAPIEvent:', liveAPIEvent.toObject());
 
         const gamemessage = liveAPIEvent.getGamemessage();
         const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得
@@ -280,15 +292,11 @@ common.registerOnServersStarted((servers) => {
                 handleMessage(responseInstance, responseTypeUrl.replace("type.googleapis.com/rtech.liveapi.", ""));
             }
         } else {
-            console.log(`Unknown message type received: ${typeUrl}`);
+            console.warn(`Unknown message type received: ${typeUrl}`);
         }
         // 必要な処理をここに追加
     });
     common.getServerList().websocketServer_web.setHandleMessageCallback((message, ws) => {
-        console.log(JSON.stringify(message))
-        console.log(message)
-        console.log(JSON.parse(message))
-        console.log(JSON.parse(message).data.message)
         common.getServerList().websocketServer_web.broadcastToAllClients(JSON.parse(message).data.message)
     })
 });
@@ -303,7 +311,7 @@ common.registerOnServersStarted((servers) => {
 function handleMessage(message, messageType) {
     // ログを保存
     common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName)
-    console.log(`Received ${messageType} message:`, message.toObject());
+    // console.log(`Received ${messageType} message:`, message.toObject());
     analyze_message(messageType, message.toObject())
 }
 

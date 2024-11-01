@@ -13,7 +13,9 @@ const HomePage = () => {
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8888'); // WebSocket サーバーの URL を指定
     ws.onmessage = (message) => {
+      console.log(message)
       const data = JSON.parse(message.data);
+      console.log(JSON.stringify(data));
       setWebSocketData(data); // WebSocket データを更新
     };
 
