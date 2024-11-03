@@ -30,7 +30,9 @@ const MapComponent = ({ webSocketData }) => {
   const [innerXOffset, setInnerXOffset] = useState(2048);
   const [innerYOffset, setInnerYOffset] = useState(2048);
   const [donutPolygon, setDonutPolygon] = useState(null);
-  const bounds = [[0, 0], [50000, 50000]];
+  const mapSize = 50000,
+  const mapOrigin = mapSize / 2
+  const bounds = [[0, 0], [mapSize, mapSize]];
 
   const [imageUrl, setImageUrl] = useState('/default-image.png'); // 初期値
 
@@ -53,8 +55,8 @@ const MapComponent = ({ webSocketData }) => {
         const initialPlayers = {};
         webSocketData.players.forEach((player) => {
           initialPlayers[player.id] = {
-            lat: player.lat,
-            lng: player.lng,
+            lat: player.lat + mapOrigin,
+            lng: player.lng + mapOrigin,
             name: player.name,
             team: player.team,
             rotation: player.rotation, // rotation 情報を追加
@@ -196,9 +198,9 @@ const MapComponent = ({ webSocketData }) => {
     <div className="relative w-[1024px] h-[1024px]">
       <div className="absolute z-0">
         <MapContainer
-          center={[25000, 25000]} // マップの中心
-          zoom={Math.log2(1024 / 50000)} // 1024x1024 表示に最適なズーム
-          minZoom={Math.log2(1024 / 50000)}
+          center={[mapOrigin, mapOrigin]} // マップの中心
+          zoom={Math.log2(1024 / mapSize)} 
+          minZoom={Math.log2(1024 / mapSize)}
           maxZoom={2}
           maxBounds={bounds}
           style={{ height: '1024px', width: '1024px' }}
