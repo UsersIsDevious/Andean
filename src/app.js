@@ -74,7 +74,8 @@ setInterval(() => {
  * @param {Object} msg
  * @type {CustomMatch}
  */
-let match
+let match;
+let lobby = new CustomMatch("lobby");
 function analyze_message(category, msg) {
     console.log("メッセージタイプ" + category)
     switch (category.toString()) {
@@ -97,7 +98,7 @@ function analyze_message(category, msg) {
         case "LoadoutConfiguration":  // 今のところ何もイベント発生しない
             break;
         case "CustomMatch_LobbyPlayers":
-            let lobby = new CustomMatch("lobby")
+            lobby = new CustomMatch("lobby")
             for (let i = 0; i < msg.playersList.length; i++) {
                 lobby.addPlayer(new Player(msg.playersList[i].name, msg.playersList[i].teamid, msg.playersList[i].nucleushash, msg.playersList[i].hardwarename))
             }

@@ -17,7 +17,7 @@ let onServersStartedCallbacks = [];
  * @param {string} newData.class - クラス名
  */
 function saveData(filename,_class) {
-  let filePath = path.join(__dirname, 'output', filename);
+  let filePath = path.join(__dirname, '../../output/', filename + ".json");
   let existingData = [];
 
   // 既存データの読み込み

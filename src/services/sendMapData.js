@@ -56,8 +56,8 @@ function sendPlayerPositionUpdate(match) {
   send(match,message);
 }
 
-async function send(match,message){
-  common.saveData(match.matchName,match)
+async function send(match, message){
+  common.saveData(match.matchName, match)
   await common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(message));
 }
 
