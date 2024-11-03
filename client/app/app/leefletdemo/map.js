@@ -30,7 +30,7 @@ const MapComponent = ({ webSocketData }) => {
   const [innerXOffset, setInnerXOffset] = useState(2048);
   const [innerYOffset, setInnerYOffset] = useState(2048);
   const [donutPolygon, setDonutPolygon] = useState(null);
-  const mapSize = 50000;
+  const mapSize = 4096;
   const mapOrigin = mapSize / 2;
   const bounds = [[0, 0], [mapSize, mapSize]];
 
@@ -55,12 +55,13 @@ const MapComponent = ({ webSocketData }) => {
         const initialPlayers = {};
         webSocketData.players.forEach((player) => {
           initialPlayers[player.id] = {
-            lat: player.lat + mapOrigin,
-            lng: player.lng + mapOrigin,
+            lat: player.lat/39 + mapOrigin,
+            lng: player.lng/39 + mapOrigin,
             name: player.name,
             team: player.team,
             rotation: player.rotation, // rotation 情報を追加
           };
+          console.log("lat: " + player.lat/39 + mapOrigin, "lng: " + player.lng/39 + mapOrigin)
         });
         setPlayers(initialPlayers);
         break;

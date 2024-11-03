@@ -267,8 +267,7 @@ async function update() {
 
 const intervalId = setInterval(() => {
     update();
-// }, 16);
-}, 1000);
+}, 16);
 
 // サーバーが全て起動した後に呼ばれる処理
 common.registerOnServersStarted((servers) => {
