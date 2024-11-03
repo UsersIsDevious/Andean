@@ -6,6 +6,34 @@ let servers = {}; // サーバーリストを保持するオブジェクト
 // コールバックリストを保持
 let onServersStartedCallbacks = [];
 
+
+
+/**
+ * JSONファイルにデータを蓄積し、保存します。
+ * 既存のデータがある場合は、それに新しいデータを追加してから保存されます。
+ * 
+ * @param {Object} _class - 新しく保存するデータオブジェクト
+ * @param {string} filename - ファイル名
+ * @param {string} newData.class - クラス名
+ */
+function saveData(filename,_class) {
+  let filePath = path.join(__dirname, 'output', filename);
+  let existingData = [];
+
+  // 既存データの読み込み
+  if (fs.existsSync(filePath)) {
+    const rawData = fs.readFileSync(filePath, 'utf-8');
+    existingData = JSON.parse(rawData);
+  }
+
+  // 新しいデータを追加
+  existingData.push(_class);
+
+  // データをファイルに書き込み
+  fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
+}
+
+
 /**
  * サーバーが全て立ち上がった時に呼ばれるコールバックを登録する関数
  * @param {Function} callback - サーバーが立ち上がった際に実行したい関数
@@ -145,4 +173,5 @@ module.exports = {
   saveLog,
   getServerList,
   registerOnServersStarted,
+  saveData,
 };

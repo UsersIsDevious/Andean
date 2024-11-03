@@ -1,6 +1,7 @@
 const common = require('../utils/common');
 const { CustomMatch } = require('../utils/andeanClass')
 
+
 /**
  * マップ初期化のメッセージを送信する関数
  * @param {String} matchName 
@@ -28,7 +29,7 @@ function sendMapInitialization(mapName, match) {
     )
   }
     
-  common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(message));
+  send(match,message);
 }
 
 /**
@@ -52,8 +53,12 @@ function sendPlayerPositionUpdate(match) {
       }
     )
   }
-  
-  common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(message));
+  send(match,message);
+}
+
+async function send(match,message){
+  common.saveData(match.matchName,match)
+  await common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(message));
 }
 
 module.exports = { sendMapInitialization, sendPlayerPositionUpdate }
