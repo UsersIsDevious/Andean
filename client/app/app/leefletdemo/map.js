@@ -30,8 +30,8 @@ const MapComponent = ({ webSocketData }) => {
   const [innerXOffset, setInnerXOffset] = useState(2048);
   const [innerYOffset, setInnerYOffset] = useState(2048);
   const [donutPolygon, setDonutPolygon] = useState(null);
-  const mapSize = 50000,
-  const mapOrigin = mapSize / 2
+  const mapSize = 50000;
+  const mapOrigin = mapSize / 2;
   const bounds = [[0, 0], [mapSize, mapSize]];
 
   const [imageUrl, setImageUrl] = useState('/default-image.png'); // 初期値
