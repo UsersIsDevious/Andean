@@ -56,9 +56,14 @@ function sendPlayerPositionUpdate(match) {
   send(match,message);
 }
 
+/**
+ * メッセージを送信する関数
+ * @param {CustomMatch} match 
+ */
 async function send(match, message){
   common.saveData(match.matchName, match)
   await common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(message));
+  match.refreshEventLists();
 }
 
 module.exports = { sendMapInitialization, sendPlayerPositionUpdate }

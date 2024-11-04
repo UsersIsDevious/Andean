@@ -527,6 +527,10 @@ class CustomMatch {
         this.rings = [];
     }
 
+    refreshEventLists(){
+        this.eventLists = [];
+    }
+
      /**
      * ringsの末尾に新しい要素を追加します。
      * ringsが3を超える場合、先頭の要素を削除します。
@@ -701,25 +705,16 @@ class Weapon {
  * Eventに関するクラス
  * @param {number} timestamp - 内部の武器名
  * @param {number} endtimestamp - 武器のレベル
- * @param {String} eventType
+ * @param {String} target　- targetプレーヤー
  * @param {Object} object
  * @param {}
  */
 class Event {
-    constructor(name, level) {
-        this.name = name;
-        this.level = level;
-        this.maxMagazine = 0; // AmmoUsedで使用された最大の弾数を格納
-    }
-
-    /**
-     * AmmoUsedで使用された最大の弾数を返す
-     * @returns {number} AmmoUsedで使用された最大の弾数
-     */
-    getMaxMagazine() {
-        return {
-            maxMagazine: this.maxMagazine
-        };
+    constructor(_timestamp, _category) {
+        this.timestamp = _timestamp;
+        this.category = _category;
+        this.target = _target;
+        this.object = object;
     }
 }
 
