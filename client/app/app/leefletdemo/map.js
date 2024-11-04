@@ -55,13 +55,13 @@ const MapComponent = ({ webSocketData }) => {
         const initialPlayers = {};
         webSocketData.players.forEach((player) => {
           initialPlayers[player.id] = {
-            lat: player.lat/39 + mapOrigin,
-            lng: player.lng/39 + mapOrigin,
+            lat: (player.lat - 2969)/22 + mapOrigin,
+            lng: (player.lng + 6968)/22 + mapOrigin,
             name: player.name,
             team: player.team,
             rotation: player.rotation, // rotation 情報を追加
           };
-          console.log("lat: " + player.lat/39 + mapOrigin, "lng: " + player.lng/39 + mapOrigin)
+          console.log("lat: " + initialPlayers[player.id].lat, "  lng: " + initialPlayers[player.id].lng, "  rotation: " + initialPlayers[player.id].rotation)
         });
         setPlayers(initialPlayers);
         break;
@@ -73,10 +73,11 @@ const MapComponent = ({ webSocketData }) => {
           if (update.action === 'move') {
             // 座標の変更
             if (updatedPlayers[update.id]) {
-              updatedPlayers[update.id].lat = update.lat;
-              updatedPlayers[update.id].lng = update.lng;
-              updatedPlayers[update.id].rotation = update.rotation; // rotation を更新
+              updatedPlayers[update.id].lat = (update.lng - 2969)/22 + mapOrigin;
+              updatedPlayers[update.id].lng = (update.lat + 6968)/22 + mapOrigin;
+              updatedPlayers[update.id].rotation = update.rotation*-1 + 45; // rotation を更新
             }
+            console.log("lat: " + updatedPlayers[update.id].lat, "  lng: " + updatedPlayers[update.id].lng, "  rotation: " + updatedPlayers[update.id].rotation)
           } else if (update.action === 'remove') {
             // プレイヤーの削除
             delete updatedPlayers[update.id];
