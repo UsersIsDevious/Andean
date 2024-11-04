@@ -224,7 +224,8 @@ class Player {
             case "":
                 break;
             default:
-                console.log("Unknown map")
+                console.log("Unknown map");
+                break;
         }
         this.angles = newAngles * -1 + 45;
     }
@@ -531,13 +532,13 @@ class CustomMatch {
         this.eventLists = [];
     }
 
-     /**
+    /**
      * ringsの末尾に新しい要素を追加します。
      * ringsが3を超える場合、先頭の要素を削除します。
      * 
      * @param {Ring} ring - 追加する要素
      */
-     addElement(ring) {
+    addElement(ring) {
         // 配列の長さが指定の制限を超える場合は先頭の要素を削除
         if (this.rings.length >= 3) {
             this.rings.shift();
@@ -724,18 +725,32 @@ class Event {
  * Ringに関するクラス
  * @param {number} timestamp
  * @param {number} endtimestamp
+ * @param {String} category
+ * @param {number} stage
  * @param {Vector3} center
  * @param {number} currentradius
  * @param {number} shrinkduration
- * @param {}
+ * @param {number} endradius
  */
 class Ring {
-    constructor(_timestamp, _stage, _center, _currentradius, _shrinkduration) {
+    /**
+     * 
+     * @param {number} _timestamp 
+     * @param {String} _category 
+     * @param {number} _stage 
+     * @param {Object} _center 
+     * @param {number} _currentradius 
+     * @param {number} _shrinkduration 
+     * @param {number} _endradius 
+     */
+    constructor(_timestamp, _category, _stage, _center, _currentradius, _shrinkduration, _endradius = 0) {
         this.timestamp = _timestamp;
+        this.category = _category;
         this.stage = _stage;
-        this.center = new Vector3();
+        this.center = new Vector3(_center.x, _center.y, _center.z);
         this.currentradius = _currentradius;
         this.shrinkduration = _shrinkduration;
+        this.endradius = _endradius;
         this.endTimeStamp = this.timestamp + this.shrinkduration;
     }
 }
@@ -750,5 +765,6 @@ module.exports = {
     Version,
     CustomMatch,
     Weapon,
-    Event
+    Event,
+    Ring
 };

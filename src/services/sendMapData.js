@@ -38,7 +38,7 @@ function sendMapInitialization(mapName, match) {
  */
 function sendPlayerPositionUpdate(match) {
   let message = {
-    type: 'map_update',
+    type: 'player_update',
     updates: []
   };
 
@@ -57,6 +57,18 @@ function sendPlayerPositionUpdate(match) {
 }
 
 /**
+ * リングに関する情報のリストを送信
+ * @param {CustomMatch} match 
+ */
+function sendRingUpdate(match) {
+  let message = {
+    type: 'ring_update',
+    rings: match.rings
+  }
+  send(match,message)
+}
+
+/**
  * メッセージを送信する関数
  * @param {CustomMatch} match 
  */
@@ -66,4 +78,4 @@ async function send(match, message){
   match.refreshEventLists();
 }
 
-module.exports = { sendMapInitialization, sendPlayerPositionUpdate }
+module.exports = { sendMapInitialization, sendPlayerPositionUpdate, sendRingUpdate }

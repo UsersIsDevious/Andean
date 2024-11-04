@@ -1,5 +1,5 @@
 const common = require('./utils/common');
-const { Player, CustomMatch, Datacenter, Item, Weapon } = require('./utils/andeanClass');
+const { Player, CustomMatch, Datacenter, Item, Weapon, Ring } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
 const language = common.readConfig('../../locals/ja.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
@@ -135,8 +135,12 @@ function analyze_message(category, msg) {
         case "MatchStateEnd":
             break;
         case "RingStartClosing":
+            match.addElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, msg.endradius));
+            sendMapData.sendRingUpdate(match);
             break;
         case "RingFinishedClosing":
+            match.addElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration));
+            sendMapData.sendRingUpdate(match);
             break;
         case "PlayerConnected":
             match.addPlayer(new Player(msg.player.name, msg.player.teamid, msg.player.nucleushash, msg.player.hardwarename));

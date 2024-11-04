@@ -61,12 +61,11 @@ const MapComponent = ({ webSocketData }) => {
             team: player.team,
             rotation: player.rotation, // rotation 情報を追加
           };
-          console.log("lat: " + initialPlayers[player.id].lat, "  lng: " + initialPlayers[player.id].lng, "  rotation: " + initialPlayers[player.id].rotation)
         });
         setPlayers(initialPlayers);
         break;
 
-      case 'map_update':
+      case 'player_update':
         // プレイヤーの座標変更や削除
         const updatedPlayers = { ...players };
         webSocketData.updates.forEach((update) => {
@@ -77,8 +76,6 @@ const MapComponent = ({ webSocketData }) => {
               updatedPlayers[update.id].lng = update.lng;
               updatedPlayers[update.id].rotation = update.rotation; // rotation を更新
             }
-            console.log("lat: " + updatedPlayers[update.id].lat, "  lng: " + updatedPlayers[update.id].lng, "  rotation: " + updatedPlayers[update.id].rotation)
-            console.log("lat_ro: " + (updatedPlayers[update.id].lat - 2048)*22 + 2969, "  lng_ro: " + (updatedPlayers[update.id].lng - 2048)*22 - 6968, "  rotation: " + updatedPlayers[update.id].rotation)
           } else if (update.action === 'remove') {
             // プレイヤーの削除
             delete updatedPlayers[update.id];
@@ -87,6 +84,8 @@ const MapComponent = ({ webSocketData }) => {
         setPlayers(updatedPlayers);
         break;
 
+      case 'ring_update':
+        break;
       default:
         console.log('Unknown WebSocket data type');
     }
