@@ -130,7 +130,7 @@ function analyze_message(category, msg) {
             }
             break;
         case "CharacterSelected":
-            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash), true);
+            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash), match.mapName, true);
             break;
         case "MatchStateEnd":
             break;
@@ -140,7 +140,7 @@ function analyze_message(category, msg) {
             break;
         case "PlayerConnected":
             match.addPlayer(new Player(msg.player.name, msg.player.teamid, msg.player.nucleushash, msg.player.hardwarename));
-            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash));
+            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash), match.mapName);
             break;
         case "PlayerDisconnected":
             break;
@@ -177,7 +177,7 @@ function analyze_message(category, msg) {
         case "ArenasItemDeselected":
             break;
         case "InventoryPickUp":
-            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash));
+            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash), match.mapName);
             if (Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item) != undefined) {
                 match.getPlayer(msg.player.nucleushash).weaponList.push(new Weapon(Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item), checkItemLevel(Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item))))
             } else {
@@ -210,7 +210,7 @@ function analyze_message(category, msg) {
             break;
         case "ObserverSwitched":
             for (let i = 0; i < msg.targetteamList.length; i++) {
-                updatePlayer(msg.targetteamList[i], match.getPlayer(msg.targetteamList[i].nucleushash));
+                updatePlayer(msg.targetteamList[i], match.getPlayer(msg.targetteamList[i].nucleushash), match.mapName);
             }
             break;
         case "ObserverAnnotation":
@@ -226,9 +226,10 @@ function analyze_message(category, msg) {
  * @param {Object} json
  * @param {Player} player
  * @param {Boolean} characterSelected
+ * @param {String} mapName
  */
-function updatePlayer(json, player, characterSelected=false) {
-    player.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y);
+function updatePlayer(json, player, mapName, characterSelected=false) {
+    player.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y, mapName);
     player.updateHealthAndShields(json.currenthealth, json.maxhealth, json.shieldhealth, json.shieldmaxhealth);
     if (player.getStatus().teamName === "") {
         player.setTeamName(json.teamname);

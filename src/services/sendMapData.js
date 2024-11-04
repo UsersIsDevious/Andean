@@ -22,8 +22,8 @@ function sendMapInitialization(mapName, match) {
         id: match.getPlayer(playerId).nucleusHash,
         name: match.getPlayer(playerId).name,
         team: match.getPlayer(playerId).teamId,
-        lat: match.getPlayer(playerId).pos.x,
-        lng: match.getPlayer(playerId).pos.y,
+        lat: match.getPlayer(playerId).pos.y,
+        lng: match.getPlayer(playerId).pos.x,
         rotation: match.getPlayer(playerId).angles
       }
     )
@@ -47,8 +47,8 @@ function sendPlayerPositionUpdate(match) {
       {
         id: match.getPlayer(playerId).nucleusHash,
         action: 'move',
-        lat: match.getPlayer(playerId).pos.x,
-        lng: match.getPlayer(playerId).pos.y,
+        lat: match.getPlayer(playerId).pos.y,
+        lng: match.getPlayer(playerId).pos.x,
         rotation: match.getPlayer(playerId).angles
       }
     )

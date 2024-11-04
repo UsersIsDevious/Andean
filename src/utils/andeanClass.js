@@ -195,9 +195,44 @@ class Player {
      * @param {number} z 新しいz座標
      * @param {number} newAngles 新しい角度
      */
-    updatePositionAndAngles(x, y, z, newAngles) {
-        this.pos.updateValues(x, y, z)
-        this.angles = newAngles;
+    updatePositionAndAngles(x, y, z, newAngles, mapName) {
+        let calcX = 0;
+        let calcY = 0;
+        switch(mapName) {
+            case "mp_rr_canyonlands_hu":
+                calcX = (x - 7515)/20 + 2048;
+                calcY = (y + 1170)/20 + 2048;
+                this.pos.updateValues(calcX, calcY, z)
+            case "mp_rr_desertlands_hu":
+                calcX = x/22 + 2048;
+                calcY = (y + 1)/22 + 2048;
+                this.pos.updateValues(calcX, calcY, z)
+            case "mp_rr_district":
+                calcX = (x - 2048)/21 + 2048;
+                calcY = (y + 2048)/21 + 2048;
+                this.pos.updateValues(calcX, calcY, z)
+            case "mp_rr_district_halloween":
+                calcX = (x - 2048)/21 + 2048;
+                calcY = (y + 2048)/21 + 2048;
+                this.pos.updateValues(calcX, calcY, z)
+            case "mp_rr_divided_moon_mu1":
+                calcX = (x - 56)/21 + 2048;
+                calcY = (y - 1556)/21 + 2048;
+                this.pos.updateValues(calcX, calcY, z)
+            case "mp_rr_freedm_skulltown":
+                calcX = (x - 32930)/5 + 2048;
+                calcY = (y + 35110)/5 + 2048;
+                this.pos.updateValues(calcX, calcY, z)
+            case "mp_rr_olympus_mu2":
+                calcX = (x + 6968)/22 + 2048;
+                calcY = (y - 2969)/22 + 2048;
+                this.pos.updateValues(calcX, calcY, z)
+            case "mp_rr_tropic_island_mu2":
+                calcX = (x + 5550)/25 + 2048;
+                calcY = (y - 7083)/25 + 2048;
+                this.pos.updateValues(calcX, calcY, z)
+        }
+        this.angles = newAngles*-1 + 45;
     }
 
     /**
