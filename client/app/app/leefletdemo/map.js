@@ -78,6 +78,7 @@ const MapComponent = ({ webSocketData }) => {
               updatedPlayers[update.id].rotation = update.rotation; // rotation を更新
             }
             console.log("lat: " + updatedPlayers[update.id].lat, "  lng: " + updatedPlayers[update.id].lng, "  rotation: " + updatedPlayers[update.id].rotation)
+            console.log("lat_ro: " + (updatedPlayers[update.id].lat - 2048)*22 + 2969, "  lng_ro: " + (updatedPlayers[update.id].lng - 2048)*22 - 6968, "  rotation: " + updatedPlayers[update.id].rotation)
           } else if (update.action === 'remove') {
             // プレイヤーの削除
             delete updatedPlayers[update.id];

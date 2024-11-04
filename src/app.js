@@ -258,12 +258,14 @@ function getPlayerStatus(match) {
         for (const teamId in match.teams) {
             apexCommon.change_camera("name", match.getPlayer(match.teams[teamId][0]).name);
         }
-        sendMapData.sendPlayerPositionUpdate(match);
     }
 }
 
 async function update() {
-    if (match) { getPlayerStatus(match) }
+    if (match) {
+        getPlayerStatus(match);
+        sendMapData.sendPlayerPositionUpdate(match);
+    }
 }
 
 const intervalId = setInterval(() => {
