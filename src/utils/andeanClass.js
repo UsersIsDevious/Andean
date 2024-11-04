@@ -196,37 +196,37 @@ class Player {
      * @param {number} newAngles 新しい角度
      */
     updatePositionAndAngles(x, y, z, newAngles, mapName) {
-        switch(mapName) {
+        switch (mapName) {
             case "mp_rr_canyonlands_hu":
-                this.pos.updateValues((x - 3419)/20 + 2048, (y - 2926)/20 + 2048, z)
+                this.pos.updateValues((x - 3419) / 20 + 2048, (y - 2926) / 20 + 2048, z)
                 break;
             case "mp_rr_desertlands_hu":
-                this.pos.updateValues(x/22 + 2048, (y + 1)/22 + 2048, z)
+                this.pos.updateValues(x / 22 + 2048, (y + 1) / 22 + 2048, z)
                 break;
             case "mp_rr_district":
-                this.pos.updateValues(x/21 + 2048, y/21 + 2048, z)
+                this.pos.updateValues(x / 21 + 2048, y / 21 + 2048, z)
                 break;
             case "mp_rr_district_halloween":
-                this.pos.updateValues(x/21 + 2048, y/21 + 2048, z)
+                this.pos.updateValues(x / 21 + 2048, y / 21 + 2048, z)
                 break;
             case "mp_rr_divided_moon_mu1":
-                this.pos.updateValues((x + 1992)/21 + 2048, (y - 492)/21 + 2048, z)
+                this.pos.updateValues((x + 1992) / 21 + 2048, (y - 492) / 21 + 2048, z)
                 break;
             case "mp_rr_freedm_skulltown":
-                this.pos.updateValues((x + 1886)/5 + 2048, (y + 294)/5 + 2048, z)
+                this.pos.updateValues((x + 1886) / 5 + 2048, (y + 294) / 5 + 2048, z)
                 break;
             case "mp_rr_olympus_mu2":
-                this.pos.updateValues((x + 6968)/22 + 2048, (y - 2969)/22 + 2048, z)
+                this.pos.updateValues((x + 6968) / 22 + 2048, (y - 2969) / 22 + 2048, z)
                 break;
             case "mp_rr_tropic_island_mu2":
-                this.pos.updateValues((x - 594)/25 + 2048, (y - 939)/25 + 2048, z)
+                this.pos.updateValues((x - 594) / 25 + 2048, (y - 939) / 25 + 2048, z)
                 break;
             case "":
                 break;
             default:
                 console.log("Unknown map")
         }
-        this.angles = newAngles*-1 + 45;
+        this.angles = newAngles * -1 + 45;
     }
 
     /**
@@ -524,7 +524,22 @@ class CustomMatch {
         this.startingLoadout = new Inventory();  // 初期配布のアイテムを追加するInventoryインスタンスを作成
         this.eventLists = [];
         this.ringStatus = "idle";  // start, active, finish, idle
-        this.ring = new Ring();
+        this.rings = [];
+    }
+
+     /**
+     * ringsの末尾に新しい要素を追加します。
+     * ringsが3を超える場合、先頭の要素を削除します。
+     * 
+     * @param {Ring} ring - 追加する要素
+     */
+     addElement(ring) {
+        // 配列の長さが指定の制限を超える場合は先頭の要素を削除
+        if (this.rings.length >= 3) {
+            this.rings.shift();
+        }
+        // 新しい要素を末尾に追加
+        this.rings.push(ring);
     }
 
     /**
@@ -712,27 +727,21 @@ class Event {
 // Ringクラスの定義
 /**
  * Ringに関するクラス
- * @param {number} timestamp - 内部の武器名
- * @param {number} endtimestamp - 武器のレベル
- * @param {String} eventType
- * @param {Object} object
+ * @param {number} timestamp
+ * @param {number} endtimestamp
+ * @param {Vector3} center
+ * @param {number} currentradius
+ * @param {number} shrinkduration
  * @param {}
  */
 class Ring {
-    constructor(name, level) {
-        this.name = name;
-        this.level = level;
-        this.maxMagazine = 0; // AmmoUsedで使用された最大の弾数を格納
-    }
-
-    /**
-     * AmmoUsedで使用された最大の弾数を返す
-     * @returns {number} AmmoUsedで使用された最大の弾数
-     */
-    getMaxMagazine() {
-        return {
-            maxMagazine: this.maxMagazine
-        };
+    constructor(_timestamp, _stage, _center, _currentradius, _shrinkduration) {
+        this.timestamp = _timestamp;
+        this.stage = _stage;
+        this.center = new Vector3();
+        this.currentradius = _currentradius;
+        this.shrinkduration = _shrinkduration;
+        this.endTimeStamp = this.timestamp + this.shrinkduration;
     }
 }
 
