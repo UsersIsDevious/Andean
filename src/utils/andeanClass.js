@@ -747,11 +747,50 @@ class Ring {
         this.timestamp = _timestamp;
         this.category = _category;
         this.stage = _stage;
-        this.center = new Vector3(_center.x, _center.y, _center.z);
         this.currentradius = _currentradius;
         this.shrinkduration = _shrinkduration;
         this.endradius = _endradius;
         this.endTimeStamp = this.timestamp + this.shrinkduration;
+        switch (mapName) {
+            case "mp_rr_canyonlands_hu":
+                this.center = new Vector3(_center.x, _center.y, _center.z);
+                this.pos.updateValues((x - 3419) / 20 + 2048, (y - 2926) / 20 + 2048, z)
+                break;
+            case "mp_rr_desertlands_hu":
+                this.center = new Vector3(_center.x, _center.y, _center.z);
+                this.pos.updateValues(x / 22 + 2048, (y + 1) / 22 + 2048, z)
+                break;
+            case "mp_rr_district":
+                this.center = new Vector3(_center.x, _center.y, _center.z);
+                this.pos.updateValues(x / 21 + 2048, y / 21 + 2048, z)
+                break;
+            case "mp_rr_district_halloween":
+                this.center = new Vector3(_center.x, _center.y, _center.z);
+                this.pos.updateValues(x / 21 + 2048, y / 21 + 2048, z)
+                break;
+            case "mp_rr_divided_moon_mu1":
+                this.center = new Vector3(_center.x, _center.y, _center.z);
+                this.pos.updateValues((x + 1992) / 21 + 2048, (y - 492) / 21 + 2048, z)
+                break;
+            case "mp_rr_freedm_skulltown":
+                this.center = new Vector3(_center.x, _center.y, _center.z);
+                this.pos.updateValues((x + 1886) / 5 + 2048, (y + 294) / 5 + 2048, z)
+                break;
+            case "mp_rr_olympus_mu2":
+                this.center = new Vector3(_center.x, _center.y, _center.z);
+                this.pos.updateValues((x + 6968) / 22 + 2048, (y - 2969) / 22 + 2048, z)
+                break;
+            case "mp_rr_tropic_island_mu2":
+                this.center = new Vector3(_center.x, _center.y, _center.z);
+                this.pos.updateValues((x - 594) / 25 + 2048, (y - 939) / 25 + 2048, z)
+                break;
+            case "":
+                break;
+            default:
+                console.log("Unknown map");
+                break;
+        }
+        this.angles = newAngles * -1 + 45;
     }
 }
 
