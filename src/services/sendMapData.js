@@ -29,7 +29,7 @@ function sendMapInitialization(mapName, match) {
     )
   }
     
-  send(match,message);
+  send(match, message);
 }
 
 /**
@@ -53,7 +53,7 @@ function sendPlayerPositionUpdate(match) {
       }
     )
   }
-  send(match,message);
+  send(match, message);
 }
 
 /**
@@ -63,9 +63,10 @@ function sendPlayerPositionUpdate(match) {
 function sendRingUpdate(match) {
   let message = {
     type: 'ring_update',
+    ringStatus: match.ringStatus,
     rings: match.rings
   }
-  send(match,message)
+  send(match, message)
 }
 
 /**

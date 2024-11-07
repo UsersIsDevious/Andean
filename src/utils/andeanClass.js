@@ -20,9 +20,9 @@ class Vector3 {
      * @param {number} newY 新しいy座標
      * @param {number} newZ 新しいz座標
      */
-    updateValues(newX, newY, newZ) {
-        this.x = newX;
-        this.y = newY;
+    updateValues(newX, newY, newZ, mapOffset) {
+        this.x = (newX + mapOffset[0]) / mapOffset[2] + 2048;
+        this.y = (newY + mapOffset[1]) / mapOffset[2] + 2048;
         this.z = newZ;
     }
 }
@@ -194,39 +194,10 @@ class Player {
      * @param {number} y 新しいy座標
      * @param {number} z 新しいz座標
      * @param {number} newAngles 新しい角度
+     * @param {Object} mapOffset
      */
-    updatePositionAndAngles(x, y, z, newAngles, mapName) {
-        switch (mapName) {
-            case "mp_rr_canyonlands_hu":
-                this.pos.updateValues((x - 3419) / 20 + 2048, (y - 2926) / 20 + 2048, z)
-                break;
-            case "mp_rr_desertlands_hu":
-                this.pos.updateValues(x / 22 + 2048, (y + 1) / 22 + 2048, z)
-                break;
-            case "mp_rr_district":
-                this.pos.updateValues(x / 21 + 2048, y / 21 + 2048, z)
-                break;
-            case "mp_rr_district_halloween":
-                this.pos.updateValues(x / 21 + 2048, y / 21 + 2048, z)
-                break;
-            case "mp_rr_divided_moon_mu1":
-                this.pos.updateValues((x + 1992) / 21 + 2048, (y - 492) / 21 + 2048, z)
-                break;
-            case "mp_rr_freedm_skulltown":
-                this.pos.updateValues((x + 1886) / 5 + 2048, (y + 294) / 5 + 2048, z)
-                break;
-            case "mp_rr_olympus_mu2":
-                this.pos.updateValues((x + 6968) / 22 + 2048, (y - 2969) / 22 + 2048, z)
-                break;
-            case "mp_rr_tropic_island_mu2":
-                this.pos.updateValues((x - 594) / 25 + 2048, (y - 939) / 25 + 2048, z)
-                break;
-            case "":
-                break;
-            default:
-                console.log("Unknown map");
-                break;
-        }
+    updatePositionAndAngles(x, y, z, newAngles, mapOffset) {
+        this.pos.updateValues(x, y, z, mapOffset)
         this.angles = newAngles * -1 + 45;
     }
 
@@ -524,8 +495,9 @@ class CustomMatch {
         this.serverId = "";  // サーバーIDを格納
         this.startingLoadout = new Inventory();  // 初期配布のアイテムを追加するInventoryインスタンスを作成
         this.eventLists = [];
-        this.ringStatus = "idle";  // start, active, finish, idle
+        this.ringStatus = "idle";  // active, idle
         this.rings = [];
+        this.mapOffset = [0, 0, 1]
     }
 
     refreshEventLists(){
@@ -538,13 +510,25 @@ class CustomMatch {
      * 
      * @param {Ring} ring - 追加する要素
      */
-    addElement(ring) {
+    addRingElement(ring) {
         // 配列の長さが指定の制限を超える場合は先頭の要素を削除
         if (this.rings.length >= 3) {
             this.rings.shift();
         }
         // 新しい要素を末尾に追加
         this.rings.push(ring);
+
+        switch (ring.category) {
+            case "ringStartClosing":
+                this.ringStatus = "active"
+                break;
+            case "ringFinishedClosing":
+                this.ringStatus = "idle"
+                break;
+            default:
+                console.log("[CustomMatch.addElement] Recived unknown message")
+                break;
+          }
     }
 
     /**
@@ -611,6 +595,36 @@ class CustomMatch {
         this.aimassiston = aimassiston;
         this.anonymousMode = anonymousMode;
         this.serverId = serverId;
+        switch (mapName) {
+            case "mp_rr_canyonlands_hu":
+                this.mapOffset = [-3419, -2926, 20];
+                break;
+            case "mp_rr_desertlands_hu":
+                this.mapOffset = [0, 1, 22];
+                break;
+            case "mp_rr_district":
+                this.mapOffset = [0, 0, 21];
+                break;
+            case "mp_rr_district_halloween":
+                this.mapOffset = [0, 0, 21];
+                break;
+            case "mp_rr_divided_moon_mu1":
+                this.mapOffset = [1992, -492, 21];
+                break;
+            case "mp_rr_freedm_skulltown":
+                this.mapOffset = [1886, 294, 5];
+                break;
+            case "mp_rr_olympus_mu2":
+                this.mapOffset = [6968, -2969, 22];
+                break;
+            case "mp_rr_tropic_island_mu2":
+                this.mapOffset = [-594, -939, 25];
+                break;
+            default:
+                this.mapOffset = [0, 0, 1];
+                console.log("[AndeanClass.CustomMatch.setMatchSetup] Unknown map");
+                break;
+        }
     }
 
     /**
@@ -734,63 +748,26 @@ class Event {
  */
 class Ring {
     /**
-     * 
+     * リングの初期化を行う
      * @param {number} _timestamp 
      * @param {String} _category 
-     * @param {number} _stage 
+     * @param {number} _stage
      * @param {Object} _center 
      * @param {number} _currentradius 
-     * @param {number} _shrinkduration 
-     * @param {number} _endradius 
+     * @param {number} _shrinkduration
+     * @param {Object} _mapOffset
+     * @param {number} _endradius
      */
-    constructor(_timestamp, _category, _stage, _center, _currentradius, _shrinkduration, _endradius = 0) {
+    constructor(_timestamp, _category, _stage, _center, _currentradius, _shrinkduration, _mapOffset, _endradius = 0) {
         this.timestamp = _timestamp;
         this.category = _category;
         this.stage = _stage;
-        this.currentradius = _currentradius;
-        this.shrinkduration = _shrinkduration;
+        this.currentradius = _currentradius / _mapOffset[2];
         this.endradius = _endradius;
+        this.shrinkduration = _shrinkduration;
         this.endTimeStamp = this.timestamp + this.shrinkduration;
-        switch (mapName) {
-            case "mp_rr_canyonlands_hu":
-                this.center = new Vector3(_center.x, _center.y, _center.z);
-                this.pos.updateValues((x - 3419) / 20 + 2048, (y - 2926) / 20 + 2048, z)
-                break;
-            case "mp_rr_desertlands_hu":
-                this.center = new Vector3(_center.x, _center.y, _center.z);
-                this.pos.updateValues(x / 22 + 2048, (y + 1) / 22 + 2048, z)
-                break;
-            case "mp_rr_district":
-                this.center = new Vector3(_center.x, _center.y, _center.z);
-                this.pos.updateValues(x / 21 + 2048, y / 21 + 2048, z)
-                break;
-            case "mp_rr_district_halloween":
-                this.center = new Vector3(_center.x, _center.y, _center.z);
-                this.pos.updateValues(x / 21 + 2048, y / 21 + 2048, z)
-                break;
-            case "mp_rr_divided_moon_mu1":
-                this.center = new Vector3(_center.x, _center.y, _center.z);
-                this.pos.updateValues((x + 1992) / 21 + 2048, (y - 492) / 21 + 2048, z)
-                break;
-            case "mp_rr_freedm_skulltown":
-                this.center = new Vector3(_center.x, _center.y, _center.z);
-                this.pos.updateValues((x + 1886) / 5 + 2048, (y + 294) / 5 + 2048, z)
-                break;
-            case "mp_rr_olympus_mu2":
-                this.center = new Vector3(_center.x, _center.y, _center.z);
-                this.pos.updateValues((x + 6968) / 22 + 2048, (y - 2969) / 22 + 2048, z)
-                break;
-            case "mp_rr_tropic_island_mu2":
-                this.center = new Vector3(_center.x, _center.y, _center.z);
-                this.pos.updateValues((x - 594) / 25 + 2048, (y - 939) / 25 + 2048, z)
-                break;
-            case "":
-                break;
-            default:
-                console.log("Unknown map");
-                break;
-        }
-        this.angles = newAngles * -1 + 45;
+        this.center = new Vector3()
+        this.center.updateValues(_center.x, _center.y, _center.z, _mapOffset)
     }
 }
 

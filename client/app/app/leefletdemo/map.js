@@ -36,6 +36,9 @@ const MapComponent = ({ webSocketData }) => {
 
   const [imageUrl, setImageUrl] = useState('/default-image.png'); // 初期値
 
+  const [ringStage, setRingStage] = useState(-1);
+  const [ringStatus, setRingStatus] = useState("idle")
+
   useEffect(() => {
     const outerCircleCoords = createCircleCoords(outerXOffset, outerYOffset, outerRadius);
     const innerCircleCoords = createCircleCoords(innerXOffset, innerYOffset, innerRadius);
@@ -85,6 +88,18 @@ const MapComponent = ({ webSocketData }) => {
         break;
 
       case 'ring_update':
+        const rings = webSocketData.rings;
+        setRingStatus(rings.ringStatus);
+        setRingStage(rings[rings.length - 1].stage);
+        switch (ringStatus) {
+          case "active":
+            break;
+          case "idle":
+            break;
+          default:
+            console.log("[RINGS_UPDATE] Recived unknown message")
+            break;
+        }
         break;
       default:
         console.log('Unknown WebSocket data type');

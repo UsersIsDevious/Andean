@@ -135,11 +135,11 @@ function analyze_message(category, msg) {
         case "MatchStateEnd":
             break;
         case "RingStartClosing":
-            match.addElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, msg.endradius));
+            match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapName, msg.endradius));
             sendMapData.sendRingUpdate(match);
             break;
         case "RingFinishedClosing":
-            match.addElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration));
+            match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapName));
             sendMapData.sendRingUpdate(match);
             break;
         case "PlayerConnected":
