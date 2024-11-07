@@ -512,7 +512,7 @@ class CustomMatch {
      */
     addRingElement(ring) {
         // 配列の長さが指定の制限を超える場合は先頭の要素を削除
-        if (this.rings.length >= 3) {
+        if (this.rings.length > 3) {
             this.rings.shift();
         }
         // 新しい要素を末尾に追加
@@ -758,14 +758,14 @@ class Ring {
      * @param {Object} _mapOffset
      * @param {number} _endradius
      */
-    constructor(_timestamp, _category, _stage, _center, _currentradius, _shrinkduration, _mapOffset, _endradius = 0) {
+    constructor(_timestamp, _category, _stage, _center, _currentRadius, _shrinkduration, _mapOffset, _endradius = -1) {
         this.timestamp = _timestamp;
         this.category = _category;
         this.stage = _stage;
-        this.currentradius = _currentradius / _mapOffset[2];
+        this.currentRadius = _currentRadius / _mapOffset[2];
         this.endradius = _endradius;
         this.shrinkduration = _shrinkduration;
-        this.endTimeStamp = this.timestamp + this.shrinkduration;
+        this.endTimestamp = this.timestamp + this.shrinkduration;
         this.center = new Vector3()
         this.center.updateValues(_center.x, _center.y, _center.z, _mapOffset)
     }

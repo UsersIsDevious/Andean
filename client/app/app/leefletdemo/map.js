@@ -37,7 +37,13 @@ const MapComponent = ({ webSocketData }) => {
   const [imageUrl, setImageUrl] = useState('/default-image.png'); // 初期値
 
   const [ringStage, setRingStage] = useState(-1);
-  const [ringStatus, setRingStatus] = useState("idle")
+  const [ringStatus, setRingStatus] = useState("idle");
+  const [ringTimestamp, setRingTimestamp] = useState(-1);
+  const [ringEndTimestamp, setRingEndTimestamp] = useState(-1);
+  const [currentRadius, setCurrentRadius] = useState(-1);
+  const [nextRadius, setNextRadius] = useState(-1);
+  const [currentCenter, setCurrentCenter] = useState(null);
+  const [nextCenter, setNextCenter] = useState(null);
 
   useEffect(() => {
     const outerCircleCoords = createCircleCoords(outerXOffset, outerYOffset, outerRadius);
@@ -87,17 +93,24 @@ const MapComponent = ({ webSocketData }) => {
         setPlayers(updatedPlayers);
         break;
 
-      case 'ring_update':
+      case 'ring_update':  // 新たな可能性として、一ラウンド分遅れている可能性が出てきた。例えばラウンド2のringStartClosing時にラウンド1のringStartClosing情報が降ってきているなど。
         const rings = webSocketData.rings;
+        const msg = rings[rings.length - 1];
         setRingStatus(rings.ringStatus);
-        setRingStage(rings[rings.length - 1].stage);
+        setRingStage(msg.stage);
+        setRingTimestamp(msg.timestamp);
+        setRingEndTimestamp(msg.endTimestamp);
         switch (ringStatus) {
           case "active":
+            setCurrentRadius(msg.currentRadius);
+            setNextRadius(msg.endRadius);  // 次のリングの収縮が始まるまで、次リングの半径はわからない。
+            setCurrentCenter(msg.center);  // 縮小を開始した円の中心
             break;
           case "idle":
+            setNextCenter(msg.center);  // 縮小後の円の中心
             break;
           default:
-            console.log("[RINGS_UPDATE] Recived unknown message")
+            console.log("[RINGS_UPDATE] Recived unknown message");
             break;
         }
         break;
