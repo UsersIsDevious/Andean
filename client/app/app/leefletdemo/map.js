@@ -104,7 +104,11 @@ const MapComponent = ({ webSocketData }) => {
           case "active":
             setCurrentRadius(msg.currentRadius);
             setNextRadius(msg.endRadius);  // 次のリングの収縮が始まるまで、次リングの半径はわからない。
-            setCurrentCenter(msg.center);  // 縮小を開始した円の中心
+            if (currentCenter === null) {
+              setCurrentCenter(msg.center);  // 縮小を開始した円の中心
+            } else {
+              setCurrentCenter(msg.center);  // 縮小を開始した円の中心
+            }
             break;
           case "idle":
             setNextCenter(msg.center);  // 縮小後の円の中心
@@ -118,32 +122,6 @@ const MapComponent = ({ webSocketData }) => {
         console.log('Unknown WebSocket data type');
     }
   }, [webSocketData]); // players を依存配列から外す
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'w') {
-        setInnerYOffset((prevValue) => prevValue + 1);
-      } else if (event.key === 's') {
-        setInnerYOffset((prevValue) => prevValue - 1);
-      } else if (event.key === 'd') {
-        setInnerXOffset((prevValue) => prevValue + 1);
-      } else if (event.key === 'a') {
-        setInnerXOffset((prevValue) => prevValue - 1);
-      } else if (event.key === 'e') {
-        setInnerRadius((prevValue) => prevValue + 1);
-      } else if (event.key === 'q') {
-        setInnerRadius((prevValue) => prevValue - 1);
-      }
-    };
-
-    // キー押下イベントのリスナーを追加
-    window.addEventListener('keydown', handleKeyDown);
-
-    // クリーンアップでリスナーを削除
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
 
   // チームに応じてアイコンの色を決定する関数
   const getTeamColor = (team) => {
@@ -220,10 +198,6 @@ const MapComponent = ({ webSocketData }) => {
     });
   };
 
-  const handleInputChange = (e) => {
-    setImageUrl(e.target.value); // ユーザーが入力した値をimageUrlに設定
-  };
-
   return (
     <div className="relative w-[1024px] h-[1024px]">
       <div className="absolute z-0">
@@ -246,31 +220,6 @@ const MapComponent = ({ webSocketData }) => {
             />
           ))}
         </MapContainer>
-      </div>
-      <img src={imageUrl}
-        className="absolute top-0 left-0 w-[100%] h-[100%] opacity-50 z-20 pointer-events-none"
-        alt="Semi-transparent overlay" />
-      <div className="absolute left-[1040px]">
-        <ControlPanel
-          outerRadius={outerRadius}
-          setOuterRadius={setOuterRadius}
-          outerXOffset={outerXOffset}
-          setOuterXOffset={setOuterXOffset}
-          outerYOffset={outerYOffset}
-          setOuterYOffset={setOuterYOffset}
-          innerRadius={innerRadius}
-          setInnerRadius={setInnerRadius}
-          innerXOffset={innerXOffset}
-          setInnerXOffset={setInnerXOffset}
-          innerYOffset={innerYOffset}
-          setInnerYOffset={setInnerYOffset}
-        />
-        <input
-          type="text"
-          placeholder="画像URLを入力してください"
-          onChange={handleInputChange}
-          style={{ width: '300px', padding: '8px', marginBottom: '20px' }}
-        />
       </div>
     </div>
   );

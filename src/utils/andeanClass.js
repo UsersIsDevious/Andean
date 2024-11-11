@@ -274,7 +274,7 @@ class Player {
             name: this.name,
             teamId: this.teamId,
             pos: { x: this.pos.x, y: this.pos.y, z: this.pos.z },
-            angles: { x: this.angles.x, y: this.angles.y, z: this.angles.z },
+            angles: this.angles,
             currentHealth: this.currentHealth,
             maxHealth: this.maxHealth,
             shieldHealth: this.shieldHealth,
@@ -507,7 +507,6 @@ class CustomMatch {
     /**
      * ringsの末尾に新しい要素を追加します。
      * ringsが3を超える場合、先頭の要素を削除します。
-     * 
      * @param {Ring} ring - 追加する要素
      */
     addRingElement(ring) {
@@ -526,7 +525,25 @@ class CustomMatch {
                 this.ringStatus = "idle"
                 break;
             default:
-                console.log("[CustomMatch.addElement] Recived unknown message")
+                console.log("[CustomMatch.addRingElement] Recived unknown message")
+                break;
+          }
+    }
+
+    /**
+     * eventListsの末尾に新しい要素を追加します。
+     * @param {Event} event - 追加する要素
+     */
+    addEventElement(event) {
+        // 新しい要素を末尾に追加
+        this.eventLists.push(event);
+        switch (event.category) {
+            case "A":
+                break;
+            case "B":
+                break;
+            default:
+                console.log("[CustomMatch.addEventElement] Recived unknown message")
                 break;
           }
     }
@@ -718,18 +735,24 @@ class Weapon {
 // Eventクラスの定義
 /**
  * Eventに関するクラス
- * @param {number} timestamp - 内部の武器名
- * @param {number} endtimestamp - 武器のレベル
- * @param {String} target　- targetプレーヤー
- * @param {Object} object
- * @param {}
+ * @param {number} timestamp - イベント発生時のタイムスタンプ
+ * @param {string} category - イベントの種類
+ * @param {string} nucleusHash - プレイヤーのID
+ * @param {object} data - 受信したメッセージやクラスオブジェクトなどを入れる
  */
 class Event {
-    constructor(_timestamp, _category) {
+    /**
+     * Eventクラスの初期化
+     * @param {number} _timestamp - イベント発生時のタイムスタンプ
+     * @param {string} _category - イベントの種類
+     * @param {string} _nucleusHash - プレイヤーのID
+     * @param {object} _data - 受信したメッセージやクラスオブジェクトなどを入れる
+     */
+    constructor(_timestamp, _category, _target, _data) {
         this.timestamp = _timestamp;
         this.category = _category;
         this.target = _target;
-        this.object = object;
+        this.data = _data;
     }
 }
 

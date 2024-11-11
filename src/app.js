@@ -153,6 +153,11 @@ function analyze_message(category, msg) {
         case "PlayerUpgradeTierChanged":
             break;
         case "PlayerDamaged":
+            /**
+             * 1.HP減らす
+             * 2.ダメージ数増やす
+             * 3.イベントクラスのobjectに付随する情報を
+             */
             break;
         case "PlayerKilled":
             break;
