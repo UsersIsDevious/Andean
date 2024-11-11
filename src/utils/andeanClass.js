@@ -537,15 +537,6 @@ class CustomMatch {
     addEventElement(event) {
         // 新しい要素を末尾に追加
         this.eventLists.push(event);
-        switch (event.category) {
-            case "A":
-                break;
-            case "B":
-                break;
-            default:
-                console.log("[CustomMatch.addEventElement] Recived unknown message")
-                break;
-          }
     }
 
     /**
