@@ -6,7 +6,41 @@ let servers = {}; // サーバーリストを保持するオブジェクト
 // コールバックリストを保持
 let onServersStartedCallbacks = [];
 
+/**
+ * 指定されたメッセージをコンソールに出力します。
+ * 
+ * @param {string} message - 出力するメッセージ。
+ * @param {string} [type="normal"] - メッセージのタイプ ("normal", "error", "warning"など)。
+ */
+function logMessage(message, type = "normal") {
+  switch (type.toLowerCase()) {
+      case "error":
+          console.error(message);
+          break;
+      case "warning":
+          console.warn(message);
+          break;
+      default:
+          console.log(message);
+          break;
+  }
+}
 
+/**
+ * 指定されたフォルダが存在しない場合は作成します
+ * @param {string} folder - 作成したいフォルダのName
+ */
+function ensureFolderExists(folder) {
+  const folderPath = path.join(__dirname, folder)
+  // フォルダが存在するか確認
+  if (!fs.existsSync(folderPath)) {
+      // 存在しない場合はフォルダを作成
+      fs.mkdirSync(folderPath, { recursive: true });
+      logMessage(`Folder created: ${folderPath}`);
+  } else {
+    logMessage(`Folder already exists: ${folderPath}`);
+  }
+}
 
 /**
  * JSONファイルにデータを蓄積し、保存します。
@@ -174,4 +208,6 @@ module.exports = {
   getServerList,
   registerOnServersStarted,
   saveData,
+  logMessage,
+  ensureFolderExists,
 };

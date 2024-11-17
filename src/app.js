@@ -1,5 +1,5 @@
 const common = require('./utils/common');
-const { Player, CustomMatch, Datacenter, Item, Weapon, Ring } = require('./utils/andeanClass');
+const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
 const language = common.readConfig('../../locals/ja.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
@@ -22,7 +22,7 @@ function exit() {
             return;
         }
         // コマンドが成功した場合、親のバッチファイルを終了した旨をコンソールに表示
-        console.log('親のバッチファイルを終了しました。');
+        common.logMessage('親のバッチファイルを終了しました。');
     });
 } 
 */
@@ -47,7 +47,7 @@ function startApexLegends() {
     const command = `"${config.apexlegends.path}" + ${config.apexlegends.option}`; // パスが空でない場合に起動コマンドを構築
     common.runRegularCommand(command)
         .then(output => {
-            console.log('Apex Legendsが起動しました:', output);
+            common.logMessage('Apex Legendsが起動しました:', output);
         })
         .catch(err => {
             console.error('Apex Legendsの起動中にエラーが発生しました:', err);
@@ -65,7 +65,7 @@ setInterval(() => {
   const colors = ['red', 'green', 'blue', 'yellow'];
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
   server.sendClients(`"color": "{${randomColor}}"`);
-  console.log(`Sent color: ${randomColor}`);
+  common.logMessage(`Sent color: ${randomColor}`);
 }, 5000); */
 
 /**
@@ -77,155 +77,266 @@ setInterval(() => {
 let match;
 let lobby = new CustomMatch("lobby");
 function analyze_message(category, msg) {
-    console.log("メッセージタイプ" + category)
+    common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
-        case "Init":
+        case "Init": {
             if (msg.platform != "") { break; }
-            match = new CustomMatch(`${msg.timestamp}`)  // web側で名前の指定があれば適用する
+            match = new CustomMatch(`${msg.timestamp}`)  // TODO: web側で名前の指定があれば適用する
             break;
-        case "Vector3":  // 今のところ何もイベント発生しない
+        }
+        case "Vector3": {  // 今のところ何もイベント発生しない
             break;
-        case "Player":  // 今のところ何もイベント発生しない
+        }
+        case "Player": {  // 今のところ何もイベント発生しない
             break;
-        case "CustomMatch_LobbyPlayer":  // 今のところ何もイベント発生しない
+        }
+        case "CustomMatch_LobbyPlayer": {  // 今のところ何もイベント発生しない
             break;
-        case "Datacenter":  // 今のところ何もイベント発生しない
+        }
+        case "Datacenter": {  // 今のところ何もイベント発生しない
             break;
-        case "Version":  // 今のところ何もイベント発生しない
+        }
+        case "Version": {  // 今のところ何もイベント発生しない
             break;
-        case "InventoryItem":  // 今のところ何もイベント発生しない
+        }
+        case "InventoryItem": {  // 今のところ何もイベント発生しない
             break;
-        case "LoadoutConfiguration":  // 今のところ何もイベント発生しない
+        }
+        case "LoadoutConfiguration": {  // 今のところ何もイベント発生しない
             break;
-        case "CustomMatch_LobbyPlayers":
+        }
+        case "CustomMatch_LobbyPlayers": {
             lobby = new CustomMatch("lobby")
             for (let i = 0; i < msg.playersList.length; i++) {
                 lobby.addPlayer(new Player(msg.playersList[i].name, msg.playersList[i].teamid, msg.playersList[i].nucleushash, msg.playersList[i].hardwarename))
             }
             break;
-        case "RequestStatus":  // 今のところ何もイベント発生しない
+        }
+        case "RequestStatus": {  // 今のところ何もイベント発生しない
             break;
-        case "Response":
+        }
+        case "Response": {
             break;
-        case "MatchSetup":
-            if (msg.startingloadout.weaponsList != []) {
-                for (let i = 0; i < msg.startingloadout.weaponsList.length; i++) {
-                    match.startingLoadout.addItem(new Item(msg.startingloadout.weaponsList[i].item, checkItemLevel(msg.startingloadout.weaponsList[i].item), msg.startingloadout.weaponsList[i].quantity));
+        }
+        case "MatchSetup": {
+            const startingloadout = msg.startingLoadout
+            if (startingloadout.weaponsList != []) {
+                for (let i = 0; i < startingloadout.weaponsList.length; i++) {
+                    match.startingLoadout.addItem(new Item(startingloadout.weaponsList[i].item, checkItemLevel(startingloadout.weaponsList[i].item), startingloadout.weaponsList[i].quantity));
                 }
             }
-            if (msg.startingloadout.equipmentList != []) {
-                for (let i = 0; i < msg.startingloadout.equipmentList.length; i++) {
-                    match.startingLoadout.addItem(new Item(msg.startingloadout.equipmentList[i].item, checkItemLevel(msg.startingloadout.equipmentList[i].item), msg.startingloadout.equipmentList[i].quantity));
+            if (startingloadout.equipmentList != []) {
+                for (let i = 0; i < startingloadout.equipmentList.length; i++) {
+                    match.startingLoadout.addItem(new Item(startingloadout.equipmentList[i].item, checkItemLevel(startingloadout.equipmentList[i].item), startingloadout.equipmentList[i].quantity));
                 }
             }
             match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, new Datacenter(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name), msg.aimassiston, msg.anonymousmode, msg.serverid);
             sendMapData.sendMapInitialization(msg.map, match)
             break;
-        case "GameStateChanged":
+        }
+        case "GameStateChanged": {
             try {
                 if (msg.state === "Playing") { match.setStartTimeStamp(msg.timestamp) };
-                match.setGameState(msg.state);   
+                match.setState(msg.state);
             } catch (error) {
-                lobby.setGameState(msg.state);
+                lobby.setState(msg.state);
             }
             break;
-        case "CharacterSelected":
-            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash), match.mapName, true);
+        }
+        case "CharacterSelected": {
+            const player = processUpdatePlayer(msg, match,true);
             break;
-        case "MatchStateEnd":
+        }
+        case "MatchStateEnd": {
+            for (let i = 0; i < msg.winnersList.length; i++) {
+                updatePlayer(msg.winnersList[i], match.getPlayer(msg.winnersList[i].nucleushash), match.mapName);
+            }
+            match.setEndTimeStamp(msg.timestamp);
+            match.addEventElement(new Event(msg.timestamp, msg.category, msg.winnersList[0].teamId, { state: msg.state }));
+            match.setState(msg.state);
             break;
-        case "RingStartClosing":
-            match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapName, msg.endradius));
+        }
+        case "RingStartClosing": {
+            const rings = match.rings;
+            if (rings == []) {
+                match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapOffset));
+            }
+            rings[rings.length - 1].updateRing(msg.timestamp, msg.category, msg.currentRadius, msg.shrinkduration, msg.endradius, match.mapOffset);
             sendMapData.sendRingUpdate(match);
             break;
-        case "RingFinishedClosing":
-            match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapName));
+        }
+        case "RingFinishedClosing": {
+            match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapOffset));
             sendMapData.sendRingUpdate(match);
             break;
-        case "PlayerConnected":
-            match.addPlayer(new Player(msg.player.name, msg.player.teamid, msg.player.nucleushash, msg.player.hardwarename));
-            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash), match.mapName);
+        }
+        case "PlayerConnected": {
+            const msg_player = msg.player;
+            const nucleushash = msg_player.nucleushash;
+            if (match.getPlayer(nucleushash) == null) {
+                match.addPlayer(new Player(msg_player.name, msg_player.teamid, nucleushash, msg_player.hardwarename));
+            }
+            const player = processUpdatePlayer(msg, match);
+            player.isOnline = true;
             break;
-        case "PlayerDisconnected":
+        }
+        case "PlayerDisconnected": {
+            const player = processUpdatePlayer(msg, match);
+            player.isOnline = false;
             break;
-        case "PlayerStatChanged":
+        }
+        case "PlayerStatChanged": {
+            const player = processUpdatePlayer(msg, match);
+            const msg_player = msg.player;
+            const newvalue = msg.newvalue;
+            switch (msg.statname) {
+                case "knockdowns":
+                    player.setDown(newvalue);
+                    break;
+                case "kills":
+                    player.setKill(newvalue);
+                    break;
+                case "knockdownAssists":
+                    player.setKillAssist(newvalue);
+                default:
+                    common.logMessage(`[PlayerStatChanged] Unknown statname: ${msg.statname}`, "error");
+                    break;
+            }
             break;
-        case "PlayerUpgradeTierChanged":
+        }
+        case "PlayerUpgradeTierChanged": {
+            const player = processUpdatePlayer(msg, match);
+            player.level[msg.level] = { upgradename: "", upgradedesc: "" };
             break;
-        case "PlayerDamaged":
+        }
+        case "PlayerDamaged": {
             /**
+             * @todo
              * 1.HP減らす
              * 2.ダメージ数増やす
              * 3.イベントクラスのobjectに付随する情報を
              */
+            const msg_attacker = msg.attacker;
+            const msg_victim = msg.victim;
+            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
+            /**
+             * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
+             * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
+             */
+            if(msg_attacker.nucleushash == ""){ break; }
+            updatePlayer(msg_attacker, match.getPlayer(msg_attacker.nucleushash), match.mapName);
             break;
-        case "PlayerKilled":
+        }
+        case "PlayerKilled": {
+            const msg_awardedto = msg.awardedto;
+            const msg_victim = msg.victim;
+            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapName);
+            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
             break;
-        case "PlayerDowned":
+        }
+        case "PlayerDowned": {
+            const player = processUpdatePlayer(msg, match);
             break;
-        case "PlayerAssist":
+        }
+        case "PlayerAssist": {
+            const player = processUpdatePlayer(msg, match);
             break;
-        case "SquadEliminated":
+        }
+        case "SquadEliminated": {
             break;
-        case "GibraltarShieldAbsorbed":
+        }
+        case "GibraltarShieldAbsorbed": {
             break;
-        case "RevenantForgedShadowDamaged":
+        }
+        case "RevenantForgedShadowDamaged": {
             break;
-        case "ChangeCamera":
+        }
+        case "ChangeCamera": {
             break;
-        case "PauseToggle":
+        }
+        case "PauseToggle": {
             break;
-        case "CustomMatch_SetSettings":
+        }
+        case "CustomMatch_SetSettings": {
             break;
-        case "PlayerRespawnTeam":
+        }
+        case "PlayerRespawnTeam": {
             break;
-        case "PlayerRevive":
+        }
+        case "PlayerRevive": {
             break;
-        case "ArenasItemSelected":
+        }
+        case "ArenasItemSelected": {
             break;
-        case "ArenasItemDeselected":
+        }
+        case "ArenasItemDeselected": {
             break;
-        case "InventoryPickUp":
-            updatePlayer(msg.player, match.getPlayer(msg.player.nucleushash), match.mapName);
-            if (Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item) != undefined) {
-                match.getPlayer(msg.player.nucleushash).weaponList.push(new Weapon(Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item), checkItemLevel(Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === msg.item))))
+        }
+        case "InventoryPickUp": {
+            const player = processUpdatePlayer(msg, match);
+            const weapons_label = language.weapons_label;
+            const item = msg.item;
+            const weapons_label_value = Object.keys(weapons_label).find((key) => weapons_label[key] === item)
+            if (weapons_label_value != undefined) {
+                player.weaponList.push(new Weapon(weapons_label_value, checkItemLevel(weapons_label_value)))
             } else {
-                match.getPlayer(msg.player.nucleushash).inventory.addItem(new Item(msg.item, checkItemLevel(msg.item), msg.item.quantity));
+                player.inventory.addItem(new Item(item, checkItemLevel(item), item.quantity));
             }
             break;
-        case "InventoryDrop":
+        }
+        case "InventoryDrop": {
             break;
-        case "InventoryUse":
+        }
+        case "InventoryUse": {
             break;
-        case "BannerCollected":
+        }
+        case "BannerCollected": {
             break;
-        case "PlayerAbilityUsed":
+        }
+        case "PlayerAbilityUsed": {
             break;
-        case "LegendUpgradeSelected":
+        }
+        case "LegendUpgradeSelected": {
+            const player = processUpdatePlayer(msg, match);
+            const levelObj = player.level[level.msg];
+            levelObj.upgradename = msg.upgradename;
+            levelObj.upgradedesc = msg.upgradedesc;
             break;
-        case "ZiplineUsed":
+        }
+        case "ZiplineUsed": {
             break;
-        case "GrenadeThrown":
+        }
+        case "GrenadeThrown": {
             break;
-        case "BlackMarketAction":
+        }
+        case "BlackMarketAction": {
             break;
-        case "WraithPortal":
+        }
+        case "WraithPortal": {
             break;
-        case "WarpGateUsed":
+        }
+        case "WarpGateUsed": {
             break;
-        case "AmmoUsed":
+        }
+        case "AmmoUsed": {
             break;
-        case "WeaponSwitched":
+        }
+        case "WeaponSwitched": {
             break;
-        case "ObserverSwitched":
-            for (let i = 0; i < msg.targetteamList.length; i++) {
-                updatePlayer(msg.targetteamList[i], match.getPlayer(msg.targetteamList[i].nucleushash), match.mapName);
+        }
+        case "ObserverSwitched": {
+            const targetPlayerList = msg.targetteamList
+            for (let i = 0; i < targetPlayerList.length; i++) {
+                const targetPlayer = targetPlayerList[i]; 
+                updatePlayer(targetPlayer, match.getPlayer(targetPlayer.nucleushash), match.mapName);
             }
             break;
-        case "ObserverAnnotation":
+        }
+        case "ObserverAnnotation": {
             break;
+        }
         default:
-            console.warn("Unknown Type Message")
+            common.logMessage(`[analyze_message] Unknown Type Message: ${category}`, "warning")
             break;
     }
 }
@@ -237,7 +348,7 @@ function analyze_message(category, msg) {
  * @param {Boolean} characterSelected
  * @param {String} mapName
  */
-function updatePlayer(json, player, mapName, characterSelected=false) {
+function updatePlayer(json, player, mapName, characterSelected = false) {
     player.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y, mapName);
     player.updateHealthAndShields(json.currenthealth, json.maxhealth, json.shieldhealth, json.shieldmaxhealth);
     if (player.getStatus().teamName === "") {
@@ -249,15 +360,22 @@ function updatePlayer(json, player, mapName, characterSelected=false) {
     if (characterSelected) {
         player.updateCharacter(json.character, json.skin);
     }
+    return player
 }
 
+function processUpdatePlayer(msg, match, characterSelected = false) {
+    const msg_player = msg.player;
+    const player = match.getPlayer(msg_player.nucleushash)
+    updatePlayer(msg_player, player, match.mapName);
+    return player
+}
 
 /**
  * アイテム名からレベルをチェックする
  * @param {String} name
  */
 function checkItemLevel(name) {
-    let level = new RegExp(`/\(${language.item.level_label} (\d+)\)/g`).exec( name );
+    let level = new RegExp(`/\(${language.item.level_label} (\d+)\)/g`).exec(name);
     if (level == null) { level = 1 };
     return level;
 }
@@ -283,11 +401,11 @@ const intervalId = setInterval(() => {
 
 // サーバーが全て起動した後に呼ばれる処理
 common.registerOnServersStarted((servers) => {
-    console.log("サーバーが全て起動しました！");
+    common.logMessage("サーバーが全て起動しました！");
     // メッセージ処理用のコールバック関数を設定
     common.getServerList().websocketServer.setHandleMessageCallback((message, ws) => {
         const liveAPIEvent = LiveAPIEvent.deserializeBinary(message);
-        // console.log('LiveAPIEvent:', liveAPIEvent.toObject());
+        // common.logMessage('LiveAPIEvent:', liveAPIEvent.toObject());
 
         const gamemessage = liveAPIEvent.getGamemessage();
         const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得
@@ -323,7 +441,7 @@ common.registerOnServersStarted((servers) => {
 function handleMessage(message, messageType) {
     // ログを保存
     common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName)
-    // console.log(`Received ${messageType} message:`, message.toObject());
+    // common.logMessage(`Received ${messageType} message:`, message.toObject());
     analyze_message(messageType, message.toObject())
 }
 

@@ -1,6 +1,7 @@
 swc-win32-x64-msvc/
 client/.next/
 log/
+output/
 
 
 # macOS 特有のファイル

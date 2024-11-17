@@ -160,6 +160,10 @@ class Player {
      * @param {number} damageReceived - くらったダメージ総数
      * @param {Boolean} isAlive - 生存状態
      * @param {Boolean} isOnline - 接続状態
+     * @param {number} level - プレイヤーのレベル
+     * @param {string} upgradeName - 選択したアップグレードの名前
+     * @param {string} upgradeDesc - 選択したアップグレードの説明
+     * @param {object} weaponList - 所持している武器のリスト
      */
     constructor(name, teamId, nucleusHash, hardwareName) {
         this.name = name;
@@ -184,6 +188,9 @@ class Player {
         this.damageReceived = 0;            // くらったダメージ総数
         this.isAlive = true;
         this.isOnline = true;
+        this.level = {
+            0: {}
+        };
         this.weaponList = [];
     }
 
@@ -262,7 +269,7 @@ class Player {
      * @returns {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
      */
     getAliveStatus() {
-        return this.isAlive
+        return this.isAlive;
     }
 
     /**
@@ -289,27 +296,27 @@ class Player {
     }
 
     /**
-     * キル数を増加させるメソッド
-     * @param {number} amount 増加させるキル数
+     * キル数を設定するメソッド
+     * @param {number} amount 設定するキル数
      */
-    addKill(amount = 1) {
-        this.kills += amount;
+    setKill(amount) {
+        this.kills = amount;
     }
 
     /**
-     * キルアシスト数を増加させるメソッド
-     * @param {number} amount 増加させるキルアシスト数
+     * キルアシスト数を設定するメソッド
+     * @param {number} amount 設定するキルアシスト数
      */
-    addKillAssist(amount = 1) {
-        this.killAssists += amount;
+    setKillAssist(amount) {
+        this.killAssists = amount;
     }
 
     /**
-     * ダウンさせた数を増加させるメソッド
-     * @param {number} amount 増加させるダウン数
+     * ダウンさせた数を設定するメソッド
+     * @param {number} amount 設定するダウン数
      */
-    addDown(amount = 1) {
-        this.downs += amount;
+    setDown(amount) {
+        this.downs = amount;
     }
 
     /**
@@ -485,7 +492,7 @@ class CustomMatch {
         this.players = {};  // プレイヤーのリスト (最大60人) 連想配列に変更　チームにnucleusHashのみ保存
         this.teams = {};    // チームの連想配列 (teamIdをキーにする)
         this.maxPlayers = 60;
-        this.gameState = "";  // gameStateChangedを格納
+        this.state = "";  // gameStateChangedを格納
         this.mapName = "";  // マップ名を格納
         this.playlistName = "";  // マッチ名を格納 (例) World's Edge（リングなし）
         this.playlistDesc = "";  // マッチ説明を格納 (例) 最後の1部隊になるまで戦い抜け
@@ -495,7 +502,6 @@ class CustomMatch {
         this.serverId = "";  // サーバーIDを格納
         this.startingLoadout = new Inventory();  // 初期配布のアイテムを追加するInventoryインスタンスを作成
         this.eventLists = [];
-        this.ringStatus = "idle";  // active, idle
         this.rings = [];
         this.mapOffset = [0, 0, 1]
     }
@@ -511,18 +517,18 @@ class CustomMatch {
      */
     addRingElement(ring) {
         // 配列の長さが指定の制限を超える場合は先頭の要素を削除
-        if (this.rings.length > 3) {
-            this.rings.shift();
-        }
+        // if (this.rings.length > 3) {
+        //     this.rings.shift();
+        // }
         // 新しい要素を末尾に追加
         this.rings.push(ring);
 
         switch (ring.category) {
             case "ringStartClosing":
-                this.ringStatus = "active"
+                this.state = `RingStartClosing_Stage_${ring.stage}`
                 break;
             case "ringFinishedClosing":
-                this.ringStatus = "idle"
+                this.state = `RingFinishedClosing_Stage_${ring.stage}`
                 break;
             default:
                 console.log("[CustomMatch.addRingElement] Recived unknown message")
@@ -565,8 +571,8 @@ class CustomMatch {
      * ゲームステータスを設定するメソッド
      * @param {String} state ゲームステータス
      */
-    setGameState(state) {
-        this.gameState = state;
+    setState(state) {
+        this.state = state;
     }
 
     /**
@@ -643,9 +649,9 @@ class CustomMatch {
         if (this.players[nucleusHash]) {
             const removedPlayer = this.players[nucleusHash];
             delete this.players[nucleusHash];
-            console.log(`${removedPlayer.name} has been removed from the match.`);
+             return `${removedPlayer.name} has been removed from the match.`;
         } else {
-            console.log(`Player with nucleusHash ${nucleusHash} not found in the match.`);
+            return `Player with nucleusHash ${nucleusHash} not found in the match.`;
         }
     }
 
@@ -667,7 +673,7 @@ class CustomMatch {
         if (player) {
             return player;
         } else {
-            console.log(`Player with nucleusHash ${nucleusHash} not found.`);
+            // console.log(`Player with nucleusHash ${nucleusHash} not found.`);
             return null;
         }
     }
@@ -728,7 +734,7 @@ class Weapon {
  * Eventに関するクラス
  * @param {number} timestamp - イベント発生時のタイムスタンプ
  * @param {string} category - イベントの種類
- * @param {string} nucleusHash - プレイヤーのID
+ * @param {string} nucleusHash - プレイヤーのIDかチームのID
  * @param {object} data - 受信したメッセージやクラスオブジェクトなどを入れる
  */
 class Event {
@@ -736,7 +742,7 @@ class Event {
      * Eventクラスの初期化
      * @param {number} _timestamp - イベント発生時のタイムスタンプ
      * @param {string} _category - イベントの種類
-     * @param {string} _nucleusHash - プレイヤーのID
+     * @param {string} _nucleusHash - プレイヤーID or チームID
      * @param {object} _data - 受信したメッセージやクラスオブジェクトなどを入れる
      */
     constructor(_timestamp, _category, _target, _data) {
@@ -770,18 +776,34 @@ class Ring {
      * @param {number} _currentradius 
      * @param {number} _shrinkduration
      * @param {Object} _mapOffset
-     * @param {number} _endradius
      */
-    constructor(_timestamp, _category, _stage, _center, _currentRadius, _shrinkduration, _mapOffset, _endradius = -1) {
+    constructor(_timestamp, _category, _stage, _center, _currentRadius, _shrinkduration, _mapOffset) {
         this.timestamp = _timestamp;
         this.category = _category;
         this.stage = _stage;
         this.currentRadius = _currentRadius / _mapOffset[2];
-        this.endradius = _endradius;
         this.shrinkduration = _shrinkduration;
         this.endTimestamp = this.timestamp + this.shrinkduration;
         this.center = new Vector3()
         this.center.updateValues(_center.x, _center.y, _center.z, _mapOffset)
+    }
+
+    /**
+     * リングオブジェクトを更新する関数
+     * @param {number} _timestamp 
+     * @param {string} _category 
+     * @param {number} _currentRadius 
+     * @param {number} _shrinkduration 
+     * @param {number} _endradius 
+     * @param {object} _mapOffset 
+     */
+    updateRing(_timestamp, _category, _currentRadius, _shrinkduration, _endradius, _mapOffset) {
+        this.timestamp = _timestamp;
+        this.category = _category;
+        this.currentRadius = _currentRadius / _mapOffset[2];
+        this.endradius = _endradius;
+        this.shrinkduration = _shrinkduration;
+        this.endTimestamp = this.timestamp + this.shrinkduration;
     }
 }
 
