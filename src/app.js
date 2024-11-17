@@ -235,14 +235,24 @@ function analyze_message(category, msg) {
             break;
         }
         case "PlayerDowned": {
-            const player = processUpdatePlayer(msg, match);
+            const msg_awardedto = msg.awardedto;
+            const msg_victim = msg.victim;
+            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapName);
+            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
             break;
         }
         case "PlayerAssist": {
-            const player = processUpdatePlayer(msg, match);
+            const msg_awardedto = msg.awardedto;
+            const msg_victim = msg.victim;
+            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapName);
+            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
             break;
         }
         case "SquadEliminated": {
+            const msg_awardedto = msg.awardedto;
+            const msg_victim = msg.victim;
+            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapName);
+            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
             break;
         }
         case "GibraltarShieldAbsorbed": {
