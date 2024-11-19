@@ -119,15 +119,21 @@ function analyze_message(category, msg) {
             break;
         }
         case "MatchSetup": {
-            const startingloadout = msg.startingLoadout
+            const startingloadout = msg.startingLoadout;
             if (startingloadout.weaponsList != []) {
+                /**
+                 * @todo
+                 * 武器はWeaponクラスでmatch.startingLoadoutにaddItemでぶちこむ
+                 */
                 for (let i = 0; i < startingloadout.weaponsList.length; i++) {
-                    match.startingLoadout.addItem(new Item(startingloadout.weaponsList[i].item, checkItemLevel(startingloadout.weaponsList[i].item), startingloadout.weaponsList[i].quantity));
+                    const weapon = startingloadout.weaponsList[i];
+                    match.startingLoadout.addItem(new Item(weapon.item, checkItemLevel(weapon.item), weapon.quantity));
                 }
             }
             if (startingloadout.equipmentList != []) {
                 for (let i = 0; i < startingloadout.equipmentList.length; i++) {
-                    match.startingLoadout.addItem(new Item(startingloadout.equipmentList[i].item, checkItemLevel(startingloadout.equipmentList[i].item), startingloadout.equipmentList[i].quantity));
+                    const equipment = startingloadout.equipmentList[i];
+                    match.startingLoadout.addItem(new Item(equipment.item, checkItemLevel(equipment.item), equipment.quantity));
                 }
             }
             match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, new Datacenter(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name), msg.aimassiston, msg.anonymousmode, msg.serverid);
@@ -144,7 +150,7 @@ function analyze_message(category, msg) {
             break;
         }
         case "CharacterSelected": {
-            const player = processUpdatePlayer(msg, match,true);
+            const player = processUpdatePlayer(msg, match, true);
             break;
         }
         case "MatchStateEnd": {
@@ -162,12 +168,10 @@ function analyze_message(category, msg) {
                 match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapOffset));
             }
             rings[rings.length - 1].updateRing(msg.timestamp, msg.category, msg.currentRadius, msg.shrinkduration, msg.endradius, match.mapOffset);
-            sendMapData.sendRingUpdate(match);
             break;
         }
         case "RingFinishedClosing": {
             match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapOffset));
-            sendMapData.sendRingUpdate(match);
             break;
         }
         case "PlayerConnected": {
@@ -177,17 +181,16 @@ function analyze_message(category, msg) {
                 match.addPlayer(new Player(msg_player.name, msg_player.teamid, nucleushash, msg_player.hardwarename));
             }
             const player = processUpdatePlayer(msg, match);
-            player.isOnline = true;
+            player.setOnlineStatus(true);
             break;
         }
         case "PlayerDisconnected": {
             const player = processUpdatePlayer(msg, match);
-            player.isOnline = false;
+            player.setOnlineStatus(false);
             break;
         }
         case "PlayerStatChanged": {
             const player = processUpdatePlayer(msg, match);
-            const msg_player = msg.player;
             const newvalue = msg.newvalue;
             switch (msg.statname) {
                 case "knockdowns":
@@ -206,7 +209,7 @@ function analyze_message(category, msg) {
         }
         case "PlayerUpgradeTierChanged": {
             const player = processUpdatePlayer(msg, match);
-            player.level[msg.level] = { upgradename: "", upgradedesc: "" };
+            player.level[msg.level] = { "upgradename": "", "upgradedesc": "" };
             break;
         }
         case "PlayerDamaged": {
@@ -218,41 +221,67 @@ function analyze_message(category, msg) {
              */
             const msg_attacker = msg.attacker;
             const msg_victim = msg.victim;
-            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
+            const victim = match.getPlayer(msg_victim.nucleushash);
+            updatePlayer(msg_victim, victim, match.mapName);
+            victim.addDamageReceived(msg.damageinflicted);
             /**
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
             if(msg_attacker.nucleushash == ""){ break; }
-            updatePlayer(msg_attacker, match.getPlayer(msg_attacker.nucleushash), match.mapName);
+            const attacker = match.getPlayer(msg_attacker.nucleushash);
+            updatePlayer(msg_attacker, attacker, match.mapName);
+            attacker.addDamageDealt(msg.damageinflicted);
             break;
         }
         case "PlayerKilled": {
             const msg_awardedto = msg.awardedto;
             const msg_victim = msg.victim;
+            const victim = match.getPlayer(msg_victim.nucleushash);
             updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapName);
-            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
+            updatePlayer(msg_victim, victim, match.mapName);
+            victim.setAliveStatus(false);
+            /**
+             * @question
+             * 何の武器で殺されたか格納する？
+             * する場合はどこに格納しようか？
+             * 何の武器で合計何キル(したか・された)かも持っておいてもいいかもね
+             */
             break;
         }
         case "PlayerDowned": {
-            const msg_awardedto = msg.awardedto;
+            const msg_attacker = msg.attacker;
             const msg_victim = msg.victim;
-            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapName);
+            updatePlayer(msg_attacker, match.getPlayer(msg_attacker.nucleushash), match.mapName);
             updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
+            /**
+             * @question
+             * 何の武器でダメージ受けたか格納する？
+             * する場合はどこに格納しようか？
+             * 何の武器で合計何ダメージ(与えた・受けた)かも持っておいてもいいかもね
+             */
             break;
         }
         case "PlayerAssist": {
-            const msg_awardedto = msg.awardedto;
+            const msg_assistant = msg.assistant;
             const msg_victim = msg.victim;
-            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapName);
+            updatePlayer(msg_assistant, match.getPlayer(msg_assistant.nucleushash), match.mapName);
             updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
+            /**
+             * @question
+             * 何の武器でアシスト受けたか格納する？
+             * する場合はどこに格納しようか？
+             * 何の武器で合計何アシスト(与えた・受けた)かも持っておいてもいいかもね
+             */
             break;
         }
         case "SquadEliminated": {
-            const msg_awardedto = msg.awardedto;
-            const msg_victim = msg.victim;
-            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapName);
-            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
+            const msg_playersList = msg.playersList;
+            for (const msg_player of msg_playersList) {
+                const player = match.getPlayer(msg_player.nucleushash);
+                updatePlayer(msg_player, player, match.mapName);
+                player.setAliveStatus(false);
+            }
             break;
         }
         case "GibraltarShieldAbsorbed": {
@@ -288,13 +317,17 @@ function analyze_message(category, msg) {
             const item = msg.item;
             const weapons_label_value = Object.keys(weapons_label).find((key) => weapons_label[key] === item)
             if (weapons_label_value != undefined) {
-                player.weaponList.push(new Weapon(weapons_label_value, checkItemLevel(weapons_label_value)))
+                player.weaponList.push(new Weapon(weapons_label_value, checkItemLevel(item)))
             } else {
                 player.inventory.addItem(new Item(item, checkItemLevel(item), item.quantity));
             }
             break;
         }
         case "InventoryDrop": {
+            /**
+             * @todo
+             * 武器を捨てた際にアタッチメントがすべてドロップイベントが発火しているか確認
+             */
             break;
         }
         case "InventoryUse": {
@@ -308,7 +341,7 @@ function analyze_message(category, msg) {
         }
         case "LegendUpgradeSelected": {
             const player = processUpdatePlayer(msg, match);
-            const levelObj = player.level[level.msg];
+            const levelObj = player.level[msg.level];
             levelObj.upgradename = msg.upgradename;
             levelObj.upgradedesc = msg.upgradedesc;
             break;
@@ -337,7 +370,7 @@ function analyze_message(category, msg) {
         case "ObserverSwitched": {
             const targetPlayerList = msg.targetteamList
             for (let i = 0; i < targetPlayerList.length; i++) {
-                const targetPlayer = targetPlayerList[i]; 
+                const targetPlayer = targetPlayerList[i];
                 updatePlayer(targetPlayer, match.getPlayer(targetPlayer.nucleushash), match.mapName);
             }
             break;
@@ -375,8 +408,8 @@ function updatePlayer(json, player, mapName, characterSelected = false) {
 
 function processUpdatePlayer(msg, match, characterSelected = false) {
     const msg_player = msg.player;
-    const player = match.getPlayer(msg_player.nucleushash)
-    updatePlayer(msg_player, player, match.mapName);
+    const player = match.getPlayer(msg_player.nucleushash);
+    updatePlayer(msg_player, player, match.mapName, characterSelected);
     return player
 }
 
@@ -385,7 +418,7 @@ function processUpdatePlayer(msg, match, characterSelected = false) {
  * @param {String} name
  */
 function checkItemLevel(name) {
-    let level = new RegExp(`/\(${language.item.level_label} (\d+)\)/g`).exec(name);
+    let level = Number(new RegExp(`\\(${language.item.level_label} (\\d+)\\)`).exec(name)[1]);
     if (level == null) { level = 1 };
     return level;
 }
