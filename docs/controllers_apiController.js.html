@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: controllers/apiController.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,39 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: controllers/apiController.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// src/controllers/apiController.js
+const apexService = require('../services/apexService');
+const sendComponent = require('../services/sendComponent');
 
+/**
+ * API 用のエンドポイントを処理する関数
+ * @param {Request} req - HTTP リクエストオブジェクト
+ * @param {Response} res - HTTP レスポンスオブジェクト
+ */
+function handleApiRequest(req, res) {
+  const { slug } = req.query;
+  
+  // /view/* のリクエストを特定
+  if (slug === 'view') {
+    sendComponent.sendComponentToClients("mapView");
+  } else {
+    apexService.apexLiveApiCall(req, res); 
+  }
+}
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+module.exports = { handleApiRequest };
+</code></pre>
+        </article>
+    </section>
 
 
 

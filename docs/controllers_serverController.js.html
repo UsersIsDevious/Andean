@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: controllers/serverController.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,55 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: controllers/serverController.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { sendClients } = require('./sseController'); // SSE のクライアント管理関数をインポート
+const common = require('../utils/shutdownManager');
+const app = require('../app')
+
+/**
+ * ボタンが押された時に色をクライアントに送信するエンドポイント
+ * @param {Request} req - クライアントのリクエストオブジェクト
+ * @param {Response} res - クライアントに対するレスポンスオブジェクト
+ */
+function handleNotify(req, res) {
+  const color = req.body.color || 'red'; // デフォルト値は赤
+  sendClients(`{"color": "${color}"}`);
+  res.sendStatus(200);
+}
+
+/**
+ * サーバーを停止するエンドポイント
+ * @param {Request} req - クライアントのリクエストオブジェクト
+ * @param {Response} res - クライアントに対するレスポンスオブジェクト
+ */
+function stopServer(req, res) {
+  res.sendStatus(200);
+  common.shutdownServers(); // すべてのサーバーを停止
+}
+
+/**
+ * ゲームを起動するエンドポイント
+ * @param {Request} req - クライアントのリクエストオブジェクト
+ * @param {Response} res - クライアントに対するレスポンスオブジェクト
+ */
+function startGame(req, res) {
+  res.sendStatus(200);
+  app.startApexLegends()
+}
 
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+module.exports = { handleNotify, stopServer, startGame };
+</code></pre>
+        </article>
+    </section>
 
 
 

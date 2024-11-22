@@ -1,10 +1,11 @@
 {
   "source": {
-    "include": ["src","client"],
+    "include": ["src"],
     "includePattern": ".js$",
     "excludePattern": "(node_modules/|docs)"
   },
   "opts": {
-    "destination": "./docs"
+    "destination": "./docs",
+    "recurse": true
   }
 }
