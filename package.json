@@ -28,5 +28,8 @@
     "tailwindcss-animate": "^1.0.7",
     "websockets": "^0.2.0",
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "jsdoc": "^4.0.4"
   }
 }
