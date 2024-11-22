@@ -426,7 +426,9 @@ function checkItemLevel(name) {
 function getPlayerStatus(match) {
     if (match.gameState == "Playing") {
         for (const teamId in match.teams) {
-            apexCommon.change_camera("name", match.getPlayer(match.teams[teamId][0]).name);
+            const player = match.getPlayer(match.teams[teamId][0]);
+            if (player.isAlive === false) { break; }
+            apexCommon.change_camera("name", player.name);
         }
     }
 }
