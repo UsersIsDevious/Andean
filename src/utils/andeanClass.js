@@ -1,6 +1,6 @@
 /**
- * 3次元ベクトルを表すクラス
- * @class
+ * @class Vector3
+ * @description 3次元ベクトルを表すクラス
  */
 class Vector3 {
     /**
@@ -8,17 +8,29 @@ class Vector3 {
      * @param {number} [x=0] - X座標の値
      * @param {number} [y=0] - Y座標の値
      * @param {number} [z=0] - Z座標の値
+     * @memberof Vector3
      */
     constructor(x = 0, y = 0, z = 0) {
+        /**
+         * @param {number} x - X座標の値
+         */
         this.x = x;
+        /**
+         * @param {number} y - Y座標の値
+         */
         this.y = y;
+        /**
+         * @param {number} z  - Z座標の値
+         */
         this.z = z;
     }
     /**
      * 座標を更新する関数
-     * @param {number} newX 新しいx座標
-     * @param {number} newY 新しいy座標
-     * @param {number} newZ 新しいz座標
+     * @param {number} newX - 新しいx座標
+     * @param {number} newY - 新しいy座標
+     * @param {number} newZ - 新しいz座標
+     * @param {number} mapOffset - 座標オフセット
+     * @memberof Vector3
      */
     updateValues(newX, newY, newZ, mapOffset) {
         this.x = (newX + mapOffset[0]) / mapOffset[2] + 2048;
@@ -32,19 +44,29 @@ class Vector3 {
  */
 class Item {
     /**
-     * @param {string} name アイテムの名前
-     * @param {number} level アイテムのレベル
-     * @param {number} quantity アイテムの保有数
+     * @param {string} name - アイテムの名前
+     * @param {number} level - アイテムのレベル
+     * @param {number} quantity - アイテムの保有数
      */
     constructor(name, level, quantity) {
-        this.name = name;       // string: アイテムの名前
-        this.level = level;     // number: アイテムのレベル
-        this.quantity = quantity; // number: アイテムの保有数
+        /**
+         * @param {string} name - アイテムの名前
+         */
+        this.name = name;
+        /**
+         * @param {number} level - アイテムのレベル
+         */
+        this.level = level;
+        /**
+         * @param {number} quantity - アイテムの保有数
+         */
+        this.quantity = quantity;
     }
 
     /**
      * アイテムの個数を変更する
-     * @param {number} newQuantity 新しい個数
+     * @param {number} newQuantity - 新しい個数
+     * @memberof Item
      */
     setQuantity(newQuantity) {
         this.quantity = newQuantity;
@@ -53,6 +75,7 @@ class Item {
     /**
      * アイテムの詳細を返す
      * @returns {Object} アイテムのステータス
+     * @memberof Item
      */
     getItemStatus() {
         return {
@@ -64,12 +87,69 @@ class Item {
 }
 
 /**
+ * 武器に関するクラス
+ * @class Weapon
+ * @param {string} id - 内部の武器名
+ * @param {string} label - 表示されている武器名
+ * @param {number} level - 武器のレベル
+ */
+class Weapon {
+    /**
+     * Creates an instance of Weapon.
+     * @param {string} id - 内部の武器名
+     * @param {string} label - 表示されている武器名
+     * @param {number} level - 武器のレベル
+     * @memberof Weapon
+     */
+    constructor(id, label, level) {
+        /**
+         * @param {string} Id - 内部の武器名
+         */
+        this.Id = id;
+        /**
+         * @param {string} label - 表示されている武器名
+         */
+        this.label = label;
+        /**
+         * @param {number} level - 武器のレベル
+         */
+        this.level = level;
+        /**
+         * @param {number} maxMagazine - AmmoUsedで使用された最大の弾数を格納
+         */
+        this.maxMagazine = 0;
+    }
+
+    /**
+     * AmmoUsedで使用された最大の弾数を返す
+     * @returns {number} AmmoUsedで使用された最大の弾数
+     * @memberof Weapon
+     */
+    getMaxMagazine() {
+        return {
+            maxMagazine: this.maxMagazine
+        };
+    }
+}
+
+/**
  * @class Inventory
  * @description プレイヤーが持つインベントリを表すクラス
  */
 class Inventory {
+    /**
+     * Creates an instance of Inventory.
+     * @memberof Inventory
+     */
     constructor() {
+        /**
+         * @param {item} items - アイテムの保有数
+         */
         this.items = []; // Array<Item>: アイテムのリスト
+        /**
+         * @param {number} weapons - アイテムの保有数
+         */
+        this.weapons = [];
     }
 
     /**
@@ -81,13 +161,44 @@ class Inventory {
     }
 
     /**
+     * インベントリに武器を追加する
+     * @param {Weapon} weapon 追加するアイテム
+     */
+    addWeapon(weapon) {
+        this.weapons.push(weapon);
+    }
+
+    /**
      * アイテムを所持しているか確認し、なければ追加、あれば所持数を更新する
      * @param {string} itemName アイテムの名前
      * @param {number} quantity 追加または更新するアイテムの個数
-     * @param {number} level アイテムのレベル
+     * @param {number} level アイテムのレベル\
+     * @memberof Inventory
      */
     addOrUpdateItem(itemName, quantity, level) {
         const existingItem = this.getItem(itemName, level);
+        if (existingItem) {
+            // 同じ名前とレベルのアイテムが既に存在する場合は、所持数を更新
+            const newQuantity = existingItem.quantity + quantity;
+            existingItem.setQuantity(newQuantity);
+            console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingItem.quantity}.`);
+        } else {
+            // アイテムが存在しない場合は、新規追加
+            const newItem = new Item(itemName, level, quantity);
+            this.addItem(newItem);
+            console.log(`${itemName} (Level ${level}) has been added with a quantity of ${quantity}.`);
+        }
+    }
+
+    /**
+     * アイテムを所持しているか確認し、なければ追加、あれば所持数を更新する
+     * @param {string} weaponLabel アイテムの名前
+     * @param {number} level アイテムのレベル
+     * @param {number} maxMagazine マガジンの最大サイズ
+     * @memberof Inventory
+     */
+    addOrUpdateWeapon(weaponLabel, level, maxMagazine) {
+        const existingItem = this.getWeapon(weaponLabel, level);
         if (existingItem) {
             // 同じ名前とレベルのアイテムが既に存在する場合は、所持数を更新
             const newQuantity = existingItem.quantity + quantity;
@@ -107,13 +218,27 @@ class Inventory {
      * @param {string} itemName 取得するアイテムの名前
      * @param {number} level 取得するアイテムのレベル
      * @returns {Item|undefined} 見つかったアイテム、またはundefined
+     * @memberof Inventory
      */
     getItem(itemName, level) {
         return this.items.find(item => item.name === itemName && item.level === level);
     }
 
     /**
+     * インベントリ内の武器を取得する
+     * 名前とレベルの両方で一致する武器を検索する
+     * @param {string} weaponId 取得する武器の名前
+     * @param {number} level 取得する武器のレベル
+     * @returns {Item|undefined} 見つかった武器、またはundefined
+     * @memberof Inventory
+     */
+    getWeapon(weaponId, level) {
+        return this.items.find(weapon => weapon.name === weaponId && weapon.level === level);
+    }
+
+    /**
      * インベントリを空にする関数
+     * @memberof Inventory
      */
     clearInventory() {
         this.items = []; // 配列を空にする
@@ -122,75 +247,125 @@ class Inventory {
     /**
      * インベントリのステータスを返す
      * @returns {Array<Object>} インベントリ内のアイテムのステータス
+     * @memberof Inventory
      */
     getInventoryStatus() {
         return this.items.map(item => item.getItemStatus());
     }
 }
 
-// Playerクラスの定義
 /**
  * @class Player
  * @description プレイヤーを表すクラス。インベントリとゲーム内でのステータスを保持する。
  */
 class Player {
     /**
+     * Creates an instance of Player.
      * @constructor
      * @param {string} name - プレイヤー名
      * @param {number} teamId - チームID (uint32)
-     * @param {Vector3} pos - プレイヤーの位置
-     * @param {number} angles - プレイヤーの視角
-     * @param {number} currentHealth - 現在の体力 (uint32)
-     * @param {number} maxHealth - 最大体力 (uint32)
-     * @param {number} shieldHealth - 現在のシールド体力 (uint32)
-     * @param {number} shieldMaxHealth - 最大シールド体力 (uint32)
      * @param {string} nucleusHash - プレイヤーの識別用ハッシュ
      * @param {string} hardwareName - 使用ハードウェア名
-     * @param {string} teamName - チーム名
-     * @param {number} squadIndex - 分隊番号 (uint32)
-     * @param {string} character - キャラクター名
-     * @param {string} skin - キャラクタースキン名
-     * @param {string} mainWeapon - メインウェポン
-     * @param {string} subWeapon - サブウェポン
-     * @param {Inventory} inventory - インベントリー
-     * @param {number} kills - キル数
-     * @param {number} killAssists - キルアシスト数
-     * @param {number} downs - ダウンさせた数
-     * @param {number} damageDealt - 敵に与えたダメージ総数
-     * @param {number} damageReceived - くらったダメージ総数
-     * @param {Boolean} isAlive - 生存状態
-     * @param {Boolean} isOnline - 接続状態
-     * @param {number} level - プレイヤーのレベル
-     * @param {string} upgradeName - 選択したアップグレードの名前
-     * @param {string} upgradeDesc - 選択したアップグレードの説明
-     * @param {object} weaponList - 所持している武器のリスト
+     * @memberof Player
      */
     constructor(name, teamId, nucleusHash, hardwareName) {
+        /**
+         * @param {string} name - プレイヤー名
+         */
         this.name = name;
+        /**
+         * @param {number} teamId - チームID (uint32)
+         */
         this.teamId = teamId;
-        this.pos = new Vector3();
-        this.angles = 0;
-        this.currentHealth = 0;
-        this.maxHealth = 0;
-        this.shieldHealth = 0;
-        this.shieldMaxHealth = 0;
+        /**
+        * @param {string} nucleusHash - プレイヤーの識別用ハッシュ
+        */
         this.nucleusHash = nucleusHash;
+        /**
+        * @param {string} hardwareName - 使用ハードウェア名
+        */
         this.hardwareName = hardwareName;
+        /**
+         * @param {Vector3} pos - プレイヤーの位置
+         */
+        this.pos = new Vector3();
+        /**
+         * @param {number} angles - プレイヤーの視角 
+        */
+        this.angles = 0;
+        /**
+        * @param {number} currentHealth - 現在の体力 (uint32)
+         */
+        this.currentHealth = 0;
+        /**
+        * @param {number} maxHealth - 最大体力 (uint32)
+        */
+        this.maxHealth = 0;
+        /**
+        * @param {number} shieldHealth - 現在のシールド体力 (uint32)
+        */
+        this.shieldHealth = 0;
+        /**
+        * @param {number} shieldMaxHealth - 最大シールド体力 (uint32)
+        */
+        this.shieldMaxHealth = 0;
+        /**
+        * @param {string} teamName - チーム名
+        */
         this.teamName = "";
+        /**
+        * @param {number} squadIndex - 分隊番号 (uint32)
+        */
         this.squadIndex = -1;
+        /**
+        * @param {string} character - キャラクター名
+        */
         this.character = "";
+        /**
+        * @param {string} skin - キャラクタースキン名
+        */
         this.skin = "";
-        this.inventory = new Inventory();    // インベントリーを追加
+        /**
+        * @param {Inventory} inventory - プレーヤーのインベントリー
+        */
+        this.inventory = new Inventory();
+        /**
+        * @param {number} kills - キル数
+        */
         this.kills = 0;                     // キル数
+        /**
+        * @param {number} killAssists - キルアシスト数
+        */
         this.killAssists = 0;               // キルアシスト数
+        /**
+        * @param {number} downs - ダウンさせた数
+        */
         this.downs = 0;                     // ダウンさせた数
-        this.damageDealt = 0;               // 敵に与えたダメージ総数
-        this.damageReceived = 0;            // くらったダメージ総数
+        /**
+        * @param {object} damageDealt - 敵に与えたダメージ詳細
+        */
+        this.damageDealt = { total: 0 };
+        /**
+        * @param {object} damageReceived - くらったダメージ詳細
+        */
+        this.damageReceived = { total: 0 };
+        /**
+        * @param {Boolean} isAlive - 生存状態
+        */
         this.isAlive = true;
+        /**
+        * @param {Boolean} isOnline - 接続状態
+        */
         this.isOnline = true;
+        /**
+        * @param {number} level - プレイヤーのレベル
+        */
         this.level = {
             0: {}
         };
+        /**
+         * @param {object} weaponList - 所持している武器のリスト
+        */
         this.weaponList = [];
     }
 
@@ -202,6 +377,7 @@ class Player {
      * @param {number} z 新しいz座標
      * @param {number} newAngles 新しい角度
      * @param {Object} mapOffset
+     * @memberof Player
      */
     updatePositionAndAngles(x, y, z, newAngles, mapOffset) {
         this.pos.updateValues(x, y, z, mapOffset)
@@ -214,6 +390,7 @@ class Player {
      * @param {number} newMaxHealth 新しい最大体力
      * @param {number} newShieldHealth 新しいシールドの体力
      * @param {number} newShieldMaxHealth 新しい最大シールド体力
+     * @memberof Player
      */
     updateHealthAndShields(newCurrentHealth, newMaxHealth, newShieldHealth, newShieldMaxHealth) {
         this.currentHealth = newCurrentHealth;
@@ -226,6 +403,7 @@ class Player {
      * プレイヤーのチーム情報、キャラクター、スキンを更新する関数
      * @param {string} newCharacter 新しいキャラクター
      * @param {string} newSkin 新しいスキン
+     * @memberof Player
      */
     updateCharacter(newCharacter, newSkin) {
         this.character = newCharacter;
@@ -235,6 +413,7 @@ class Player {
     /**
      * プレイヤーの生存状態を変更するメソッド
      * @param {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
+     * @memberof Player
      */
     setAliveStatus(status) {
         this.isAlive = status;
@@ -243,6 +422,7 @@ class Player {
     /**
      * プレイヤーの生存状態を変更するメソッド
      * @param {boolean} status プレイヤーが接続している場合はtrue、切断している場合はfalse
+     * @memberof Player
      */
     setOnlineStatus(status) {
         this.isAlive = status;
@@ -251,6 +431,7 @@ class Player {
     /**
      * チーム名を変更するメソッド
      * @param {String} teamName チーム名を入力してチーム名を変更
+     * @memberof Player
      */
     setTeamName(teamName) {
         this.teamName = teamName;
@@ -259,6 +440,7 @@ class Player {
     /**
      * チーム内のインデックスを変更するメソッド
      * @param {number} index 変更する値を入力して、その値に変更する
+     * @memberof Player
      */
     setSquadIndex(index) {
         this.squadIndex = index;
@@ -267,37 +449,25 @@ class Player {
     /**
      * プレイヤーの生存状態を返すメソッド
      * @returns {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
+     * @memberof Player
      */
     getAliveStatus() {
         return this.isAlive;
     }
 
     /**
-     * プレイヤーのステータスをオブジェクトとして返す
-     * @returns {Object} プレイヤーのステータス情報
+     * プレイヤーの接続状態を返すメソッド
+     * @returns {boolean} status プレイヤーが接続している場合はtrue、切断している場合はfalse
+     * @memberof Player
      */
-    getStatus() {
-        return {
-            name: this.name,
-            teamId: this.teamId,
-            pos: { x: this.pos.x, y: this.pos.y, z: this.pos.z },
-            angles: this.angles,
-            currentHealth: this.currentHealth,
-            maxHealth: this.maxHealth,
-            shieldHealth: this.shieldHealth,
-            shieldMaxHealth: this.shieldMaxHealth,
-            nucleusHash: this.nucleusHash,
-            hardwareName: this.hardwareName,
-            teamName: this.teamName,
-            squadIndex: this.squadIndex,
-            character: this.character,
-            skin: this.skin
-        };
+    getOnlineStatus() {
+        return this.isOnline;
     }
 
     /**
      * キル数を設定するメソッド
      * @param {number} amount 設定するキル数
+     * @memberof Player
      */
     setKill(amount) {
         this.kills = amount;
@@ -306,6 +476,7 @@ class Player {
     /**
      * キルアシスト数を設定するメソッド
      * @param {number} amount 設定するキルアシスト数
+     * @memberof Player
      */
     setKillAssist(amount) {
         this.killAssists = amount;
@@ -314,6 +485,7 @@ class Player {
     /**
      * ダウンさせた数を設定するメソッド
      * @param {number} amount 設定するダウン数
+     * @memberof Player
      */
     setDown(amount) {
         this.downs = amount;
@@ -321,98 +493,79 @@ class Player {
 
     /**
      * 敵に与えたダメージを増加させるメソッド
+     * @param {string} perpetrator - 攻撃に使用したもの
      * @param {number} amount 増加させるダメージ量
+     * @memberof Player
      */
-    addDamageDealt(amount) {
-        this.damageDealt += amount;
+    addDamageDealt(perpetrator, amount) {
+        if (!perpetrator in this.damageDealt) {
+            this.damageDealt[perpetrator] = 0;
+        }
+        this.damageDealt[perpetrator] += amount;
+        this.damageDealt[total] += amount;
     }
 
     /**
-     * くらったダメージを増加させるメソッド
-     * @param {number} amount 増加させるダメージ量
+     * 受けたダメージを増加させるメソッド
+     * @param {string} perpetrator - 攻撃に使用されたもの
+     * @param {number} amount - 増加させるダメージ量
+     * @param {boolean} [penetrator=false] - シールド貫通武器かどうか
+     * @memberof Player
      */
-    addDamageReceived(amount) {
-        this.damageReceived += amount;
-    }
+    addDamageReceived(perpetrator, amount, penetrator = false) {
+        if (!perpetrator in this.damageReceived) {
+            this.damageReceived[perpetrator] = 0;
+        }
+        this.damageReceived[perpetrator] += amount;
+        this.damageReceived[total] += amount;
 
-    /**
-     * 武器リストに武器を追加
-     * @param {Weapon} weapon 武器インスタンス
-     */
-    addWeapon(weapon) {
-        this.weaponList[weapon.name] = weapon;
-    }
-
-    /**
-     * 武器リストにから武器を削除
-     * @param {String} name 内部の武器名
-     */
-    removeWeapon(name) {
-        delete this.weaponList[name];
-    }
-
-    /**
-     * メインウェポンを変更する関数
-     * @param {string} newMainWeapon - 新しいメインウェポン
-     */
-    changeMainWeapon(newMainWeapon) {
-        this.mainWeapon = newMainWeapon;
-        console.log(`${this.name} has changed main weapon to: ${this.mainWeapon}`);
-    }
-
-    /**
-     * サブウェポンを変更する関数
-     * @param {string} newSubWeapon - 新しいサブウェポン
-     */
-    changeSubWeapon(newSubWeapon) {
-        this.subWeapon = newSubWeapon;
-        console.log(`${this.name} has changed sub weapon to: ${this.subWeapon}`);
-    }
-
-    /**
-     * メインとサブウェポンを同時に変更する関数
-     * @param {string} newMainWeapon - 新しいメインウェポン
-     * @param {string} newSubWeapon - 新しいサブウェポン
-     */
-    changeWeapons(newMainWeapon, newSubWeapon) {
-        this.mainWeapon = newMainWeapon;
-        this.subWeapon = newSubWeapon;
-        console.log(`${this.name} has changed main weapon to: ${this.mainWeapon} and sub weapon to: ${this.subWeapon}`);
-    }
-
-    /**
-     * プレイヤーにアイテムを追加する
-     * @param {Item} item 追加するアイテム
-     */
-    addItemToInventory(item) {
-        this.inventory.addItem(item);
-    }
-
-    /**
-     * プレイヤーのインベントリのステータスを取得する
-     * @returns {Array<Object>} インベントリ内のアイテムのステータス
-     */
-    getInventoryStatus() {
-        return this.inventory.getInventoryStatus();
+        if (penetrator) {
+            
+        }
     }
 }
-// Datacenterクラスの定義
+
 /**
- * データセンターを表すクラス
- * @param {number} timestamp - タイムスタンプ (uint64)
- * @param {string} category - カテゴリー名
- * @param {string} name - データセンター名
+ * @class Datacenter
+ * @description データセンターを表すクラス
  */
 class Datacenter {
-    constructor(timestamp, category, name) {
+    /**
+     * Creates an instance of Datacenter.
+     * @memberof Datacenter
+     */
+    constructor() {
+        /**
+         * @param {number} timestamp　- タイムスタンプ (uint64)
+         */
+        this.timestamp = 0;
+        /**
+         * @param {string} category - カテゴリー名
+         */
+        this.category = "";
+        /**
+         * @param {string} name - データセンター名
+         */
+        this.name = "";
+    }
+    /**
+     * @param {*} timestamp　- タイムスタンプ (uint64)
+     * @param {*} category - カテゴリー名
+     * @param {*} name - データセンター名
+     * @return {Datacenter} 
+     * @memberof Datacenter
+     */
+    update(timestamp, category, name){
         this.timestamp = timestamp;
         this.category = category;
         this.name = name;
+        return this;
     }
 
     /**
      * データセンターのステータスをオブジェクトとして返す
      * @returns {Object} データセンターのステータス情報
+     * @memberof Datacenter
      */
     getStatus() {
         return {
@@ -421,21 +574,11 @@ class Datacenter {
             name: this.name
         };
     }
-
-    /**
-     * データセンターの詳細を表示するメソッド
-     */
-    printDetails() {
-        console.log(`Timestamp: ${this.timestamp}`);
-        console.log(`Category: ${this.category}`);
-        console.log(`Datacenter Name: ${this.name}`);
-    }
 }
 
-// Versionクラスの定義
 /**
  * バージョン情報を表すクラス
- * @class
+ * @class Version
  */
 class Version {
     /**
@@ -444,6 +587,7 @@ class Version {
      * @param {number} minor_num - マイナーバージョン番号 (uint32)
      * @param {number} build_stamp - ビルドスタンプ (uint32)
      * @param {string} revision - リビジョン情報
+     * @memberof Version
      */
     constructor(major_num, minor_num, build_stamp, revision) {
         this.major_num = major_num;
@@ -455,6 +599,7 @@ class Version {
     /**
      * バージョンのステータスをオブジェクトとして返す
      * @returns {Object} バージョンのステータス情報
+     * @memberof Version
      */
     getStatus() {
         return {
@@ -467,6 +612,7 @@ class Version {
 
     /**
      * バージョンの詳細を表示するメソッド
+     * @memberof Version
      */
     printDetails() {
         console.log(`Version: ${this.major_num}.${this.minor_num}`);
@@ -475,15 +621,15 @@ class Version {
     }
 }
 
-// CustomMatchクラスの定義
 /**
  * カスタムマッチを管理するクラス
- * @class
+ * @class CustomMatch
  */
 class CustomMatch {
     /**
      * @constructor
      * @param {string} matchName - マッチ名
+     * @memberof CustomMatch
      */
     constructor(matchName) {
         this.matchName = matchName;
@@ -496,7 +642,10 @@ class CustomMatch {
         this.mapName = "";  // マップ名を格納
         this.playlistName = "";  // マッチ名を格納 (例) World's Edge（リングなし）
         this.playlistDesc = "";  // マッチ説明を格納 (例) 最後の1部隊になるまで戦い抜け
-        this.datacenter = {};  // Datacenterクラスをのオブジェクトを格納
+        /**
+         * 
+         */
+        this.datacenter = new Datacenter();  // Datacenterクラスをのオブジェクトを格納
         this.aimassiston = true;  // エイムアシストの設定値を格納
         this.anonymousMode = false;  // 匿名モードの設定値を格納
         this.serverId = "";  // サーバーIDを格納
@@ -506,7 +655,11 @@ class CustomMatch {
         this.mapOffset = [0, 0, 1]
     }
 
-    refreshEventLists(){
+    /**
+     *
+     * @memberof CustomMatch
+     */
+    refreshEventLists() {
         this.eventLists = [];
     }
 
@@ -514,6 +667,7 @@ class CustomMatch {
      * ringsの末尾に新しい要素を追加します。
      * ringsが3を超える場合、先頭の要素を削除します。
      * @param {Ring} ring - 追加する要素
+     * @memberof CustomMatch
      */
     addRingElement(ring) {
         // 配列の長さが指定の制限を超える場合は先頭の要素を削除
@@ -525,20 +679,21 @@ class CustomMatch {
 
         switch (ring.category) {
             case "ringStartClosing":
-                this.state = `RingStartClosing_Stage_${ring.stage}`
+                this.state = `RingStartClosing_Stage_${ring.stage}`;
                 break;
             case "ringFinishedClosing":
-                this.state = `RingFinishedClosing_Stage_${ring.stage}`
+                this.state = `RingFinishedClosing_Stage_${ring.stage}`;
                 break;
             default:
-                console.log("[CustomMatch.addRingElement] Recived unknown message")
+                console.log("[CustomMatch.addRingElement] Recived unknown message");
                 break;
-          }
+        }
     }
 
     /**
      * eventListsの末尾に新しい要素を追加します。
      * @param {Event} event - 追加する要素
+     * @memberof CustomMatch
      */
     addEventElement(event) {
         // 新しい要素を末尾に追加
@@ -548,6 +703,7 @@ class CustomMatch {
     /**
     * プレイヤーを追加するメソッド
     * @param {Player} player 追加するプレイヤー
+    * @memberof CustomMatch
     */
     addPlayer(player) {
         if (Object.keys(this.players).length >= this.maxPlayers) {
@@ -570,6 +726,7 @@ class CustomMatch {
     /**
      * ゲームステータスを設定するメソッド
      * @param {String} state ゲームステータス
+     * @memberof CustomMatch
      */
     setState(state) {
         this.state = state;
@@ -578,6 +735,7 @@ class CustomMatch {
     /**
      * マッチ開始時刻を設定するメソッド
      * @param {String} timestamp ゲームステータス
+     * @memberof CustomMatch
      */
     setStartTimeStamp(timestamp) {
         this.startTimeStamp = timestamp;
@@ -586,6 +744,7 @@ class CustomMatch {
     /**
      * マッチ終了時刻を設定するメソッド
      * @param {String} timestamp ゲームステータス
+     * @memberof CustomMatch
      */
     setEndTimeStamp(timestamp) {
         this.endTimeStamp = timestamp;
@@ -596,16 +755,15 @@ class CustomMatch {
      * @param {String} mapName マップ名
      * @param {String} playlistName 
      * @param {String} playlistDesc
-     * @param {Datacenter} datacenter
      * @param {Boolean} aimassiston
      * @param {Boolean} anonymousMode
      * @param {String} serverId
+     * @memberof CustomMatch
      */
-    setMatchSetup(mapName, playlistName, playlistDesc, datacenter, aimassiston, anonymousMode, serverId) {
+    setMatchSetup(mapName, playlistName, playlistDesc, aimassiston, anonymousMode, serverId) {
         this.mapName = mapName;
         this.playlistName = playlistName;
         this.playlistDesc = playlistDesc;
-        this.datacenter = datacenter;
         this.aimassiston = aimassiston;
         this.anonymousMode = anonymousMode;
         this.serverId = serverId;
@@ -644,12 +802,13 @@ class CustomMatch {
     /**
      * プレイヤーを削除するメソッド
      * @param {string} nucleusHash プレイヤーのnucleusHash
+     * @memberof CustomMatch
      */
     removePlayer(nucleusHash) {
         if (this.players[nucleusHash]) {
             const removedPlayer = this.players[nucleusHash];
             delete this.players[nucleusHash];
-             return `${removedPlayer.name} has been removed from the match.`;
+            return `${removedPlayer.name} has been removed from the match.`;
         } else {
             return `Player with nucleusHash ${nucleusHash} not found in the match.`;
         }
@@ -658,6 +817,7 @@ class CustomMatch {
     /**
      * 現在のプレイヤー数を返す
      * @returns {number} 現在のプレイヤー数
+     * @memberof CustomMatch
      */
     getPlayerCount() {
         return Object.keys(this.players).length;
@@ -667,6 +827,7 @@ class CustomMatch {
      * 特定のプレイヤーを取得するメソッド
      * @param {string} nucleusHash プレイヤーのnucleusHash
      * @returns {Player|null} 見つかったプレイヤーのステータス、見つからなければnull
+     * @memberof CustomMatch
      */
     getPlayer(nucleusHash) {
         const player = this.players[nucleusHash];
@@ -681,6 +842,7 @@ class CustomMatch {
     /**
      * マッチのステータスを取得するメソッド
      * @returns {Object} マッチのステータスとプレイヤーリスト
+     * @memberof CustomMatch
      */
     getMatchStatus() {
         return {
@@ -704,34 +866,9 @@ class CustomMatch {
     }
 }
 
-// Weaponクラスの定義
-/**
- * 武器に関するクラス
- * @param {number} name - 内部の武器名
- * @param {number} level - 武器のレベル
- */
-class Weapon {
-    constructor(name, level) {
-        this.name = name;
-        this.level = level;
-        this.maxMagazine = 0; // AmmoUsedで使用された最大の弾数を格納
-    }
-
-    /**
-     * AmmoUsedで使用された最大の弾数を返す
-     * @returns {number} AmmoUsedで使用された最大の弾数
-     */
-    getMaxMagazine() {
-        return {
-            maxMagazine: this.maxMagazine
-        };
-    }
-}
-
-
-// Eventクラスの定義
 /**
  * Eventに関するクラス
+ * @class Event
  * @param {number} timestamp - イベント発生時のタイムスタンプ
  * @param {string} category - イベントの種類
  * @param {string} nucleusHash - プレイヤーのIDかチームのID
@@ -753,10 +890,9 @@ class Event {
     }
 }
 
-
-// Ringクラスの定義
 /**
  * Ringに関するクラス
+ * @class Ring
  * @param {number} timestamp
  * @param {number} endtimestamp
  * @param {String} category
@@ -776,6 +912,7 @@ class Ring {
      * @param {number} _currentradius 
      * @param {number} _shrinkduration
      * @param {Object} _mapOffset
+     * @memberof Ring
      */
     constructor(_timestamp, _category, _stage, _center, _currentRadius, _shrinkduration, _mapOffset) {
         this.timestamp = _timestamp;
@@ -795,7 +932,8 @@ class Ring {
      * @param {number} _currentRadius 
      * @param {number} _shrinkduration 
      * @param {number} _endradius 
-     * @param {object} _mapOffset 
+     * @param {object} _mapOffset
+     * @memberof Ring
      */
     updateRing(_timestamp, _category, _currentRadius, _shrinkduration, _endradius, _mapOffset) {
         this.timestamp = _timestamp;

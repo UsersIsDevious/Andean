@@ -12,5 +12,6 @@
     "discord" : {
         "bot_token" : ""
     },
+    "penetrator" : ["Caustic Gas"],
     "output":"/output"
   }

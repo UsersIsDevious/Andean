@@ -80,8 +80,11 @@ function analyze_message(category, msg) {
     common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
         case "Init": {
+            /**
+             * @todo web側で名前の指定があれば適用する
+             */
             if (msg.platform != "") { break; }
-            match = new CustomMatch(`${msg.timestamp}`)  // TODO: web側で名前の指定があれば適用する
+            match = new CustomMatch(`${msg.timestamp}`);
             break;
         }
         case "Vector3": {  // 今のところ何もイベント発生しない
@@ -121,22 +124,21 @@ function analyze_message(category, msg) {
         case "MatchSetup": {
             const startingloadout = msg.startingLoadout;
             if (startingloadout.weaponsList != []) {
-                /**
-                 * @todo
-                 * 武器はWeaponクラスでmatch.startingLoadoutにaddItemでぶちこむ
-                 */
                 for (let i = 0; i < startingloadout.weaponsList.length; i++) {
                     const weapon = startingloadout.weaponsList[i];
-                    match.startingLoadout.addItem(new Item(weapon.item, checkItemLevel(weapon.item), weapon.quantity));
+                    const weaponLabel = weapon.item;
+                    match.startingLoadout.addItem(new Weapon(weaponLabel, language.weapons_label[weapon.item], checkItemLevel(weapon.item)));
                 }
             }
-            if (startingloadout.equipmentList != []) {
-                for (let i = 0; i < startingloadout.equipmentList.length; i++) {
-                    const equipment = startingloadout.equipmentList[i];
-                    match.startingLoadout.addItem(new Item(equipment.item, checkItemLevel(equipment.item), equipment.quantity));
+            const equipmentList = startingloadout.equipmentList;
+            if (equipmentList != []) {
+                for (let i = 0; i < equipmentList.length; i++) {
+                    const equipment = equipmentList[i];
+                    match.startingLoadout.addOrUpdateItem(equipment.item, equipment.quantity, checkItemLevel(equipment.item));
                 }
             }
-            match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, new Datacenter(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name), msg.aimassiston, msg.anonymousmode, msg.serverid);
+            match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, msg.aimassiston, msg.anonymousmode, msg.serverid);
+            match.datacenter.update(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name);
             sendMapData.sendMapInitialization(msg.map, match)
             break;
         }
@@ -315,12 +317,11 @@ function analyze_message(category, msg) {
             const player = processUpdatePlayer(msg, match);
             const weapons_label = language.weapons_label;
             const item = msg.item;
-            const weapons_label_value = Object.keys(weapons_label).find((key) => weapons_label[key] === item)
-            if (weapons_label_value != undefined) {
-                player.weaponList.push(new Weapon(weapons_label_value, checkItemLevel(item)))
-            } else {
-                player.inventory.addItem(new Item(item, checkItemLevel(item), item.quantity));
+            const weaponId = Object.keys(weapons_label).find((key) => weapons_label[key] === item);
+            if (weaponId != undefined) {
+                player.weaponList.push(new Weapon(weaponId, weapons_label[weaponId], checkItemLevel(item)));
             }
+            player.inventory.addOrUpdateItem(item, item.quantity, checkItemLevel(item));
             break;
         }
         case "InventoryDrop": {
@@ -410,7 +411,7 @@ function processUpdatePlayer(msg, match, characterSelected = false) {
     const msg_player = msg.player;
     const player = match.getPlayer(msg_player.nucleushash);
     updatePlayer(msg_player, player, match.mapName, characterSelected);
-    return player
+    return player;
 }
 
 /**
@@ -423,11 +424,20 @@ function checkItemLevel(name) {
     return level;
 }
 
+/**
+ * シールド貫通武器かどうかのチェック
+ * @param {string} perpetrator 
+ * @returns {boolean}
+ */
+function checkShieldPenetrator(perpetrator) {
+    return perpetrator in config.penetrator;
+}
+
 function getPlayerStatus(match) {
     if (match.gameState == "Playing") {
         for (const teamId in match.teams) {
             const player = match.getPlayer(match.teams[teamId][0]);
-            if (player.isAlive === false) { break; }
+            if (!player.getAliveStatus() || !player.getOnlineStatus()) { continue; }
             apexCommon.change_camera("name", player.name);
         }
     }
@@ -453,7 +463,7 @@ common.registerOnServersStarted((servers) => {
         // common.logMessage('LiveAPIEvent:', liveAPIEvent.toObject());
 
         const gamemessage = liveAPIEvent.getGamemessage();
-        const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得
+        const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得w
         const valueBinary = gamemessage.getValue_asU8(); // バイナリ値を取得
 
         if (messageTypes[typeUrl]) {
