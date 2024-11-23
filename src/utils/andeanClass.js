@@ -410,7 +410,7 @@ class Player {
         this.damageDealt = { total: 0 };
 
         /**
-         * くらったダメージ詳細
+         * 敵から受けたダメージ詳細
          * @type {object}
          * @property {number} total - 合計ダメージ
          */
