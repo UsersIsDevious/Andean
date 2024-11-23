@@ -1,6 +1,8 @@
 ## Classes
 
 <dl>
+<dt><a href="#WebSocketServer">WebSocketServer</a></dt>
+<dd></dd>
 <dt><a href="#Vector3">Vector3</a></dt>
 <dd></dd>
 <dt><a href="#Item">Item</a></dt>
@@ -8,6 +10,8 @@
 <dt><a href="#Weapon">Weapon</a></dt>
 <dd></dd>
 <dt><a href="#Inventory">Inventory</a></dt>
+<dd></dd>
+<dt><a href="#Statistics">Statistics</a></dt>
 <dd></dd>
 <dt><a href="#Player">Player</a></dt>
 <dd></dd>
@@ -43,10 +47,10 @@
 <dl>
 <dt><a href="#startApexLegends">startApexLegends()</a> ⇒ <code>*</code></dt>
 <dd></dd>
-<dt><a href="#updatePlayer">updatePlayer(json, player, characterSelected, mapName)</a></dt>
+<dt><a href="#updatePlayer">updatePlayer(json, player, mapOffset, characterSelected)</a></dt>
 <dd><p>Playerクラスのオブジェクトを更新する</p>
 </dd>
-<dt><a href="#processUpdatePlayer">processUpdatePlayer(msg, match, [characterSelected])</a> ⇒ <code>*</code></dt>
+<dt><a href="#processUpdatePlayer">processUpdatePlayer(msg, match, [characterSelected])</a> ⇒ <code><a href="#Player">Player</a></code></dt>
 <dd></dd>
 <dt><a href="#checkItemLevel">checkItemLevel(name)</a></dt>
 <dd><p>アイテム名からレベルをチェックする</p>
@@ -57,7 +61,8 @@
 <dt><a href="#getPlayerStatus">getPlayerStatus(match)</a></dt>
 <dd></dd>
 <dt><a href="#update">update()</a></dt>
-<dd></dd>
+<dd><p>メインスレッド</p>
+</dd>
 <dt><a href="#handleMessage">handleMessage(message, messageType, ws)</a></dt>
 <dd><p>メッセージを処理する</p>
 </dd>
@@ -193,6 +198,76 @@
 </dd>
 </dl>
 
+<a name="WebSocketServer"></a>
+
+## WebSocketServer
+**Kind**: global class  
+
+* [WebSocketServer](#WebSocketServer)
+    * [new WebSocketServer()](#new_WebSocketServer_new)
+    * [.setHandleMessageCallback(callback)](#WebSocketServer+setHandleMessageCallback)
+    * [.handleIncomingMessage(message, ws)](#WebSocketServer+handleIncomingMessage)
+    * [.sendToClient(ws, message)](#WebSocketServer+sendToClient)
+    * [.broadcastToAllClients(message)](#WebSocketServer+broadcastToAllClients)
+    * [.stopServer()](#WebSocketServer+stopServer) ⇒ <code>\*</code>
+
+<a name="new_WebSocketServer_new"></a>
+
+### new WebSocketServer()
+WebSocketサーバー
+
+<a name="WebSocketServer+setHandleMessageCallback"></a>
+
+### webSocketServer.setHandleMessageCallback(callback)
+コールバック関数を設定するメソッド
+
+**Kind**: instance method of [<code>WebSocketServer</code>](#WebSocketServer)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| callback | <code>function</code> | handleMessageで呼び出されるコールバック関数 |
+
+<a name="WebSocketServer+handleIncomingMessage"></a>
+
+### webSocketServer.handleIncomingMessage(message, ws)
+受信メッセージを処理する
+
+**Kind**: instance method of [<code>WebSocketServer</code>](#WebSocketServer)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>Buffer</code> | 受信したメッセージ |
+| ws | <code>WebSocket</code> | 送信元のWebSocketインスタンス |
+
+<a name="WebSocketServer+sendToClient"></a>
+
+### webSocketServer.sendToClient(ws, message)
+クライアントにメッセージを送信する
+
+**Kind**: instance method of [<code>WebSocketServer</code>](#WebSocketServer)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| ws | <code>WebSocket</code> | 対象クライアント |
+| message | <code>string</code> | 送信するメッセージ |
+
+<a name="WebSocketServer+broadcastToAllClients"></a>
+
+### webSocketServer.broadcastToAllClients(message)
+全ての接続中クライアントにメッセージを送信する
+
+**Kind**: instance method of [<code>WebSocketServer</code>](#WebSocketServer)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>string</code> | 送信するメッセージ |
+
+<a name="WebSocketServer+stopServer"></a>
+
+### webSocketServer.stopServer() ⇒ <code>\*</code>
+サーバーを停止する
+
+**Kind**: instance method of [<code>WebSocketServer</code>](#WebSocketServer)  
 <a name="Vector3"></a>
 
 ## Vector3
@@ -536,6 +611,67 @@ weapons - アイテムの保有数
 #### new Inventory()
 Creates an instance of Inventory.
 
+<a name="Statistics"></a>
+
+## Statistics
+**Kind**: global class  
+
+* [Statistics](#Statistics)
+    * _instance_
+        * [.weapons](#Statistics+weapons) : <code>object</code>
+        * [.players](#Statistics+players) : <code>object</code>
+        * [.legends](#Statistics+legends) : <code>object</code>
+    * _static_
+        * [.Statistics](#Statistics.Statistics)
+            * [new Statistics()](#new_Statistics.Statistics_new)
+
+<a name="Statistics+weapons"></a>
+
+### statistics.weapons : <code>object</code>
+**Kind**: instance property of [<code>Statistics</code>](#Statistics)  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| total | <code>number</code> | 合計ダメージ |
+
+<a name="Statistics+players"></a>
+
+### statistics.players : <code>object</code>
+**Kind**: instance property of [<code>Statistics</code>](#Statistics)  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| total | <code>number</code> | 合計ダメージ |
+
+<a name="Statistics+legends"></a>
+
+### statistics.legends : <code>object</code>
+**Kind**: instance property of [<code>Statistics</code>](#Statistics)  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| total | <code>number</code> | 合計ダメージ |
+
+<a name="Statistics.Statistics"></a>
+
+### Statistics.Statistics
+**Kind**: static class of [<code>Statistics</code>](#Statistics)  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| total | <code>number</code> | 合計ダメージ |
+| [weaponName] | <code>Object.&lt;string, number&gt;</code> | ダメージ詳細 (例: 武器やスキル) |
+
+<a name="new_Statistics.Statistics_new"></a>
+
+#### new Statistics()
+Creates an instance of Statistics.
+
+**Returns**: this  
 <a name="Player"></a>
 
 ## Player
@@ -556,21 +692,21 @@ Creates an instance of Inventory.
         * [.shieldMaxHealth](#Player+shieldMaxHealth) : <code>number</code>
         * [.teamName](#Player+teamName) : <code>string</code>
         * [.squadIndex](#Player+squadIndex) : <code>number</code>
-        * [.character](#Player+character) : <code>string</code>
+        * [.legend](#Player+legend) : <code>string</code>
         * [.skin](#Player+skin) : <code>string</code>
         * [.inventory](#Player+inventory) : [<code>Inventory</code>](#Inventory)
-        * [.kills](#Player+kills) : <code>number</code>
-        * [.killAssists](#Player+killAssists) : <code>number</code>
-        * [.downs](#Player+downs) : <code>number</code>
-        * [.damageDealt](#Player+damageDealt) : <code>object</code>
-        * [.damageReceived](#Player+damageReceived) : <code>object</code>
+        * [.kills](#Player+kills) : [<code>Statistics</code>](#Statistics)
+        * [.killAssists](#Player+killAssists) : [<code>Statistics</code>](#Statistics)
+        * [.downs](#Player+downs) : [<code>Statistics</code>](#Statistics)
+        * [.damageDealt](#Player+damageDealt) : [<code>Statistics</code>](#Statistics)
+        * [.damageReceived](#Player+damageReceived) : [<code>Statistics</code>](#Statistics)
         * [.isAlive](#Player+isAlive) : <code>boolean</code>
         * [.isOnline](#Player+isOnline) : <code>boolean</code>
         * [.level](#Player+level) : <code>object</code>
         * [.weaponList](#Player+weaponList) : <code>Array.&lt;object&gt;</code>
         * [.updatePositionAndAngles(x, y, z, newAngles, mapOffset)](#Player+updatePositionAndAngles)
         * [.updateHealthAndShields(newCurrentHealth, newMaxHealth, newShieldHealth, newShieldMaxHealth)](#Player+updateHealthAndShields)
-        * [.updateCharacter(newCharacter, newSkin)](#Player+updateCharacter)
+        * [.updateLegend(newLegend, newSkin)](#Player+updateLegend)
         * [.setAliveStatus(status)](#Player+setAliveStatus)
         * [.setOnlineStatus(status)](#Player+setOnlineStatus)
         * [.setTeamName(teamName)](#Player+setTeamName)
@@ -581,7 +717,7 @@ Creates an instance of Inventory.
         * [.setKillAssist(amount)](#Player+setKillAssist)
         * [.setDown(amount)](#Player+setDown)
         * [.addDamageDealt(perpetrator, amount)](#Player+addDamageDealt)
-        * [.addDamageReceived(perpetrator, amount, [penetrator])](#Player+addDamageReceived)
+        * [.addDamageReceived(amount, perpetrator, attacker, legend, [penetrator])](#Player+addDamageReceived)
     * _static_
         * [.Player](#Player.Player)
             * [new Player(name, teamId, nucleusHash, hardwareName)](#new_Player.Player_new)
@@ -663,9 +799,9 @@ Creates an instance of Inventory.
 分隊番号 (uint32)
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
-<a name="Player+character"></a>
+<a name="Player+legend"></a>
 
-### player.character : <code>string</code>
+### player.legend : <code>string</code>
 キャラクター名
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
@@ -683,47 +819,34 @@ Creates an instance of Inventory.
 **Kind**: instance property of [<code>Player</code>](#Player)  
 <a name="Player+kills"></a>
 
-### player.kills : <code>number</code>
+### player.kills : [<code>Statistics</code>](#Statistics)
 キル数
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
 <a name="Player+killAssists"></a>
 
-### player.killAssists : <code>number</code>
+### player.killAssists : [<code>Statistics</code>](#Statistics)
 キルアシスト数
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
 <a name="Player+downs"></a>
 
-### player.downs : <code>number</code>
+### player.downs : [<code>Statistics</code>](#Statistics)
 ダウンさせた数
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
 <a name="Player+damageDealt"></a>
 
-### player.damageDealt : <code>object</code>
+### player.damageDealt : [<code>Statistics</code>](#Statistics)
 敵に与えたダメージ詳細
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| total | <code>number</code> | 合計ダメージ |
-| [weaponName] | <code>Object.&lt;string, number&gt;</code> | 各攻撃手段ごとのダメージ詳細 (例: 武器やスキル) |
-
 <a name="Player+damageReceived"></a>
 
-### player.damageReceived : <code>object</code>
+### player.damageReceived : [<code>Statistics</code>](#Statistics)
 敵から受けたダメージ詳細
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| total | <code>number</code> | 合計ダメージ |
-
 <a name="Player+isAlive"></a>
 
 ### player.isAlive : <code>boolean</code>
@@ -746,6 +869,7 @@ Creates an instance of Inventory.
 
 | Name | Type | Description |
 | --- | --- | --- |
+| now | <code>number</code> | 現在レベル |
 | 0 | <code>object</code> | レベル情報 |
 
 <a name="Player+weaponList"></a>
@@ -783,16 +907,16 @@ Creates an instance of Inventory.
 | newShieldHealth | <code>number</code> | 新しいシールドの体力 |
 | newShieldMaxHealth | <code>number</code> | 新しい最大シールド体力 |
 
-<a name="Player+updateCharacter"></a>
+<a name="Player+updateLegend"></a>
 
-### player.updateCharacter(newCharacter, newSkin)
+### player.updateLegend(newLegend, newSkin)
 プレイヤーのチーム情報、キャラクター、スキンを更新する関数
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| newCharacter | <code>string</code> | 新しいキャラクター |
+| newLegend | <code>string</code> | 新しいキャラクター |
 | newSkin | <code>string</code> | 新しいスキン |
 
 <a name="Player+setAliveStatus"></a>
@@ -900,15 +1024,17 @@ Creates an instance of Inventory.
 
 <a name="Player+addDamageReceived"></a>
 
-### player.addDamageReceived(perpetrator, amount, [penetrator])
+### player.addDamageReceived(amount, perpetrator, attacker, legend, [penetrator])
 受けたダメージを増加させるメソッド
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| perpetrator | <code>string</code> |  | 攻撃に使用されたもの |
 | amount | <code>number</code> |  | 増加させるダメージ量 |
+| perpetrator | <code>string</code> |  | 攻撃に使用されたもの |
+| attacker | <code>string</code> |  | 攻撃したプレイヤーのnucleushash |
+| legend | <code>string</code> |  | 攻撃を行ったプレイヤーのレジェンド名 |
 | [penetrator] | <code>boolean</code> | <code>false</code> | シールド貫通武器かどうか |
 
 <a name="Player.Player"></a>
@@ -975,9 +1101,9 @@ name - データセンター名
 
 | Param | Type | Description |
 | --- | --- | --- |
-| timestamp | <code>\*</code> | - タイムスタンプ (uint64) |
-| category | <code>\*</code> | カテゴリー名 |
-| name | <code>\*</code> | データセンター名 |
+| timestamp | <code>number</code> | - タイムスタンプ (uint64) |
+| category | <code>string</code> | カテゴリー名 |
+| name | <code>string</code> | データセンター名 |
 
 <a name="Datacenter+getStatus"></a>
 
@@ -1553,7 +1679,7 @@ Ringに関するクラス
 **Kind**: global function  
 <a name="updatePlayer"></a>
 
-## updatePlayer(json, player, characterSelected, mapName)
+## updatePlayer(json, player, mapOffset, characterSelected)
 Playerクラスのオブジェクトを更新する
 
 **Kind**: global function  
@@ -1562,18 +1688,18 @@ Playerクラスのオブジェクトを更新する
 | --- | --- | --- |
 | json | <code>Object</code> |  | 
 | player | [<code>Player</code>](#Player) |  | 
+| mapOffset | <code>object</code> |  | 
 | characterSelected | <code>Boolean</code> | <code>false</code> | 
-| mapName | <code>String</code> |  | 
 
 <a name="processUpdatePlayer"></a>
 
-## processUpdatePlayer(msg, match, [characterSelected]) ⇒ <code>\*</code>
+## processUpdatePlayer(msg, match, [characterSelected]) ⇒ [<code>Player</code>](#Player)
 **Kind**: global function  
 
 | Param | Type | Default |
 | --- | --- | --- |
-| msg | <code>\*</code> |  | 
-| match | <code>\*</code> |  | 
+| msg | <code>Object</code> |  | 
+| match | [<code>CustomMatch</code>](#CustomMatch) |  | 
 | [characterSelected] | <code>boolean</code> | <code>false</code> | 
 
 <a name="checkItemLevel"></a>
@@ -1594,9 +1720,9 @@ Playerクラスのオブジェクトを更新する
 
 **Kind**: global function  
 
-| Param | Type |
-| --- | --- |
-| perpetrator | <code>string</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| perpetrator | <code>string</code> | 武器名 |
 
 <a name="getPlayerStatus"></a>
 
@@ -1605,11 +1731,13 @@ Playerクラスのオブジェクトを更新する
 
 | Param | Type |
 | --- | --- |
-| match | <code>\*</code> | 
+| match | [<code>CustomMatch</code>](#CustomMatch) | 
 
 <a name="update"></a>
 
 ## update()
+メインスレッド
+
 **Kind**: global function  
 <a name="handleMessage"></a>
 

@@ -280,6 +280,38 @@ class Inventory {
 }
 
 /**
+ * @class Statistics
+ */
+class Statistics {
+    /**
+     * Creates an instance of Statistics.
+     * @property {number} total - 合計ダメージ
+     * @property {Object.<string, number>} [weaponName] - ダメージ詳細 (例: 武器やスキル)
+     * @return this
+     * @memberof Statistics
+     */
+    constructor() {
+        this.total = 0; // 合計ダメージ
+        /**
+         * @type {object}
+         * @property {number} total - 合計ダメージ
+         */
+        this.weapons = {}; // 攻撃手段ごとのダメージは動的に追加される
+        /**
+         * @type {object}
+         * @property {number} total - 合計ダメージ
+         */
+        this.players = {};
+        /**
+         * @type {object}
+         * @property {number} total - 合計ダメージ
+         */
+        this.legends = {};
+        return this;
+    }
+}
+
+/**
  * @class Player
  * @description プレイヤーを表すクラス。インベントリとゲーム内でのステータスを保持する。
  */
@@ -386,46 +418,33 @@ class Player {
 
         /**
          * キル数
-         * @type {number}
+         * @type {Statistics}
          */
-        this.kills = 0;
+        this.kills = new Statistics();
 
         /**
          * キルアシスト数
-         * @type {number}
+         * @type {Statistics}
          */
-        this.killAssists = 0;
+        this.killAssists = new Statistics();
 
         /**
          * ダウンさせた数
-         * @type {number}
+         * @type {Statistics}
          */
-        this.downs = 0;
+        this.downs = new Statistics();
 
         /**
          * 敵に与えたダメージ詳細
-         * @type {object}
-         * @property {number} total - 合計ダメージ
-         * @property {Object.<string, number>} [weaponName] - 各攻撃手段ごとのダメージ詳細 (例: 武器やスキル)
+         * @type {Statistics}
          */
-        this.damageDealt = {
-            total: 0, // 合計ダメージ
-            weapons: {}, // 攻撃手段ごとのダメージは動的に追加される
-            players: {},
-            legends: {}
-        };
+        this.damageDealt = new Statistics();
 
         /**
          * 敵から受けたダメージ詳細
-         * @type {object}
-         * @property {number} total - 合計ダメージ
+         * @type {Statistics}
          */
-        this.damageReceived = {
-            total: 0, // 合計ダメージ
-            weapons: {},
-            players: {},
-            legends: {}
-        };
+        this.damageReceived = new Statistics();
 
         /**
          * 生存状態
@@ -442,9 +461,11 @@ class Player {
         /**
          * プレイヤーのレベル情報
          * @type {object}
+         * @property {number} now - 現在レベル
          * @property {object} 0 - レベル情報
          */
         this.level = {
+            now: 0,
             0: {}
         };
 
