@@ -406,8 +406,12 @@ class Player {
          * 敵に与えたダメージ詳細
          * @type {object}
          * @property {number} total - 合計ダメージ
+         * @property {Object.<string, number>} [weaponName] - 各攻撃手段ごとのダメージ詳細 (例: 武器やスキル)
          */
-        this.damageDealt = { total: 0 };
+        this.damageDealt = {
+            total: 0 // 合計ダメージ
+            // 攻撃手段ごとのダメージは動的に追加される
+        };
 
         /**
          * 敵から受けたダメージ詳細
@@ -567,17 +571,33 @@ class Player {
     }
 
     /**
-     * 敵に与えたダメージを増加させるメソッド
-     * @param {string} perpetrator - 攻撃に使用したもの
-     * @param {number} amount 増加させるダメージ量
-     * @memberof Player
-     */
+    * 敵に与えたダメージを増加させるメソッド
+    * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
+    * @param {number} amount - 増加させるダメージ量
+    * @memberof Player
+    */
     addDamageDealt(perpetrator, amount) {
-        if (!perpetrator in this.damageDealt) {
+        // 入力値のチェック
+        if (typeof perpetrator !== 'string') {
+            throw new TypeError('perpetrator は文字列である必要があります');
+        }
+        if (typeof amount !== 'number' || amount < 0) {
+            throw new TypeError('amount は0以上の数値である必要があります');
+        }
+
+        // ダメージ記録の初期化
+        if (!(perpetrator in this.damageDealt)) {
             this.damageDealt[perpetrator] = 0;
         }
+
+        // ダメージを加算
         this.damageDealt[perpetrator] += amount;
-        this.damageDealt[total] += amount;
+
+        // 合計ダメージを加算
+        if (!('total' in this.damageDealt)) {
+            this.damageDealt['total'] = 0;
+        }
+        this.damageDealt['total'] += amount;
     }
 
     /**
