@@ -13,15 +13,15 @@ class Vector3 {
      */
     constructor(x = 0, y = 0, z = 0) {
         /**
-         * @param {number} x - X座標の値
+         * @type {number} x - X座標の値
          */
         this.x = x;
         /**
-         * @param {number} y - Y座標の値
+         * @type {number} y - Y座標の値
          */
         this.y = y;
         /**
-         * @param {number} z  - Z座標の値
+         * @type {number} z  - Z座標の値
          */
         this.z = z;
         return this;
@@ -57,15 +57,15 @@ class Item {
      */
     constructor(name, level, quantity) {
         /**
-         * @param {string} name - アイテムの名前
+         * @property {string} name - アイテムの名前
          */
         this.name = name;
         /**
-         * @param {number} level - アイテムのレベル
+         * @property {number} level - アイテムのレベル
          */
         this.level = level;
         /**
-         * @param {number} quantity - アイテムの保有数
+         * @property {number} quantity - アイテムの保有数
          */
         this.quantity = quantity;
         return this;
@@ -108,19 +108,19 @@ class Weapon {
      */
     constructor(id, label, level) {
         /**
-         * @param {string} Id - 内部の武器名
+         * @property {string} Id - 内部の武器名
          */
         this.Id = id;
         /**
-         * @param {string} label - 表示されている武器名
+         * @property {string} label - 表示されている武器名
          */
         this.label = label;
         /**
-         * @param {number} level - 武器のレベル
+         * @property {number} level - 武器のレベル
          */
         this.level = level;
         /**
-         * @param {number} maxMagazine - AmmoUsedで使用された最大の弾数を格納
+         * @property {number} maxMagazine - AmmoUsedで使用された最大の弾数を格納
          */
         this.maxMagazine = 0;
         return this;
@@ -151,11 +151,11 @@ class Inventory {
      */
     constructor() {
         /**
-         * @param {item} items - アイテムの保有数
+         * @property {item} items - アイテムの保有数
          */
         this.items = []; // Array<Item>: アイテムのリスト
         /**
-         * @param {number} weapons - アイテムの保有数
+         * @property {number} weapons - アイテムの保有数
          */
         this.weapons = [];
         return this;
@@ -289,101 +289,101 @@ class Player {
      */
     constructor(name, teamId, nucleusHash, hardwareName) {
         /**
-         * @param {string} name - プレイヤー名
+         * @property {string} name - プレイヤー名
          */
         this.name = name;
         /**
-         * @param {number} teamId - チームID (uint32)
+         * @property {number} teamId - チームID (uint32)
          */
         this.teamId = teamId;
         /**
-        * @param {string} nucleusHash - プレイヤーの識別用ハッシュ
+        * @property {string} nucleusHash - プレイヤーの識別用ハッシュ
         */
         this.nucleusHash = nucleusHash;
         /**
-        * @param {string} hardwareName - 使用ハードウェア名
+        * @property {string} hardwareName - 使用ハードウェア名
         */
         this.hardwareName = hardwareName;
         /**
-         * @param {Vector3} pos - プレイヤーの位置
+         * @property {Vector3} pos - プレイヤーの位置
          */
         this.pos = new Vector3();
         /**
-         * @param {number} angles - プレイヤーの視角 
+         * @property {number} angles - プレイヤーの視角 
         */
         this.angles = 0;
         /**
-        * @param {number} currentHealth - 現在の体力 (uint32)
+        * @property {number} currentHealth - 現在の体力 (uint32)
          */
         this.currentHealth = 0;
         /**
-        * @param {number} maxHealth - 最大体力 (uint32)
+        * @property {number} maxHealth - 最大体力 (uint32)
         */
         this.maxHealth = 0;
         /**
-        * @param {number} shieldHealth - 現在のシールド体力 (uint32)
+        * @property {number} shieldHealth - 現在のシールド体力 (uint32)
         */
         this.shieldHealth = 0;
         /**
-        * @param {number} shieldMaxHealth - 最大シールド体力 (uint32)
+        * @property {number} shieldMaxHealth - 最大シールド体力 (uint32)
         */
         this.shieldMaxHealth = 0;
         /**
-        * @param {string} teamName - チーム名
+        * @property {string} teamName - チーム名
         */
         this.teamName = "";
         /**
-        * @param {number} squadIndex - 分隊番号 (uint32)
+        * @property {number} squadIndex - 分隊番号 (uint32)
         */
         this.squadIndex = -1;
         /**
-        * @param {string} character - キャラクター名
+        * @property {string} character - キャラクター名
         */
         this.character = "";
         /**
-        * @param {string} skin - キャラクタースキン名
+        * @property {string} skin - キャラクタースキン名
         */
         this.skin = "";
         /**
-        * @param {Inventory} inventory - プレーヤーのインベントリー
+        * @property {Inventory} inventory - プレーヤーのインベントリー
         */
         this.inventory = new Inventory();
         /**
-        * @param {number} kills - キル数
+        * @property {number} kills - キル数
         */
         this.kills = 0;                     // キル数
         /**
-        * @param {number} killAssists - キルアシスト数
+        * @property {number} killAssists - キルアシスト数
         */
         this.killAssists = 0;               // キルアシスト数
         /**
-        * @param {number} downs - ダウンさせた数
+        * @property {number} downs - ダウンさせた数
         */
         this.downs = 0;                     // ダウンさせた数
         /**
-        * @param {object} damageDealt - 敵に与えたダメージ詳細
+        * @property {object} damageDealt - 敵に与えたダメージ詳細
         */
         this.damageDealt = { total: 0 };
         /**
-        * @param {object} damageReceived - くらったダメージ詳細
+        * @property {object} damageReceived - くらったダメージ詳細
         */
         this.damageReceived = { total: 0 };
         /**
-        * @param {Boolean} isAlive - 生存状態
+        * @property {Boolean} isAlive - 生存状態
         */
         this.isAlive = true;
         /**
-        * @param {Boolean} isOnline - 接続状態
+        * @property {Boolean} isOnline - 接続状態
         */
         this.isOnline = true;
         /**
-        * @param {number} level - プレイヤーのレベル
+        * @property {number} level - プレイヤーのレベル
         */
         this.level = {
             0: {}
         };
         /**
-         * @param {object} weaponList - 所持している武器のリスト
+         * @property {object} weaponList - 所持している武器のリスト
         */
         this.weaponList = [];
     }
@@ -556,15 +556,15 @@ class Datacenter {
      */
     constructor() {
         /**
-         * @param {number} timestamp　- タイムスタンプ (uint64)
+         * @property {number} timestamp　- タイムスタンプ (uint64)
          */
         this.timestamp = 0;
         /**
-         * @param {string} category - カテゴリー名
+         * @property {string} category - カテゴリー名
          */
         this.category = "";
         /**
-         * @param {string} name - データセンター名
+         * @property {string} name - データセンター名
          */
         this.name = "";
     }

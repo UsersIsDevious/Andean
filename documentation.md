@@ -201,9 +201,9 @@
 * [Vector3](#Vector3)
     * [new Vector3()](#new_Vector3_new)
     * _instance_
-        * [.x](#Vector3+x)
-        * [.y](#Vector3+y)
-        * [.z](#Vector3+z)
+        * [.x](#Vector3+x) : <code>number</code>
+        * [.y](#Vector3+y) : <code>number</code>
+        * [.z](#Vector3+z) : <code>number</code>
         * [.updateValues(newX, newY, newZ, mapOffset)](#Vector3+updateValues) ⇒ [<code>Vector3</code>](#Vector3)
     * _static_
         * [.Vector3](#Vector3.Vector3)
@@ -216,31 +216,22 @@
 
 <a name="Vector3+x"></a>
 
-### vector3.x
+### vector3.x : <code>number</code>
+x - X座標の値
+
 **Kind**: instance property of [<code>Vector3</code>](#Vector3)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| x | <code>number</code> | X座標の値 |
-
 <a name="Vector3+y"></a>
 
-### vector3.y
+### vector3.y : <code>number</code>
+y - Y座標の値
+
 **Kind**: instance property of [<code>Vector3</code>](#Vector3)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| y | <code>number</code> | Y座標の値 |
-
 <a name="Vector3+z"></a>
 
-### vector3.z
+### vector3.z : <code>number</code>
+z  - Z座標の値
+
 **Kind**: instance property of [<code>Vector3</code>](#Vector3)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| z | <code>number</code> | Z座標の値 |
-
 <a name="Vector3+updateValues"></a>
 
 ### vector3.updateValues(newX, newY, newZ, mapOffset) ⇒ [<code>Vector3</code>](#Vector3)
@@ -295,8 +286,9 @@
 
 ### item.name
 **Kind**: instance property of [<code>Item</code>](#Item)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | name | <code>string</code> | アイテムの名前 |
 
@@ -304,8 +296,9 @@
 
 ### item.level
 **Kind**: instance property of [<code>Item</code>](#Item)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | level | <code>number</code> | アイテムのレベル |
 
@@ -313,8 +306,9 @@
 
 ### item.quantity
 **Kind**: instance property of [<code>Item</code>](#Item)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | quantity | <code>number</code> | アイテムの保有数 |
 
@@ -376,8 +370,9 @@
 
 ### weapon.Id
 **Kind**: instance property of [<code>Weapon</code>](#Weapon)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | Id | <code>string</code> | 内部の武器名 |
 
@@ -385,8 +380,9 @@
 
 ### weapon.label
 **Kind**: instance property of [<code>Weapon</code>](#Weapon)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | label | <code>string</code> | 表示されている武器名 |
 
@@ -394,8 +390,9 @@
 
 ### weapon.level
 **Kind**: instance property of [<code>Weapon</code>](#Weapon)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | level | <code>number</code> | 武器のレベル |
 
@@ -403,8 +400,9 @@
 
 ### weapon.maxMagazine
 **Kind**: instance property of [<code>Weapon</code>](#Weapon)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | maxMagazine | <code>number</code> | AmmoUsedで使用された最大の弾数を格納 |
 
@@ -462,8 +460,9 @@ Creates an instance of Weapon.
 
 ### inventory.items
 **Kind**: instance property of [<code>Inventory</code>](#Inventory)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | items | <code>item</code> | アイテムの保有数 |
 
@@ -471,8 +470,9 @@ Creates an instance of Weapon.
 
 ### inventory.weapons
 **Kind**: instance property of [<code>Inventory</code>](#Inventory)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | weapons | <code>number</code> | アイテムの保有数 |
 
@@ -631,8 +631,9 @@ Creates an instance of Inventory.
 
 ### player.name
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | name | <code>string</code> | プレイヤー名 |
 
@@ -640,8 +641,9 @@ Creates an instance of Inventory.
 
 ### player.teamId
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | teamId | <code>number</code> | チームID (uint32) |
 
@@ -649,8 +651,9 @@ Creates an instance of Inventory.
 
 ### player.nucleusHash
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | nucleusHash | <code>string</code> | プレイヤーの識別用ハッシュ |
 
@@ -658,8 +661,9 @@ Creates an instance of Inventory.
 
 ### player.hardwareName
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | hardwareName | <code>string</code> | 使用ハードウェア名 |
 
@@ -667,8 +671,9 @@ Creates an instance of Inventory.
 
 ### player.pos
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | pos | [<code>Vector3</code>](#Vector3) | プレイヤーの位置 |
 
@@ -676,8 +681,9 @@ Creates an instance of Inventory.
 
 ### player.angles
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | angles | <code>number</code> | プレイヤーの視角 |
 
@@ -685,8 +691,9 @@ Creates an instance of Inventory.
 
 ### player.currentHealth
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | currentHealth | <code>number</code> | 現在の体力 (uint32) |
 
@@ -694,8 +701,9 @@ Creates an instance of Inventory.
 
 ### player.maxHealth
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | maxHealth | <code>number</code> | 最大体力 (uint32) |
 
@@ -703,8 +711,9 @@ Creates an instance of Inventory.
 
 ### player.shieldHealth
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | shieldHealth | <code>number</code> | 現在のシールド体力 (uint32) |
 
@@ -712,8 +721,9 @@ Creates an instance of Inventory.
 
 ### player.shieldMaxHealth
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | shieldMaxHealth | <code>number</code> | 最大シールド体力 (uint32) |
 
@@ -721,8 +731,9 @@ Creates an instance of Inventory.
 
 ### player.teamName
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | teamName | <code>string</code> | チーム名 |
 
@@ -730,8 +741,9 @@ Creates an instance of Inventory.
 
 ### player.squadIndex
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | squadIndex | <code>number</code> | 分隊番号 (uint32) |
 
@@ -739,8 +751,9 @@ Creates an instance of Inventory.
 
 ### player.character
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | character | <code>string</code> | キャラクター名 |
 
@@ -748,8 +761,9 @@ Creates an instance of Inventory.
 
 ### player.skin
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | skin | <code>string</code> | キャラクタースキン名 |
 
@@ -757,8 +771,9 @@ Creates an instance of Inventory.
 
 ### player.inventory
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | inventory | [<code>Inventory</code>](#Inventory) | プレーヤーのインベントリー |
 
@@ -766,8 +781,9 @@ Creates an instance of Inventory.
 
 ### player.kills
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | kills | <code>number</code> | キル数 |
 
@@ -775,8 +791,9 @@ Creates an instance of Inventory.
 
 ### player.killAssists
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | killAssists | <code>number</code> | キルアシスト数 |
 
@@ -784,8 +801,9 @@ Creates an instance of Inventory.
 
 ### player.downs
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | downs | <code>number</code> | ダウンさせた数 |
 
@@ -793,8 +811,9 @@ Creates an instance of Inventory.
 
 ### player.damageDealt
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | damageDealt | <code>object</code> | 敵に与えたダメージ詳細 |
 
@@ -802,8 +821,9 @@ Creates an instance of Inventory.
 
 ### player.damageReceived
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | damageReceived | <code>object</code> | くらったダメージ詳細 |
 
@@ -811,8 +831,9 @@ Creates an instance of Inventory.
 
 ### player.isAlive
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | isAlive | <code>Boolean</code> | 生存状態 |
 
@@ -820,8 +841,9 @@ Creates an instance of Inventory.
 
 ### player.isOnline
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | isOnline | <code>Boolean</code> | 接続状態 |
 
@@ -829,8 +851,9 @@ Creates an instance of Inventory.
 
 ### player.level
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | level | <code>number</code> | プレイヤーのレベル |
 
@@ -838,8 +861,9 @@ Creates an instance of Inventory.
 
 ### player.weaponList
 **Kind**: instance property of [<code>Player</code>](#Player)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | weaponList | <code>object</code> | 所持している武器のリスト |
 
@@ -1043,8 +1067,9 @@ Creates an instance of Player.
 
 ### datacenter.timestamp
 **Kind**: instance property of [<code>Datacenter</code>](#Datacenter)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | timestamp | <code>number</code> | - タイムスタンプ (uint64) |
 
@@ -1052,8 +1077,9 @@ Creates an instance of Player.
 
 ### datacenter.category
 **Kind**: instance property of [<code>Datacenter</code>](#Datacenter)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | category | <code>string</code> | カテゴリー名 |
 
@@ -1061,8 +1087,9 @@ Creates an instance of Player.
 
 ### datacenter.name
 **Kind**: instance property of [<code>Datacenter</code>](#Datacenter)  
+**Properties**
 
-| Param | Type | Description |
+| Name | Type | Description |
 | --- | --- | --- |
 | name | <code>string</code> | データセンター名 |
 
