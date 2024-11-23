@@ -13,21 +13,24 @@ class Vector3 {
      */
     constructor(x = 0, y = 0, z = 0) {
         /**
-         * @type {number} x - X座標の値
+         * X座標
+         * @type {number} 
          */
         this.x = x;
         /**
-         * @type {number} y - Y座標の値
+         * Y座標
+         * @type {number}
          */
         this.y = y;
         /**
-         * @type {number} z  - Z座標の値
+         * Z座標
+         * @type {number}
          */
         this.z = z;
         return this;
     }
     /**
-     * 座標を更新する関数
+     * 座標を計算、更新する関数
      * @param {number} newX - 新しいx座標
      * @param {number} newY - 新しいy座標
      * @param {number} newZ - 新しいz座標
@@ -57,15 +60,18 @@ class Item {
      */
     constructor(name, level, quantity) {
         /**
-         * @type {string} name - アイテムの名前
+         * アイテム名
+         * @type {string} 
          */
         this.name = name;
         /**
-         * @type {number} level - アイテムのレベル
+         * アイテムレベル
+         * @type {number}
          */
         this.level = level;
         /**
-         * @type {number} quantity - アイテムの保有数
+         * アイテムの保有数
+         * @type {number} 
          */
         this.quantity = quantity;
         return this;
@@ -289,102 +295,152 @@ class Player {
      */
     constructor(name, teamId, nucleusHash, hardwareName) {
         /**
-         * @type {string} name - プレイヤー名
+         * プレイヤー名
+         * @type {string}
          */
         this.name = name;
+
         /**
-         * @type {number} teamId - チームID (uint32)
+         * チームID (uint32)
+         * @type {number}
          */
         this.teamId = teamId;
+
         /**
-        * @type {string} nucleusHash - プレイヤーの識別用ハッシュ
-        */
+         * プレイヤーの識別用ハッシュ
+         * @type {string}
+         */
         this.nucleusHash = nucleusHash;
+
         /**
-        * @type {string} hardwareName - 使用ハードウェア名
-        */
+         * 使用ハードウェア名
+         * @type {string}
+         */
         this.hardwareName = hardwareName;
+
         /**
-         * @type {Vector3} pos - プレイヤーの位置
+         * プレイヤーの位置 (3次元ベクトル)
+         * @type {Vector3}
          */
         this.pos = new Vector3();
+
         /**
-         * @type {number} angles - プレイヤーの視角 
-        */
+         * プレイヤーの視角
+         * @type {number}
+         */
         this.angles = 0;
+
         /**
-        * @type {number} currentHealth - 現在の体力 (uint32)
+         * 現在の体力 (uint32)
+         * @type {number}
          */
         this.currentHealth = 0;
+
         /**
-        * @type {number} maxHealth - 最大体力 (uint32)
-        */
+         * 最大体力 (uint32)
+         * @type {number}
+         */
         this.maxHealth = 0;
+
         /**
-        * @type {number} shieldHealth - 現在のシールド体力 (uint32)
-        */
+         * 現在のシールド体力 (uint32)
+         * @type {number}
+         */
         this.shieldHealth = 0;
+
         /**
-        * @type {number} shieldMaxHealth - 最大シールド体力 (uint32)
-        */
+         * 最大シールド体力 (uint32)
+         * @type {number}
+         */
         this.shieldMaxHealth = 0;
+
         /**
-        * @type {string} teamName - チーム名
-        */
+         * チーム名
+         * @type {string}
+         */
         this.teamName = "";
+
         /**
-        * @type {number} squadIndex - 分隊番号 (uint32)
-        */
+         * 分隊番号 (uint32)
+         * @type {number}
+         */
         this.squadIndex = -1;
+
         /**
-        * @type {string} character - キャラクター名
-        */
+         * キャラクター名
+         * @type {string}
+         */
         this.character = "";
+
         /**
-        * @type {string} skin - キャラクタースキン名
-        */
+         * キャラクタースキン名
+         * @type {string}
+         */
         this.skin = "";
+
         /**
-        * @type {Inventory} inventory - プレーヤーのインベントリー
-        */
+         * プレーヤーのインベントリー
+         * @type {Inventory}
+         */
         this.inventory = new Inventory();
+
         /**
-        * @type {number} kills - キル数
-        */
-        this.kills = 0;                     // キル数
+         * キル数
+         * @type {number}
+         */
+        this.kills = 0;
+
         /**
-        * @type {number} killAssists - キルアシスト数
-        */
-        this.killAssists = 0;               // キルアシスト数
+         * キルアシスト数
+         * @type {number}
+         */
+        this.killAssists = 0;
+
         /**
-        * @type {number} downs - ダウンさせた数
-        */
-        this.downs = 0;                     // ダウンさせた数
+         * ダウンさせた数
+         * @type {number}
+         */
+        this.downs = 0;
+
         /**
-        * @type {object} damageDealt - 敵に与えたダメージ詳細
-        */
+         * 敵に与えたダメージ詳細
+         * @type {object}
+         * @property {number} total - 合計ダメージ
+         */
         this.damageDealt = { total: 0 };
+
         /**
-        * @type {object} damageReceived - くらったダメージ詳細
-        */
+         * くらったダメージ詳細
+         * @type {object}
+         * @property {number} total - 合計ダメージ
+         */
         this.damageReceived = { total: 0 };
+
         /**
-        * @type {Boolean} isAlive - 生存状態
-        */
+         * 生存状態
+         * @type {boolean}
+         */
         this.isAlive = true;
+
         /**
-        * @type {Boolean} isOnline - 接続状態
-        */
+         * 接続状態
+         * @type {boolean}
+         */
         this.isOnline = true;
+
         /**
-        * @type {number} level - プレイヤーのレベル
-        */
+         * プレイヤーのレベル情報
+         * @type {object}
+         * @property {object} 0 - レベル情報
+         */
         this.level = {
             0: {}
         };
+
         /**
-         * @type {object} weaponList - 所持している武器のリスト
-        */
+         * 所持している武器のリスト
+         * @type {Array<object>}
+         */
         this.weaponList = [];
     }
 
@@ -539,7 +595,7 @@ class Player {
         this.damageReceived[total] += amount;
 
         if (penetrator) {
-            
+
         }
     }
 }
@@ -575,7 +631,7 @@ class Datacenter {
      * @return {Datacenter} 
      * @memberof Datacenter
      */
-    update(timestamp, category, name){
+    update(timestamp, category, name) {
         this.timestamp = timestamp;
         this.category = category;
         this.name = name;
@@ -665,75 +721,99 @@ class CustomMatch {
      */
     constructor(matchName) {
         /**
-         * @type {string} matchName - マッチ名
+         * マッチ名
+         * @type {string} 
          */
         this.matchName = matchName;
         /**
-         * @type {number} startTimeStamp - スタートタイムスタンプ
+         * スタートタイムスタンプ
+         * @type {number} 
          */
         this.startTimeStamp = "";
         /**
-         * @type {number} endTimeStamp - エンドタイムスタンプ
+         * エンドタイムスタンプ
+         * @type {number} 
          */
         this.endTimeStamp = "";
         /**
-         * @type {Object<string, Player>} - プレイヤーのリスト (最大60人) 連想配列に変更　チームにnucleusHashのみ保存
+         * プレイヤーの連想配列 (最大60人)
+         * キーはプレイヤーID、値はPlayerクラスのインスタンス
+         * @type {Object<string, Player>}
          */
         this.players = {};
         /**
-         * @type {Object<string,string>} teams - チームの連想配列 (teamIdをキーにする)
+         * チームの連想配列
+         * キーはteamId、値はnucleusHashを保存
+         * @type {Object<string,string>} 
          */
         this.teams = {};
         /**
-         * @type {number} maxPlayers - Maxプレーヤー数
+         * 最大プレイヤー数
+         * @type {number}
          */
         this.maxPlayers = 60;
         /**
-         * @type {string} state - gameStateChangedを格納
+         * 現在の状態
+         * gameStateChangedを格納
+         * @type {string}
          */
         this.state = "";
         /**
-         * @type {string} mapName - マップ名
+         * マップ名
+         * @type {string} 
          */
         this.mapName = "";
         /**
-         * @type {string} playlistName - マッチ名を格納 (例) World's Edge（リングなし）
+         * プレイリスト名
+         * 例: World's Edge（リングなし）
+         * @type {string}
          */
         this.playlistName = "";
         /**
-         * @type {string} playlistDesc - マッチ説明を格納 (例) 最後の1部隊になるまで戦い抜け
+         * プレイリストの説明
+         * 例: 最後の1部隊になるまで戦い抜け
+         * @type {string}
          */
         this.playlistDesc = "";
         /**
-         * @type {Datacenter} datacenter - Datacenterクラスをのオブジェクトを格納
+         * Datacenterのインスタンス
+         * @type {Datacenter}
          */
         this.datacenter = new Datacenter();
         /**
-         * @type {string} aimassiston - エイムアシストの設定値を格納
+         * エイムアシストの設定値
+         * @type {boolean}
          */
         this.aimassiston = true;
         /**
-         * @type {string} anonymousMode - 匿名モードの設定値を格納
+         * 匿名モードの設定
+         * @type {boolean}
          */
-        this.anonymousMode = false; 
+        this.anonymousMode = false;
         /**
-         * @type {string} serverId - サーバーIDを格納
+         * サーバーID
+         * @type {string}
          */
         this.serverId = "";
         /**
-         * @type {Inventory} startingLoadout - 初期配布のアイテムを追加するInventoryインスタンスを作成
+         * 初期配布アイテムを管理するInventoryのインスタンス
+         * @type {Inventory}
          */
         this.startingLoadout = new Inventory();
         /**
-         * @type {Array} eventLists - イベントリスト
+         * イベントリスト
+         * @type {Array<Event>}
          */
         this.eventLists = [];
         /**
-         * @type {Array} rings - ringデータ
+         * リングデータの配列
+         * 各要素はRingクラスのインスタンス
+         * @type {Array<Ring>}
          */
         this.rings = [];
         /**
-         * @type {Array} mapOffset - マップのオフセット
+         * マップのオフセット
+         * @type {Array<number>}
          */
         this.mapOffset = [0, 0, 1]
     }
@@ -744,6 +824,7 @@ class CustomMatch {
      */
     refreshEventLists() {
         this.eventLists = [];
+        return this;
     }
 
     /**
@@ -963,15 +1044,31 @@ class Event {
      * @constructor
      * @param {number} _timestamp - イベント発生時のタイムスタンプ
      * @param {string} _category - イベントの種類
-     * @param {string} _nucleusHash - プレイヤーID or チームID
+     * @param {string} _target - プレイヤーID or チームID
      * @param {object} _data - 受信したメッセージやクラスオブジェクトなどを入れる
      * @return {Event}
      * @memberof Event
      */
     constructor(_timestamp, _category, _target, _data) {
+        /**
+         * イベント発生時のタイムスタンプ
+         * @type {number}
+         */
         this.timestamp = _timestamp;
+        /**
+         * イベントの種類
+         * @type {string}
+         */
         this.category = _category;
+        /**
+         * プレイヤーID or チームID
+         * @type {string}
+         */
         this.target = _target;
+        /**
+         * 受信したメッセージやクラスオブジェクトなどを入れる
+         * @type {object}
+         */
         this.data = _data;
         return this;
     }
@@ -1003,14 +1100,41 @@ class Ring {
      * @memberof Ring
      */
     constructor(_timestamp, _category, _stage, _center, _currentRadius, _shrinkduration, _mapOffset) {
+        /**
+         * 
+         * @type {number}
+         */
         this.timestamp = _timestamp;
+        /**
+         * 
+         * @type {string}
+         */
         this.category = _category;
+        /**
+         * 
+         * @type {number}
+         */
         this.stage = _stage;
+        /**
+         * 
+         * @type {number}
+         */
         this.currentRadius = _currentRadius / _mapOffset[2];
+        /**
+         * 
+         * @type {number}
+         */
         this.shrinkduration = _shrinkduration;
+        /**
+         * 
+         * @type {number}
+         */
         this.endTimestamp = this.timestamp + this.shrinkduration;
-        this.center = new Vector3()
-        this.center.updateValues(_center.x, _center.y, _center.z, _mapOffset)
+        /**
+         * 
+         * @type {Vector3}
+         */
+        this.center = new Vector3().updateValues(_center.x, _center.y, _center.z, _mapOffset)
     }
 
     /**
