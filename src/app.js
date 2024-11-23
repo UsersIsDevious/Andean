@@ -114,6 +114,7 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_LobbyPlayers": {
+            // 一旦lobbyと言う名前のマッチが有るものとして扱う
             lobby = new CustomMatch("lobby")
             for (let i = 0; i < msg.playersList.length; i++) {
                 lobby.addPlayer(new Player(msg.playersList[i].name, msg.playersList[i].teamid, msg.playersList[i].nucleushash, msg.playersList[i].hardwarename))
@@ -127,12 +128,13 @@ function analyze_message(category, msg) {
             break;
         }
         case "MatchSetup": {
-            const startingloadout = msg.startingLoadout;
+            const startingloadout = msg.startingloadout;
             if (startingloadout.weaponsList != []) {
                 for (let i = 0; i < startingloadout.weaponsList.length; i++) {
                     const weapon = startingloadout.weaponsList[i];
                     const weaponLabel = weapon.item;
-                    match.startingLoadout.addItem(new Weapon(weaponLabel, language.weapons_label[weapon.item], checkItemLevel(weapon.item)));
+                    const weaponId = getWeaponId(weaponLabel);
+                    match.startingLoadout.addOrUpdateWeapon(weaponId, weaponLabel, checkItemLevel(weaponLabel));
                 }
             }
             const equipmentList = startingloadout.equipmentList;
@@ -198,88 +200,121 @@ function analyze_message(category, msg) {
         }
         case "PlayerStatChanged": {
             const player = processUpdatePlayer(msg, match);
-            const newvalue = msg.newvalue;
-            switch (msg.statname) {
-                case "knockdowns":
-                    player.setDown(newvalue);
-                    break;
-                case "kills":
-                    player.setKill(newvalue);
-                    break;
-                case "knockdownAssists":
-                    player.setKillAssist(newvalue);
-                default:
-                    common.logMessage(`[PlayerStatChanged] Unknown statname: ${msg.statname}`, "error");
-                    break;
-            }
+            // const newvalue = msg.newvalue;
+            // switch (msg.statname) {
+            //     case "knockdowns":
+            //         player.setDown(newvalue);
+            //         break;
+            //     case "kills":
+            //         player.setKill(newvalue);
+            //         break;
+            //     case "knockdownAssists":
+            //         player.setKillAssist(newvalue);
+            //     default:
+            //         common.logMessage(`[PlayerStatChanged] Unknown statname: ${msg.statname}`, "error");
+            //         break;
+            // }
             break;
         }
         case "PlayerUpgradeTierChanged": {
             const player = processUpdatePlayer(msg, match);
-            player.level[msg.level] = { "upgradename": "", "upgradedesc": "" };
+            player.level[String(msg.level)] = { "upgradename": "", "upgradedesc": "" };
+            player.level.now = String(msg.level);
             break;
         }
         case "PlayerDamaged": {
             /**
              * @todo
-             * 1.HP減らす
-             * 2.ダメージ数増やす
-             * 3.イベントクラスのobjectに付随する情報を
+             * 1.イベントクラスのobjectに付随する情報を
              */
+            //ダメージを与えた側
             const msg_attacker = msg.attacker;
             const msg_victim = msg.victim;
-            const victim = match.getPlayer(msg_victim.nucleushash);
-            updatePlayer(msg_victim, victim, match.mapOffset);
-            victim.addDamageReceived(msg.damageinflicted, msg.weapon, msg_attacker.nucleushash, msg_attacker.character, checkShieldPenetrator(msg.weapon));
+            let weaponName = getWeaponId(msg.weapon)
+            if (weaponName === undefined) {
+                weaponName = msg.weapon;
+            }
+            const victim = processUpdateMsgPlayer(msg_victim, match);
+            victim.addDamageReceived(msg.damageinflicted, weaponName, msg_attacker.nucleushash, msg_attacker.character, checkShieldPenetrator(weaponName));
+            //ダメージを受けた側
             /**
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
-            if(msg_attacker.nucleushash == ""){ break; }
-            const attacker = match.getPlayer(msg_attacker.nucleushash);
-            updatePlayer(msg_attacker, attacker, match.mapOffset);
-            attacker.addDamageDealt(msg.damageinflicted);
+            if (msg_attacker.nucleushash == "") { 
+                break;
+            }
+            const attacker = processUpdateMsgPlayer(msg_attacker, match);
+            attacker.addDamageDealt(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character, checkShieldPenetrator(weaponName));
             break;
         }
         case "PlayerKilled": {
+            //殺された側
             const msg_awardedto = msg.awardedto;
             const msg_victim = msg.victim;
-            const victim = match.getPlayer(msg_victim.nucleushash);
-            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapOffset);
-            updatePlayer(msg_victim, victim, match.mapOffset);
-            victim.setAliveStatus(false);
+            let weaponName = getWeaponId(msg.weapon)
+            if (weaponName === undefined) {
+                weaponName = msg.weapon;
+            }
+            const victim = processUpdateMsgPlayer(msg_victim, match);
+            victim.setKillsReceived(msg.damageinflicted, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
+
+            //殺した側
             /**
-             * @question
-             * 何の武器で殺されたか格納する？
-             * する場合はどこに格納しようか？
-             * 何の武器で合計何キル(したか・された)かも持っておいてもいいかもね
+             * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
+             * If the awardedto is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
+            if (msg_awardedto.nucleushash == "") {
+                break;
+            }
+            const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
+            awardedto.setKills(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character)
             break;
         }
         case "PlayerDowned": {
-            const msg_attacker = msg.attacker;
+            //ダウンした側
+            const msg_awardedto = msg.awardedto;
             const msg_victim = msg.victim;
-            updatePlayer(msg_attacker, match.getPlayer(msg_attacker.nucleushash), match.mapOffset);
-            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapOffset);
+            let weaponName = getWeaponId(msg.weapon)
+            if (weaponName === undefined) {
+                weaponName = msg.weapon;
+            }
+            const victim = processUpdateMsgPlayer(msg_victim, match);
+            victim.setDownsReceived(msg.damageinflicted, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
+
+            //ダウンさせた側
             /**
-             * @question
-             * 何の武器でダメージ受けたか格納する？
-             * する場合はどこに格納しようか？
-             * 何の武器で合計何ダメージ(与えた・受けた)かも持っておいてもいいかもね
+             * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
+             * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
+            if (msg_awardedto.nucleushash == "") {
+                break;
+            }
+            const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
+            awardedto.setDowns(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character)
             break;
         }
         case "PlayerAssist": {
-            const msg_assistant = msg.assistant;
+            //アシストダウンした側
+            const msg_awardedto = msg.awardedto;
             const msg_victim = msg.victim;
-            updatePlayer(msg_assistant, match.getPlayer(msg_assistant.nucleushash), match.mapOffset);
-            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapOffset);
+            let weaponName = getWeaponId(msg.weapon)
+            if (weaponName === undefined) {
+                weaponName = msg.weapon;
+            }
+            const victim = processUpdateMsgPlayer(msg_victim, match);
+            victim.setKillAssistsReceived(msg.damageinflicted, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
+            
+            //アシストした側
             /**
-             * @question
-             * 何の武器でアシスト受けたか格納する？
-             * する場合はどこに格納しようか？
-             * 何の武器で合計何アシスト(与えた・受けた)かも持っておいてもいいかもね
+             * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
+             * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
+            if (msg_awardedto.nucleushash == "") {
+                break;
+            }
+            const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
+            awardedto.setKillAssists(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character)
             break;
         }
         case "SquadEliminated": {
@@ -320,11 +355,10 @@ function analyze_message(category, msg) {
         }
         case "InventoryPickUp": {
             const player = processUpdatePlayer(msg, match);
-            const weapons_label = language.weapons_label;
             const item = msg.item;
-            const weaponId = Object.keys(weapons_label).find((key) => weapons_label[key] === item);
+            const weaponId = getWeaponId(item)
             if (weaponId != undefined) {
-                player.weaponList.push(new Weapon(weaponId, weapons_label[weaponId], checkItemLevel(item)));
+                player.inventory.addOrUpdateWeapon(weaponId, item, checkItemLevel(item));
             }
             player.inventory.addOrUpdateItem(item, item.quantity, checkItemLevel(item));
             break;
@@ -334,9 +368,20 @@ function analyze_message(category, msg) {
              * @todo
              * 武器を捨てた際にアタッチメントがすべてドロップイベントが発火しているか確認
              */
+            const player = processUpdatePlayer(msg, match);
+            const item = msg.item;
+            const weaponId = getWeaponId(item)
+            if (weaponId != undefined) {
+                player.inventory.removeWeapon(weaponId, checkItemLevel(item));
+            }
+            player.inventory.addOrUpdateItem(item, -(item.quantity), checkItemLevel(item));
             break;
         }
         case "InventoryUse": {
+            // 仮置き
+            const player = processUpdatePlayer(msg, match);
+            const item = msg.item;
+            player.inventory.addOrUpdateItem(item, -(item.quantity), checkItemLevel(item));
             break;
         }
         case "BannerCollected": {
@@ -347,7 +392,7 @@ function analyze_message(category, msg) {
         }
         case "LegendUpgradeSelected": {
             const player = processUpdatePlayer(msg, match);
-            const levelObj = player.level[msg.level];
+            const levelObj = player.level[String(msg.level)];
             levelObj.upgradename = msg.upgradename;
             levelObj.upgradedesc = msg.upgradedesc;
             break;
@@ -356,6 +401,10 @@ function analyze_message(category, msg) {
             break;
         }
         case "GrenadeThrown": {
+            //仮置き
+            const player = processUpdatePlayer(msg, match);
+            const itemName = msg.linkedentity;
+            player.inventory.addOrUpdateItem(itemName, -1, checkItemLevel(itemName));
             break;
         }
         case "BlackMarketAction": {
@@ -368,6 +417,21 @@ function analyze_message(category, msg) {
             break;
         }
         case "AmmoUsed": {
+            /**
+             * {
+             *  "timestamp":000,
+             *  "category":"ammoUsed",
+             *  "player":{},
+             *  "ammotype":"sniper",
+             *  "amountused":14,
+             *  "oldammocount":14,
+             *  "newammocount":0
+             * }
+             */
+            //仮置き
+            const player = processUpdatePlayer(msg, match);
+            const ammoType = msg.ammotype;
+            player.inventory.addOrUpdateItem(ammoType, -(msg.amountused), checkItemLevel(ammoType));
             break;
         }
         case "WeaponSwitched": {
@@ -400,10 +464,10 @@ function analyze_message(category, msg) {
 function updatePlayer(json, player, mapOffset, characterSelected = false) {
     player.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y, mapOffset);
     player.updateHealthAndShields(json.currenthealth, json.maxhealth, json.shieldhealth, json.shieldmaxhealth);
-    if (player.getStatus().teamName === "") {
+    if (player.teamName === "") {
         player.setTeamName(json.teamname);
     }
-    if (player.getStatus().squadIndex === -1) {
+    if (player.squadIndex === -1) {
         player.setSquadIndex(json.squadindex);
     }
     if (characterSelected) {
@@ -413,8 +477,7 @@ function updatePlayer(json, player, mapOffset, characterSelected = false) {
 }
 
 /**
- *
- *
+ * 
  * @param {Object} msg
  * @param {CustomMatch} match
  * @param {boolean} [characterSelected=false]
@@ -428,12 +491,31 @@ function processUpdatePlayer(msg, match, characterSelected = false) {
 }
 
 /**
+ *
+ *
+ * @param {Object} msg_player
+ * @param {CustomMatch} match
+ * @return {Player} 
+ */
+function processUpdateMsgPlayer(msg_player, match) {
+    const player = match.getPlayer(msg_player.nucleushash);
+    updatePlayer(msg_player, player, match.mapOffset);
+    return player;
+}
+
+/**
  * アイテム名からレベルをチェックする
  * @param {String} name
  */
 function checkItemLevel(name) {
-    let level = Number(new RegExp(`\\(${language.item.level_label} (\\d+)\\)`).exec(name)[1]);
-    if (level == null) { level = 1 };
+    //debug中
+    let level = new RegExp(`\\(${language.item.level_label} (\\d+)\\)`).exec(name);
+    console.log(name,level)
+    if (level == null) {
+        level = 1;
+    } else {
+        level = Number(level[1]);
+    }
     return level;
 }
 
@@ -452,20 +534,26 @@ function checkShieldPenetrator(perpetrator) {
  * @param {CustomMatch} match
  */
 function getPlayerStatus(match) {
-    if (match.gameState == "Playing") {
-        for (const teamId in match.teams) {
-            const player = match.getPlayer(match.teams[teamId][0]);
-            if (!player.getAliveStatus() || !player.getOnlineStatus()) { continue; }
-            apexCommon.change_camera("name", player.name);
-        }
+    for (const teamId in match.teams) {
+        const player = match.getPlayer(match.teams[teamId][0]);
+        if (!player.getAliveStatus() || !player.getOnlineStatus()) { continue; }
+        apexCommon.change_camera("name", player.name);
     }
+}
+
+/**
+ * 武器名からゲーム内IDをチェックする
+ * @param {String} name
+ */
+function getWeaponId(name) {
+    return Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === name);
 }
 
 /**
  * メインスレッド
  */
 async function update() {
-    if (match) {
+    if (match && match.startTimeStamp != 0 && match.endTimeStamp === 0) {
         getPlayerStatus(match);
         sendMapData.sendPlayerPositionUpdate(match);
     }

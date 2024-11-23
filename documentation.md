@@ -52,6 +52,8 @@
 </dd>
 <dt><a href="#processUpdatePlayer">processUpdatePlayer(msg, match, [characterSelected])</a> ⇒ <code><a href="#Player">Player</a></code></dt>
 <dd></dd>
+<dt><a href="#processUpdateMsgPlayer">processUpdateMsgPlayer(msg_player, match)</a> ⇒ <code><a href="#Player">Player</a></code></dt>
+<dd></dd>
 <dt><a href="#checkItemLevel">checkItemLevel(name)</a></dt>
 <dd><p>アイテム名からレベルをチェックする</p>
 </dd>
@@ -60,6 +62,9 @@
 </dd>
 <dt><a href="#getPlayerStatus">getPlayerStatus(match)</a></dt>
 <dd></dd>
+<dt><a href="#getWeaponId">getWeaponId(name)</a></dt>
+<dd><p>武器名からゲーム内IDをチェックする</p>
+</dd>
 <dt><a href="#update">update()</a></dt>
 <dd><p>メインスレッド</p>
 </dd>
@@ -485,13 +490,15 @@ Creates an instance of Weapon.
     * [new Inventory()](#new_Inventory_new)
     * _instance_
         * [.items](#Inventory+items) : <code>item</code>
-        * [.weapons](#Inventory+weapons) : <code>number</code>
+        * [.weapons](#Inventory+weapons) : [<code>Weapon</code>](#Weapon)
         * [.addItem(item)](#Inventory+addItem) ⇒ [<code>Inventory</code>](#Inventory)
         * [.addWeapon(weapon)](#Inventory+addWeapon) ⇒ [<code>Inventory</code>](#Inventory)
         * [.addOrUpdateItem(itemName, quantity, level)](#Inventory+addOrUpdateItem) ⇒ [<code>Inventory</code>](#Inventory)
-        * [.addOrUpdateWeapon(weaponLabel, level, maxMagazine)](#Inventory+addOrUpdateWeapon) ⇒ [<code>Inventory</code>](#Inventory)
+        * [.addOrUpdateWeapon(weaponId, weaponLabel, level, [maxMagazine])](#Inventory+addOrUpdateWeapon) ⇒ [<code>Inventory</code>](#Inventory)
+        * [.removeItem(itemName, level)](#Inventory+removeItem) ⇒ [<code>Item</code>](#Item) \| <code>undefined</code>
+        * [.removeWeapon(weaponId, level)](#Inventory+removeWeapon) ⇒ [<code>Weapon</code>](#Weapon) \| <code>undefined</code>
         * [.getItem(itemName, level)](#Inventory+getItem) ⇒ [<code>Item</code>](#Item) \| <code>undefined</code>
-        * [.getWeapon(weaponId, level)](#Inventory+getWeapon) ⇒ [<code>Item</code>](#Item) \| <code>undefined</code>
+        * [.getWeapon(weaponId, level)](#Inventory+getWeapon) ⇒ [<code>Weapon</code>](#Weapon) \| <code>undefined</code>
         * [.clearInventory()](#Inventory+clearInventory)
         * [.getInventoryStatus()](#Inventory+getInventoryStatus) ⇒ <code>Array.&lt;Object&gt;</code>
     * _static_
@@ -511,7 +518,7 @@ items - アイテムの保有数
 **Kind**: instance property of [<code>Inventory</code>](#Inventory)  
 <a name="Inventory+weapons"></a>
 
-### inventory.weapons : <code>number</code>
+### inventory.weapons : [<code>Weapon</code>](#Weapon)
 weapons - アイテムの保有数
 
 **Kind**: instance property of [<code>Inventory</code>](#Inventory)  
@@ -552,16 +559,39 @@ weapons - アイテムの保有数
 
 <a name="Inventory+addOrUpdateWeapon"></a>
 
-### inventory.addOrUpdateWeapon(weaponLabel, level, maxMagazine) ⇒ [<code>Inventory</code>](#Inventory)
+### inventory.addOrUpdateWeapon(weaponId, weaponLabel, level, [maxMagazine]) ⇒ [<code>Inventory</code>](#Inventory)
 アイテムを所持しているか確認し、なければ追加、あれば所持数を更新する
 
 **Kind**: instance method of [<code>Inventory</code>](#Inventory)  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| weaponLabel | <code>string</code> | アイテムの名前 |
-| level | <code>number</code> | アイテムのレベル |
-| maxMagazine | <code>number</code> | マガジンの最大サイズ |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| weaponId | <code>string</code> |  | 武器の名前 |
+| weaponLabel | <code>string</code> |  | 武器の名前 |
+| level | <code>number</code> |  | 武器のレベル |
+| [maxMagazine] | <code>number</code> | <code>0</code> | マガジンの最大サイズ |
+
+<a name="Inventory+removeItem"></a>
+
+### inventory.removeItem(itemName, level) ⇒ [<code>Item</code>](#Item) \| <code>undefined</code>
+インベントリから指定アイテムを削除
+
+**Kind**: instance method of [<code>Inventory</code>](#Inventory)  
+
+| Param | Type |
+| --- | --- |
+| itemName | <code>string</code> | 
+| level | <code>number</code> | 
+
+<a name="Inventory+removeWeapon"></a>
+
+### inventory.removeWeapon(weaponId, level) ⇒ [<code>Weapon</code>](#Weapon) \| <code>undefined</code>
+**Kind**: instance method of [<code>Inventory</code>](#Inventory)  
+
+| Param | Type |
+| --- | --- |
+| weaponId | <code>string</code> | 
+| level | <code>number</code> | 
 
 <a name="Inventory+getItem"></a>
 
@@ -578,11 +608,11 @@ weapons - アイテムの保有数
 
 <a name="Inventory+getWeapon"></a>
 
-### inventory.getWeapon(weaponId, level) ⇒ [<code>Item</code>](#Item) \| <code>undefined</code>
+### inventory.getWeapon(weaponId, level) ⇒ [<code>Weapon</code>](#Weapon) \| <code>undefined</code>
 インベントリ内の武器を取得する名前とレベルの両方で一致する武器を検索する
 
 **Kind**: instance method of [<code>Inventory</code>](#Inventory)  
-**Returns**: [<code>Item</code>](#Item) \| <code>undefined</code> - 見つかった武器、またはundefined  
+**Returns**: [<code>Weapon</code>](#Weapon) \| <code>undefined</code> - 見つかった武器、またはundefined  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -618,60 +648,121 @@ Creates an instance of Inventory.
 
 * [Statistics](#Statistics)
     * _instance_
-        * [.weapons](#Statistics+weapons) : <code>object</code>
-        * [.players](#Statistics+players) : <code>object</code>
-        * [.legends](#Statistics+legends) : <code>object</code>
+        * [.total](#Statistics+total) : <code>number</code>
+        * [.weapons](#Statistics+weapons) : <code>Object.&lt;string, number&gt;</code>
+        * [.players](#Statistics+players) : <code>Object.&lt;string, number&gt;</code>
+        * [.legends](#Statistics+legends) : <code>Object.&lt;string, number&gt;</code>
+        * [.addToTotal(amount)](#Statistics+addToTotal)
+        * [.addWeaponUsage(weaponId, amount)](#Statistics+addWeaponUsage)
+        * [.addPlayerStat(playerId, amount)](#Statistics+addPlayerStat)
+        * [.addLegendStat(legendName, amount)](#Statistics+addLegendStat)
+        * [.updateStatistics(amount, weaponId, playerId, legendName)](#Statistics+updateStatistics) ⇒ [<code>Statistics</code>](#Statistics)
+        * [.reset()](#Statistics+reset) ⇒ [<code>Statistics</code>](#Statistics)
     * _static_
         * [.Statistics](#Statistics.Statistics)
             * [new Statistics()](#new_Statistics.Statistics_new)
 
+<a name="Statistics+total"></a>
+
+### statistics.total : <code>number</code>
+合計数
+
+**Kind**: instance property of [<code>Statistics</code>](#Statistics)  
 <a name="Statistics+weapons"></a>
 
-### statistics.weapons : <code>object</code>
+### statistics.weapons : <code>Object.&lt;string, number&gt;</code>
+Statistics by weapon.
+
 **Kind**: instance property of [<code>Statistics</code>](#Statistics)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| total | <code>number</code> | 合計ダメージ |
-
 <a name="Statistics+players"></a>
 
-### statistics.players : <code>object</code>
+### statistics.players : <code>Object.&lt;string, number&gt;</code>
+Statistics by player.
+
 **Kind**: instance property of [<code>Statistics</code>](#Statistics)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| total | <code>number</code> | 合計ダメージ |
-
 <a name="Statistics+legends"></a>
 
-### statistics.legends : <code>object</code>
+### statistics.legends : <code>Object.&lt;string, number&gt;</code>
+Statistics by legend.
+
 **Kind**: instance property of [<code>Statistics</code>](#Statistics)  
-**Properties**
+<a name="Statistics+addToTotal"></a>
 
-| Name | Type | Description |
+### statistics.addToTotal(amount)
+Adds a amount to the total.
+
+**Kind**: instance method of [<code>Statistics</code>](#Statistics)  
+
+| Param | Type | Description |
 | --- | --- | --- |
-| total | <code>number</code> | 合計ダメージ |
+| amount | <code>number</code> | The number to add to the total. |
 
+<a name="Statistics+addWeaponUsage"></a>
+
+### statistics.addWeaponUsage(weaponId, amount)
+Records a weapon's usage.
+
+**Kind**: instance method of [<code>Statistics</code>](#Statistics)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| weaponId | <code>string</code> | The ID of the weapon. |
+| amount | <code>number</code> | The number to add for the weapon. |
+
+<a name="Statistics+addPlayerStat"></a>
+
+### statistics.addPlayerStat(playerId, amount)
+Records a player's statistics.
+
+**Kind**: instance method of [<code>Statistics</code>](#Statistics)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| playerId | <code>string</code> | The nucleusHash of the player. |
+| amount | <code>number</code> | The number to add for the player. |
+
+<a name="Statistics+addLegendStat"></a>
+
+### statistics.addLegendStat(legendName, amount)
+Records a legend's statistics.
+
+**Kind**: instance method of [<code>Statistics</code>](#Statistics)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| legendName | <code>string</code> | The name of the legend. |
+| amount | <code>number</code> | The number to add for the legend. |
+
+<a name="Statistics+updateStatistics"></a>
+
+### statistics.updateStatistics(amount, weaponId, playerId, legendName) ⇒ [<code>Statistics</code>](#Statistics)
+Updates the statistics for a given amount, weapon, player, and legend in one call.
+
+**Kind**: instance method of [<code>Statistics</code>](#Statistics)  
+**Returns**: [<code>Statistics</code>](#Statistics) - The updated instance of the Statistics class.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| amount | <code>number</code> | The number to add to the statistics. |
+| weaponId | <code>string</code> | The ID or name of the weapon to update. |
+| playerId | <code>string</code> | The ID or name of the player to update. |
+| legendName | <code>string</code> | The name of the legend to update. |
+
+<a name="Statistics+reset"></a>
+
+### statistics.reset() ⇒ [<code>Statistics</code>](#Statistics)
+Resets all statistics.
+
+**Kind**: instance method of [<code>Statistics</code>](#Statistics)  
 <a name="Statistics.Statistics"></a>
 
 ### Statistics.Statistics
 **Kind**: static class of [<code>Statistics</code>](#Statistics)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| total | <code>number</code> | 合計ダメージ |
-| [weaponName] | <code>Object.&lt;string, number&gt;</code> | ダメージ詳細 (例: 武器やスキル) |
-
 <a name="new_Statistics.Statistics_new"></a>
 
 #### new Statistics()
 Creates an instance of Statistics.
 
-**Returns**: this  
 <a name="Player"></a>
 
 ## Player
@@ -685,6 +776,7 @@ Creates an instance of Statistics.
         * [.nucleusHash](#Player+nucleusHash) : <code>string</code>
         * [.hardwareName](#Player+hardwareName) : <code>string</code>
         * [.pos](#Player+pos) : [<code>Vector3</code>](#Vector3)
+        * [.original_pos](#Player+original_pos) : [<code>Vector3</code>](#Vector3)
         * [.angles](#Player+angles) : <code>number</code>
         * [.currentHealth](#Player+currentHealth) : <code>number</code>
         * [.maxHealth](#Player+maxHealth) : <code>number</code>
@@ -696,8 +788,11 @@ Creates an instance of Statistics.
         * [.skin](#Player+skin) : <code>string</code>
         * [.inventory](#Player+inventory) : [<code>Inventory</code>](#Inventory)
         * [.kills](#Player+kills) : [<code>Statistics</code>](#Statistics)
+        * [.killsReceived](#Player+killsReceived) : [<code>Statistics</code>](#Statistics)
         * [.killAssists](#Player+killAssists) : [<code>Statistics</code>](#Statistics)
+        * [.killAssistsReceived](#Player+killAssistsReceived) : [<code>Statistics</code>](#Statistics)
         * [.downs](#Player+downs) : [<code>Statistics</code>](#Statistics)
+        * [.downsReceived](#Player+downsReceived) : [<code>Statistics</code>](#Statistics)
         * [.damageDealt](#Player+damageDealt) : [<code>Statistics</code>](#Statistics)
         * [.damageReceived](#Player+damageReceived) : [<code>Statistics</code>](#Statistics)
         * [.isAlive](#Player+isAlive) : <code>boolean</code>
@@ -713,10 +808,13 @@ Creates an instance of Statistics.
         * [.setSquadIndex(index)](#Player+setSquadIndex)
         * [.getAliveStatus()](#Player+getAliveStatus) ⇒ <code>boolean</code>
         * [.getOnlineStatus()](#Player+getOnlineStatus) ⇒ <code>boolean</code>
-        * [.setKill(amount)](#Player+setKill)
-        * [.setKillAssist(amount)](#Player+setKillAssist)
-        * [.setDown(amount)](#Player+setDown)
-        * [.addDamageDealt(perpetrator, amount)](#Player+addDamageDealt)
+        * [.setKills(amount, perpetrator, victim, legend)](#Player+setKills)
+        * [.setKillsReceived(amount, perpetrator, awardedto, legend)](#Player+setKillsReceived)
+        * [.setKillAssists(amount, perpetrator, victim, legend)](#Player+setKillAssists)
+        * [.setKillAssistsReceived(amount, perpetrator, awardedto, legend)](#Player+setKillAssistsReceived)
+        * [.setDowns(amount, perpetrator, victim, legend)](#Player+setDowns)
+        * [.setDownsReceived(amount, perpetrator, awardedto, legend)](#Player+setDownsReceived)
+        * [.addDamageDealt(amount, perpetrator, victim, legend)](#Player+addDamageDealt)
         * [.addDamageReceived(amount, perpetrator, attacker, legend, [penetrator])](#Player+addDamageReceived)
     * _static_
         * [.Player](#Player.Player)
@@ -755,6 +853,12 @@ Creates an instance of Statistics.
 
 ### player.pos : [<code>Vector3</code>](#Vector3)
 プレイヤーの位置 (3次元ベクトル)
+
+**Kind**: instance property of [<code>Player</code>](#Player)  
+<a name="Player+original_pos"></a>
+
+### player.original\_pos : [<code>Vector3</code>](#Vector3)
+APEX座標プレイヤーの位置 (3次元ベクトル)
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
 <a name="Player+angles"></a>
@@ -823,16 +927,34 @@ Creates an instance of Statistics.
 キル数
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
+<a name="Player+killsReceived"></a>
+
+### player.killsReceived : [<code>Statistics</code>](#Statistics)
+キル数させられた数
+
+**Kind**: instance property of [<code>Player</code>](#Player)  
 <a name="Player+killAssists"></a>
 
 ### player.killAssists : [<code>Statistics</code>](#Statistics)
 キルアシスト数
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
+<a name="Player+killAssistsReceived"></a>
+
+### player.killAssistsReceived : [<code>Statistics</code>](#Statistics)
+キル数させられた数
+
+**Kind**: instance property of [<code>Player</code>](#Player)  
 <a name="Player+downs"></a>
 
 ### player.downs : [<code>Statistics</code>](#Statistics)
 ダウンさせた数
+
+**Kind**: instance property of [<code>Player</code>](#Player)  
+<a name="Player+downsReceived"></a>
+
+### player.downsReceived : [<code>Statistics</code>](#Statistics)
+キル数させられた数
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
 <a name="Player+damageDealt"></a>
@@ -869,8 +991,8 @@ Creates an instance of Statistics.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| now | <code>number</code> | 現在レベル |
-| 0 | <code>object</code> | レベル情報 |
+| now | <code>string</code> | 現在レベル |
+| "0" | <code>object</code> | レベル情報 |
 
 <a name="Player+weaponList"></a>
 
@@ -977,20 +1099,37 @@ Creates an instance of Statistics.
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 **Returns**: <code>boolean</code> - status プレイヤーが接続している場合はtrue、切断している場合はfalse  
-<a name="Player+setKill"></a>
+<a name="Player+setKills"></a>
 
-### player.setKill(amount)
-キル数を設定するメソッド
+### player.setKills(amount, perpetrator, victim, legend)
+キルした数を設定するメソッド
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | amount | <code>number</code> | 設定するキル数 |
+| perpetrator | <code>string</code> | 攻撃に使用したもの (例: 武器名、スキル名) |
+| victim | <code>string</code> | 攻撃受けたプレイヤーの（nucleushash） |
+| legend | <code>string</code> | 攻撃を受けたプレイヤーのレジェンド名 |
 
-<a name="Player+setKillAssist"></a>
+<a name="Player+setKillsReceived"></a>
 
-### player.setKillAssist(amount)
+### player.setKillsReceived(amount, perpetrator, awardedto, legend)
+敵からキルされた数を設定するメソッド
+
+**Kind**: instance method of [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| amount | <code>number</code> | 設定するキルを受けた数 |
+| perpetrator | <code>string</code> | 攻撃に使用したもの (例: 武器名、スキル名) |
+| awardedto | <code>string</code> | 攻撃したプレイヤーの（nucleushash） |
+| legend | <code>string</code> | 攻撃をしたプレイヤーのレジェンド名 |
+
+<a name="Player+setKillAssists"></a>
+
+### player.setKillAssists(amount, perpetrator, victim, legend)
 キルアシスト数を設定するメソッド
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
@@ -998,10 +1137,27 @@ Creates an instance of Statistics.
 | Param | Type | Description |
 | --- | --- | --- |
 | amount | <code>number</code> | 設定するキルアシスト数 |
+| perpetrator | <code>string</code> | 攻撃に使用したもの (例: 武器名、スキル名) |
+| victim | <code>string</code> | 攻撃受けたプレイヤーの（nucleushash） |
+| legend | <code>string</code> | 攻撃を受けたプレイヤーのレジェンド名 |
 
-<a name="Player+setDown"></a>
+<a name="Player+setKillAssistsReceived"></a>
 
-### player.setDown(amount)
+### player.setKillAssistsReceived(amount, perpetrator, awardedto, legend)
+敵からキルアシストされた数を設定するメソッド
+
+**Kind**: instance method of [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| amount | <code>number</code> | 設定するキルアシスト数 |
+| perpetrator | <code>string</code> | 攻撃に使用したもの (例: 武器名、スキル名) |
+| awardedto | <code>string</code> | 攻撃したプレイヤーの（nucleushash） |
+| legend | <code>string</code> | 攻撃をしたプレイヤーのレジェンド名 |
+
+<a name="Player+setDowns"></a>
+
+### player.setDowns(amount, perpetrator, victim, legend)
 ダウンさせた数を設定するメソッド
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
@@ -1009,23 +1165,42 @@ Creates an instance of Statistics.
 | Param | Type | Description |
 | --- | --- | --- |
 | amount | <code>number</code> | 設定するダウン数 |
+| perpetrator | <code>string</code> | 攻撃に使用したもの (例: 武器名、スキル名) |
+| victim | <code>string</code> | 攻撃受けたプレイヤーの（nucleushash） |
+| legend | <code>string</code> | 攻撃を受けたプレイヤーのレジェンド名 |
+
+<a name="Player+setDownsReceived"></a>
+
+### player.setDownsReceived(amount, perpetrator, awardedto, legend)
+敵からダウンさせられた数を設定するメソッド
+
+**Kind**: instance method of [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| amount | <code>number</code> | 設定するキルアシスト数 |
+| perpetrator | <code>string</code> | 攻撃に使用したもの (例: 武器名、スキル名) |
+| awardedto | <code>string</code> | 攻撃したプレイヤーの（nucleushash） |
+| legend | <code>string</code> | 攻撃をしたプレイヤーのレジェンド名 |
 
 <a name="Player+addDamageDealt"></a>
 
-### player.addDamageDealt(perpetrator, amount)
+### player.addDamageDealt(amount, perpetrator, victim, legend)
 敵に与えたダメージを増加させるメソッド
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| perpetrator | <code>string</code> | 攻撃に使用したもの (例: 武器名、スキル名) |
 | amount | <code>number</code> | 増加させるダメージ量 |
+| perpetrator | <code>string</code> | 攻撃に使用したもの (例: 武器名、スキル名) |
+| victim | <code>string</code> | 攻撃受けたプレイヤーの（nucleushash） |
+| legend | <code>string</code> | 攻撃を受けたプレイヤーのレジェンド名 |
 
 <a name="Player+addDamageReceived"></a>
 
 ### player.addDamageReceived(amount, perpetrator, attacker, legend, [penetrator])
-受けたダメージを増加させるメソッド
+プレイヤーが受けたダメージを増加させ、体力やシールドの状態を更新するメソッド
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 
@@ -1033,9 +1208,9 @@ Creates an instance of Statistics.
 | --- | --- | --- | --- |
 | amount | <code>number</code> |  | 増加させるダメージ量 |
 | perpetrator | <code>string</code> |  | 攻撃に使用されたもの |
-| attacker | <code>string</code> |  | 攻撃したプレイヤーのnucleushash |
+| attacker | <code>string</code> |  | 攻撃したプレイヤーの（nucleushash） |
 | legend | <code>string</code> |  | 攻撃を行ったプレイヤーのレジェンド名 |
-| [penetrator] | <code>boolean</code> | <code>false</code> | シールド貫通武器かどうか |
+| [penetrator] | <code>boolean</code> | <code>false</code> | 攻撃がシールドを貫通する場合はtrue、デフォルトはfalse |
 
 <a name="Player.Player"></a>
 
@@ -1702,6 +1877,16 @@ Playerクラスのオブジェクトを更新する
 | match | [<code>CustomMatch</code>](#CustomMatch) |  | 
 | [characterSelected] | <code>boolean</code> | <code>false</code> | 
 
+<a name="processUpdateMsgPlayer"></a>
+
+## processUpdateMsgPlayer(msg_player, match) ⇒ [<code>Player</code>](#Player)
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| msg_player | <code>Object</code> | 
+| match | [<code>CustomMatch</code>](#CustomMatch) | 
+
 <a name="checkItemLevel"></a>
 
 ## checkItemLevel(name)
@@ -1732,6 +1917,17 @@ Playerクラスのオブジェクトを更新する
 | Param | Type |
 | --- | --- |
 | match | [<code>CustomMatch</code>](#CustomMatch) | 
+
+<a name="getWeaponId"></a>
+
+## getWeaponId(name)
+武器名からゲーム内IDをチェックする
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| name | <code>String</code> | 
 
 <a name="update"></a>
 

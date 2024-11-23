@@ -41,7 +41,7 @@ class Vector3 {
     updateValues(newX, newY, newZ, mapOffset) {
         this.x = (newX + mapOffset[0]) / mapOffset[2] + 2048;
         this.y = (newY + mapOffset[1]) / mapOffset[2] + 2048;
-        this.z = newZ;
+        this.z = newZ / mapOffset[2];
         return this;
     }
 }
@@ -161,7 +161,7 @@ class Inventory {
          */
         this.items = []; // Array<Item>: アイテムのリスト
         /**
-         * @type {number} weapons - アイテムの保有数
+         * @type {Weapon} weapons - アイテムの保有数
          */
         this.weapons = [];
         return this;
@@ -201,7 +201,12 @@ class Inventory {
         const existingItem = this.getItem(itemName, level);
         if (existingItem) {
             // 同じ名前とレベルのアイテムが既に存在する場合は、所持数を更新
-            const newQuantity = existingItem.quantity + quantity;
+            let newQuantity = existingItem.quantity + quantity;
+            //もし所持数が0を下回ったら
+            if (newQuantity < 0) {
+                const item = this.removeItem(itemName, level);
+                return item;
+            }
             existingItem.setQuantity(newQuantity);
             console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingItem.quantity}.`);
         } else {
@@ -215,26 +220,65 @@ class Inventory {
 
     /**
      * アイテムを所持しているか確認し、なければ追加、あれば所持数を更新する
-     * @param {string} weaponLabel アイテムの名前
-     * @param {number} level アイテムのレベル
-     * @param {number} maxMagazine マガジンの最大サイズ
+     * @param {string} weaponId 武器の名前
+     * @param {string} weaponLabel 武器の名前
+     * @param {number} level 武器のレベル
+     * @param {number} [maxMagazine = 0] マガジンの最大サイズ
      * @return {Inventory}
      * @memberof Inventory
      */
-    addOrUpdateWeapon(weaponLabel, level, maxMagazine) {
-        const existingItem = this.getWeapon(weaponLabel, level);
-        if (existingItem) {
-            // 同じ名前とレベルのアイテムが既に存在する場合は、所持数を更新
-            const newQuantity = existingItem.quantity + quantity;
-            existingItem.setQuantity(newQuantity);
-            console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingItem.quantity}.`);
+    addOrUpdateWeapon(weaponId, weaponLabel, level, maxMagazine = 0) {
+        const existingWeapon = this.getWeapon(weaponLabel, level);
+        if (existingWeapon) {
+            /**
+             * @todo
+             * マックスマガジンの概念を作る所から始める
+             */
+            /* const newQuantity = existingWeapon.quantity + quantity;
+            existingWeapon.setQuantity(newQuantity);
+            console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingWeapon.quantity}.`); */
         } else {
             // アイテムが存在しない場合は、新規追加
-            const newItem = new Item(itemName, level, quantity);
-            this.addItem(newItem);
-            console.log(`${itemName} (Level ${level}) has been added with a quantity of ${quantity}.`);
+            const newWeapon = new Weapon(weaponId, weaponLabel, level);
+            this.addWeapon(newWeapon);
+            console.log(`${weaponLabel} (Level ${level}) has been added.`);
         }
         return this;
+    }
+
+    /**
+     * インベントリから指定アイテムを削除
+     * @param {string} itemName
+     * @param {number} level
+     * @return {Item|undefined} 
+     * @memberof Inventory
+     */
+    removeItem(itemName, level) {
+        // 条件に合致する要素のインデックスを取得
+        const index = this.items.findIndex(item => item.name === itemName && item.level === level);
+        // 要素が見つかった場合、その要素を削除
+        if (index !== -1) {
+            const item = this.items.splice(index, 1); // 指定されたインデックスの要素を1つ削除
+            return item; // 削除成功
+        }
+        return undefined; // 要素が見つからなかった場合
+    }
+
+    /**
+     * @param {string} weaponId
+     * @param {number} level
+     * @return {Weapon|undefined} 
+     * @memberof Inventory
+     */
+    removeWeapon(weaponId, level) {
+        // 条件に合致する要素のインデックスを取得
+        const index = this.weapons.findIndex(weapon => weapon.name === weaponId && weapon.level === level);
+        // 要素が見つかった場合、その要素を削除
+        if (index !== -1) {
+            const weapon = this.weapons.splice(index, 1); // 指定されたインデックスの要素を1つ削除
+            return weapon; // 削除成功
+        }
+        return undefined; // 要素が見つからなかった場合
     }
 
     /**
@@ -254,11 +298,11 @@ class Inventory {
      * 名前とレベルの両方で一致する武器を検索する
      * @param {string} weaponId 取得する武器の名前
      * @param {number} level 取得する武器のレベル
-     * @return {Item|undefined} 見つかった武器、またはundefined
+     * @return {Weapon|undefined} 見つかった武器、またはundefined
      * @memberof Inventory
      */
     getWeapon(weaponId, level) {
-        return this.items.find(weapon => weapon.name === weaponId && weapon.level === level);
+        return this.weapons.find(weapon => weapon.name === weaponId && weapon.level === level);
     }
 
     /**
@@ -285,27 +329,115 @@ class Inventory {
 class Statistics {
     /**
      * Creates an instance of Statistics.
-     * @property {number} total - 合計ダメージ
-     * @property {Object.<string, number>} [weaponName] - ダメージ詳細 (例: 武器やスキル)
-     * @return this
+     * @return {Statistics}
      * @memberof Statistics
      */
     constructor() {
-        this.total = 0; // 合計ダメージ
         /**
-         * @type {object}
-         * @property {number} total - 合計ダメージ
+         * 合計数
+         * @type {number}
          */
-        this.weapons = {}; // 攻撃手段ごとのダメージは動的に追加される
+        this.total = 0; // 合計
         /**
-         * @type {object}
-         * @property {number} total - 合計ダメージ
+         * Statistics by weapon.
+         * @type {Object.<string, number>}
+         */
+        this.weapons = {};
+        /**
+         * Statistics by player.
+         * @type {Object.<string, number>}
          */
         this.players = {};
         /**
-         * @type {object}
-         * @property {number} total - 合計ダメージ
+         * Statistics by legend.
+         * @type {Object.<string, number>}
          */
+        this.legends = {};
+        return this;
+    }
+
+    /**
+     * Adds a amount to the total.
+     * @param {number} amount - The number to add to the total.
+     * @memberof Statistics
+     */
+    addToTotal(amount) {
+        let total = this.total;
+        total += amount;
+        return total;
+    }
+
+    /**
+     * Records a weapon's usage.
+     * @param {string} weaponId - The ID of the weapon.
+     * @param {number} amount - The number to add for the weapon.
+     * @memberof Statistics
+     */
+    addWeaponUsage(weaponId, amount) {
+        if (!this.weapons[weaponId]) {
+            this.weapons[weaponId] = 0;
+        }
+        let total = this.weapons[weaponId];
+        total += amount;
+        return total;
+    }
+
+    /**
+     * Records a player's statistics.
+     * @param {string} playerId - The nucleusHash of the player.
+     * @param {number} amount - The number to add for the player.
+     * @memberof Statistics
+     */
+    addPlayerStat(playerId, amount) {
+        if (!this.players[playerId]) {
+            this.players[playerId] = 0;
+        }
+        let total = this.players[playerId];
+        total += amount;
+        return total;
+    }
+
+    /**
+     * Records a legend's statistics.
+     * @param {string} legendName - The name of the legend.
+     * @param {number} amount - The number to add for the legend.
+     * @memberof Statistics
+     */
+    addLegendStat(legendName, amount) {
+        if (!this.legends[legendName]) {
+            this.legends[legendName] = 0;
+        }
+        let total = this.legends[legendName];
+        total += amount;
+        return total;
+    }
+
+    /**
+     * Updates the statistics for a given amount, weapon, player, and legend in one call.
+     * @param {number} amount - The number to add to the statistics.
+     * @param {string} weaponId - The ID or name of the weapon to update.
+     * @param {string} playerId - The ID or name of the player to update.
+     * @param {string} legendName - The name of the legend to update.
+     * @return {Statistics} The updated instance of the Statistics class.
+     * @memberof Statistics
+     */
+    updateStatistics(amount, weaponId, playerId, legendName) {
+        this.addToTotal(amount);
+        this.addWeaponUsage(weaponId, amount);
+        this.addPlayerStat(playerId, amount);
+        this.addLegendStat(legendName, amount);
+        return this;
+    }
+
+    /**
+     * Resets all statistics.
+     * @return {Statistics}
+     * @memberof Statistics
+     */
+    reset() {
+        this.total = 0;
+        this.weapons = {};
+        this.players = {};
         this.legends = {};
         return this;
     }
@@ -355,6 +487,12 @@ class Player {
          * @type {Vector3}
          */
         this.pos = new Vector3();
+
+        /**
+         * APEX座標プレイヤーの位置 (3次元ベクトル)
+         * @type {Vector3}
+         */
+        this.original_pos = new Vector3();
 
         /**
          * プレイヤーの視角
@@ -423,16 +561,34 @@ class Player {
         this.kills = new Statistics();
 
         /**
+         * キル数させられた数
+         * @type {Statistics}
+         */
+        this.killsReceived = new Statistics();
+
+        /**
          * キルアシスト数
          * @type {Statistics}
          */
         this.killAssists = new Statistics();
 
         /**
+         * キル数させられた数
+         * @type {Statistics}
+         */
+        this.killAssistsReceived = new Statistics();
+
+        /**
          * ダウンさせた数
          * @type {Statistics}
          */
         this.downs = new Statistics();
+
+        /**
+         * キル数させられた数
+         * @type {Statistics}
+         */
+        this.downsReceived = new Statistics();
 
         /**
          * 敵に与えたダメージ詳細
@@ -461,12 +617,12 @@ class Player {
         /**
          * プレイヤーのレベル情報
          * @type {object}
-         * @property {number} now - 現在レベル
-         * @property {object} 0 - レベル情報
+         * @property {string} now - 現在レベル
+         * @property {object} "0" - レベル情報
          */
         this.level = {
-            now: 0,
-            0: {}
+            now: "0",
+            "0": {}
         };
 
         /**
@@ -475,7 +631,6 @@ class Player {
          */
         this.weaponList = [];
     }
-
 
     /**
      * プレイヤーの位置と角度を更新する関数
@@ -572,100 +727,143 @@ class Player {
     }
 
     /**
-     * キル数を設定するメソッド
+     * キルした数を設定するメソッド
      * @param {number} amount 設定するキル数
+     * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
+     * @param {string} victim - 攻撃受けたプレイヤーの（nucleushash）
+     * @param {string} legend - 攻撃を受けたプレイヤーのレジェンド名
      * @memberof Player
      */
-    setKill(amount) {
-        this.kills = amount;
+    setKills(amount, perpetrator, victim, legend) {
+        this.kills.updateStatistics(amount, perpetrator, victim, legend);
+    }
+
+    /**
+     * 敵からキルされた数を設定するメソッド
+     * @param {number} amount 設定するキルを受けた数
+     * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
+     * @param {string} awardedto - 攻撃したプレイヤーの（nucleushash）
+     * @param {string} legend - 攻撃をしたプレイヤーのレジェンド名
+     * @memberof Player
+     */
+    setKillsReceived(amount, perpetrator, awardedto, legend) {
+        this.killsReceived.updateStatistics(amount, perpetrator, awardedto, legend);
+        this.setAliveStatus(false);
     }
 
     /**
      * キルアシスト数を設定するメソッド
      * @param {number} amount 設定するキルアシスト数
+     * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
+     * @param {string} victim - 攻撃受けたプレイヤーの（nucleushash）
+     * @param {string} legend - 攻撃を受けたプレイヤーのレジェンド名
      * @memberof Player
      */
-    setKillAssist(amount) {
-        this.killAssists = amount;
+    setKillAssists(amount, perpetrator, victim, legend) {
+        this.killAssists.updateStatistics(amount, perpetrator, victim, legend);
+    }
+
+    /**
+     * 敵からキルアシストされた数を設定するメソッド
+     * @param {number} amount 設定するキルアシスト数
+     * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
+     * @param {string} awardedto - 攻撃したプレイヤーの（nucleushash）
+     * @param {string} legend - 攻撃をしたプレイヤーのレジェンド名
+     * @memberof Player
+     */
+    setKillAssistsReceived(amount, perpetrator, awardedto, legend) {
+        this.killAssistsReceived.updateStatistics(amount, perpetrator, awardedto, legend);
     }
 
     /**
      * ダウンさせた数を設定するメソッド
      * @param {number} amount 設定するダウン数
+     * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
+     * @param {string} victim - 攻撃受けたプレイヤーの（nucleushash）
+     * @param {string} legend - 攻撃を受けたプレイヤーのレジェンド名
      * @memberof Player
      */
-    setDown(amount) {
-        this.downs = amount;
+    setDowns(amount, perpetrator, victim, legend) {
+        this.downs.updateStatistics(amount, perpetrator, victim, legend);
     }
 
     /**
-    * 敵に与えたダメージを増加させるメソッド
-    * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
-    * @param {number} amount - 増加させるダメージ量
-    * @memberof Player
-    */
-    addDamageDealt(perpetrator, amount) {
-        // 入力値のチェック
-        if (typeof perpetrator !== 'string') {
-            throw new TypeError('perpetrator は文字列である必要があります');
-        }
-        if (typeof amount !== 'number' || amount < 0) {
-            throw new TypeError('amount は0以上の数値である必要があります');
-        }
-
-        // ダメージ記録の初期化
-        if (!(perpetrator in this.damageDealt)) {
-            this.damageDealt[perpetrator] = 0;
-        }
-
-        // ダメージを加算
-        this.damageDealt[perpetrator] += amount;
-
-        // 合計ダメージを加算
-        if (!('total' in this.damageDealt)) {
-            this.damageDealt['total'] = 0;
-        }
-        this.damageDealt['total'] += amount;
+     * 敵からダウンさせられた数を設定するメソッド
+     * @param {number} amount 設定するキルアシスト数
+     * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
+     * @param {string} awardedto - 攻撃したプレイヤーの（nucleushash）
+     * @param {string} legend - 攻撃をしたプレイヤーのレジェンド名
+     * @memberof Player
+     */
+    setDownsReceived(amount, perpetrator, awardedto, legend) {
+        this.downsReceived.updateStatistics(amount, perpetrator, awardedto, legend);
     }
 
     /**
-     * 受けたダメージを増加させるメソッド
+     * 敵に与えたダメージを増加させるメソッド
+     * @param {number} amount - 増加させるダメージ量
+     * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
+     * @param {string} victim - 攻撃受けたプレイヤーの（nucleushash）
+     * @param {string} legend - 攻撃を受けたプレイヤーのレジェンド名
+     * @memberof Player
+     */
+    addDamageDealt(amount, perpetrator, victim, legend) {
+        this.damageDealt.updateStatistics(amount, perpetrator, victim, legend);
+    }
+
+    /**
+     * プレイヤーが受けたダメージを増加させ、体力やシールドの状態を更新するメソッド
      * @param {number} amount - 増加させるダメージ量
      * @param {string} perpetrator - 攻撃に使用されたもの
-     * @param {string} attacker - 攻撃したプレイヤーのnucleushash
+     * @param {string} attacker - 攻撃したプレイヤーの（nucleushash）
      * @param {string} legend - 攻撃を行ったプレイヤーのレジェンド名
-     * @param {boolean} [penetrator=false] - シールド貫通武器かどうか
+     * @param {boolean} [penetrator=false] - 攻撃がシールドを貫通する場合はtrue、デフォルトはfalse
      * @memberof Player
      */
     addDamageReceived(amount, perpetrator, attacker, legend, penetrator = false) {
-        if (!perpetrator in this.damageReceived.weapons) {
-            this.damageReceived[perpetrator] = 0;
-        }
-        if (!attacker in this.damageReceived.players) {
-            this.damageReceived[perpetrator] = 0;
-        }
-        if (!legend in this.damageReceived.legends) {
-            this.damageReceived[perpetrator] = 0;
-        }
-        this.damageReceived.weapons[perpetrator] += amount;
-        this.damageReceived.players[attacker] += amount;
-        this.damageReceived.legends[legend] += amount;
-        this.damageReceived[total] += amount;
+        // 統計情報を更新する
+        // 受けたダメージ、攻撃手段、攻撃者の識別子とレジェンド名を記録
+        this.damageReceived.updateStatistics(amount, perpetrator, attacker, legend);
 
+        // シールドを貫通する攻撃の場合
         if (penetrator) {
-            const resultHealth = this.currentHealth - amount;
-            if (resultHealth < 0) { resultHealth = 0; }
+            // 現在の体力からダメージを引いた結果を計算
+            let resultHealth = this.currentHealth - amount;
+
+            // 体力が0未満になる場合は0に制限
+            if (resultHealth < 0) {
+                resultHealth = 0;
+            }
+
+            // シールドはそのままで体力だけを更新する
             this.updateHealthAndShields(resultHealth, this.maxHealth, this.shieldHealth, this.shieldMaxHealth);
+
+            // 更新後の体力・シールド状態を返す
             return [resultHealth, this.maxHealth, this.shieldHealth, this.shieldMaxHealth];
         }
 
-        const resultShield = this.shieldHealth - amount;
-        const resultHealth = amount - this.shieldHealth;
+        // シールドを貫通しない通常の攻撃の場合
+        // シールドからダメージ量を引いた結果を計算
+        let resultShield = this.shieldHealth - amount;
 
-        if (resultShield < 0) { resultShield = 0; }
-        if (resultHealth < 0) { resultHealth = 0; }
+        // 現在の体力を変数に保持（シールドが破壊された場合に調整する）
+        let resultHealth = this.currentHealth;
 
-        this.updateHealthAndShields(resultHealth, this.maxHealth, resultShield, this.shieldMaxHealth)
+        // シールドが0未満の場合、残りのダメージを体力に適用
+        if (resultShield < 0) {
+            resultHealth += resultShield; // resultShieldが負の場合、体力に減少分を反映
+            resultShield = 0; // シールドは0にリセット
+        }
+
+        // 体力が0未満になる場合は0に制限
+        if (resultHealth < 0) {
+            resultHealth = 0;
+        }
+
+        // 体力とシールドの状態を更新する
+        this.updateHealthAndShields(resultHealth, this.maxHealth, resultShield, this.shieldMaxHealth);
+
+        // 更新後の体力・シールド状態を返す
         return [resultHealth, this.maxHealth, resultShield, this.shieldMaxHealth];
     }
 }
@@ -799,12 +997,12 @@ class CustomMatch {
          * スタートタイムスタンプ
          * @type {number} 
          */
-        this.startTimeStamp = "";
+        this.startTimeStamp = 0;
         /**
          * エンドタイムスタンプ
          * @type {number} 
          */
-        this.endTimeStamp = "";
+        this.endTimeStamp = 0;
         /**
          * プレイヤーの連想配列 (最大60人)
          * キーはプレイヤーID、値はPlayerクラスのインスタンス
@@ -1064,9 +1262,8 @@ class CustomMatch {
      * @memberof CustomMatch
      */
     getPlayer(nucleusHash) {
-        const player = this.players[nucleusHash];
-        if (player) {
-            return player;
+        if (this.players[nucleusHash]) {
+            return this.players[nucleusHash];
         } else {
             // console.log(`Player with nucleusHash ${nucleusHash} not found.`);
             return null;
