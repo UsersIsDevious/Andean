@@ -416,7 +416,7 @@ function updatePlayer(json, player, mapName, characterSelected = false) {
  *
  *
  * @param {*} msg
- * @param {*} match
+ * @param {CustomMatch} match
  * @param {boolean} [characterSelected=false]
  * @return {*} 
  */
