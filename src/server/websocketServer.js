@@ -1,6 +1,10 @@
 const WebSocket = require('ws');
 
 
+/**
+ * WebSocketサーバー
+ * @class WebSocketServer
+ */
 class WebSocketServer {
   constructor(port) {
     this.port = port;
@@ -30,6 +34,7 @@ class WebSocketServer {
   /**
    * コールバック関数を設定するメソッド
    * @param {Function} callback - handleMessageで呼び出されるコールバック関数
+   * @memberof WebSocketServer
    */
   setHandleMessageCallback(callback) {
     this.handleMessageCallback = callback;
@@ -39,6 +44,7 @@ class WebSocketServer {
    * 受信メッセージを処理する
    * @param {Buffer} message - 受信したメッセージ
    * @param {WebSocket} ws - 送信元のWebSocketインスタンス
+   * @memberof WebSocketServer
    */
   handleIncomingMessage(message, ws) {
     try {
@@ -58,6 +64,7 @@ class WebSocketServer {
    * クライアントにメッセージを送信する
    * @param {WebSocket} ws - 対象クライアント
    * @param {string} message - 送信するメッセージ
+   * @memberof WebSocketServer
    */
   sendToClient(ws, message) {
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -68,6 +75,7 @@ class WebSocketServer {
   /**
    * 全ての接続中クライアントにメッセージを送信する
    * @param {string} message - 送信するメッセージ
+   * @memberof WebSocketServer
    */
   broadcastToAllClients(message) {
     this.clients.forEach((client) => {
@@ -76,9 +84,10 @@ class WebSocketServer {
       }
     });
   }
-
   /**
    * サーバーを停止する
+   * @return {*} 
+   * @memberof WebSocketServer
    */
   stopServer() {
     return new Promise((resolve, reject) => {
