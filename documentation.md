@@ -710,11 +710,12 @@ Creates an instance of Inventory.
 | Name | Type | Description |
 | --- | --- | --- |
 | total | <code>number</code> | 合計ダメージ |
+| [weaponName] | <code>Object.&lt;string, number&gt;</code> | 各攻撃手段ごとのダメージ詳細 (例: 武器やスキル) |
 
 <a name="Player+damageReceived"></a>
 
 ### player.damageReceived : <code>object</code>
-くらったダメージ詳細
+敵から受けたダメージ詳細
 
 **Kind**: instance property of [<code>Player</code>](#Player)  
 **Properties**
@@ -894,7 +895,7 @@ Creates an instance of Inventory.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| perpetrator | <code>string</code> | 攻撃に使用したもの |
+| perpetrator | <code>string</code> | 攻撃に使用したもの (例: 武器名、スキル名) |
 | amount | <code>number</code> | 増加させるダメージ量 |
 
 <a name="Player+addDamageReceived"></a>

@@ -415,10 +415,10 @@ function updatePlayer(json, player, mapName, characterSelected = false) {
 /**
  *
  *
- * @param {*} msg
- * @param {*} match
+ * @param {Object} msg
+ * @param {CustomMatch} match
  * @param {boolean} [characterSelected=false]
- * @return {*} 
+ * @return {Player} 
  */
 function processUpdatePlayer(msg, match, characterSelected = false) {
     const msg_player = msg.player;
@@ -449,7 +449,7 @@ function checkShieldPenetrator(perpetrator) {
 /**
  *
  *
- * @param {*} match
+ * @param {CustomMatch} match
  */
 function getPlayerStatus(match) {
     if (match.gameState == "Playing") {
@@ -462,8 +462,7 @@ function getPlayerStatus(match) {
 }
 
 /**
- *
- *
+ * メインスレッド
  */
 async function update() {
     if (match) {
