@@ -268,9 +268,9 @@ z  - Z座標の値
 * [Item](#Item)
     * [new Item()](#new_Item_new)
     * _instance_
-        * [.name](#Item+name)
-        * [.level](#Item+level)
-        * [.quantity](#Item+quantity)
+        * [.name](#Item+name) : <code>string</code>
+        * [.level](#Item+level) : <code>number</code>
+        * [.quantity](#Item+quantity) : <code>number</code>
         * [.setQuantity(newQuantity)](#Item+setQuantity) ⇒ [<code>Item</code>](#Item)
         * [.getItemStatus()](#Item+getItemStatus) ⇒ [<code>Item</code>](#Item)
     * _static_
@@ -284,34 +284,22 @@ z  - Z座標の値
 
 <a name="Item+name"></a>
 
-### item.name
+### item.name : <code>string</code>
+name - アイテムの名前
+
 **Kind**: instance property of [<code>Item</code>](#Item)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | アイテムの名前 |
-
 <a name="Item+level"></a>
 
-### item.level
+### item.level : <code>number</code>
+level - アイテムのレベル
+
 **Kind**: instance property of [<code>Item</code>](#Item)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| level | <code>number</code> | アイテムのレベル |
-
 <a name="Item+quantity"></a>
 
-### item.quantity
+### item.quantity : <code>number</code>
+quantity - アイテムの保有数
+
 **Kind**: instance property of [<code>Item</code>](#Item)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| quantity | <code>number</code> | アイテムの保有数 |
-
 <a name="Item+setQuantity"></a>
 
 ### item.setQuantity(newQuantity) ⇒ [<code>Item</code>](#Item)
@@ -352,10 +340,10 @@ z  - Z座標の値
 * [Weapon](#Weapon)
     * [new Weapon()](#new_Weapon_new)
     * _instance_
-        * [.Id](#Weapon+Id)
-        * [.label](#Weapon+label)
-        * [.level](#Weapon+level)
-        * [.maxMagazine](#Weapon+maxMagazine)
+        * [.Id](#Weapon+Id) : <code>string</code>
+        * [.label](#Weapon+label) : <code>string</code>
+        * [.level](#Weapon+level) : <code>number</code>
+        * [.maxMagazine](#Weapon+maxMagazine) : <code>number</code>
         * [.getMaxMagazine()](#Weapon+getMaxMagazine) ⇒ <code>number</code>
     * _static_
         * [.Weapon](#Weapon.Weapon)
@@ -368,44 +356,28 @@ z  - Z座標の値
 
 <a name="Weapon+Id"></a>
 
-### weapon.Id
+### weapon.Id : <code>string</code>
+Id - 内部の武器名
+
 **Kind**: instance property of [<code>Weapon</code>](#Weapon)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| Id | <code>string</code> | 内部の武器名 |
-
 <a name="Weapon+label"></a>
 
-### weapon.label
+### weapon.label : <code>string</code>
+label - 表示されている武器名
+
 **Kind**: instance property of [<code>Weapon</code>](#Weapon)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| label | <code>string</code> | 表示されている武器名 |
-
 <a name="Weapon+level"></a>
 
-### weapon.level
+### weapon.level : <code>number</code>
+level - 武器のレベル
+
 **Kind**: instance property of [<code>Weapon</code>](#Weapon)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| level | <code>number</code> | 武器のレベル |
-
 <a name="Weapon+maxMagazine"></a>
 
-### weapon.maxMagazine
+### weapon.maxMagazine : <code>number</code>
+maxMagazine - AmmoUsedで使用された最大の弾数を格納
+
 **Kind**: instance property of [<code>Weapon</code>](#Weapon)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| maxMagazine | <code>number</code> | AmmoUsedで使用された最大の弾数を格納 |
-
 <a name="Weapon+getMaxMagazine"></a>
 
 ### weapon.getMaxMagazine() ⇒ <code>number</code>
@@ -437,8 +409,8 @@ Creates an instance of Weapon.
 * [Inventory](#Inventory)
     * [new Inventory()](#new_Inventory_new)
     * _instance_
-        * [.items](#Inventory+items)
-        * [.weapons](#Inventory+weapons)
+        * [.items](#Inventory+items) : <code>item</code>
+        * [.weapons](#Inventory+weapons) : <code>number</code>
         * [.addItem(item)](#Inventory+addItem) ⇒ [<code>Inventory</code>](#Inventory)
         * [.addWeapon(weapon)](#Inventory+addWeapon) ⇒ [<code>Inventory</code>](#Inventory)
         * [.addOrUpdateItem(itemName, quantity, level)](#Inventory+addOrUpdateItem) ⇒ [<code>Inventory</code>](#Inventory)
@@ -458,24 +430,16 @@ Creates an instance of Weapon.
 
 <a name="Inventory+items"></a>
 
-### inventory.items
+### inventory.items : <code>item</code>
+items - アイテムの保有数
+
 **Kind**: instance property of [<code>Inventory</code>](#Inventory)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| items | <code>item</code> | アイテムの保有数 |
-
 <a name="Inventory+weapons"></a>
 
-### inventory.weapons
+### inventory.weapons : <code>number</code>
+weapons - アイテムの保有数
+
 **Kind**: instance property of [<code>Inventory</code>](#Inventory)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| weapons | <code>number</code> | アイテムの保有数 |
-
 <a name="Inventory+addItem"></a>
 
 ### inventory.addItem(item) ⇒ [<code>Inventory</code>](#Inventory)
@@ -580,30 +544,30 @@ Creates an instance of Inventory.
 * [Player](#Player)
     * [new Player()](#new_Player_new)
     * _instance_
-        * [.name](#Player+name)
-        * [.teamId](#Player+teamId)
-        * [.nucleusHash](#Player+nucleusHash)
-        * [.hardwareName](#Player+hardwareName)
-        * [.pos](#Player+pos)
-        * [.angles](#Player+angles)
-        * [.currentHealth](#Player+currentHealth)
-        * [.maxHealth](#Player+maxHealth)
-        * [.shieldHealth](#Player+shieldHealth)
-        * [.shieldMaxHealth](#Player+shieldMaxHealth)
-        * [.teamName](#Player+teamName)
-        * [.squadIndex](#Player+squadIndex)
-        * [.character](#Player+character)
-        * [.skin](#Player+skin)
-        * [.inventory](#Player+inventory)
-        * [.kills](#Player+kills)
-        * [.killAssists](#Player+killAssists)
-        * [.downs](#Player+downs)
-        * [.damageDealt](#Player+damageDealt)
-        * [.damageReceived](#Player+damageReceived)
-        * [.isAlive](#Player+isAlive)
-        * [.isOnline](#Player+isOnline)
-        * [.level](#Player+level)
-        * [.weaponList](#Player+weaponList)
+        * [.name](#Player+name) : <code>string</code>
+        * [.teamId](#Player+teamId) : <code>number</code>
+        * [.nucleusHash](#Player+nucleusHash) : <code>string</code>
+        * [.hardwareName](#Player+hardwareName) : <code>string</code>
+        * [.pos](#Player+pos) : [<code>Vector3</code>](#Vector3)
+        * [.angles](#Player+angles) : <code>number</code>
+        * [.currentHealth](#Player+currentHealth) : <code>number</code>
+        * [.maxHealth](#Player+maxHealth) : <code>number</code>
+        * [.shieldHealth](#Player+shieldHealth) : <code>number</code>
+        * [.shieldMaxHealth](#Player+shieldMaxHealth) : <code>number</code>
+        * [.teamName](#Player+teamName) : <code>string</code>
+        * [.squadIndex](#Player+squadIndex) : <code>number</code>
+        * [.character](#Player+character) : <code>string</code>
+        * [.skin](#Player+skin) : <code>string</code>
+        * [.inventory](#Player+inventory) : [<code>Inventory</code>](#Inventory)
+        * [.kills](#Player+kills) : <code>number</code>
+        * [.killAssists](#Player+killAssists) : <code>number</code>
+        * [.downs](#Player+downs) : <code>number</code>
+        * [.damageDealt](#Player+damageDealt) : <code>object</code>
+        * [.damageReceived](#Player+damageReceived) : <code>object</code>
+        * [.isAlive](#Player+isAlive) : <code>Boolean</code>
+        * [.isOnline](#Player+isOnline) : <code>Boolean</code>
+        * [.level](#Player+level) : <code>number</code>
+        * [.weaponList](#Player+weaponList) : <code>object</code>
         * [.updatePositionAndAngles(x, y, z, newAngles, mapOffset)](#Player+updatePositionAndAngles)
         * [.updateHealthAndShields(newCurrentHealth, newMaxHealth, newShieldHealth, newShieldMaxHealth)](#Player+updateHealthAndShields)
         * [.updateCharacter(newCharacter, newSkin)](#Player+updateCharacter)
@@ -629,244 +593,148 @@ Creates an instance of Inventory.
 
 <a name="Player+name"></a>
 
-### player.name
+### player.name : <code>string</code>
+name - プレイヤー名
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | プレイヤー名 |
-
 <a name="Player+teamId"></a>
 
-### player.teamId
+### player.teamId : <code>number</code>
+teamId - チームID (uint32)
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| teamId | <code>number</code> | チームID (uint32) |
-
 <a name="Player+nucleusHash"></a>
 
-### player.nucleusHash
+### player.nucleusHash : <code>string</code>
+nucleusHash - プレイヤーの識別用ハッシュ
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| nucleusHash | <code>string</code> | プレイヤーの識別用ハッシュ |
-
 <a name="Player+hardwareName"></a>
 
-### player.hardwareName
+### player.hardwareName : <code>string</code>
+hardwareName - 使用ハードウェア名
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| hardwareName | <code>string</code> | 使用ハードウェア名 |
-
 <a name="Player+pos"></a>
 
-### player.pos
+### player.pos : [<code>Vector3</code>](#Vector3)
+pos - プレイヤーの位置
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| pos | [<code>Vector3</code>](#Vector3) | プレイヤーの位置 |
-
 <a name="Player+angles"></a>
 
-### player.angles
+### player.angles : <code>number</code>
+angles - プレイヤーの視角
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| angles | <code>number</code> | プレイヤーの視角 |
-
 <a name="Player+currentHealth"></a>
 
-### player.currentHealth
+### player.currentHealth : <code>number</code>
+currentHealth - 現在の体力 (uint32)
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| currentHealth | <code>number</code> | 現在の体力 (uint32) |
-
 <a name="Player+maxHealth"></a>
 
-### player.maxHealth
+### player.maxHealth : <code>number</code>
+maxHealth - 最大体力 (uint32)
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| maxHealth | <code>number</code> | 最大体力 (uint32) |
-
 <a name="Player+shieldHealth"></a>
 
-### player.shieldHealth
+### player.shieldHealth : <code>number</code>
+shieldHealth - 現在のシールド体力 (uint32)
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| shieldHealth | <code>number</code> | 現在のシールド体力 (uint32) |
-
 <a name="Player+shieldMaxHealth"></a>
 
-### player.shieldMaxHealth
+### player.shieldMaxHealth : <code>number</code>
+shieldMaxHealth - 最大シールド体力 (uint32)
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| shieldMaxHealth | <code>number</code> | 最大シールド体力 (uint32) |
-
 <a name="Player+teamName"></a>
 
-### player.teamName
+### player.teamName : <code>string</code>
+teamName - チーム名
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| teamName | <code>string</code> | チーム名 |
-
 <a name="Player+squadIndex"></a>
 
-### player.squadIndex
+### player.squadIndex : <code>number</code>
+squadIndex - 分隊番号 (uint32)
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| squadIndex | <code>number</code> | 分隊番号 (uint32) |
-
 <a name="Player+character"></a>
 
-### player.character
+### player.character : <code>string</code>
+character - キャラクター名
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| character | <code>string</code> | キャラクター名 |
-
 <a name="Player+skin"></a>
 
-### player.skin
+### player.skin : <code>string</code>
+skin - キャラクタースキン名
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| skin | <code>string</code> | キャラクタースキン名 |
-
 <a name="Player+inventory"></a>
 
-### player.inventory
+### player.inventory : [<code>Inventory</code>](#Inventory)
+inventory - プレーヤーのインベントリー
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| inventory | [<code>Inventory</code>](#Inventory) | プレーヤーのインベントリー |
-
 <a name="Player+kills"></a>
 
-### player.kills
+### player.kills : <code>number</code>
+kills - キル数
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| kills | <code>number</code> | キル数 |
-
 <a name="Player+killAssists"></a>
 
-### player.killAssists
+### player.killAssists : <code>number</code>
+killAssists - キルアシスト数
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| killAssists | <code>number</code> | キルアシスト数 |
-
 <a name="Player+downs"></a>
 
-### player.downs
+### player.downs : <code>number</code>
+downs - ダウンさせた数
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| downs | <code>number</code> | ダウンさせた数 |
-
 <a name="Player+damageDealt"></a>
 
-### player.damageDealt
+### player.damageDealt : <code>object</code>
+damageDealt - 敵に与えたダメージ詳細
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| damageDealt | <code>object</code> | 敵に与えたダメージ詳細 |
-
 <a name="Player+damageReceived"></a>
 
-### player.damageReceived
+### player.damageReceived : <code>object</code>
+damageReceived - くらったダメージ詳細
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| damageReceived | <code>object</code> | くらったダメージ詳細 |
-
 <a name="Player+isAlive"></a>
 
-### player.isAlive
+### player.isAlive : <code>Boolean</code>
+isAlive - 生存状態
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| isAlive | <code>Boolean</code> | 生存状態 |
-
 <a name="Player+isOnline"></a>
 
-### player.isOnline
+### player.isOnline : <code>Boolean</code>
+isOnline - 接続状態
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| isOnline | <code>Boolean</code> | 接続状態 |
-
 <a name="Player+level"></a>
 
-### player.level
+### player.level : <code>number</code>
+level - プレイヤーのレベル
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| level | <code>number</code> | プレイヤーのレベル |
-
 <a name="Player+weaponList"></a>
 
-### player.weaponList
+### player.weaponList : <code>object</code>
+weaponList - 所持している武器のリスト
+
 **Kind**: instance property of [<code>Player</code>](#Player)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| weaponList | <code>object</code> | 所持している武器のリスト |
-
 <a name="Player+updatePositionAndAngles"></a>
 
 ### player.updatePositionAndAngles(x, y, z, newAngles, mapOffset)
@@ -1049,9 +917,9 @@ Creates an instance of Player.
 * [Datacenter](#Datacenter)
     * [new Datacenter()](#new_Datacenter_new)
     * _instance_
-        * [.timestamp](#Datacenter+timestamp)
-        * [.category](#Datacenter+category)
-        * [.name](#Datacenter+name)
+        * [.timestamp](#Datacenter+timestamp) : <code>number</code>
+        * [.category](#Datacenter+category) : <code>string</code>
+        * [.name](#Datacenter+name) : <code>string</code>
         * [.update(timestamp, category, name)](#Datacenter+update) ⇒ [<code>Datacenter</code>](#Datacenter)
         * [.getStatus()](#Datacenter+getStatus) ⇒ <code>Object</code>
     * _static_
@@ -1065,34 +933,22 @@ Creates an instance of Player.
 
 <a name="Datacenter+timestamp"></a>
 
-### datacenter.timestamp
+### datacenter.timestamp : <code>number</code>
+timestamp　- タイムスタンプ (uint64)
+
 **Kind**: instance property of [<code>Datacenter</code>](#Datacenter)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| timestamp | <code>number</code> | - タイムスタンプ (uint64) |
-
 <a name="Datacenter+category"></a>
 
-### datacenter.category
+### datacenter.category : <code>string</code>
+category - カテゴリー名
+
 **Kind**: instance property of [<code>Datacenter</code>](#Datacenter)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| category | <code>string</code> | カテゴリー名 |
-
 <a name="Datacenter+name"></a>
 
-### datacenter.name
+### datacenter.name : <code>string</code>
+name - データセンター名
+
 **Kind**: instance property of [<code>Datacenter</code>](#Datacenter)  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | データセンター名 |
-
 <a name="Datacenter+update"></a>
 
 ### datacenter.update(timestamp, category, name) ⇒ [<code>Datacenter</code>](#Datacenter)
@@ -1128,6 +984,10 @@ Creates an instance of Datacenter.
 * [Version](#Version)
     * [new Version()](#new_Version_new)
     * _instance_
+        * [.major_num](#Version+major_num) : <code>number</code>
+        * [.minor_num](#Version+minor_num) : <code>number</code>
+        * [.build_stamp](#Version+build_stamp) : <code>number</code>
+        * [.revision](#Version+revision) : <code>string</code>
         * [.getStatus()](#Version+getStatus) ⇒ <code>Object</code>
         * [.printDetails()](#Version+printDetails)
     * _static_
@@ -1139,6 +999,30 @@ Creates an instance of Datacenter.
 ### new Version()
 バージョン情報を表すクラス
 
+<a name="Version+major_num"></a>
+
+### version.major\_num : <code>number</code>
+major_num - メジャーバージョン番号 (uint32)
+
+**Kind**: instance property of [<code>Version</code>](#Version)  
+<a name="Version+minor_num"></a>
+
+### version.minor\_num : <code>number</code>
+minor_num - マイナーバージョン番号 (uint32)
+
+**Kind**: instance property of [<code>Version</code>](#Version)  
+<a name="Version+build_stamp"></a>
+
+### version.build\_stamp : <code>number</code>
+build_stamp - ビルドスタンプ (uint32)
+
+**Kind**: instance property of [<code>Version</code>](#Version)  
+<a name="Version+revision"></a>
+
+### version.revision : <code>string</code>
+revision - リビジョン情報
+
+**Kind**: instance property of [<code>Version</code>](#Version)  
 <a name="Version+getStatus"></a>
 
 ### version.getStatus() ⇒ <code>Object</code>
@@ -1175,7 +1059,24 @@ Creates an instance of Datacenter.
 * [CustomMatch](#CustomMatch)
     * [new CustomMatch()](#new_CustomMatch_new)
     * _instance_
-        * [.datacenter](#CustomMatch+datacenter)
+        * [.matchName](#CustomMatch+matchName) : <code>string</code>
+        * [.startTimeStamp](#CustomMatch+startTimeStamp) : <code>number</code>
+        * [.endTimeStamp](#CustomMatch+endTimeStamp) : <code>number</code>
+        * [.players](#CustomMatch+players) : <code>Object.&lt;string, Player&gt;</code>
+        * [.teams](#CustomMatch+teams) : <code>Object.&lt;string, string&gt;</code>
+        * [.maxPlayers](#CustomMatch+maxPlayers) : <code>number</code>
+        * [.state](#CustomMatch+state) : <code>string</code>
+        * [.mapName](#CustomMatch+mapName) : <code>string</code>
+        * [.playlistName](#CustomMatch+playlistName) : <code>string</code>
+        * [.playlistDesc](#CustomMatch+playlistDesc) : <code>string</code>
+        * [.datacenter](#CustomMatch+datacenter) : [<code>Datacenter</code>](#Datacenter)
+        * [.aimassiston](#CustomMatch+aimassiston) : <code>string</code>
+        * [.anonymousMode](#CustomMatch+anonymousMode) : <code>string</code>
+        * [.serverId](#CustomMatch+serverId) : <code>string</code>
+        * [.startingLoadout](#CustomMatch+startingLoadout) : [<code>Inventory</code>](#Inventory)
+        * [.eventLists](#CustomMatch+eventLists) : <code>Array</code>
+        * [.rings](#CustomMatch+rings) : <code>Array</code>
+        * [.mapOffset](#CustomMatch+mapOffset) : <code>Array</code>
         * [.refreshEventLists()](#CustomMatch+refreshEventLists)
         * [.addRingElement(ring)](#CustomMatch+addRingElement)
         * [.addEventElement(event)](#CustomMatch+addEventElement)
@@ -1197,9 +1098,113 @@ Creates an instance of Datacenter.
 ### new CustomMatch()
 カスタムマッチを管理するクラス
 
+<a name="CustomMatch+matchName"></a>
+
+### customMatch.matchName : <code>string</code>
+matchName - マッチ名
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+startTimeStamp"></a>
+
+### customMatch.startTimeStamp : <code>number</code>
+startTimeStamp - スタートタイムスタンプ
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+endTimeStamp"></a>
+
+### customMatch.endTimeStamp : <code>number</code>
+endTimeStamp - エンドタイムスタンプ
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+players"></a>
+
+### customMatch.players : <code>Object.&lt;string, Player&gt;</code>
+- プレイヤーのリスト (最大60人) 連想配列に変更　チームにnucleusHashのみ保存
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+teams"></a>
+
+### customMatch.teams : <code>Object.&lt;string, string&gt;</code>
+teams - チームの連想配列 (teamIdをキーにする)
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+maxPlayers"></a>
+
+### customMatch.maxPlayers : <code>number</code>
+maxPlayers - Maxプレーヤー数
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+state"></a>
+
+### customMatch.state : <code>string</code>
+state - gameStateChangedを格納
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+mapName"></a>
+
+### customMatch.mapName : <code>string</code>
+mapName - マップ名
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+playlistName"></a>
+
+### customMatch.playlistName : <code>string</code>
+playlistName - マッチ名を格納 (例) World's Edge（リングなし）
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+playlistDesc"></a>
+
+### customMatch.playlistDesc : <code>string</code>
+playlistDesc - マッチ説明を格納 (例) 最後の1部隊になるまで戦い抜け
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
 <a name="CustomMatch+datacenter"></a>
 
-### customMatch.datacenter
+### customMatch.datacenter : [<code>Datacenter</code>](#Datacenter)
+datacenter - Datacenterクラスをのオブジェクトを格納
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+aimassiston"></a>
+
+### customMatch.aimassiston : <code>string</code>
+aimassiston - エイムアシストの設定値を格納
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+anonymousMode"></a>
+
+### customMatch.anonymousMode : <code>string</code>
+anonymousMode - 匿名モードの設定値を格納
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+serverId"></a>
+
+### customMatch.serverId : <code>string</code>
+serverId - サーバーIDを格納
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+startingLoadout"></a>
+
+### customMatch.startingLoadout : [<code>Inventory</code>](#Inventory)
+startingLoadout - 初期配布のアイテムを追加するInventoryインスタンスを作成
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+eventLists"></a>
+
+### customMatch.eventLists : <code>Array</code>
+eventLists - イベントリスト
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+rings"></a>
+
+### customMatch.rings : <code>Array</code>
+rings - ringデータ
+
+**Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
+<a name="CustomMatch+mapOffset"></a>
+
+### customMatch.mapOffset : <code>Array</code>
+mapOffset - マップのオフセット
+
 **Kind**: instance property of [<code>CustomMatch</code>](#CustomMatch)  
 <a name="CustomMatch+refreshEventLists"></a>
 

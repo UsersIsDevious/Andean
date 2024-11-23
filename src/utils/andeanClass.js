@@ -57,15 +57,15 @@ class Item {
      */
     constructor(name, level, quantity) {
         /**
-         * @property {string} name - アイテムの名前
+         * @type {string} name - アイテムの名前
          */
         this.name = name;
         /**
-         * @property {number} level - アイテムのレベル
+         * @type {number} level - アイテムのレベル
          */
         this.level = level;
         /**
-         * @property {number} quantity - アイテムの保有数
+         * @type {number} quantity - アイテムの保有数
          */
         this.quantity = quantity;
         return this;
@@ -108,19 +108,19 @@ class Weapon {
      */
     constructor(id, label, level) {
         /**
-         * @property {string} Id - 内部の武器名
+         * @type {string} Id - 内部の武器名
          */
         this.Id = id;
         /**
-         * @property {string} label - 表示されている武器名
+         * @type {string} label - 表示されている武器名
          */
         this.label = label;
         /**
-         * @property {number} level - 武器のレベル
+         * @type {number} level - 武器のレベル
          */
         this.level = level;
         /**
-         * @property {number} maxMagazine - AmmoUsedで使用された最大の弾数を格納
+         * @type {number} maxMagazine - AmmoUsedで使用された最大の弾数を格納
          */
         this.maxMagazine = 0;
         return this;
@@ -151,11 +151,11 @@ class Inventory {
      */
     constructor() {
         /**
-         * @property {item} items - アイテムの保有数
+         * @type {item} items - アイテムの保有数
          */
         this.items = []; // Array<Item>: アイテムのリスト
         /**
-         * @property {number} weapons - アイテムの保有数
+         * @type {number} weapons - アイテムの保有数
          */
         this.weapons = [];
         return this;
@@ -289,101 +289,101 @@ class Player {
      */
     constructor(name, teamId, nucleusHash, hardwareName) {
         /**
-         * @property {string} name - プレイヤー名
+         * @type {string} name - プレイヤー名
          */
         this.name = name;
         /**
-         * @property {number} teamId - チームID (uint32)
+         * @type {number} teamId - チームID (uint32)
          */
         this.teamId = teamId;
         /**
-        * @property {string} nucleusHash - プレイヤーの識別用ハッシュ
+        * @type {string} nucleusHash - プレイヤーの識別用ハッシュ
         */
         this.nucleusHash = nucleusHash;
         /**
-        * @property {string} hardwareName - 使用ハードウェア名
+        * @type {string} hardwareName - 使用ハードウェア名
         */
         this.hardwareName = hardwareName;
         /**
-         * @property {Vector3} pos - プレイヤーの位置
+         * @type {Vector3} pos - プレイヤーの位置
          */
         this.pos = new Vector3();
         /**
-         * @property {number} angles - プレイヤーの視角 
+         * @type {number} angles - プレイヤーの視角 
         */
         this.angles = 0;
         /**
-        * @property {number} currentHealth - 現在の体力 (uint32)
+        * @type {number} currentHealth - 現在の体力 (uint32)
          */
         this.currentHealth = 0;
         /**
-        * @property {number} maxHealth - 最大体力 (uint32)
+        * @type {number} maxHealth - 最大体力 (uint32)
         */
         this.maxHealth = 0;
         /**
-        * @property {number} shieldHealth - 現在のシールド体力 (uint32)
+        * @type {number} shieldHealth - 現在のシールド体力 (uint32)
         */
         this.shieldHealth = 0;
         /**
-        * @property {number} shieldMaxHealth - 最大シールド体力 (uint32)
+        * @type {number} shieldMaxHealth - 最大シールド体力 (uint32)
         */
         this.shieldMaxHealth = 0;
         /**
-        * @property {string} teamName - チーム名
+        * @type {string} teamName - チーム名
         */
         this.teamName = "";
         /**
-        * @property {number} squadIndex - 分隊番号 (uint32)
+        * @type {number} squadIndex - 分隊番号 (uint32)
         */
         this.squadIndex = -1;
         /**
-        * @property {string} character - キャラクター名
+        * @type {string} character - キャラクター名
         */
         this.character = "";
         /**
-        * @property {string} skin - キャラクタースキン名
+        * @type {string} skin - キャラクタースキン名
         */
         this.skin = "";
         /**
-        * @property {Inventory} inventory - プレーヤーのインベントリー
+        * @type {Inventory} inventory - プレーヤーのインベントリー
         */
         this.inventory = new Inventory();
         /**
-        * @property {number} kills - キル数
+        * @type {number} kills - キル数
         */
         this.kills = 0;                     // キル数
         /**
-        * @property {number} killAssists - キルアシスト数
+        * @type {number} killAssists - キルアシスト数
         */
         this.killAssists = 0;               // キルアシスト数
         /**
-        * @property {number} downs - ダウンさせた数
+        * @type {number} downs - ダウンさせた数
         */
         this.downs = 0;                     // ダウンさせた数
         /**
-        * @property {object} damageDealt - 敵に与えたダメージ詳細
+        * @type {object} damageDealt - 敵に与えたダメージ詳細
         */
         this.damageDealt = { total: 0 };
         /**
-        * @property {object} damageReceived - くらったダメージ詳細
+        * @type {object} damageReceived - くらったダメージ詳細
         */
         this.damageReceived = { total: 0 };
         /**
-        * @property {Boolean} isAlive - 生存状態
+        * @type {Boolean} isAlive - 生存状態
         */
         this.isAlive = true;
         /**
-        * @property {Boolean} isOnline - 接続状態
+        * @type {Boolean} isOnline - 接続状態
         */
         this.isOnline = true;
         /**
-        * @property {number} level - プレイヤーのレベル
+        * @type {number} level - プレイヤーのレベル
         */
         this.level = {
             0: {}
         };
         /**
-         * @property {object} weaponList - 所持している武器のリスト
+         * @type {object} weaponList - 所持している武器のリスト
         */
         this.weaponList = [];
     }
@@ -556,15 +556,15 @@ class Datacenter {
      */
     constructor() {
         /**
-         * @property {number} timestamp　- タイムスタンプ (uint64)
+         * @type {number} timestamp　- タイムスタンプ (uint64)
          */
         this.timestamp = 0;
         /**
-         * @property {string} category - カテゴリー名
+         * @type {string} category - カテゴリー名
          */
         this.category = "";
         /**
-         * @property {string} name - データセンター名
+         * @type {string} name - データセンター名
          */
         this.name = "";
     }
@@ -610,9 +610,21 @@ class Version {
      * @memberof Version
      */
     constructor(major_num, minor_num, build_stamp, revision) {
+        /**
+         * @type {number} major_num - メジャーバージョン番号 (uint32)
+         */
         this.major_num = major_num;
+        /**
+         * @type {number} minor_num - マイナーバージョン番号 (uint32)
+         */
         this.minor_num = minor_num;
+        /**
+         * @type {number} build_stamp - ビルドスタンプ (uint32)
+         */
         this.build_stamp = build_stamp;
+        /**
+         * @type {string} revision - リビジョン情報
+         */
         this.revision = revision;
     }
 
@@ -652,26 +664,77 @@ class CustomMatch {
      * @memberof CustomMatch
      */
     constructor(matchName) {
-        this.matchName = matchName;
-        this.startTimeStamp = "";
-        this.endTimeStamp = "";
-        this.players = {};  // プレイヤーのリスト (最大60人) 連想配列に変更　チームにnucleusHashのみ保存
-        this.teams = {};    // チームの連想配列 (teamIdをキーにする)
-        this.maxPlayers = 60;
-        this.state = "";  // gameStateChangedを格納
-        this.mapName = "";  // マップ名を格納
-        this.playlistName = "";  // マッチ名を格納 (例) World's Edge（リングなし）
-        this.playlistDesc = "";  // マッチ説明を格納 (例) 最後の1部隊になるまで戦い抜け
         /**
-         * 
+         * @type {string} matchName - マッチ名
          */
-        this.datacenter = new Datacenter();  // Datacenterクラスをのオブジェクトを格納
-        this.aimassiston = true;  // エイムアシストの設定値を格納
-        this.anonymousMode = false;  // 匿名モードの設定値を格納
-        this.serverId = "";  // サーバーIDを格納
-        this.startingLoadout = new Inventory();  // 初期配布のアイテムを追加するInventoryインスタンスを作成
+        this.matchName = matchName;
+        /**
+         * @type {number} startTimeStamp - スタートタイムスタンプ
+         */
+        this.startTimeStamp = "";
+        /**
+         * @type {number} endTimeStamp - エンドタイムスタンプ
+         */
+        this.endTimeStamp = "";
+        /**
+         * @type {Object<string, Player>} - プレイヤーのリスト (最大60人) 連想配列に変更　チームにnucleusHashのみ保存
+         */
+        this.players = {};
+        /**
+         * @type {Object<string,string>} teams - チームの連想配列 (teamIdをキーにする)
+         */
+        this.teams = {};
+        /**
+         * @type {number} maxPlayers - Maxプレーヤー数
+         */
+        this.maxPlayers = 60;
+        /**
+         * @type {string} state - gameStateChangedを格納
+         */
+        this.state = "";
+        /**
+         * @type {string} mapName - マップ名
+         */
+        this.mapName = "";
+        /**
+         * @type {string} playlistName - マッチ名を格納 (例) World's Edge（リングなし）
+         */
+        this.playlistName = "";
+        /**
+         * @type {string} playlistDesc - マッチ説明を格納 (例) 最後の1部隊になるまで戦い抜け
+         */
+        this.playlistDesc = "";
+        /**
+         * @type {Datacenter} datacenter - Datacenterクラスをのオブジェクトを格納
+         */
+        this.datacenter = new Datacenter();
+        /**
+         * @type {string} aimassiston - エイムアシストの設定値を格納
+         */
+        this.aimassiston = true;
+        /**
+         * @type {string} anonymousMode - 匿名モードの設定値を格納
+         */
+        this.anonymousMode = false; 
+        /**
+         * @type {string} serverId - サーバーIDを格納
+         */
+        this.serverId = "";
+        /**
+         * @type {Inventory} startingLoadout - 初期配布のアイテムを追加するInventoryインスタンスを作成
+         */
+        this.startingLoadout = new Inventory();
+        /**
+         * @type {Array} eventLists - イベントリスト
+         */
         this.eventLists = [];
+        /**
+         * @type {Array} rings - ringデータ
+         */
         this.rings = [];
+        /**
+         * @type {Array} mapOffset - マップのオフセット
+         */
         this.mapOffset = [0, 0, 1]
     }
 
