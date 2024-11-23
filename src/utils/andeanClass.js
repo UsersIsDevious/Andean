@@ -8,6 +8,7 @@ class Vector3 {
      * @param {number} [x=0] - X座標の値
      * @param {number} [y=0] - Y座標の値
      * @param {number} [z=0] - Z座標の値
+     * @return {Vector3} 
      * @memberof Vector3
      */
     constructor(x = 0, y = 0, z = 0) {
@@ -23,6 +24,7 @@ class Vector3 {
          * @param {number} z  - Z座標の値
          */
         this.z = z;
+        return this;
     }
     /**
      * 座標を更新する関数
@@ -30,12 +32,14 @@ class Vector3 {
      * @param {number} newY - 新しいy座標
      * @param {number} newZ - 新しいz座標
      * @param {number} mapOffset - 座標オフセット
+     * @return {Vector3} 
      * @memberof Vector3
      */
     updateValues(newX, newY, newZ, mapOffset) {
         this.x = (newX + mapOffset[0]) / mapOffset[2] + 2048;
         this.y = (newY + mapOffset[1]) / mapOffset[2] + 2048;
         this.z = newZ;
+        return this;
     }
 }
 /**
@@ -44,9 +48,12 @@ class Vector3 {
  */
 class Item {
     /**
+     * @constructor
      * @param {string} name - アイテムの名前
      * @param {number} level - アイテムのレベル
      * @param {number} quantity - アイテムの保有数
+     * @return {Item}
+     * @memberof Item
      */
     constructor(name, level, quantity) {
         /**
@@ -61,44 +68,42 @@ class Item {
          * @param {number} quantity - アイテムの保有数
          */
         this.quantity = quantity;
+        return this;
     }
 
     /**
      * アイテムの個数を変更する
      * @param {number} newQuantity - 新しい個数
+     * @return {Item}
      * @memberof Item
      */
     setQuantity(newQuantity) {
         this.quantity = newQuantity;
+        return this;
     }
 
     /**
      * アイテムの詳細を返す
-     * @returns {Object} アイテムのステータス
+     * @return {Item} アイテムのステータス
      * @memberof Item
      */
     getItemStatus() {
-        return {
-            name: this.name,
-            level: this.level,
-            quantity: this.quantity
-        };
+        return this;
     }
 }
 
 /**
- * 武器に関するクラス
  * @class Weapon
- * @param {string} id - 内部の武器名
- * @param {string} label - 表示されている武器名
- * @param {number} level - 武器のレベル
+ * @description 武器に関するクラス
  */
 class Weapon {
     /**
      * Creates an instance of Weapon.
+     * @constructor
      * @param {string} id - 内部の武器名
      * @param {string} label - 表示されている武器名
      * @param {number} level - 武器のレベル
+     * @return {weapon}
      * @memberof Weapon
      */
     constructor(id, label, level) {
@@ -118,11 +123,12 @@ class Weapon {
          * @param {number} maxMagazine - AmmoUsedで使用された最大の弾数を格納
          */
         this.maxMagazine = 0;
+        return this;
     }
 
     /**
      * AmmoUsedで使用された最大の弾数を返す
-     * @returns {number} AmmoUsedで使用された最大の弾数
+     * @return {number} AmmoUsedで使用された最大の弾数
      * @memberof Weapon
      */
     getMaxMagazine() {
@@ -139,6 +145,8 @@ class Weapon {
 class Inventory {
     /**
      * Creates an instance of Inventory.
+     * @constructor
+     * @return {Inventory}
      * @memberof Inventory
      */
     constructor() {
@@ -150,29 +158,37 @@ class Inventory {
          * @param {number} weapons - アイテムの保有数
          */
         this.weapons = [];
+        return this;
     }
 
     /**
      * インベントリにアイテムを追加する
      * @param {Item} item 追加するアイテム
+     * @return {Inventory}
+     * @memberof Inventory
      */
     addItem(item) {
         this.items.push(item);
+        return this;
     }
 
     /**
      * インベントリに武器を追加する
      * @param {Weapon} weapon 追加するアイテム
+     * @return {Inventory}
+     * @memberof Inventory
      */
     addWeapon(weapon) {
         this.weapons.push(weapon);
+        return this;
     }
 
     /**
      * アイテムを所持しているか確認し、なければ追加、あれば所持数を更新する
      * @param {string} itemName アイテムの名前
      * @param {number} quantity 追加または更新するアイテムの個数
-     * @param {number} level アイテムのレベル\
+     * @param {number} level アイテムのレベル
+     * @return {Inventory}
      * @memberof Inventory
      */
     addOrUpdateItem(itemName, quantity, level) {
@@ -188,6 +204,7 @@ class Inventory {
             this.addItem(newItem);
             console.log(`${itemName} (Level ${level}) has been added with a quantity of ${quantity}.`);
         }
+        return this;
     }
 
     /**
@@ -195,6 +212,7 @@ class Inventory {
      * @param {string} weaponLabel アイテムの名前
      * @param {number} level アイテムのレベル
      * @param {number} maxMagazine マガジンの最大サイズ
+     * @return {Inventory}
      * @memberof Inventory
      */
     addOrUpdateWeapon(weaponLabel, level, maxMagazine) {
@@ -210,6 +228,7 @@ class Inventory {
             this.addItem(newItem);
             console.log(`${itemName} (Level ${level}) has been added with a quantity of ${quantity}.`);
         }
+        return this;
     }
 
     /**
@@ -217,7 +236,7 @@ class Inventory {
      * 名前とレベルの両方で一致するアイテムを検索する
      * @param {string} itemName 取得するアイテムの名前
      * @param {number} level 取得するアイテムのレベル
-     * @returns {Item|undefined} 見つかったアイテム、またはundefined
+     * @return {Item|undefined} 見つかったアイテム、またはundefined
      * @memberof Inventory
      */
     getItem(itemName, level) {
@@ -229,7 +248,7 @@ class Inventory {
      * 名前とレベルの両方で一致する武器を検索する
      * @param {string} weaponId 取得する武器の名前
      * @param {number} level 取得する武器のレベル
-     * @returns {Item|undefined} 見つかった武器、またはundefined
+     * @return {Item|undefined} 見つかった武器、またはundefined
      * @memberof Inventory
      */
     getWeapon(weaponId, level) {
@@ -246,7 +265,7 @@ class Inventory {
 
     /**
      * インベントリのステータスを返す
-     * @returns {Array<Object>} インベントリ内のアイテムのステータス
+     * @return {Array<Object>} インベントリ内のアイテムのステータス
      * @memberof Inventory
      */
     getInventoryStatus() {
@@ -448,7 +467,7 @@ class Player {
 
     /**
      * プレイヤーの生存状態を返すメソッド
-     * @returns {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
+     * @return {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
      * @memberof Player
      */
     getAliveStatus() {
@@ -457,7 +476,7 @@ class Player {
 
     /**
      * プレイヤーの接続状態を返すメソッド
-     * @returns {boolean} status プレイヤーが接続している場合はtrue、切断している場合はfalse
+     * @return {boolean} status プレイヤーが接続している場合はtrue、切断している場合はfalse
      * @memberof Player
      */
     getOnlineStatus() {
@@ -532,6 +551,7 @@ class Player {
 class Datacenter {
     /**
      * Creates an instance of Datacenter.
+     * @constructor
      * @memberof Datacenter
      */
     constructor() {
@@ -564,7 +584,7 @@ class Datacenter {
 
     /**
      * データセンターのステータスをオブジェクトとして返す
-     * @returns {Object} データセンターのステータス情報
+     * @return {Object} データセンターのステータス情報
      * @memberof Datacenter
      */
     getStatus() {
@@ -598,7 +618,7 @@ class Version {
 
     /**
      * バージョンのステータスをオブジェクトとして返す
-     * @returns {Object} バージョンのステータス情報
+     * @return {Object} バージョンのステータス情報
      * @memberof Version
      */
     getStatus() {
@@ -816,7 +836,7 @@ class CustomMatch {
 
     /**
      * 現在のプレイヤー数を返す
-     * @returns {number} 現在のプレイヤー数
+     * @return {number} 現在のプレイヤー数
      * @memberof CustomMatch
      */
     getPlayerCount() {
@@ -826,7 +846,7 @@ class CustomMatch {
     /**
      * 特定のプレイヤーを取得するメソッド
      * @param {string} nucleusHash プレイヤーのnucleusHash
-     * @returns {Player|null} 見つかったプレイヤーのステータス、見つからなければnull
+     * @return {Player|null} 見つかったプレイヤーのステータス、見つからなければnull
      * @memberof CustomMatch
      */
     getPlayer(nucleusHash) {
@@ -841,7 +861,7 @@ class CustomMatch {
 
     /**
      * マッチのステータスを取得するメソッド
-     * @returns {Object} マッチのステータスとプレイヤーリスト
+     * @return {Object} マッチのステータスとプレイヤーリスト
      * @memberof CustomMatch
      */
     getMatchStatus() {
@@ -877,16 +897,20 @@ class CustomMatch {
 class Event {
     /**
      * Eventクラスの初期化
+     * @constructor
      * @param {number} _timestamp - イベント発生時のタイムスタンプ
      * @param {string} _category - イベントの種類
      * @param {string} _nucleusHash - プレイヤーID or チームID
      * @param {object} _data - 受信したメッセージやクラスオブジェクトなどを入れる
+     * @return {Event}
+     * @memberof Event
      */
     constructor(_timestamp, _category, _target, _data) {
         this.timestamp = _timestamp;
         this.category = _category;
         this.target = _target;
         this.data = _data;
+        return this;
     }
 }
 
@@ -905,6 +929,7 @@ class Event {
 class Ring {
     /**
      * リングの初期化を行う
+     * @constructor
      * @param {number} _timestamp 
      * @param {String} _category 
      * @param {number} _stage

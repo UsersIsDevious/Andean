@@ -5,8 +5,6 @@
 <dd></dd>
 <dt><a href="#Item">Item</a></dt>
 <dd></dd>
-<dt><a href="#Item">Item</a></dt>
-<dd></dd>
 <dt><a href="#Weapon">Weapon</a></dt>
 <dd></dd>
 <dt><a href="#Inventory">Inventory</a></dt>
@@ -18,8 +16,6 @@
 <dt><a href="#Version">Version</a></dt>
 <dd></dd>
 <dt><a href="#CustomMatch">CustomMatch</a></dt>
-<dd></dd>
-<dt><a href="#Event">Event</a></dt>
 <dd></dd>
 <dt><a href="#Event">Event</a></dt>
 <dd></dd>
@@ -35,21 +31,33 @@
 </dd>
 </dl>
 
+## Constants
+
+<dl>
+<dt><a href="#intervalId">intervalId</a> : <code>*</code></dt>
+<dd></dd>
+</dl>
+
 ## Functions
 
 <dl>
-<dt><a href="#startApexLegends">startApexLegends()</a></dt>
-<dd><p>Apex Legendsを起動する関数</p>
-</dd>
+<dt><a href="#startApexLegends">startApexLegends()</a> ⇒ <code>*</code></dt>
+<dd></dd>
 <dt><a href="#updatePlayer">updatePlayer(json, player, characterSelected, mapName)</a></dt>
 <dd><p>Playerクラスのオブジェクトを更新する</p>
 </dd>
+<dt><a href="#processUpdatePlayer">processUpdatePlayer(msg, match, [characterSelected])</a> ⇒ <code>*</code></dt>
+<dd></dd>
 <dt><a href="#checkItemLevel">checkItemLevel(name)</a></dt>
 <dd><p>アイテム名からレベルをチェックする</p>
 </dd>
 <dt><a href="#checkShieldPenetrator">checkShieldPenetrator(perpetrator)</a> ⇒ <code>boolean</code></dt>
 <dd><p>シールド貫通武器かどうかのチェック</p>
 </dd>
+<dt><a href="#getPlayerStatus">getPlayerStatus(match)</a></dt>
+<dd></dd>
+<dt><a href="#update">update()</a></dt>
+<dd></dd>
 <dt><a href="#handleMessage">handleMessage(message, messageType, ws)</a></dt>
 <dd><p>メッセージを処理する</p>
 </dd>
@@ -196,7 +204,7 @@
         * [.x](#Vector3+x)
         * [.y](#Vector3+y)
         * [.z](#Vector3+z)
-        * [.updateValues(newX, newY, newZ, mapOffset)](#Vector3+updateValues)
+        * [.updateValues(newX, newY, newZ, mapOffset)](#Vector3+updateValues) ⇒ [<code>Vector3</code>](#Vector3)
     * _static_
         * [.Vector3](#Vector3.Vector3)
             * [new Vector3([x], [y], [z])](#new_Vector3.Vector3_new)
@@ -235,7 +243,7 @@
 
 <a name="Vector3+updateValues"></a>
 
-### vector3.updateValues(newX, newY, newZ, mapOffset)
+### vector3.updateValues(newX, newY, newZ, mapOffset) ⇒ [<code>Vector3</code>](#Vector3)
 座標を更新する関数
 
 **Kind**: instance method of [<code>Vector3</code>](#Vector3)  
@@ -268,27 +276,20 @@
 
 * [Item](#Item)
     * [new Item()](#new_Item_new)
-    * [new Item(name, level, quantity)](#new_Item_new)
-    * [.name](#Item+name)
-    * [.level](#Item+level)
-    * [.quantity](#Item+quantity)
-    * [.setQuantity(newQuantity)](#Item+setQuantity)
-    * [.getItemStatus()](#Item+getItemStatus) ⇒ <code>Object</code>
+    * _instance_
+        * [.name](#Item+name)
+        * [.level](#Item+level)
+        * [.quantity](#Item+quantity)
+        * [.setQuantity(newQuantity)](#Item+setQuantity) ⇒ [<code>Item</code>](#Item)
+        * [.getItemStatus()](#Item+getItemStatus) ⇒ [<code>Item</code>](#Item)
+    * _static_
+        * [.Item](#Item.Item)
+            * [new Item(name, level, quantity)](#new_Item.Item_new)
 
 <a name="new_Item_new"></a>
 
 ### new Item()
 プレイヤーが保有するアイテムを表すクラス
-
-<a name="new_Item_new"></a>
-
-### new Item(name, level, quantity)
-
-| Param | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | アイテムの名前 |
-| level | <code>number</code> | アイテムのレベル |
-| quantity | <code>number</code> | アイテムの保有数 |
 
 <a name="Item+name"></a>
 
@@ -319,7 +320,7 @@
 
 <a name="Item+setQuantity"></a>
 
-### item.setQuantity(newQuantity)
+### item.setQuantity(newQuantity) ⇒ [<code>Item</code>](#Item)
 アイテムの個数を変更する
 
 **Kind**: instance method of [<code>Item</code>](#Item)  
@@ -330,33 +331,18 @@
 
 <a name="Item+getItemStatus"></a>
 
-### item.getItemStatus() ⇒ <code>Object</code>
+### item.getItemStatus() ⇒ [<code>Item</code>](#Item)
 アイテムの詳細を返す
 
 **Kind**: instance method of [<code>Item</code>](#Item)  
-**Returns**: <code>Object</code> - アイテムのステータス  
-<a name="Item"></a>
+**Returns**: [<code>Item</code>](#Item) - アイテムのステータス  
+<a name="Item.Item"></a>
 
-## Item
-**Kind**: global class  
+### Item.Item
+**Kind**: static class of [<code>Item</code>](#Item)  
+<a name="new_Item.Item_new"></a>
 
-* [Item](#Item)
-    * [new Item()](#new_Item_new)
-    * [new Item(name, level, quantity)](#new_Item_new)
-    * [.name](#Item+name)
-    * [.level](#Item+level)
-    * [.quantity](#Item+quantity)
-    * [.setQuantity(newQuantity)](#Item+setQuantity)
-    * [.getItemStatus()](#Item+getItemStatus) ⇒ <code>Object</code>
-
-<a name="new_Item_new"></a>
-
-### new Item()
-プレイヤーが保有するアイテムを表すクラス
-
-<a name="new_Item_new"></a>
-
-### new Item(name, level, quantity)
+#### new Item(name, level, quantity)
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -364,58 +350,13 @@
 | level | <code>number</code> | アイテムのレベル |
 | quantity | <code>number</code> | アイテムの保有数 |
 
-<a name="Item+name"></a>
-
-### item.name
-**Kind**: instance property of [<code>Item</code>](#Item)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| name | <code>string</code> | アイテムの名前 |
-
-<a name="Item+level"></a>
-
-### item.level
-**Kind**: instance property of [<code>Item</code>](#Item)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| level | <code>number</code> | アイテムのレベル |
-
-<a name="Item+quantity"></a>
-
-### item.quantity
-**Kind**: instance property of [<code>Item</code>](#Item)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| quantity | <code>number</code> | アイテムの保有数 |
-
-<a name="Item+setQuantity"></a>
-
-### item.setQuantity(newQuantity)
-アイテムの個数を変更する
-
-**Kind**: instance method of [<code>Item</code>](#Item)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| newQuantity | <code>number</code> | 新しい個数 |
-
-<a name="Item+getItemStatus"></a>
-
-### item.getItemStatus() ⇒ <code>Object</code>
-アイテムの詳細を返す
-
-**Kind**: instance method of [<code>Item</code>](#Item)  
-**Returns**: <code>Object</code> - アイテムのステータス  
 <a name="Weapon"></a>
 
 ## Weapon
 **Kind**: global class  
 
 * [Weapon](#Weapon)
-    * [new Weapon(id, label, level)](#new_Weapon_new)
+    * [new Weapon()](#new_Weapon_new)
     * _instance_
         * [.Id](#Weapon+Id)
         * [.label](#Weapon+label)
@@ -428,15 +369,8 @@
 
 <a name="new_Weapon_new"></a>
 
-### new Weapon(id, label, level)
+### new Weapon()
 武器に関するクラス
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| id | <code>string</code> | 内部の武器名 |
-| label | <code>string</code> | 表示されている武器名 |
-| level | <code>number</code> | 武器のレベル |
 
 <a name="Weapon+Id"></a>
 
@@ -507,10 +441,10 @@ Creates an instance of Weapon.
     * _instance_
         * [.items](#Inventory+items)
         * [.weapons](#Inventory+weapons)
-        * [.addItem(item)](#Inventory+addItem)
-        * [.addWeapon(weapon)](#Inventory+addWeapon)
-        * [.addOrUpdateItem(itemName, quantity, level)](#Inventory+addOrUpdateItem)
-        * [.addOrUpdateWeapon(weaponLabel, level, maxMagazine)](#Inventory+addOrUpdateWeapon)
+        * [.addItem(item)](#Inventory+addItem) ⇒ [<code>Inventory</code>](#Inventory)
+        * [.addWeapon(weapon)](#Inventory+addWeapon) ⇒ [<code>Inventory</code>](#Inventory)
+        * [.addOrUpdateItem(itemName, quantity, level)](#Inventory+addOrUpdateItem) ⇒ [<code>Inventory</code>](#Inventory)
+        * [.addOrUpdateWeapon(weaponLabel, level, maxMagazine)](#Inventory+addOrUpdateWeapon) ⇒ [<code>Inventory</code>](#Inventory)
         * [.getItem(itemName, level)](#Inventory+getItem) ⇒ [<code>Item</code>](#Item) \| <code>undefined</code>
         * [.getWeapon(weaponId, level)](#Inventory+getWeapon) ⇒ [<code>Item</code>](#Item) \| <code>undefined</code>
         * [.clearInventory()](#Inventory+clearInventory)
@@ -544,7 +478,7 @@ Creates an instance of Weapon.
 
 <a name="Inventory+addItem"></a>
 
-### inventory.addItem(item)
+### inventory.addItem(item) ⇒ [<code>Inventory</code>](#Inventory)
 インベントリにアイテムを追加する
 
 **Kind**: instance method of [<code>Inventory</code>](#Inventory)  
@@ -555,7 +489,7 @@ Creates an instance of Weapon.
 
 <a name="Inventory+addWeapon"></a>
 
-### inventory.addWeapon(weapon)
+### inventory.addWeapon(weapon) ⇒ [<code>Inventory</code>](#Inventory)
 インベントリに武器を追加する
 
 **Kind**: instance method of [<code>Inventory</code>](#Inventory)  
@@ -566,7 +500,7 @@ Creates an instance of Weapon.
 
 <a name="Inventory+addOrUpdateItem"></a>
 
-### inventory.addOrUpdateItem(itemName, quantity, level)
+### inventory.addOrUpdateItem(itemName, quantity, level) ⇒ [<code>Inventory</code>](#Inventory)
 アイテムを所持しているか確認し、なければ追加、あれば所持数を更新する
 
 **Kind**: instance method of [<code>Inventory</code>](#Inventory)  
@@ -575,11 +509,11 @@ Creates an instance of Weapon.
 | --- | --- | --- |
 | itemName | <code>string</code> | アイテムの名前 |
 | quantity | <code>number</code> | 追加または更新するアイテムの個数 |
-| level | <code>number</code> | アイテムのレベル\ |
+| level | <code>number</code> | アイテムのレベル |
 
 <a name="Inventory+addOrUpdateWeapon"></a>
 
-### inventory.addOrUpdateWeapon(weaponLabel, level, maxMagazine)
+### inventory.addOrUpdateWeapon(weaponLabel, level, maxMagazine) ⇒ [<code>Inventory</code>](#Inventory)
 アイテムを所持しているか確認し、なければ追加、あれば所持数を更新する
 
 **Kind**: instance method of [<code>Inventory</code>](#Inventory)  
@@ -1382,7 +1316,8 @@ eventListsの末尾に新しい要素を追加します。
 
 * [Event](#Event)
     * [new Event(timestamp, category, nucleusHash, data)](#new_Event_new)
-    * [new Event(_timestamp, _category, _nucleusHash, _data)](#new_Event_new)
+    * [.Event](#Event.Event)
+        * [new Event(_timestamp, _category, _nucleusHash, _data)](#new_Event.Event_new)
 
 <a name="new_Event_new"></a>
 
@@ -1397,44 +1332,13 @@ Eventに関するクラス
 | nucleusHash | <code>string</code> | プレイヤーのIDかチームのID |
 | data | <code>object</code> | 受信したメッセージやクラスオブジェクトなどを入れる |
 
-<a name="new_Event_new"></a>
+<a name="Event.Event"></a>
 
-### new Event(_timestamp, _category, _nucleusHash, _data)
-Eventクラスの初期化
+### Event.Event
+**Kind**: static class of [<code>Event</code>](#Event)  
+<a name="new_Event.Event_new"></a>
 
-
-| Param | Type | Description |
-| --- | --- | --- |
-| _timestamp | <code>number</code> | イベント発生時のタイムスタンプ |
-| _category | <code>string</code> | イベントの種類 |
-| _nucleusHash | <code>string</code> | プレイヤーID or チームID |
-| _data | <code>object</code> | 受信したメッセージやクラスオブジェクトなどを入れる |
-
-<a name="Event"></a>
-
-## Event
-**Kind**: global class  
-
-* [Event](#Event)
-    * [new Event(timestamp, category, nucleusHash, data)](#new_Event_new)
-    * [new Event(_timestamp, _category, _nucleusHash, _data)](#new_Event_new)
-
-<a name="new_Event_new"></a>
-
-### new Event(timestamp, category, nucleusHash, data)
-Eventに関するクラス
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| timestamp | <code>number</code> | イベント発生時のタイムスタンプ |
-| category | <code>string</code> | イベントの種類 |
-| nucleusHash | <code>string</code> | プレイヤーのIDかチームのID |
-| data | <code>object</code> | 受信したメッセージやクラスオブジェクトなどを入れる |
-
-<a name="new_Event_new"></a>
-
-### new Event(_timestamp, _category, _nucleusHash, _data)
+#### new Event(_timestamp, _category, _nucleusHash, _data)
 Eventクラスの初期化
 
 
@@ -1523,11 +1427,13 @@ Ringに関するクラス
 | category | <code>String</code> | 
 | msg | <code>Object</code> | 
 
+<a name="intervalId"></a>
+
+## intervalId : <code>\*</code>
+**Kind**: global constant  
 <a name="startApexLegends"></a>
 
-## startApexLegends()
-Apex Legendsを起動する関数
-
+## startApexLegends() ⇒ <code>\*</code>
 **Kind**: global function  
 <a name="updatePlayer"></a>
 
@@ -1542,6 +1448,17 @@ Playerクラスのオブジェクトを更新する
 | player | [<code>Player</code>](#Player) |  | 
 | characterSelected | <code>Boolean</code> | <code>false</code> | 
 | mapName | <code>String</code> |  | 
+
+<a name="processUpdatePlayer"></a>
+
+## processUpdatePlayer(msg, match, [characterSelected]) ⇒ <code>\*</code>
+**Kind**: global function  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| msg | <code>\*</code> |  | 
+| match | <code>\*</code> |  | 
+| [characterSelected] | <code>boolean</code> | <code>false</code> | 
 
 <a name="checkItemLevel"></a>
 
@@ -1565,6 +1482,19 @@ Playerクラスのオブジェクトを更新する
 | --- | --- |
 | perpetrator | <code>string</code> | 
 
+<a name="getPlayerStatus"></a>
+
+## getPlayerStatus(match)
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| match | <code>\*</code> | 
+
+<a name="update"></a>
+
+## update()
+**Kind**: global function  
 <a name="handleMessage"></a>
 
 ## handleMessage(message, messageType, ws)

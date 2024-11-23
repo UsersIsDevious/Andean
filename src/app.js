@@ -30,6 +30,11 @@ function exit() {
 /**
  * Apex Legendsを起動する関数
  */
+/**
+ *
+ *
+ * @return {*} 
+ */
 function startApexLegends() {
     if (config) {
         if (!config.apexlegends.path) {
@@ -407,6 +412,14 @@ function updatePlayer(json, player, mapName, characterSelected = false) {
     return player
 }
 
+/**
+ *
+ *
+ * @param {*} msg
+ * @param {*} match
+ * @param {boolean} [characterSelected=false]
+ * @return {*} 
+ */
 function processUpdatePlayer(msg, match, characterSelected = false) {
     const msg_player = msg.player;
     const player = match.getPlayer(msg_player.nucleushash);
@@ -433,6 +446,11 @@ function checkShieldPenetrator(perpetrator) {
     return perpetrator in config.penetrator;
 }
 
+/**
+ *
+ *
+ * @param {*} match
+ */
 function getPlayerStatus(match) {
     if (match.gameState == "Playing") {
         for (const teamId in match.teams) {
@@ -443,6 +461,10 @@ function getPlayerStatus(match) {
     }
 }
 
+/**
+ *
+ *
+ */
 async function update() {
     if (match) {
         getPlayerStatus(match);
@@ -450,6 +472,7 @@ async function update() {
     }
 }
 
+/** @type {*} */
 const intervalId = setInterval(() => {
     update();
 }, 16);
