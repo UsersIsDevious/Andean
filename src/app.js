@@ -162,7 +162,7 @@ function analyze_message(category, msg) {
         }
         case "MatchStateEnd": {
             for (let i = 0; i < msg.winnersList.length; i++) {
-                updatePlayer(msg.winnersList[i], match.getPlayer(msg.winnersList[i].nucleushash), match.mapName);
+                updatePlayer(msg.winnersList[i], match.getPlayer(msg.winnersList[i].nucleushash), match.mapOffset);
             }
             match.setEndTimeStamp(msg.timestamp);
             match.addEventElement(new Event(msg.timestamp, msg.category, msg.winnersList[0].teamId, { state: msg.state }));
@@ -229,15 +229,15 @@ function analyze_message(category, msg) {
             const msg_attacker = msg.attacker;
             const msg_victim = msg.victim;
             const victim = match.getPlayer(msg_victim.nucleushash);
-            updatePlayer(msg_victim, victim, match.mapName);
-            victim.addDamageReceived(msg.damageinflicted);
+            updatePlayer(msg_victim, victim, match.mapOffset);
+            victim.addDamageReceived(msg.damageinflicted, msg.weapon, msg_attacker.nucleushash, msg_attacker.character, checkShieldPenetrator(msg.weapon));
             /**
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
             if(msg_attacker.nucleushash == ""){ break; }
             const attacker = match.getPlayer(msg_attacker.nucleushash);
-            updatePlayer(msg_attacker, attacker, match.mapName);
+            updatePlayer(msg_attacker, attacker, match.mapOffset);
             attacker.addDamageDealt(msg.damageinflicted);
             break;
         }
@@ -245,8 +245,8 @@ function analyze_message(category, msg) {
             const msg_awardedto = msg.awardedto;
             const msg_victim = msg.victim;
             const victim = match.getPlayer(msg_victim.nucleushash);
-            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapName);
-            updatePlayer(msg_victim, victim, match.mapName);
+            updatePlayer(msg_awardedto, match.getPlayer(msg_awardedto.nucleushash), match.mapOffset);
+            updatePlayer(msg_victim, victim, match.mapOffset);
             victim.setAliveStatus(false);
             /**
              * @question
@@ -259,8 +259,8 @@ function analyze_message(category, msg) {
         case "PlayerDowned": {
             const msg_attacker = msg.attacker;
             const msg_victim = msg.victim;
-            updatePlayer(msg_attacker, match.getPlayer(msg_attacker.nucleushash), match.mapName);
-            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
+            updatePlayer(msg_attacker, match.getPlayer(msg_attacker.nucleushash), match.mapOffset);
+            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapOffset);
             /**
              * @question
              * 何の武器でダメージ受けたか格納する？
@@ -272,8 +272,8 @@ function analyze_message(category, msg) {
         case "PlayerAssist": {
             const msg_assistant = msg.assistant;
             const msg_victim = msg.victim;
-            updatePlayer(msg_assistant, match.getPlayer(msg_assistant.nucleushash), match.mapName);
-            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapName);
+            updatePlayer(msg_assistant, match.getPlayer(msg_assistant.nucleushash), match.mapOffset);
+            updatePlayer(msg_victim, match.getPlayer(msg_victim.nucleushash), match.mapOffset);
             /**
              * @question
              * 何の武器でアシスト受けたか格納する？
@@ -286,7 +286,7 @@ function analyze_message(category, msg) {
             const msg_playersList = msg.playersList;
             for (const msg_player of msg_playersList) {
                 const player = match.getPlayer(msg_player.nucleushash);
-                updatePlayer(msg_player, player, match.mapName);
+                updatePlayer(msg_player, player, match.mapOffset);
                 player.setAliveStatus(false);
             }
             break;
@@ -376,8 +376,8 @@ function analyze_message(category, msg) {
         case "ObserverSwitched": {
             const targetPlayerList = msg.targetteamList
             for (let i = 0; i < targetPlayerList.length; i++) {
-                const targetPlayer = targetPlayerList[i];
-                updatePlayer(targetPlayer, match.getPlayer(targetPlayer.nucleushash), match.mapName);
+                const msg_target = targetPlayerList[i];
+                updatePlayer(msg_target, match.getPlayer(msg_target.nucleushash), match.mapOffset);
             }
             break;
         }
@@ -394,11 +394,11 @@ function analyze_message(category, msg) {
  * Playerクラスのオブジェクトを更新する
  * @param {Object} json
  * @param {Player} player
+ * @param {object} mapOffset
  * @param {Boolean} characterSelected
- * @param {String} mapName
  */
-function updatePlayer(json, player, mapName, characterSelected = false) {
-    player.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y, mapName);
+function updatePlayer(json, player, mapOffset, characterSelected = false) {
+    player.updatePositionAndAngles(json.pos.x, json.pos.y, json.pos.z, json.angles.y, mapOffset);
     player.updateHealthAndShields(json.currenthealth, json.maxhealth, json.shieldhealth, json.shieldmaxhealth);
     if (player.getStatus().teamName === "") {
         player.setTeamName(json.teamname);
@@ -407,7 +407,7 @@ function updatePlayer(json, player, mapName, characterSelected = false) {
         player.setSquadIndex(json.squadindex);
     }
     if (characterSelected) {
-        player.updateCharacter(json.character, json.skin);
+        player.updateLegend(json.character, json.skin);
     }
     return player
 }
@@ -423,7 +423,7 @@ function updatePlayer(json, player, mapName, characterSelected = false) {
 function processUpdatePlayer(msg, match, characterSelected = false) {
     const msg_player = msg.player;
     const player = match.getPlayer(msg_player.nucleushash);
-    updatePlayer(msg_player, player, match.mapName, characterSelected);
+    updatePlayer(msg_player, player, match.mapOffset, characterSelected);
     return player;
 }
 
@@ -439,7 +439,7 @@ function checkItemLevel(name) {
 
 /**
  * シールド貫通武器かどうかのチェック
- * @param {string} perpetrator 
+ * @param {string} perpetrator - 武器名
  * @returns {boolean}
  */
 function checkShieldPenetrator(perpetrator) {

@@ -370,7 +370,7 @@ class Player {
          * キャラクター名
          * @type {string}
          */
-        this.character = "";
+        this.legend = "";
 
         /**
          * キャラクタースキン名
@@ -409,8 +409,10 @@ class Player {
          * @property {Object.<string, number>} [weaponName] - 各攻撃手段ごとのダメージ詳細 (例: 武器やスキル)
          */
         this.damageDealt = {
-            total: 0 // 合計ダメージ
-            // 攻撃手段ごとのダメージは動的に追加される
+            total: 0, // 合計ダメージ
+            weapons: {}, // 攻撃手段ごとのダメージは動的に追加される
+            players: {},
+            legends: {}
         };
 
         /**
@@ -418,7 +420,12 @@ class Player {
          * @type {object}
          * @property {number} total - 合計ダメージ
          */
-        this.damageReceived = { total: 0 };
+        this.damageReceived = {
+            total: 0, // 合計ダメージ
+            weapons: {},
+            players: {},
+            legends: {}
+        };
 
         /**
          * 生存状態
@@ -480,12 +487,12 @@ class Player {
 
     /**
      * プレイヤーのチーム情報、キャラクター、スキンを更新する関数
-     * @param {string} newCharacter 新しいキャラクター
+     * @param {string} newLegend 新しいキャラクター
      * @param {string} newSkin 新しいスキン
      * @memberof Player
      */
-    updateCharacter(newCharacter, newSkin) {
-        this.character = newCharacter;
+    updateLegend(newLegend, newSkin) {
+        this.legend = newLegend;
         this.skin = newSkin;
     }
 
@@ -602,16 +609,26 @@ class Player {
 
     /**
      * 受けたダメージを増加させるメソッド
-     * @param {string} perpetrator - 攻撃に使用されたもの
      * @param {number} amount - 増加させるダメージ量
+     * @param {string} perpetrator - 攻撃に使用されたもの
+     * @param {string} attacker - 攻撃したプレイヤーのnucleushash
+     * @param {string} legend - 攻撃を行ったプレイヤーのレジェンド名
      * @param {boolean} [penetrator=false] - シールド貫通武器かどうか
      * @memberof Player
      */
-    addDamageReceived(perpetrator, amount, penetrator = false) {
-        if (!perpetrator in this.damageReceived) {
+    addDamageReceived(amount, perpetrator, attacker, legend, penetrator = false) {
+        if (!perpetrator in this.damageReceived.weapons) {
             this.damageReceived[perpetrator] = 0;
         }
-        this.damageReceived[perpetrator] += amount;
+        if (!attacker in this.damageReceived.players) {
+            this.damageReceived[perpetrator] = 0;
+        }
+        if (!legend in this.damageReceived.legends) {
+            this.damageReceived[perpetrator] = 0;
+        }
+        this.damageReceived.weapons[perpetrator] += amount;
+        this.damageReceived.players[attacker] += amount;
+        this.damageReceived.legends[legend] += amount;
         this.damageReceived[total] += amount;
 
         if (penetrator) {
