@@ -595,8 +595,20 @@ class Player {
         this.damageReceived[total] += amount;
 
         if (penetrator) {
-
+            const resultHealth = this.currentHealth - amount;
+            if (resultHealth < 0) { resultHealth = 0; }
+            this.updateHealthAndShields(resultHealth, this.maxHealth, this.shieldHealth, this.shieldMaxHealth);
+            return [resultHealth, this.maxHealth, this.shieldHealth, this.shieldMaxHealth];
         }
+
+        const resultShield = this.shieldHealth - amount;
+        const resultHealth = amount - this.shieldHealth;
+
+        if (resultShield < 0) { resultShield = 0; }
+        if (resultHealth < 0) { resultHealth = 0; }
+
+        this.updateHealthAndShields(resultHealth, this.maxHealth, resultShield, this.shieldMaxHealth)
+        return [resultHealth, this.maxHealth, resultShield, this.shieldMaxHealth];
     }
 }
 
@@ -625,9 +637,9 @@ class Datacenter {
         this.name = "";
     }
     /**
-     * @param {*} timestamp　- タイムスタンプ (uint64)
-     * @param {*} category - カテゴリー名
-     * @param {*} name - データセンター名
+     * @param {number} timestamp　- タイムスタンプ (uint64)
+     * @param {string} category - カテゴリー名
+     * @param {string} name - データセンター名
      * @return {Datacenter} 
      * @memberof Datacenter
      */
