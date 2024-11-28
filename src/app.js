@@ -332,13 +332,13 @@ function analyze_message(category, msg) {
         case "RevenantForgedShadowDamaged": {
             break;
         }
-        case "ChangeCamera": {
+        case "ChangeCamera": {  // 今のところ何もイベント発生しない
             break;
         }
-        case "PauseToggle": {
+        case "PauseToggle": {  // 今のところ何もイベント発生しない
             break;
         }
-        case "CustomMatch_SetSettings": {
+        case "CustomMatch_SetSettings": {  // 今のところ何もイベント発生しない
             break;
         }
         case "PlayerRespawnTeam": {
@@ -385,6 +385,13 @@ function analyze_message(category, msg) {
             break;
         }
         case "BannerCollected": {
+            const player = processUpdatePlayer(msg, match);
+            /**
+             * @todo
+             * アビリティを使用した際にどのアビリティを使用したかがわかるため、
+             * プレイヤーごとにアビリティが溜まっているかどうかや使用済みかどうかなどのデータを保持できる。
+             * 追加します？
+             */
             break;
         }
         case "PlayerAbilityUsed": {
@@ -435,6 +442,8 @@ function analyze_message(category, msg) {
             break;
         }
         case "WeaponSwitched": {
+            const player = processUpdatePlayer(msg, match);
+            player.inHand = msg.newweapon;
             break;
         }
         case "ObserverSwitched": {
@@ -605,9 +614,12 @@ common.registerOnServersStarted((servers) => {
  */
 function handleMessage(message, messageType) {
     // ログを保存
-    common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName)
+    if (!(messageType in ["ObserverSwitched", "Response"])) {  // logにObserverSwitchedとResponseを含めないようにする
+        common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
+    }
+    // common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
     // common.logMessage(`Received ${messageType} message:`, message.toObject());
-    analyze_message(messageType, message.toObject())
+    analyze_message(messageType, message.toObject());
 }
 
 module.exports = { startApexLegends, analyze_message }

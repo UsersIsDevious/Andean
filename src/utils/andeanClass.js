@@ -630,6 +630,12 @@ class Player {
          * @type {Array<object>}
          */
         this.weaponList = [];
+
+        /**
+         * 今手に持っている武器
+         * @type {string}
+         */
+        this.inHand = "mp_weapon_melee_survival";
     }
 
     /**
