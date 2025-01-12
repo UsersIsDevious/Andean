@@ -1,7 +1,7 @@
 const common = require('./utils/common');
 const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
-const language = common.readConfig('../../locals/ja.json');
+const language = common.readConfig('../../locals/en.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
 const sendMapData = require('./services/sendMapData')
@@ -82,7 +82,7 @@ setInterval(() => {
 let match;
 let lobby = new CustomMatch("lobby");
 function analyze_message(category, msg) {
-    common.logMessage("メッセージタイプ" + category)
+    // common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
         case "Init": {
             /**
@@ -519,7 +519,6 @@ function processUpdateMsgPlayer(msg_player, match) {
 function checkItemLevel(name) {
     //debug中
     let level = new RegExp(`\\(${language.item.level_label} (\\d+)\\)`).exec(name);
-    console.log(name,level)
     if (level == null) {
         level = 1;
     } else {

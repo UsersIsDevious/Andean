@@ -197,7 +197,8 @@ class Inventory {
      * @return {Inventory}
      * @memberof Inventory
      */
-    addOrUpdateItem(itemName, quantity, level) {
+    addOrUpdateItem(_itemName, quantity, level) {
+        const itemName = _itemName.split(" ")[0];
         const existingItem = this.getItem(itemName, level);
         if (existingItem) {
             // 同じ名前とレベルのアイテムが既に存在する場合は、所持数を更新
@@ -208,12 +209,12 @@ class Inventory {
                 return item;
             }
             existingItem.setQuantity(newQuantity);
-            console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingItem.quantity}.`);
+            // console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingItem.quantity}.`);
         } else {
             // アイテムが存在しない場合は、新規追加
             const newItem = new Item(itemName, level, quantity);
             this.addItem(newItem);
-            console.log(`${itemName} (Level ${level}) has been added with a quantity of ${quantity}.`);
+            // console.log(`${itemName} (Level ${level}) has been added with a quantity of ${quantity}.`);
         }
         return this;
     }
@@ -227,7 +228,8 @@ class Inventory {
      * @return {Inventory}
      * @memberof Inventory
      */
-    addOrUpdateWeapon(weaponId, weaponLabel, level, maxMagazine = 0) {
+    addOrUpdateWeapon(weaponId, _weaponLabel, level, maxMagazine = 0) {
+        const weaponLabel = _weaponLabel.split(" ")[0];
         const existingWeapon = this.getWeapon(weaponLabel, level);
         if (existingWeapon) {
             /**
@@ -241,7 +243,7 @@ class Inventory {
             // アイテムが存在しない場合は、新規追加
             const newWeapon = new Weapon(weaponId, weaponLabel, level);
             this.addWeapon(newWeapon);
-            console.log(`${weaponLabel} (Level ${level}) has been added.`);
+            // console.log(`${weaponLabel} (Level ${level}) has been added.`);
         }
         return this;
     }
@@ -561,7 +563,7 @@ class Player {
         this.kills = new Statistics();
 
         /**
-         * キル数させられた数
+         * キルさせられた数
          * @type {Statistics}
          */
         this.killsReceived = new Statistics();
@@ -573,7 +575,7 @@ class Player {
         this.killAssists = new Statistics();
 
         /**
-         * キル数させられた数
+         * キルアシストさせられた数
          * @type {Statistics}
          */
         this.killAssistsReceived = new Statistics();
@@ -585,7 +587,7 @@ class Player {
         this.downs = new Statistics();
 
         /**
-         * キル数させられた数
+         * ダウンさせられた数
          * @type {Statistics}
          */
         this.downsReceived = new Statistics();
@@ -1123,7 +1125,7 @@ class CustomMatch {
                 this.state = `RingFinishedClosing_Stage_${ring.stage}`;
                 break;
             default:
-                console.log("[CustomMatch.addRingElement] Recived unknown message");
+                console.warn("[CustomMatch.addRingElement] Recived unknown message");
                 break;
         }
     }
@@ -1232,7 +1234,7 @@ class CustomMatch {
                 break;
             default:
                 this.mapOffset = [0, 0, 1];
-                console.log("[AndeanClass.CustomMatch.setMatchSetup] Unknown map");
+                console.warn("[AndeanClass.CustomMatch.setMatchSetup] Unknown map");
                 break;
         }
     }
