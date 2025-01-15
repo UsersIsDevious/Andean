@@ -1562,5 +1562,6 @@ module.exports = {
   CustomMatch,
   Weapon,
   Event,
+  Packet,
   Ring,
 };
