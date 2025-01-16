@@ -1362,7 +1362,7 @@ class Event {
    * @return {Event}
    * @memberof Event
    */
-  constructor(_timestamp, _category, _target, _data) {
+  constructor(_timestamp, _category, _data) {
     /**
      * イベント発生時のタイムスタンプ
      * @type {number}

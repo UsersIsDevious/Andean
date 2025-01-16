@@ -167,7 +167,7 @@ function analyze_message(category, msg) {
                 updatePlayer(msg.winnersList[i], match.getPlayer(msg.winnersList[i].nucleushash), match.mapOffset);
             }
             match.setEndTimeStamp(msg.timestamp);
-            match.addEventElement(new Event(msg.timestamp, msg.category, msg.winnersList[0].teamId, { state: msg.state }));
+            match.addEventElement(new Event(msg.timestamp, msg.category, {teamId: msg.winnersList[0].teamId, state: msg.state }));
             match.setState(msg.state);
             break;
         }
