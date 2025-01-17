@@ -80,7 +80,12 @@ let match;
 /**
  * @type {Packet}
  */
-let packet;
+let packet1;
+/**
+ * @type {Packet}
+ */
+let packet2;
+let nowWorker = 0;
 let lobby = new CustomMatch("lobby");
 /**
  * メッセージを分析し、要素を抽出する。
@@ -88,6 +93,16 @@ let lobby = new CustomMatch("lobby");
  * @param {Object} msg
  */
 function analyze_message(category, msg) {
+    /**
+     * @type {Packet}
+     */
+    const packet = packet1;
+    if (nowWorker === 2) {
+        /**
+         * @type {Packet}
+         */
+        packet = packet2;
+    }
     // common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
         case "Init": {
@@ -611,10 +626,15 @@ function checkShieldPenetrator(perpetrator) {
  * @param {CustomMatch} match
  */
 function getPlayerStatus(match) {
-    if (!packet === undefined) {
-        common.saveData(`Packet Log - ${Date.now()}`, packet.toJSON())
+    if (nowWorker === 2) {
+        nowWorker = 1;
+        common.saveData(`Packet Log - ${match.startTimeStamp}`, packet2.toJSON())
+        packet2 = new Packet((Date.now() / 1000) - match.startTimeStamp);
+    } else {
+        nowWorker = 2;
+        common.saveData(`Packet Log - ${match.startTimeStamp}`, packet1.toJSON())
+        packet1 = new Packet((Date.now() / 1000) - match.startTimeStamp);
     }
-    packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
     for (const teamId in match.teams) {
         const player = match.getPlayer(match.teams[teamId][0]);
         if (!player.getAliveStatus() || !player.getOnlineStatus()) { continue; }
@@ -654,7 +674,7 @@ common.registerOnServersStarted((servers) => {
         // common.logMessage('LiveAPIEvent:', liveAPIEvent.toObject());
 
         const gamemessage = liveAPIEvent.getGamemessage();
-        const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得w
+        const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得
         const valueBinary = gamemessage.getValue_asU8(); // バイナリ値を取得
 
         if (messageTypes[typeUrl]) {
@@ -670,7 +690,6 @@ common.registerOnServersStarted((servers) => {
         } else {
             console.warn(`Unknown message type received: ${typeUrl}`);
         }
-        // 必要な処理をここに追加
     });
     common.getServerList().websocketServer_web.setHandleMessageCallback((message, ws) => {
         common.getServerList().websocketServer_web.broadcastToAllClients(JSON.parse(message).data.message)
