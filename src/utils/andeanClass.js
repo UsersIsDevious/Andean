@@ -1381,17 +1381,22 @@ class Event {
     return this;
   }
 }
+
+
 /**
+ * メッセージパケット化するクラス
+ * @class Packet
  * @param {number} t マッチ開始からの経過秒数
  * @param {Array<Object>} data 各エンティティのデータ配列
  * @param {Array<Event>} events イベントの配列
- * パケットを表現するクラス
  */
 class Packet {
   /**
+   * @constructor
    * @param {number} t マッチ開始からの経過秒数
    * @param {Array<Object>} data 各エンティティのデータ配列
    * @param {Array<Event>} events イベントの配列
+   * @memberof Packet
    */
   constructor(t, data = [], events = []) {
     /**
@@ -1404,12 +1409,14 @@ class Packet {
      * @property {string} id エンティティのID
      * @property {Array<number>} pos エンティティの位置情報 [x, y, z]
      * @property {Array<number>} hp エンティティの体力情報 [maxHP, currentHP, armor, shield]
+     * @memberof Packet
      */
     this.data = data;
 
     /**
      * @type {Array<Event>} イベントの配列
      * @property {string} category イベント名
+     * @memberof Packet
      */
     this.events = events;
   }
@@ -1417,6 +1424,7 @@ class Packet {
   /**
    * パケットをJSON形式に変換する
    * @returns {Object} JSONオブジェクト
+   * @memberof Packet
    */
   toJSON() {
     return {
@@ -1434,7 +1442,8 @@ class Packet {
    * @param {Object} entityData 追加するエンティティ情報
    * @param {string} entityData.id エンティティのID
    * @param {Array<number>} entityData.pos エンティティの位置情報 [x, y, z]
-   * @param {Array<number>} entityData.hp エンティティの体力情報 [maxHP, currentHP, armor, shield]
+   * @param {Array<number>} entityData.hp エンティティの体力情報 [currentHP, maxHP, currentShield, maxShield]
+   * @memberof Packet
    */
   addData(entityData) {
     this.data.push(entityData);
@@ -1443,6 +1452,7 @@ class Packet {
   /**
    * イベントを追加する
    * @param {Event} event 追加するイベント
+   * @memberof Packet
    */
   addEvent(event) {
     this.events.push(event);

@@ -1,5 +1,5 @@
 const common = require('./utils/common');
-const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event } = require('./utils/andeanClass');
+const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event, Packet } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
 const language = common.readConfig('../../locals/en.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
@@ -74,13 +74,19 @@ setInterval(() => {
 }, 5000); */
 
 /**
- * メッセージを分析し、要素を抽出する。
- * @param {String} category
- * @param {Object} msg
  * @type {CustomMatch}
  */
 let match;
+/**
+ * @type {Packet}
+ */
+let packet;
 let lobby = new CustomMatch("lobby");
+/**
+ * メッセージを分析し、要素を抽出する。
+ * @param {String} category
+ * @param {Object} msg
+ */
 function analyze_message(category, msg) {
     // common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
@@ -167,20 +173,45 @@ function analyze_message(category, msg) {
                 updatePlayer(msg.winnersList[i], match.getPlayer(msg.winnersList[i].nucleushash), match.mapOffset);
             }
             match.setEndTimeStamp(msg.timestamp);
-            match.addEventElement(new Event(msg.timestamp, msg.category, {teamId: msg.winnersList[0].teamId, state: msg.state }));
+
+            // AndeanのEventクラスに追加する
+            const winnerTeams = [];
+            for (let i = 0; i < msg.winnersList.length; i++) {
+                if (!winnerTeams.includes(msg.winnersList[i].teamId)) {
+                    winnerTeams.push(msg.winnersList[i].teamId);
+                }
+            }
+            const event = new Event(msg.timestamp, msg.category, {teamId: winnerTeams, state: msg.state });
+            match.addEventElement(event);
+            // AndeanのPacketクラスに追加する
+            packet.addEvent(event);
             match.setState(msg.state);
             break;
         }
         case "RingStartClosing": {
+            // AndeanのRingクラスに追加する
             const rings = match.rings;
             if (rings == []) {
                 match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapOffset));
             }
             rings[rings.length - 1].updateRing(msg.timestamp, msg.category, msg.currentRadius, msg.shrinkduration, msg.endradius, match.mapOffset);
+
+            // AndeanのEventクラスに追加する
+            const event = new Event(msg.timestamp, msg.category, { stage: msg.stage, center: convertLeefletPOS(match.mapOffset, msg.center), currentradius: msg.currentradius / match.mapOffset[2], endradius: msg.endradius / match.mapOffset[2], shrinkduration: msg.shrinkduration });
+            match.addEventElement(event);
+            // AndeanのPacketクラスに追加する
+            packet.addEvent(event);
             break;
         }
         case "RingFinishedClosing": {
+            // AndeanのRingクラスに追加する
             match.addRingElement(new Ring(msg.timestamp, msg.category, msg.stage, msg.center, msg.currentradius, msg.shrinkduration, match.mapOffset));
+
+            // AndeanのEventクラスに追加する
+            const event = new Event(msg.timestamp, msg.category, { stage: msg.stage, center: convertLeefletPOS(match.mapOffset, msg.center), currentradius: msg.currentradius / match.mapOffset[2], shrinkduration: msg.shrinkduration });
+            match.addEventElement(event);
+            // AndeanのPacketクラスに追加する
+            packet.addEvent(event);
             break;
         }
         case "PlayerConnected": {
@@ -264,11 +295,34 @@ function analyze_message(category, msg) {
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the awardedto is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
-            if (msg_awardedto.nucleushash == "") {
-                break;
+            if ("nucleushash" in msg_awardedto) {
+                if (!msg_awardedto.nucleushash == "") {
+                    const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
+                    awardedto.setKills(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character)
+
+                    // AndeanのEventクラスに追加する
+                    const event = new Event(
+                        msg.timestamp, msg.category,
+                        {
+                            attacker: {
+                                id: msg_awardedto.nucleushash,
+                                pos: convertLeefletPOS(match.mapOffset, msg_awardedto.pos),
+                                ang: msg_awardedto.angles.y
+                            },
+                            victim: {
+                                id: msg_victim.nucleushash,
+                                pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                                ang: msg_victim.angles.y
+                            },
+                            weapon: msg.weapon,
+                        }
+                    );
+                    match.addEventElement(event);
+
+                    // AndeanのPacketクラスに追加する
+                    packet.addEvent(event);
+                }
             }
-            const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
-            awardedto.setKills(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character)
             break;
         }
         case "PlayerDowned": {
@@ -450,7 +504,12 @@ function analyze_message(category, msg) {
             const targetPlayerList = msg.targetteamList
             for (let i = 0; i < targetPlayerList.length; i++) {
                 const msg_target = targetPlayerList[i];
+
+                // AndeanのPlayerクラスに追加する
                 updatePlayer(msg_target, match.getPlayer(msg_target.nucleushash), match.mapOffset);
+
+                // AndeanのPacketクラスに追加する
+                packet.addData({ id: msg_target.nucleushash, pos: convertLeefletPOS(match.mapOffset, msg_target.pos), ang: msg_target.angles.y, hp: [msg_target.currenthealth, msg_target.maxhealth, msg_target.shieldhealth, msg_target.shieldmaxhealth] });
             }
             break;
         }
@@ -512,6 +571,16 @@ function processUpdateMsgPlayer(msg_player, match) {
     return player;
 }
 
+
+/**
+ * LiveAPIEventのposデータをLeedlet形式のposデータに変換する
+ * @param {Array} _mapOffset - マップのオフセット
+ * @param {JSON} _pos - LiveAPIEventのposデータ
+ */
+function convertLeefletPOS(_mapOffset, _pos) {
+    return [(_pos.x + _mapOffset[0]) / _mapOffset[2] , (_pos.y + _mapOffset[1]) / _mapOffset[2], _pos.z / _mapOffset[2]];
+}
+
 /**
  * アイテム名からレベルをチェックする
  * @param {String} name
@@ -542,6 +611,10 @@ function checkShieldPenetrator(perpetrator) {
  * @param {CustomMatch} match
  */
 function getPlayerStatus(match) {
+    if (!packet === undefined) {
+        common.saveData(`Packet Log - ${Date.now()}`, packet.toJSON())
+    }
+    packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
     for (const teamId in match.teams) {
         const player = match.getPlayer(match.teams[teamId][0]);
         if (!player.getAliveStatus() || !player.getOnlineStatus()) { continue; }
