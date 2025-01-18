@@ -35,7 +35,7 @@ function startGame(req, res) {
 
 
 /**
- * ゲームを起動するエンドポイント
+ * コンフィグを保存するエンドポイント
  * @param {Request} req - クライアントのリクエストオブジェクト
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
@@ -46,7 +46,7 @@ function saveConfig(req, res) {
 
 
 /**
- * ゲームを起動するエンドポイント
+ * コンフィグをデフォルトにリセットするエンドポイント
  * @param {Request} req - クライアントのリクエストオブジェクト
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
