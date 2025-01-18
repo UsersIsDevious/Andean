@@ -1115,6 +1115,11 @@ class CustomMatch {
      */
     this.eventLists = [];
     /**
+     * パケットリスト
+     * @type {Array<Event>}
+     */
+    this.packetLists = [];
+    /**
      * リングデータの配列
      * 各要素はRingクラスのインスタンス
      * @type {Array<Ring>}
@@ -1171,6 +1176,16 @@ class CustomMatch {
   addEventElement(event) {
     // 新しい要素を末尾に追加
     this.eventLists.push(event);
+  }
+
+  /**
+   * eventListsの末尾に新しい要素を追加します。
+   * @param {Event} event - 追加する要素
+   * @memberof CustomMatch
+   */
+  addPacketElement(event) {
+    // 新しい要素を末尾に追加
+    this.packetLists.push(event);
   }
 
   /**
