@@ -2,7 +2,7 @@
 
 import { DragDropContext } from 'react-beautiful-dnd'
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { toast } from "@/components/ui/use-toast"
+import { toast } from "@/components/ui/toast"
 import { Button } from "@/components/ui/button"
 import TeamCard from "./TeamCard"
 import CSVImportButton from "./CSVImportButton"

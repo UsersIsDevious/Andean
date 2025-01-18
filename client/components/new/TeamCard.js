@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { TeamHeader } from "./team/TeamHeader"
 import { PlayerSlots } from "./team/PlayerSlots"
-import { getTeamColor } from "../utils/teamColors"
+import { getTeamColor } from "../../utils/teamColors"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 export default function TeamCard({ team }) {
