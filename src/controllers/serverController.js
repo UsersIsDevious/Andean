@@ -34,4 +34,27 @@ function startGame(req, res) {
 }
 
 
-module.exports = { handleNotify, stopServer, startGame };
+/**
+ * ゲームを起動するエンドポイント
+ * @param {Request} req - クライアントのリクエストオブジェクト
+ * @param {Response} res - クライアントに対するレスポンスオブジェクト
+ */
+function saveConfig(req, res) {
+  res.sendStatus(200);
+  app.startApexLegends()
+}
+
+
+/**
+ * ゲームを起動するエンドポイント
+ * @param {Request} req - クライアントのリクエストオブジェクト
+ * @param {Response} res - クライアントに対するレスポンスオブジェクト
+ */
+function resetConfig(req, res) {
+  res.sendStatus(200);
+  app.startApexLegends()
+}
+
+
+
+module.exports = { handleNotify, stopServer, startGame , saveConfig , resetConfig };
