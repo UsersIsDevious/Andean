@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { toast } from "@/components/ui/use-toast"
+import { toast } from "@/components/ui/toast"
 
 const MAX_PLAYERS_PER_TEAM = 3;
 const TOTAL_TEAMS = 20;
