@@ -1,8 +1,8 @@
 'use client'
 
 import { Tabs, TabsList } from "@/components/ui/tabs"
-import { TabTriggers } from "./player-area/TabTriggers"
-import { TabContent } from "./player-area/TabContent"
+import { TabTriggers } from "./TabTriggers"
+import { TabContent } from "./TabContent"
 
 export default function PlayerAreaTabs({ observers, unassigned }) {
   return (

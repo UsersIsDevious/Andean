@@ -1,32 +1,34 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { GradientButton } from "../ui/GradientButton"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Camera } from 'lucide-react'
-import { CameraTypeSelector } from './camera-settings/CameraTypeSelector'
-import { POISelector } from './camera-settings/POISelector'
-import { PlayerSelector } from './camera-settings/PlayerSelector'
+import { CameraTypeSelector } from "./CameraTypeSelector"
+import { POISelector } from "./POISelector"
+import { PlayerSelector } from "./PlayerSelector"
+import { GradientCard } from '../common/GradientCard'
 
 export default function CameraSettings({
-  cameraType,
+  cameraType = 'poi',
   setCameraType,
-  selectedPOI,
+  selectedPOI = '',
   setSelectedPOI,
-  selectedPlayer,
+  selectedPlayer = '',
   setSelectedPlayer,
-  poiOptions,
-  playerNames
+  poiOptions = [],
+  playerNames = []
 }) {
   return (
-    <Card className="w-full bg-gradient-to-br from-gray-900 to-gray-800 text-white overflow-hidden">
+    <GradientCard title="カメラ設定">
       <CardContent className="p-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500 mb-6">カメラ設定</h2>
+          {/* Removed line */}
         </motion.div>
         <motion.div
           initial={{ opacity: 0 }}
@@ -54,7 +56,7 @@ export default function CameraSettings({
           </Button>
         </motion.div>
       </CardContent>
-    </Card>
+    </GradientCard>
   )
 }
 

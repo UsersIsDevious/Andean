@@ -41,7 +41,6 @@ function startGame(req, res) {
  */
 function saveConfig(req, res) {
   res.sendStatus(200);
-  app.startApexLegends()
 }
 
 
@@ -52,7 +51,6 @@ function saveConfig(req, res) {
  */
 function resetConfig(req, res) {
   res.sendStatus(200);
-  app.startApexLegends()
 }
 
 

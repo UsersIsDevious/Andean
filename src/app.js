@@ -78,14 +78,13 @@ setInterval(() => {
  */
 let match;
 /**
- * @type {Packet}
+ * @type {CustomMatch}
  */
-let packet1;
+let matchBase;
 /**
  * @type {Packet}
  */
-let packet2;
-let nowWorker = 0;
+let packet;
 let lobby = new CustomMatch("lobby");
 /**
  * メッセージを分析し、要素を抽出する。
@@ -93,16 +92,6 @@ let lobby = new CustomMatch("lobby");
  * @param {Object} msg
  */
 function analyze_message(category, msg) {
-    /**
-     * @type {Packet}
-     */
-    const packet = packet1;
-    if (nowWorker === 2) {
-        /**
-         * @type {Packet}
-         */
-        packet = packet2;
-    }
     // common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
         case "Init": {
@@ -173,6 +162,7 @@ function analyze_message(category, msg) {
         case "GameStateChanged": {
             try {
                 if (msg.state === "Playing") { match.setStartTimeStamp(msg.timestamp) };
+                if (msg.state === "Prematch") { matchBase = match };
                 match.setState(msg.state);
             } catch (error) {
                 lobby.setState(msg.state);
@@ -201,6 +191,11 @@ function analyze_message(category, msg) {
             // AndeanのPacketクラスに追加する
             packet.addEvent(event);
             match.setState(msg.state);
+
+            if (match && match.endTimeStamp !== 0 && match.state !== "Postmatch") {
+                matchBase.packetLists = match.packetLists;
+                common.saveData(`Packet Log - ${match.startTimeStamp}`, matchBase);
+            }
             break;
         }
         case "RingStartClosing": {
@@ -281,7 +276,7 @@ function analyze_message(category, msg) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
-            if ("nucleushash" in msg_awardedto) { 
+            if ("nucleushash" in msg_awardedto || msg_awardedto.nucleushash !== "") { 
                 victim.addDamageReceived(msg.damageinflicted, weaponName, msg_attacker.nucleushash, msg_attacker.character, checkShieldPenetrator(weaponName));
             } else {
                 victim.addDamageReceived(msg.damageinflicted, weaponName, "World", "World", checkShieldPenetrator(weaponName));
@@ -291,7 +286,7 @@ function analyze_message(category, msg) {
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
-            if (!"nucleushash" in msg_awardedto) { 
+            if (!"nucleushash" in msg_awardedto || msg_awardedto.nucleushash === "") {
                 break;
             }
             const attacker = processUpdateMsgPlayer(msg_attacker, match);
@@ -307,7 +302,7 @@ function analyze_message(category, msg) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
-            if ("nucleushash" in msg_awardedto) {
+            if ("nucleushash" in msg_awardedto || msg_awardedto.nucleushash !== "") {
                 victim.setKillsReceived(msg.damageinflicted, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
             } else {
                 victim.setKillsReceived(msg.damageinflicted, weaponName, "World", "World");
@@ -317,7 +312,7 @@ function analyze_message(category, msg) {
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the awardedto is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
-            if ("nucleushash" in msg_awardedto) {
+            if (!"nucleushash" in msg_awardedto || msg_awardedto.nucleushash === "") {
                 const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
                 awardedto.setKills(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character)
 
@@ -329,6 +324,28 @@ function analyze_message(category, msg) {
                             id: msg_awardedto.nucleushash,
                             pos: convertLeefletPOS(match.mapOffset, msg_awardedto.pos),
                             ang: msg_awardedto.angles.y
+                        },
+                        victim: {
+                            id: msg_victim.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                            ang: msg_victim.angles.y
+                        },
+                        weapon: msg.weapon,
+                    }
+                );
+                match.addEventElement(event);
+
+                // AndeanのPacketクラスに追加する
+                packet.addEvent(event);
+            } else {
+                // AndeanのEventクラスに追加する
+                const event = new Event(
+                    msg.timestamp, msg.category,
+                    {
+                        attacker: {
+                            id: "World",
+                            pos: [0, 0, 0],
+                            ang: 0
                         },
                         victim: {
                             id: msg_victim.nucleushash,
@@ -354,7 +371,7 @@ function analyze_message(category, msg) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
-            if ("nucleushash" in msg_awardedto) {
+            if ("nucleushash" in msg_awardedto || msg_awardedto.nucleushash !== "") {
                 victim.setDownsReceived(msg.damageinflicted, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
             } else {
                 victim.setDownsReceived(msg.damageinflicted, weaponName, "World", "World");
@@ -366,7 +383,7 @@ function analyze_message(category, msg) {
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
-            if (!"nucleushash" in msg_awardedto) {
+            if (!"nucleushash" in msg_awardedto || msg_awardedto.nucleushash === "") {
                 break;
             }
             const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
@@ -382,7 +399,7 @@ function analyze_message(category, msg) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
-            if ("nucleushash" in msg_awardedto) {
+            if ("nucleushash" in msg_awardedto || msg_awardedto.nucleushash !== "") {
                 victim.setKillAssistsReceived(msg.damageinflicted, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
             } else {
                 victim.setDownAssistsReceived(msg.damageinflicted, weaponName, "World", "World");
@@ -392,7 +409,7 @@ function analyze_message(category, msg) {
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
-            if (!"nucleushash" in msg_awardedto) {
+            if (!"nucleushash" in msg_awardedto || msg_awardedto.nucleushash === "") {
                 break;
             }
             const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
@@ -645,12 +662,6 @@ function checkShieldPenetrator(perpetrator) {
  * @param {CustomMatch} match
  */
 function getPlayerStatus(match) {
-    if (packet !== undefined) {
-        if (packet.data != [] && packet.events != []) {
-            match.addPacketElement(packet.toJSON());
-        }
-    }
-    packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
     for (const teamId in match.teams) {
         const player = match.getPlayer(match.teams[teamId][0]);
         if (!player.getAliveStatus() || !player.getOnlineStatus()) { continue; }
@@ -674,8 +685,11 @@ async function update() {
         getPlayerStatus(match);
         sendMapData.sendPlayerPositionUpdate(match);
     }
-    if (match && match.endTimeStamp !== 0 && match.state !== "Postmatch") {
-        common.saveData(`Packet Log - ${match.startTimeStamp}`, JSON.stringify(match.packetLists));
+    if (match && match.startTimeStamp != 0 && !["Resolution", "Postmatch"].includes(match.state)) {
+        if (packet && (packet.data.length + packet.events.length) != 0) {
+            match.addPacketElement(packet.toJSON());
+        }
+        packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
     }
 }
 
