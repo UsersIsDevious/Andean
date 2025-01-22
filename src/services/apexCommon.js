@@ -1,6 +1,7 @@
 const { 
     Request, ChangeCamera, PauseToggle, CustomMatch_CreateLobby, CustomMatch_JoinLobby, CustomMatch_LeaveLobby, CustomMatch_SetReady, CustomMatch_SetMatchmaking,
-    CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings, PlayerOfInterest, CustomMatch_SetSpawnPoint
+    CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings,
+    PlayerOfInterest, CustomMatch_SetSpawnPoint, CustomMatch_SetEndRingExclusion
 } = require('../../bin/events_pb'); // events_pb.jsからRequest関連の機能をインポート
 const { getServerList, wss } = require('../utils/common');
 
@@ -251,7 +252,7 @@ function get_match_settings() {
 }
 
 /**
- * チーム名を設定
+ * スポーンポイントを設定
  * @param {number} teamId - チームID
  * @param {number} landmark - 設定するランドマークの番号
  */
@@ -261,6 +262,20 @@ function set_spawn_point(teamId, landmark) {
     setSpawnPoint.setTeamid(teamId);
     setSpawnPoint.setSpawnpoint(landmark);
     req.setCustommatchSetspawnpoint(setSpawnPoint);
+    serialized_request(req);
+}
+
+/**
+ * スポーンポイントを設定
+ * @param {number} ringId - リングIDを指定
+ * @param {number} exclusion - 除外設定の有無を指定
+ */
+function set_end_ring_exclusion(ringId, exclusion) {
+    const req = new Request();
+    const endRingExclusion = new CustomMatch_SetEndRingExclusion();
+    endRingExclusion.setRingId(ringId);
+    endRingExclusion.setExcluded(exclusion);
+    req.setCustomMatchSetEndRingExclusion(endRingExclusion);
     serialized_request(req);
 }
 
@@ -280,5 +295,6 @@ module.exports = {
     get_lobby_players,
     set_team_name,
     get_match_settings,
-    set_spawn_point
+    set_spawn_point,
+    set_end_ring_exclusion
 };
