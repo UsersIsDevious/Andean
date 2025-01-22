@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "./ui/button"
-import { fetchWithTimeout } from "../lib/utils"
+import { fetchWithTimeout } from "../../lib/utils"
 
 export function RequestButton({ url, method = "GET", body, onSuccess, onError, children, ...props }) {
   const [isLoading, setIsLoading] = useState(false)

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useLobby } from "../hooks/use-lobby"
+import { useLobby } from "../../hooks/use-lobby"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LobbySettings } from "./lobby-settings"

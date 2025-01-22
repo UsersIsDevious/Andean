@@ -143,11 +143,27 @@ function saveLog(message, logFileName = 'app.log') {
 }
 
 /**
+ * Configファイルに保存します。
+ * 
+ * @param {Object} _class - 新しく保存するデータオブジェクト
+ */
+function saveConfig(configPath = "../../config.json", _class) {
+  try {
+    // データをファイルに書き込み
+    const result = fs.writeFileSync(configPath, JSON.stringify(_class, null, 2));
+    return result;
+  } catch (error) {
+    console.error(`Config ファイルの保存エラー (パス: ${configPath}):`, error.message);
+    return null;
+  }
+}
+
+/**
  * config.json を読み込む関数
- * @param {string} [configPath='../config/config.json'] - 設定ファイルのパス（デフォルトパスを設定）
+ * @param {string} [configPath='../../config.json'] - 設定ファイルのパス（デフォルトパスを設定）
  * @returns {Object|null} - 読み込んだ設定内容（エラー時は null を返す）
  */
-function readConfig(configPath = '../config/config.json') {
+function readConfig(configPath = '../../config.json') {
   try {
     const absolutePath = path.resolve(__dirname, configPath);
     const configData = fs.readFileSync(absolutePath, 'utf8');
@@ -207,6 +223,7 @@ module.exports = {
   saveLog,
   getServerList,
   registerOnServersStarted,
+  saveConfig,
   saveData,
   logMessage,
   ensureFolderExists,

@@ -9,7 +9,7 @@ import MatchManagement from "./match-management"
 import LobbyManagement from "./lobby-management"
 import CameraSettings from "./camera-settings"
 import Settings from "./settings"
-import { useLobby } from "../hooks/use-lobby"
+import { useLobby } from "../../hooks/use-lobby"
 
 export default function Layout({ config, updateConfig, simulatedLobbyData, updateSimulatedLobbyData }) {
   const [isDarkMode, setIsDarkMode] = useState(false)

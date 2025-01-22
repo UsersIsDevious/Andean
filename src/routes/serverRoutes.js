@@ -7,7 +7,7 @@ router.post('/notify', serverController.handleNotify);
 router.post('/stopServer', serverController.stopServer);
 router.post('/startGame', serverController.startGame);
 router.post('/saveConfig', serverController.saveConfig);
-router.post('/loadConfig', serverController.saveConfig);
+router.post('/loadConfig', serverController.loadConfig);
 router.post('/resetConfig', serverController.resetConfig);
 
 module.exports = router;

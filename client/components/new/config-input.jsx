@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Input } from "./ui/input"
-import { useConfig } from "../hooks/use-config"
+import { useConfig } from "../../hooks/use-config"
 
 export function ConfigInput({ configKey, label, type = "text", ...props }) {
   const { config, updateConfig } = useConfig()

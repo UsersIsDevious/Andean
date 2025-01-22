@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Layout from "./components/layout"
-import { useConfig } from "./hooks/use-config"
+import Layout from "../../../components/new/layout"
+import { useConfig } from "../../../hooks/use-config"
 
 export default function Home() {
   const { config = {}, updateConfig } = useConfig()

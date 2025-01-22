@@ -745,4 +745,4 @@ function handleMessage(message, messageType) {
     analyze_message(messageType, message.toObject());
 }
 
-module.exports = { startApexLegends, analyze_message }
+module.exports = { config, startApexLegends, analyze_message }
