@@ -127,7 +127,8 @@ function analyze_message(category, msg) {
             // 一旦lobbyと言う名前のマッチが有るものとして扱う
             lobby = new CustomMatch("lobby")
             for (let i = 0; i < msg.playersList.length; i++) {
-                lobby.addPlayer(new Player(msg.playersList[i].name, msg.playersList[i].teamid, msg.playersList[i].nucleushash, msg.playersList[i].hardwarename))
+                const msg_player = msg.playersList[i]
+                lobby.addPlayer(new Player(msg_player.name, msg_player.teamid, msg_player.nucleushash, msg_player.hardwarename))
             }
             break;
         }
@@ -436,7 +437,7 @@ function analyze_message(category, msg) {
         case "PauseToggle": {  // 今のところ何もイベント発生しない
             break;
         }
-        case "CustomMatch_SetSettings": {  // 今のところ何もイベント発生しない
+        case "CustomMatch_SetSettings": {
             break;
         }
         case "PlayerRespawnTeam": {
@@ -737,7 +738,7 @@ common.registerOnServersStarted((servers) => {
  */
 function handleMessage(message, messageType) {
     // ログを保存
-    if (!(messageType in ["ObserverSwitched", "Response"])) {  // logにObserverSwitchedとResponseを含めないようにする
+    if (!(["ObserverSwitched", "Response"].includes(messageType))) {  // logにObserverSwitchedとResponseを含めないようにする
         common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
     }
     // common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
