@@ -268,33 +268,77 @@ function analyze_message(category, msg) {
             break;
         }
         case "PlayerDamaged": {
-            /**
-             * @todo
-             * 1.イベントクラスのobjectに付随する情報を
-             */
             //ダメージを与えた側
             const msg_attacker = msg.attacker;
             const msg_victim = msg.victim;
+            const penetrator = checkShieldPenetrator(weaponName);
             let weaponName = getWeaponId(msg.weapon)
             if (weaponName === undefined) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") { 
-                victim.addDamageReceived(msg.damageinflicted, weaponName, msg_attacker.nucleushash, msg_attacker.character, checkShieldPenetrator(weaponName));
+                victim.addDamageReceived(msg.damageinflicted, weaponName, msg_attacker.nucleushash, msg_attacker.character, penetrator);
             } else {
-                victim.addDamageReceived(msg.damageinflicted, weaponName, "World", "World", checkShieldPenetrator(weaponName));
+                victim.addDamageReceived(msg.damageinflicted, weaponName, "World", "World", penetrator);
             }
             //ダメージを受けた側
             /**
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
-            if (!"nucleushash" in msg_attacker || msg_attacker.nucleushash === "") {
-                break;
+            let event;
+            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
+                const msg_assistant = processUpdateMsgPlayer(msg_attacker, match);
+                msg_assistant.addDamageDealt(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character, penetrator)
+
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    {
+                        attacker: {
+                            id: msg_attacker.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_attacker.pos),
+                            hp: [msg_attacker.currenthealth, msg_attacker.maxhealth, msg_attacker.shieldhealth, msg_attacker.shieldmaxhealth],
+                            ang: msg_attacker.angles.y
+                        },
+                        victim: {
+                            id: msg_victim.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
+                            ang: msg_victim.angles.y
+                        },
+                        weapon: msg.weapon,
+                        damageinflicted: msg.damageinflicted
+                    }
+                );
+            } else {
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    {
+                        attacker: {
+                            id: "World",
+                            pos: [0, 0, 0],
+                            hp: [0, 0, 0, 0],
+                            ang: 0
+                        },
+                        victim: {
+                            id: msg_victim.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
+                            ang: msg_victim.angles.y
+                        },
+                        weapon: msg.weapon,
+                        damageinflicted: msg.damageinflicted
+                    }
+                );
             }
-            const attacker = processUpdateMsgPlayer(msg_attacker, match);
-            attacker.addDamageDealt(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character, checkShieldPenetrator(weaponName));
+
+            // AndeanのEventクラスに追加する
+            match.addEventElement(event);
+            // AndeanのPacketクラスに追加する
+            packet.addEvent(event);
             break;
         }
         case "PlayerKilled": {
@@ -307,78 +351,91 @@ function analyze_message(category, msg) {
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
             if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
-                victim.setKillsReceived(msg.damageinflicted, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
+                victim.setKillsReceived(1, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
             } else {
-                victim.setKillsReceived(msg.damageinflicted, weaponName, "World", "World");
+                victim.setKillsReceived(1, weaponName, "World", "World");
             }
             //殺した側
             /**
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the awardedto is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
+            let event;
             if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
                 const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
-                awardedto.setKills(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character)
+                awardedto.setKills(1, weaponName, msg_victim.nucleushash, msg_victim.character)
 
                 // AndeanのEventクラスに追加する
-                const event = new Event(
+                event = new Event(
                     msg.timestamp, msg.category,
                     {
                         attacker: {
                             id: msg_awardedto.nucleushash,
                             pos: convertLeefletPOS(match.mapOffset, msg_awardedto.pos),
+                            hp: [msg_awardedto.currenthealth, msg_awardedto.maxhealth, msg_awardedto.shieldhealth, msg_awardedto.shieldmaxhealth],
                             ang: msg_awardedto.angles.y
                         },
                         victim: {
                             id: msg_victim.nucleushash,
                             pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
                             ang: msg_victim.angles.y
                         },
                         weapon: msg.weapon,
                     }
                 );
-                match.addEventElement(event);
-
-                // AndeanのPacketクラスに追加する
-                packet.addEvent(event);
             } else {
                 // AndeanのEventクラスに追加する
-                const event = new Event(
+                event = new Event(
                     msg.timestamp, msg.category,
                     {
                         attacker: {
                             id: "World",
                             pos: [0, 0, 0],
+                            hp: [0, 0, 0, 0],
                             ang: 0
                         },
                         victim: {
                             id: msg_victim.nucleushash,
                             pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
                             ang: msg_victim.angles.y
                         },
                         weapon: msg.weapon,
                     }
                 );
-                match.addEventElement(event);
+            }
 
-                // AndeanのPacketクラスに追加する
-                packet.addEvent(event);
+            // AndeanのEventクラスに追加する
+            match.addEventElement(event);
+            // AndeanのPacketクラスに追加する
+            packet.addEvent(event);
+
+            // AndeanのTeamクラスに追加する 
+            const team = match.getTeam(msg_victim.teamid);
+            if (team.getPlayerCount() === 0) {
+                if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
+                    team.setDestroyerId("World");
+                } else {
+                    team.setDestroyerId(msg_awardedto.nucleushash);
+                }
+                team.setLastDeath(msg_victim.nucleusHash);
             }
             break;
         }
         case "PlayerDowned": {
             //ダウンした側
-            const msg_awardedto = msg.awardedto;
+            const msg_attacker = msg.attacker;
             const msg_victim = msg.victim;
             let weaponName = getWeaponId(msg.weapon)
             if (weaponName === undefined) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
-            if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
-                victim.setDownsReceived(msg.damageinflicted, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
+            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
+                victim.setDownsReceived(1, weaponName, msg_attacker.nucleushash, msg_attacker.character);
             } else {
-                victim.setDownsReceived(msg.damageinflicted, weaponName, "World", "World");
+                victim.setDownsReceived(1, weaponName, "World", "World");
             }
             
 
@@ -387,46 +444,141 @@ function analyze_message(category, msg) {
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
-            if (!"nucleushash" in msg_awardedto || msg_awardedto.nucleushash === "") {
-                break;
+            let event;
+            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
+                const msg_assistant = processUpdateMsgPlayer(msg_attacker, match);
+                msg_assistant.setDowns(1, weaponName, msg_victim.nucleushash, msg_victim.character)
+
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    {
+                        attacker: {
+                            id: msg_attacker.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_attacker.pos),
+                            hp: [msg_attacker.currenthealth, msg_attacker.maxhealth, msg_attacker.shieldhealth, msg_attacker.shieldmaxhealth],
+                            ang: msg_attacker.angles.y
+                        },
+                        victim: {
+                            id: msg_victim.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
+                            ang: msg_victim.angles.y
+                        },
+                        weapon: msg.weapon,
+                    }
+                );
+            } else {
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    {
+                        attacker: {
+                            id: "World",
+                            pos: [0, 0, 0],
+                            hp: [0, 0, 0, 0],
+                            ang: 0
+                        },
+                        victim: {
+                            id: msg_victim.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
+                            ang: msg_victim.angles.y
+                        },
+                        weapon: msg.weapon,
+                    }
+                );
             }
-            const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
-            awardedto.setDowns(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character)
+
+            // AndeanのEventクラスに追加する
+            match.addEventElement(event);
+            // AndeanのPacketクラスに追加する
+            packet.addEvent(event);
             break;
         }
         case "PlayerAssist": {
             //アシストダウンした側
-            const msg_awardedto = msg.awardedto;
+            const msg_assistant = msg.assistant;
             const msg_victim = msg.victim;
             let weaponName = getWeaponId(msg.weapon)
             if (weaponName === undefined) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
-            if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
-                victim.setKillAssistsReceived(msg.damageinflicted, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
+            if ("nucleushash" in msg_assistant && msg_assistant.nucleushash !== "") {
+                victim.setKillAssistsReceived(1, weaponName, msg_assistant.nucleushash, msg_assistant.character);
             } else {
-                victim.setDownAssistsReceived(msg.damageinflicted, weaponName, "World", "World");
+                victim.setKillAssistsReceived(1, weaponName, "World", "World");
             }
             //アシストした側
             /**
              * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
              * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
              */
-            if (!"nucleushash" in msg_awardedto || msg_awardedto.nucleushash === "") {
-                break;
+            let event;
+            if ("nucleushash" in msg_assistant && msg_assistant.nucleushash !== "") {
+                const msg_assistant = processUpdateMsgPlayer(msg_assistant, match);
+                msg_assistant.setKillAssists(1, weaponName, msg_victim.nucleushash, msg_victim.character)
+
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    {
+                        attacker: {
+                            id: msg_assistant.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_assistant.pos),
+                            hp: [msg_assistant.currenthealth, msg_assistant.maxhealth, msg_assistant.shieldhealth, msg_assistant.shieldmaxhealth],
+                            ang: msg_assistant.angles.y
+                        },
+                        victim: {
+                            id: msg_victim.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
+                            ang: msg_victim.angles.y
+                        },
+                        weapon: msg.weapon,
+                    }
+                );
+            } else {
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    {
+                        attacker: {
+                            id: "World",
+                            pos: [0, 0, 0],
+                            hp: [0, 0, 0, 0],
+                            ang: 0
+                        },
+                        victim: {
+                            id: msg_victim.nucleushash,
+                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
+                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
+                            ang: msg_victim.angles.y
+                        },
+                        weapon: msg.weapon,
+                    }
+                );
             }
-            const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
-            awardedto.setKillAssists(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character)
+
+            // AndeanのEventクラスに追加する
+            match.addEventElement(event);
+            // AndeanのPacketクラスに追加する
+            packet.addEvent(event);
             break;
         }
         case "SquadEliminated": {
             const msg_playersList = msg.playersList;
+            const msg_player = msg_playersList[0];
             for (const msg_player of msg_playersList) {
                 const player = match.getPlayer(msg_player.nucleushash);
                 updatePlayer(msg_player, player, match.mapOffset);
                 player.setAliveStatus(false);
             }
+            const team = match.getTeam(msg_player.teamid);
+            const event = new Event(msg.timestamp, msg.category, { teamId: msg_player.teamid, lastPlayer: team.lastDeath, destroyer: team.destroyerId });
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "GibraltarShieldAbsorbed": {

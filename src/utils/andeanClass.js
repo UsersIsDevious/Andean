@@ -1346,6 +1346,19 @@ class CustomMatch {
   }
 
   /**
+   * 特定のチームを取得するメソッド
+   * @param {*} teamId 
+   * @returns {Team|null} 見つかったチームのステータス、見つからなければnull
+   */
+  getTeam(teamId) {
+    if (this.teams[teamId]) {
+      return this.teams[teamId];
+    } else {
+      return null;
+    }
+  }
+
+  /**
    * マッチのステータスを取得するメソッド
    * @return {Object} マッチのステータスとプレイヤーリスト
    * @memberof CustomMatch
