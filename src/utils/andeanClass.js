@@ -749,80 +749,69 @@ class Player {
 
   /**
    * キルした数を設定するメソッド
-   * @param {number} amount 設定するキル数
    * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
    * @param {string} victim - 攻撃受けたプレイヤーの（nucleushash）
    * @param {string} legend - 攻撃を受けたプレイヤーのレジェンド名
    * @memberof Player
    */
-  setKills(amount, perpetrator, victim, legend) {
-    this.kills.updateStatistics(amount, perpetrator, victim, legend);
+  setKills(perpetrator, victim, legend) {
+    this.kills.updateStatistics(1, perpetrator, victim, legend);
   }
 
   /**
    * 敵からキルされた数を設定するメソッド
-   * @param {number} amount 設定するキルを受けた数
    * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
    * @param {string} awardedto - 攻撃したプレイヤーの（nucleushash）
    * @param {string} legend - 攻撃をしたプレイヤーのレジェンド名
    * @memberof Player
    */
-  setKillsReceived(amount, perpetrator, awardedto, legend) {
-    this.killsReceived.updateStatistics(amount, perpetrator, awardedto, legend);
+  setKillsReceived(perpetrator, awardedto, legend) {
+    this.killsReceived.updateStatistics(1, perpetrator, awardedto, legend);
     this.setAliveStatus(false);
   }
 
   /**
    * キルアシスト数を設定するメソッド
-   * @param {number} amount 設定するキルアシスト数
    * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
    * @param {string} victim - 攻撃受けたプレイヤーの（nucleushash）
    * @param {string} legend - 攻撃を受けたプレイヤーのレジェンド名
    * @memberof Player
    */
-  setKillAssists(amount, perpetrator, victim, legend) {
-    this.killAssists.updateStatistics(amount, perpetrator, victim, legend);
+  setKillAssists(perpetrator, victim, legend) {
+    this.killAssists.updateStatistics(1, perpetrator, victim, legend);
   }
 
   /**
    * 敵からキルアシストされた数を設定するメソッド
-   * @param {number} amount 設定するキルアシスト数
    * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
    * @param {string} awardedto - 攻撃したプレイヤーの（nucleushash）
    * @param {string} legend - 攻撃をしたプレイヤーのレジェンド名
    * @memberof Player
    */
-  setKillAssistsReceived(amount, perpetrator, awardedto, legend) {
-    this.killAssistsReceived.updateStatistics(
-      amount,
-      perpetrator,
-      awardedto,
-      legend
-    );
+  setKillAssistsReceived(perpetrator, awardedto, legend) {
+    this.killAssistsReceived.updateStatistics(1, perpetrator, awardedto, legend);
   }
 
   /**
    * ダウンさせた数を設定するメソッド
-   * @param {number} amount 設定するダウン数
    * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
    * @param {string} victim - 攻撃受けたプレイヤーの（nucleushash）
    * @param {string} legend - 攻撃を受けたプレイヤーのレジェンド名
    * @memberof Player
    */
-  setDowns(amount, perpetrator, victim, legend) {
-    this.downs.updateStatistics(amount, perpetrator, victim, legend);
+  setDowns(perpetrator, victim, legend) {
+    this.downs.updateStatistics(1, perpetrator, victim, legend);
   }
 
   /**
    * 敵からダウンさせられた数を設定するメソッド
-   * @param {number} amount 設定するキルアシスト数
    * @param {string} perpetrator - 攻撃に使用したもの (例: 武器名、スキル名)
    * @param {string} awardedto - 攻撃したプレイヤーの（nucleushash）
    * @param {string} legend - 攻撃をしたプレイヤーのレジェンド名
    * @memberof Player
    */
-  setDownsReceived(amount, perpetrator, awardedto, legend) {
-    this.downsReceived.updateStatistics(amount, perpetrator, awardedto, legend);
+  setDownsReceived(perpetrator, awardedto, legend) {
+    this.downsReceived.updateStatistics(1, perpetrator, awardedto, legend);
   }
 
   /**

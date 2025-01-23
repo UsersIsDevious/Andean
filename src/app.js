@@ -351,9 +351,9 @@ function analyze_message(category, msg) {
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
             if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
-                victim.setKillsReceived(1, weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
+                victim.setKillsReceived(weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
             } else {
-                victim.setKillsReceived(1, weaponName, "World", "World");
+                victim.setKillsReceived(weaponName, "World", "World");
             }
             //殺した側
             /**
@@ -363,7 +363,7 @@ function analyze_message(category, msg) {
             let event;
             if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
                 const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
-                awardedto.setKills(1, weaponName, msg_victim.nucleushash, msg_victim.character)
+                awardedto.setKills(weaponName, msg_victim.nucleushash, msg_victim.character)
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -433,9 +433,9 @@ function analyze_message(category, msg) {
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
-                victim.setDownsReceived(1, weaponName, msg_attacker.nucleushash, msg_attacker.character);
+                victim.setDownsReceived(weaponName, msg_attacker.nucleushash, msg_attacker.character);
             } else {
-                victim.setDownsReceived(1, weaponName, "World", "World");
+                victim.setDownsReceived(weaponName, "World", "World");
             }
             
 
@@ -447,7 +447,7 @@ function analyze_message(category, msg) {
             let event;
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
                 const msg_assistant = processUpdateMsgPlayer(msg_attacker, match);
-                msg_assistant.setDowns(1, weaponName, msg_victim.nucleushash, msg_victim.character)
+                msg_assistant.setDowns(weaponName, msg_victim.nucleushash, msg_victim.character)
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -506,9 +506,9 @@ function analyze_message(category, msg) {
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
             if ("nucleushash" in msg_assistant && msg_assistant.nucleushash !== "") {
-                victim.setKillAssistsReceived(1, weaponName, msg_assistant.nucleushash, msg_assistant.character);
+                victim.setKillAssistsReceived(weaponName, msg_assistant.nucleushash, msg_assistant.character);
             } else {
-                victim.setKillAssistsReceived(1, weaponName, "World", "World");
+                victim.setKillAssistsReceived(weaponName, "World", "World");
             }
             //アシストした側
             /**
@@ -518,7 +518,7 @@ function analyze_message(category, msg) {
             let event;
             if ("nucleushash" in msg_assistant && msg_assistant.nucleushash !== "") {
                 const msg_assistant = processUpdateMsgPlayer(msg_assistant, match);
-                msg_assistant.setKillAssists(1, weaponName, msg_victim.nucleushash, msg_victim.character)
+                msg_assistant.setKillAssists(weaponName, msg_victim.nucleushash, msg_victim.character)
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
