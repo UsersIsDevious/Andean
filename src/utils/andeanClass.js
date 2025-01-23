@@ -1577,14 +1577,19 @@ class Ring {
   }
 }
 
+
+/**
+ * チームを表すクラス
+ * @class Team
+ * @param {string} teamName チーム名
+ */
 class Team {
   /**
    * @constructor
    * @param {string} teamName チーム名
-   * @param {Array<string>} players プレイヤーリスト
    * @memberof Team
    */
-  constructor(teamName, players = []) {
+  constructor(teamName) {
     /**
      * チーム名
      * @type {string}
@@ -1594,12 +1599,22 @@ class Team {
      * プレイヤーリスト
      * @type {Array<string>}
      */
-    this.players = players;
+    this.players = [];
     /**
      * チームを壊滅させたプレイヤーのnucleusHash
      * @type {string}
      */
     this.destroyerId = "";
+    /**
+     * チームの最後の死亡プレイヤーのnucleusHash
+     * @type {string}
+     */
+    this.lastDeath = "";
+    /**
+     * チームの画像URL
+     * @type {string}
+     */
+    this.teamImg = "";
   }
 
   /**
@@ -1625,11 +1640,12 @@ class Team {
 
   /**
    * チームの残り人数を取得するメソッド
+   * @param {CustomMatch} match CustomMatchクラスのインスタンス
    * @return {number} チームの残り人数
    * @memberof Team
    */
-  getPlayerCount() {
-    return this.players.length;
+  getPlayerCount(match) {
+    return this.players.filter((nucleusHash) => match.players[nucleusHash].isAlive()).length;
   }
 
   /**
@@ -1638,6 +1654,30 @@ class Team {
    */
   setDestroyerId(nucleusHash) {
     this.destroyerId = nucleusHash;
+  }
+
+  /**
+   * チームの最後の死亡プレイヤーのnucleusHashを設定するメソッド
+   * @param {string} nucleusHash チームの最後の死亡プレイヤーのnucleusHash
+   */
+  setLastDeath(nucleusHash) {
+    this.lastDeath = nucleusHash;
+  }
+
+  /**
+   * チームの画像URLを設定するメソッド
+   * @param {string} url チームの画像URL
+   */
+  setTeamImg(url) {
+    this.teamImg = url;
+  }
+
+  /**
+   * チーム名を変更するメソッド
+   * @param {string} newTeamName 新しいチーム名
+   */
+  setTeamName(newTeamName) {
+    this.teamName = newTeamName;
   }
 }
 

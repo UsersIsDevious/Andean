@@ -46,7 +46,7 @@ function startApexLegends() {
             return;
         }
     } else {
-        config = common.readConfig('../../config.json');
+        config = common.readConfig();
     }
 
     const command = `"${config.apexlegends.path}" + ${config.apexlegends.option}`; // パスが空でない場合に起動コマンドを構築

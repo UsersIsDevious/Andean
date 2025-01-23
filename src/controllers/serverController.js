@@ -31,7 +31,7 @@ function stopServer(req, res) {
  */
 function startGame(req, res) {
   res.sendStatus(200);
-  app.startApexLegends()
+  app.startApexLegends(); // Apex Legends を起動
 }
 
 

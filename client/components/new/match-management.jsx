@@ -44,7 +44,7 @@ export default function MatchManagement() {
             <RequestButton
               url={lobbyId ? "/api/join_lobby" : "/api/create_lobby"}
               method="POST"
-              body={lobbyId ? { lobbyId } : undefined}
+              body={lobbyId ? { token: lobbyId } : undefined}
               onSuccess={(data) => {
                 if (!lobbyId) {
                   setLobbyId(data.lobbyId)
