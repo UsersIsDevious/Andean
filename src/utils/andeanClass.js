@@ -1191,9 +1191,10 @@ class CustomMatch {
   /**
    * プレイヤーを追加するメソッド
    * @param {Player} player 追加するプレイヤー
+   * @param {string} teamName チーム名
    * @memberof CustomMatch
    */
-  addPlayer(player) {
+  addPlayer(player, teamName) {
     if (Object.keys(this.players).length >= this.maxPlayers) {
       //console.log("Cannot add more players, the match is full.");
     } else if (this.players[player.nucleusHash]) {
@@ -1205,9 +1206,20 @@ class CustomMatch {
       // チームにプレイヤーを追加
       if (!this.teams[player.teamId]) {
         // チームが存在しない場合は新しく作成する
-        this.teams[player.teamId] = [];
+        this.teams[player.teamId] = new Team(teamName);
       }
-      this.teams[player.teamId].push(player.nucleusHash);
+      this.teams[player.teamId].addPlayer(player.nucleusHash);
+    }
+  }
+
+  /**
+   * チームを追加するメソッド
+   * @param {number} teamId チームID
+   * @param {string} teamName チーム名
+   */
+  addTeam(teamId, teamName) {
+    if (!this.teams[teamId]) {
+      this.teams[teamId] = new Team(teamName);
     }
   }
 

@@ -126,6 +126,10 @@ function analyze_message(category, msg) {
         case "CustomMatch_LobbyPlayers": {
             // 一旦lobbyと言う名前のマッチが有るものとして扱う
             lobby = new CustomMatch("lobby")
+            for (let i = 0; i < msg.teamsList.length; i++) {
+                const msg_team = msg.teamsList[i];
+                lobby.addTeam(msg_team.id, msg_team.name);
+            }
             for (let i = 0; i < msg.playersList.length; i++) {
                 const msg_player = msg.playersList[i]
                 lobby.addPlayer(new Player(msg_player.name, msg_player.teamid, msg_player.nucleushash, msg_player.hardwarename))
@@ -228,7 +232,7 @@ function analyze_message(category, msg) {
             const msg_player = msg.player;
             const nucleushash = msg_player.nucleushash;
             if (match.getPlayer(nucleushash) == null) {
-                match.addPlayer(new Player(msg_player.name, msg_player.teamid, nucleushash, msg_player.hardwarename));
+                match.addPlayer(new Player(msg_player.name, msg_player.teamid, nucleushash, msg_player.hardwarename), msg_player.teamname);
             }
             const player = processUpdatePlayer(msg, match);
             player.setOnlineStatus(true);
