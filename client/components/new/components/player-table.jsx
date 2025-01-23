@@ -7,12 +7,14 @@ export function PlayerTable({ players }) {
         <TableHeader>
           <TableRow>
             <TableHead>Player Name</TableHead>
+            <TableHead>Player ID</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {players.map((player) => (
             <TableRow key={player.id}>
               <TableCell>{player.name}</TableCell>
+              <TableCell>{player.id}</TableCell>
             </TableRow>
           ))}
         </TableBody>

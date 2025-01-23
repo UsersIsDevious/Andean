@@ -1,11 +1,10 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Pencil } from "lucide-react"
 
-export function TeamCard({ team, onTeamNameChange }) {
+export function TeamCard({ team, onTeamNameChange, backgroundColor }) {
   const [isEditing, setIsEditing] = useState(false)
   const [teamName, setTeamName] = useState(team.name)
 
@@ -14,11 +13,15 @@ export function TeamCard({ team, onTeamNameChange }) {
     setIsEditing(false)
   }
 
+  const teamNumber = Number.parseInt(team.id) - 1
+
   return (
-    <Card className="flex flex-col">
+    <Card className={`flex flex-col ${backgroundColor}`}>
       <CardHeader className="p-2">
         <div className="flex items-center space-x-2">
-          <img src={team.logo || "/placeholder.svg"} alt={`${team.name} logo`} className="w-6 h-6 rounded-full" />
+          <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+            {teamNumber}
+          </div>
           {isEditing ? (
             <Input
               value={teamName}
@@ -36,13 +39,22 @@ export function TeamCard({ team, onTeamNameChange }) {
         </div>
       </CardHeader>
       <CardContent className="p-2 flex-grow">
-        <p className="text-xs text-muted-foreground mb-2">Players: {`${Math.min(team.players.length, 3)}/3`}</p>
+        <p className="text-sm font-medium mb-2">Players: {team.players.length} / 3</p>
         <div className="grid grid-cols-1 gap-1 text-xs">
-          {team.players.slice(0, 3).map((player) => (
-            <div key={player.id} className="truncate">
-              {player.name}
-            </div>
-          ))}
+          {[0, 1, 2].map((index) => {
+            const player = team.players[index]
+            return (
+              <div key={index} className="h-6 flex items-center px-2 border border-gray-600 rounded">
+                {player ? (
+                  <span className="truncate">{player.name}</span>
+                ) : (
+                  <span className="text-gray-400" aria-label={`Empty player slot ${index + 1}`}>
+                    Empty
+                  </span>
+                )}
+              </div>
+            )
+          })}
         </div>
       </CardContent>
     </Card>

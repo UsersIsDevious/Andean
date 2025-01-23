@@ -1,23 +1,87 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { RequestButton } from "./request-button"
 import { Input } from "@/components/ui/input"
 import { ConfigInput } from "./config-input"
-import { useConfig } from "../../hooks/use-config"
+// import { useConfig } from "../hooks/use-config" //Removed as per update 5
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Check, X, Users, Play, Pause, Calculator, Shield } from "lucide-react"
+import { Check, X, Users, Play, Pause, Calculator, Shield, LogOut } from "lucide-react"
+import { useLobby } from "../contexts/LobbyContext"
+import { Button } from "@/components/ui/button"
 
-export default function MatchManagement() {
+export default function MatchManagement({ config, updateConfig }) {
   const [readyStatus, setReadyStatus] = useState(false)
-  const [lobbyId, setLobbyId] = useState("")
-  const { config, updateConfig } = useConfig()
+  const [lobbyIdInput, setLobbyIdInput] = useState("")
+  // Remove the following line:
+  // const { config, updateConfig } = useConfig()
+  const { lobbyId, isInLobby, joinLobby, leaveLobby } = useLobby()
+  const [rankPoints, setRankPoints] = useState(Array(20).fill(0))
+
+  useEffect(() => {
+    if (config.score_setting && config.score_setting.rank_points) {
+      setRankPoints(config.score_setting.rank_points)
+    }
+  }, [config.score_setting])
 
   const handleRankPointsChange = (index, value) => {
-    const newRankPoints = [...config.rankPoints]
+    const newRankPoints = [...rankPoints]
     newRankPoints[index] = Number.parseInt(value, 10)
-    updateConfig({ ...config, rankPoints: newRankPoints })
+    setRankPoints(newRankPoints)
+    updateConfig({
+      ...config,
+      score_setting: {
+        ...config.score_setting,
+        rank_points: newRankPoints,
+      },
+    })
+  }
+
+  const handleJoinOrCreateLobby = async () => {
+    if (isInLobby) {
+      alert("You are already in a lobby. Please leave the current lobby first.")
+      return
+    }
+
+    try {
+      const response = await fetch(lobbyIdInput ? "/api/join_lobby" : "/api/create_lobby", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: lobbyIdInput ? JSON.stringify({ lobbyId: lobbyIdInput }) : undefined,
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const newLobbyId = lobbyIdInput || data.lobbyId
+        joinLobby(newLobbyId)
+        alert(lobbyIdInput ? "Joined lobby successfully" : `Created lobby with ID: ${newLobbyId}`)
+        setLobbyIdInput("")
+      } else {
+        throw new Error("Failed to join or create lobby")
+      }
+    } catch (error) {
+      alert(`Error: ${error.message}`)
+    }
+  }
+
+  const handleLeaveLobby = async () => {
+    try {
+      const response = await fetch("/api/leave_lobby", {
+        method: "POST",
+      })
+
+      if (response.ok) {
+        leaveLobby()
+        alert("Left lobby successfully")
+      } else {
+        throw new Error("Failed to leave lobby")
+      }
+    } catch (error) {
+      alert(`Error: ${error.message}`)
+    }
   }
 
   return (
@@ -35,27 +99,17 @@ export default function MatchManagement() {
               </Label>
               <Input
                 id="lobbyId"
-                placeholder="Enter Lobby ID"
-                value={lobbyId}
-                onChange={(e) => setLobbyId(e.target.value)}
+                placeholder={isInLobby ? lobbyId : "Enter Lobby ID"}
+                value={lobbyIdInput}
+                onChange={(e) => setLobbyIdInput(e.target.value)}
                 className="flex-1"
+                disabled={isInLobby}
               />
             </div>
-            <RequestButton
-              url={lobbyId ? "/api/join_lobby" : "/api/create_lobby"}
-              method="POST"
-              body={lobbyId ? { token: lobbyId } : undefined}
-              onSuccess={(data) => {
-                if (!lobbyId) {
-                  setLobbyId(data.lobbyId)
-                }
-                alert(lobbyId ? "Joined lobby successfully" : `Created lobby with ID: ${data.lobbyId}`)
-              }}
-              className="flex items-center space-x-2"
-            >
+            <Button onClick={handleJoinOrCreateLobby} disabled={isInLobby} className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
-              <span>{lobbyId ? "Join Lobby" : "Create Lobby"}</span>
-            </RequestButton>
+              <span>{lobbyIdInput ? "Join Lobby" : "Create Lobby"}</span>
+            </Button>
           </div>
           <div className="flex space-x-4">
             <RequestButton
@@ -65,11 +119,21 @@ export default function MatchManagement() {
               onSuccess={() => setReadyStatus(!readyStatus)}
               variant={readyStatus ? "outline" : "default"}
               className="flex items-center space-x-2"
+              disabled={!isInLobby}
             >
               {readyStatus ? <X className="w-4 h-4" /> : <Check className="w-4 h-4" />}
               <span>{readyStatus ? "Set Not Ready" : "Set Ready"}</span>
             </RequestButton>
           </div>
+          <Button
+            onClick={handleLeaveLobby}
+            disabled={!isInLobby}
+            className="flex items-center space-x-2 w-full justify-center"
+            variant="secondary"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Leave Lobby</span>
+          </Button>
         </CardContent>
       </Card>
       <Card>
@@ -79,17 +143,39 @@ export default function MatchManagement() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <ConfigInput configKey="pointsPerKill" label="Points per Kill" type="number" />
-            <ConfigInput configKey="maxKills" label="Max Kills" type="number" />
+            <ConfigInput
+              configKey="kill_point"
+              label="Points per Kill"
+              type="number"
+              value={config.score_setting?.kill_point}
+              onChange={(value) =>
+                updateConfig({
+                  ...config,
+                  score_setting: { ...config.score_setting, kill_point: Number(value) },
+                })
+              }
+            />
+            <ConfigInput
+              configKey="max_kill"
+              label="Max Kills"
+              type="number"
+              value={config.score_setting?.max_kill}
+              onChange={(value) =>
+                updateConfig({
+                  ...config,
+                  score_setting: { ...config.score_setting, max_kill: Number(value) },
+                })
+              }
+            />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {[...Array(20)].map((_, index) => (
+            {rankPoints.map((points, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <span className="w-12 text-sm text-muted-foreground">{`Rank ${index + 1}`}</span>
                 <Input
                   type="number"
                   placeholder={`Points`}
-                  value={config?.rankPoints?.[index] || ""}
+                  value={points}
                   onChange={(e) => handleRankPointsChange(index, e.target.value)}
                 />
               </div>

@@ -9,11 +9,11 @@ import MatchManagement from "./match-management"
 import LobbyManagement from "./lobby-management"
 import CameraSettings from "./camera-settings"
 import Settings from "./settings"
-import { useLobby } from "../../hooks/use-lobby"
+import { useLobby } from "../contexts/LobbyContext" // 変更
 
 export default function Layout({ config, updateConfig, simulatedLobbyData, updateSimulatedLobbyData }) {
   const [isDarkMode, setIsDarkMode] = useState(false)
-  const { isInLobby } = useLobby()
+  const { isInLobby } = useLobby() // 変更
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme")
@@ -75,7 +75,7 @@ export default function Layout({ config, updateConfig, simulatedLobbyData, updat
             <SystemManagement />
           </TabsContent>
           <TabsContent value="match" className="space-y-4 animate-in fade-in-50">
-            <MatchManagement />
+            <MatchManagement config={config} updateConfig={updateConfig} />
           </TabsContent>
           <TabsContent value="lobby" className="space-y-4 animate-in fade-in-50">
             <LobbyManagement
@@ -92,7 +92,7 @@ export default function Layout({ config, updateConfig, simulatedLobbyData, updat
             />
           </TabsContent>
           <TabsContent value="settings" className="space-y-4 animate-in fade-in-50">
-            <Settings config={config} updateConfig={updateConfig} />
+            <Settings config={config} updateConfig={updateConfig} updateSimulatedLobbyData={updateSimulatedLobbyData} />
           </TabsContent>
         </Tabs>
       </div>

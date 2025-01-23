@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ConfigInput } from "./config-input"
 import { RequestButton } from "./request-button"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
@@ -8,9 +8,12 @@ import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Globe, Network, Folder, Save, RefreshCw, Bug } from "lucide-react"
+// import { useConfig } from "../hooks/use-config" // Removed useConfig hook
 
-export default function Settings({ config, updateConfig, updateSimulatedLobbyData }) {
+export default function Settings({ config, updateConfig }) {
+  // Added config and updateConfig props
   const [showDebug, setShowDebug] = useState(false)
+  // const { config, updateConfig } = useConfig() // Removed useConfig hook
 
   return (
     <div className="space-y-6">
@@ -24,8 +27,12 @@ export default function Settings({ config, updateConfig, updateSimulatedLobbyDat
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="gameLanguage">Game Language</Label>
-            <Select id="gameLanguage">
+            <Label htmlFor="language">Game Language</Label>
+            <Select
+              id="language"
+              value={config.language || "en"}
+              onValueChange={(value) => updateConfig({ ...config, language: value })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
@@ -38,8 +45,8 @@ export default function Settings({ config, updateConfig, updateSimulatedLobbyDat
               </SelectContent>
             </Select>
           </div>
-          <ConfigInput configKey="logDirectory" label="Log Directory" />
-          <ConfigInput configKey="commandOptions" label="Command Options" />
+          <ConfigInput configKey="log_dir" label="Log Directory" value={config.log_dir} />
+          <ConfigInput configKey="apexlegends.option" label="Command Options" value={config.apexlegends?.option} />
         </CardContent>
       </Card>
       <Card>
@@ -51,8 +58,13 @@ export default function Settings({ config, updateConfig, updateSimulatedLobbyDat
           <CardDescription>Configure network-related options</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <ConfigInput configKey="websocketPort" label="WebSocket Port" type="number" defaultValue="7777" />
-          <ConfigInput configKey="dataFrequency" label="Data Frequency (per second)" type="number" defaultValue="60" />
+          <ConfigInput
+            configKey="apexlegends.api_port"
+            label="WebSocket Port"
+            type="number"
+            value={config.apexlegends?.api_port}
+          />
+          <ConfigInput configKey="data_fps" label="Data Frequency (per second)" type="number" value={config.data_fps} />
         </CardContent>
       </Card>
       <Card>
@@ -64,8 +76,12 @@ export default function Settings({ config, updateConfig, updateSimulatedLobbyDat
           <CardDescription>Set file paths for various operations</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <ConfigInput configKey="exportDirectory" label="Data Export Directory" />
-          <ConfigInput configKey="gameInstallDirectory" label="Game Installation Directory" />
+          <ConfigInput configKey="output" label="Data Export Directory" value={config.output} />
+          <ConfigInput
+            configKey="apexlegends.path"
+            label="Game Installation Directory"
+            value={config.apexlegends?.path}
+          />
         </CardContent>
       </Card>
       <Card>
@@ -81,6 +97,7 @@ export default function Settings({ config, updateConfig, updateSimulatedLobbyDat
             <RequestButton
               url="/api/saveConfig"
               method="POST"
+              body={config}
               onSuccess={() => alert("Settings saved successfully")}
               onError={(error) => alert(`Failed to save settings: ${error}`)}
               className="flex items-center space-x-2 w-full justify-center"
@@ -134,14 +151,6 @@ export default function Settings({ config, updateConfig, updateSimulatedLobbyDat
                   checked={config?.simulateLobby ?? false}
                   onCheckedChange={(checked) => {
                     updateConfig({ ...config, simulateLobby: checked })
-                    if (checked) {
-                      updateSimulatedLobbyData({
-                        isInLobby: true,
-                        lobbyPlayers: [],
-                        matchSettings: null,
-                        teams: [],
-                      })
-                    }
                   }}
                   className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-600"
                 />

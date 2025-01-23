@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import Layout from "../../../components/new/layout"
-import { useConfig } from "../../../hooks/use-config"
+import { useState, useEffect } from "react"
+import Layout from "@/components/new/components/layout"
+import { useConfig } from "@/components/new/hooks/use-config"
+import { LobbyProvider } from "@/components/new/contexts/LobbyContext"
 
 export default function Home() {
-  const { config = {}, updateConfig } = useConfig()
+  const { config, updateConfig, fetchConfig } = useConfig()
+  const [pageConfig, setPageConfig] = useState({})
   const [simulatedLobbyData, setSimulatedLobbyData] = useState({
     isInLobby: false,
     lobbyPlayers: [],
@@ -13,18 +15,28 @@ export default function Home() {
     teams: [],
   })
 
+  useEffect(() => {
+    const loadConfig = async () => {
+      const loadedConfig = await fetchConfig()
+      setPageConfig(loadedConfig || {})
+    }
+    loadConfig()
+  }, [])
+
   // Function to update simulated lobby data
   const updateSimulatedLobbyData = (newData) => {
     setSimulatedLobbyData((prevData) => ({ ...prevData, ...newData }))
   }
 
   return (
-    <Layout
-      config={config}
-      updateConfig={updateConfig}
-      simulatedLobbyData={simulatedLobbyData}
-      updateSimulatedLobbyData={updateSimulatedLobbyData}
-    />
+    <LobbyProvider>
+      <Layout
+        config={pageConfig}
+        updateConfig={updateConfig}
+        simulatedLobbyData={simulatedLobbyData}
+        updateSimulatedLobbyData={updateSimulatedLobbyData}
+      />
+    </LobbyProvider>
   )
 }
 

@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { SearchableDropdown } from "./ui/searchable-dropdown"
 import { RequestButton } from "./request-button"
-import { fetchWithTimeout } from "../../lib/utils"
+import { fetchWithTimeout } from "../lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { MapPin, User } from "lucide-react"
@@ -24,14 +24,27 @@ export function CameraChange({ isSimulated, simulatedLobbyData }) {
 
   useEffect(() => {
     if (isSimulated) {
-      setPlayers(simulatedLobbyData?.lobbyPlayers?.map((player) => ({ value: player.name, label: player.name })) || [])
+      const simulatedPlayers =
+        simulatedLobbyData?.lobbyPlayers?.map((player) => ({
+          value: player.name,
+          label: `${player.teamName} - ${player.name}`,
+        })) || []
+      setPlayers(simulatedPlayers)
     } else {
       const fetchPlayers = async () => {
         try {
           const response = await fetchWithTimeout("/api/get_lobby_players")
           if (response.ok) {
             const data = await response.json()
-            setPlayers(data.map((player) => ({ value: player, label: player })))
+            const formattedPlayers = Object.entries(data)
+              .filter(([teamId]) => Number.parseInt(teamId) >= 2 && Number.parseInt(teamId) <= 21)
+              .flatMap(([teamId, team]) =>
+                team.players.map((player) => ({
+                  value: player.id,
+                  label: `${team.name} - ${player.name}`,
+                })),
+              )
+            setPlayers(formattedPlayers)
           }
         } catch (error) {
           console.error("Error fetching players:", error)

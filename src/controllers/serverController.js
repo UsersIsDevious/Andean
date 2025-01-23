@@ -51,6 +51,7 @@ function saveConfig(req, res) {
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
 function loadConfig(req, res) {
+  console.log("ログ読み込みたいリクエストきてるー")
   res.status(200).send(app.config);
 }
 
