@@ -49,7 +49,7 @@ function startApexLegends() {
         config = common.readConfig();
     }
 
-    const command = `"${config.apexlegends.path}" + ${config.apexlegends.option}`; // パスが空でない場合に起動コマンドを構築
+    const command = `"${config.apexlegends.path}" + ${config.apexlegends.option} '+cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"'`; // パスが空でない場合に起動コマンドを構築
     common.runRegularCommand(command)
         .then(output => {
             common.logMessage('Apex Legendsが起動しました:', output);
@@ -245,20 +245,6 @@ function analyze_message(category, msg) {
         }
         case "PlayerStatChanged": {
             const player = processUpdatePlayer(msg, match);
-            // const newvalue = msg.newvalue;
-            // switch (msg.statname) {
-            //     case "knockdowns":
-            //         player.setDown(newvalue);
-            //         break;
-            //     case "kills":
-            //         player.setKill(newvalue);
-            //         break;
-            //     case "knockdownAssists":
-            //         player.setKillAssist(newvalue);
-            //     default:
-            //         common.logMessage(`[PlayerStatChanged] Unknown statname: ${msg.statname}`, "error");
-            //         break;
-            // }
             break;
         }
         case "PlayerUpgradeTierChanged": {
@@ -289,28 +275,13 @@ function analyze_message(category, msg) {
              */
             let event;
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
-                const msg_assistant = processUpdateMsgPlayer(msg_attacker, match);
-                msg_assistant.addDamageDealt(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character, penetrator)
+                const msg_attacker = processUpdateMsgPlayer(msg_attacker, match);
+                msg_attacker.addDamageDealt(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character, penetrator)
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
                     msg.timestamp, msg.category,
-                    {
-                        attacker: {
-                            id: msg_attacker.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_attacker.pos),
-                            hp: [msg_attacker.currenthealth, msg_attacker.maxhealth, msg_attacker.shieldhealth, msg_attacker.shieldmaxhealth],
-                            ang: msg_attacker.angles.y
-                        },
-                        victim: {
-                            id: msg_victim.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
-                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
-                            ang: msg_victim.angles.y
-                        },
-                        weapon: msg.weapon,
-                        damageinflicted: msg.damageinflicted
-                    }
+                    { attacker: processEventData(msg_attacker, match), victim: processEventData(msg_victim, match), weapon: msg.weapon, damageinflicted: msg.damageinflicted }
                 );
             } else {
                 // AndeanのEventクラスに追加する
@@ -323,12 +294,7 @@ function analyze_message(category, msg) {
                             hp: [0, 0, 0, 0],
                             ang: 0
                         },
-                        victim: {
-                            id: msg_victim.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
-                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
-                            ang: msg_victim.angles.y
-                        },
+                        victim: processEventData(msg_victim, match),
                         weapon: msg.weapon,
                         damageinflicted: msg.damageinflicted
                     }
@@ -350,6 +316,7 @@ function analyze_message(category, msg) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
+            victim.setStatus("death");
             if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
                 victim.setKillsReceived(weaponName, msg_awardedto.nucleushash, msg_awardedto.character);
             } else {
@@ -368,21 +335,7 @@ function analyze_message(category, msg) {
                 // AndeanのEventクラスに追加する
                 event = new Event(
                     msg.timestamp, msg.category,
-                    {
-                        attacker: {
-                            id: msg_awardedto.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_awardedto.pos),
-                            hp: [msg_awardedto.currenthealth, msg_awardedto.maxhealth, msg_awardedto.shieldhealth, msg_awardedto.shieldmaxhealth],
-                            ang: msg_awardedto.angles.y
-                        },
-                        victim: {
-                            id: msg_victim.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
-                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
-                            ang: msg_victim.angles.y
-                        },
-                        weapon: msg.weapon,
-                    }
+                    { attacker: processEventData(msg_awardedto, match), victim: processEventData(msg_victim, match), weapon: msg.weapon }
                 );
             } else {
                 // AndeanのEventクラスに追加する
@@ -395,12 +348,7 @@ function analyze_message(category, msg) {
                             hp: [0, 0, 0, 0],
                             ang: 0
                         },
-                        victim: {
-                            id: msg_victim.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
-                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
-                            ang: msg_victim.angles.y
-                        },
+                        victim: processEventData(msg_victim, match),
                         weapon: msg.weapon,
                     }
                 );
@@ -432,6 +380,7 @@ function analyze_message(category, msg) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
+            victim.setStatus("down");
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
                 victim.setDownsReceived(weaponName, msg_attacker.nucleushash, msg_attacker.character);
             } else {
@@ -446,27 +395,13 @@ function analyze_message(category, msg) {
              */
             let event;
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
-                const msg_assistant = processUpdateMsgPlayer(msg_attacker, match);
-                msg_assistant.setDowns(weaponName, msg_victim.nucleushash, msg_victim.character)
+                const msg_attacker = processUpdateMsgPlayer(msg_attacker, match);
+                msg_attacker.setDowns(weaponName, msg_victim.nucleushash, msg_victim.character)
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
                     msg.timestamp, msg.category,
-                    {
-                        attacker: {
-                            id: msg_attacker.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_attacker.pos),
-                            hp: [msg_attacker.currenthealth, msg_attacker.maxhealth, msg_attacker.shieldhealth, msg_attacker.shieldmaxhealth],
-                            ang: msg_attacker.angles.y
-                        },
-                        victim: {
-                            id: msg_victim.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
-                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
-                            ang: msg_victim.angles.y
-                        },
-                        weapon: msg.weapon,
-                    }
+                    { attacker: processEventData(msg_attacker, match), victim: processEventData(msg_victim, match), weapon: msg.weapon }
                 );
             } else {
                 // AndeanのEventクラスに追加する
@@ -479,12 +414,7 @@ function analyze_message(category, msg) {
                             hp: [0, 0, 0, 0],
                             ang: 0
                         },
-                        victim: {
-                            id: msg_victim.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
-                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
-                            ang: msg_victim.angles.y
-                        },
+                        victim: processEventData(msg_victim, match),
                         weapon: msg.weapon,
                     }
                 );
@@ -524,18 +454,8 @@ function analyze_message(category, msg) {
                 event = new Event(
                     msg.timestamp, msg.category,
                     {
-                        attacker: {
-                            id: msg_assistant.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_assistant.pos),
-                            hp: [msg_assistant.currenthealth, msg_assistant.maxhealth, msg_assistant.shieldhealth, msg_assistant.shieldmaxhealth],
-                            ang: msg_assistant.angles.y
-                        },
-                        victim: {
-                            id: msg_victim.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
-                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
-                            ang: msg_victim.angles.y
-                        },
+                        attacker: processEventData(msg_assistant, match),
+                        victim: processEventData(msg_victim, match),
                         weapon: msg.weapon,
                     }
                 );
@@ -550,12 +470,7 @@ function analyze_message(category, msg) {
                             hp: [0, 0, 0, 0],
                             ang: 0
                         },
-                        victim: {
-                            id: msg_victim.nucleushash,
-                            pos: convertLeefletPOS(match.mapOffset, msg_victim.pos),
-                            hp: [msg_victim.currenthealth, msg_victim.maxhealth, msg_victim.shieldhealth, msg_victim.shieldmaxhealth],
-                            ang: msg_victim.angles.y
-                        },
+                        victim: processEventData(msg_victim, match),
                         weapon: msg.weapon,
                     }
                 );
@@ -571,9 +486,8 @@ function analyze_message(category, msg) {
             const msg_playersList = msg.playersList;
             const msg_player = msg_playersList[0];
             for (const msg_player of msg_playersList) {
-                const player = match.getPlayer(msg_player.nucleushash);
-                updatePlayer(msg_player, player, match.mapOffset);
-                player.setAliveStatus(false);
+                const player = processUpdateMsgPlayer(msg_player, match);
+                player.setStatus("eliminated");
             }
             const team = match.getTeam(msg_player.teamid);
             const event = new Event(msg.timestamp, msg.category, { teamId: msg_player.teamid, lastPlayer: team.lastDeath, destroyer: team.destroyerId });
@@ -597,9 +511,30 @@ function analyze_message(category, msg) {
             break;
         }
         case "PlayerRespawnTeam": {
+            const msg_player = msg.player;
+            const player = processUpdatePlayer(msg, match);
+            let data = processEventData(msg_player, match);
+            let respawnedteammatesList = [];
+            for (const msg_respawnedteammates of msg.respawnedteammatesList) {
+                const teammate = processUpdateMsgPlayer(msg_respawnedteammates, match);
+                teammate.setStatus("alive");
+                respawnedteammatesList.push(processEventData(msg_respawnedteammates, match));
+            }
+            data["respawnedteammatesList"] = respawnedteammatesList;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "PlayerRevive": {
+            const player = processUpdatePlayer(msg, match);
+            const revived = processUpdateMsgPlayer(msg.revived, match);
+            revived.setStatus("alive");
+            let data = processEventData(msg.player, match);
+            data["revived"] = processEventData(msg.revived, match);
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "ArenasItemSelected": {
@@ -679,26 +614,28 @@ function analyze_message(category, msg) {
             break;
         }
         case "AmmoUsed": {
-            /**
-             * {
-             *  "timestamp":000,
-             *  "category":"ammoUsed",
-             *  "player":{},
-             *  "ammotype":"sniper",
-             *  "amountused":14,
-             *  "oldammocount":14,
-             *  "newammocount":0
-             * }
-             */
-            //仮置き
             const player = processUpdatePlayer(msg, match);
             const ammoType = msg.ammotype;
             player.inventory.addOrUpdateItem(ammoType, -(msg.amountused), checkItemLevel(ammoType));
+            let data = processEventData(msg.player, match);
+            data["ammotype"] = msg.ammotype;
+            data["amountused"] = msg.amountused;
+            data["oldammocount"] = msg.oldammocount;
+            data["newammocount"] = msg.newammocount;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "WeaponSwitched": {
             const player = processUpdatePlayer(msg, match);
             player.inHand = msg.newweapon;
+            let data = processEventData(msg.player, match);
+            data["oldweapon"] = msg.oldweapon;
+            data["newweapon"] = msg.newweapon;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "ObserverSwitched": {
@@ -786,6 +723,20 @@ function processUpdateMsgPlayer(msg_player, match) {
  */
 function convertLeefletPOS(_mapOffset, _pos) {
     return [(_pos.x + _mapOffset[0]) / _mapOffset[2] , (_pos.y + _mapOffset[1]) / _mapOffset[2], _pos.z / _mapOffset[2]];
+}
+
+/**
+ * LiveAPIEventのデータをEventクラス形式のデータに変換する一般化関数
+ * @param {Object} msg_player - LiveAPIEventのデータ
+ * @param {CustomMatch} match - CustomMatchクラスのインスタンス
+ */
+function processEventData(msg_player, match) {
+    return {
+        id: msg_player.nucleushash,
+        pos: convertLeefletPOS(match.mapOffset, msg_player.pos),
+        hp: [msg_player.currenthealth, msg_player.maxhealth, msg_player.shieldhealth, msg_player.shieldmaxhealth],
+        ang: msg_player.angles.y
+    }
 }
 
 /**

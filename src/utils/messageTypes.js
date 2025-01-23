@@ -4,7 +4,7 @@ const {
     RingFinishedClosing, PlayerConnected, PlayerDisconnected, PlayerStatChanged, PlayerUpgradeTierChanged, PlayerDamaged,
     PlayerKilled, PlayerDowned, PlayerAssist, SquadEliminated, GibraltarShieldAbsorbed, RevenantForgedShadowDamaged, ChangeCamera, PauseToggle, CustomMatch_SetSettings,
     PlayerRespawnTeam, PlayerRevive, ArenasItemSelected, ArenasItemDeselected, InventoryPickUp, InventoryDrop, InventoryUse,
-    BannerCollected, PlayerAbilityUsed, LegendUpgradeSelected, ZiplineUsed, GrenadeThrown, BlackMarketAction, WraithPortal,
+    BannerCollected, PlayerAbilityUsed, PlayerUltimateCharged, LegendUpgradeSelected, ZiplineUsed, GrenadeThrown, BlackMarketAction, WraithPortal,
     WarpGateUsed, AmmoUsed, WeaponSwitched, ObserverSwitched, ObserverAnnotation
   } = require('../../bin/events_pb');
   
@@ -29,6 +29,7 @@ const {
     'type.googleapis.com/rtech.liveapi.PlayerConnected': PlayerConnected,
     'type.googleapis.com/rtech.liveapi.PlayerDisconnected': PlayerDisconnected,
     'type.googleapis.com/rtech.liveapi.PlayerStatChanged': PlayerStatChanged,
+    'type.googleapis.com/rtech.liveapi.PlayerUltimateCharged': PlayerUltimateCharged,
     'type.googleapis.com/rtech.liveapi.PlayerUpgradeTierChanged': PlayerUpgradeTierChanged,
     'type.googleapis.com/rtech.liveapi.PlayerDamaged': PlayerDamaged,
     'type.googleapis.com/rtech.liveapi.PlayerKilled': PlayerKilled,

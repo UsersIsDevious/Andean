@@ -1,12 +1,25 @@
 {
-    "apexlegends" : {
-        "path" : "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Apex Legends\\r5apex.exe",
-        "api_port" : "7777",
-        "option" : "+miles_language english +cl_showpos 1 +cl_liveapi_enabled 1 +cl_liveapi_ws_servers \"ws://127.0.0.1:7777\" +cl_liveapi_enabled 1 +cl_liveapi_pretty_print_log 1 +mat_queue_mode 2"
+    "apexlegends": {
+        "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Apex Legends\\r5apex.exe",
+        "api_port": "7777",
+        "api_option": "+cl_liveapi_enabled 1 +cl_liveapi_allow_requests 1  +cl_liveapi_use_protobuf 1",
+        "option": "+miles_language english +cl_liveapi_ws_keepalive 30 +cl_liveapi_ws_retry_count 10 +cl_liveapi_ws_retry_time 30 +cl_liveapi_ws_timeout 300"
     },
-    "penetrator" : ["Caustic Gas"],
-    "output":"/output",
-    "language":"en",
+    "penetrator": [
+        "Caustic Gas"
+    ],
+    "output": "/output",
+    "language": "en",
     "log_dir": "/logs",
-    "data_fps": 60
-  }
+    "data_fps": 60,
+    "score_setting": {
+        "kill_point": 0,
+        "max_kill": 0,
+        "rank_points": [
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0
+        ]
+    }
+}

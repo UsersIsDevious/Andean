@@ -228,17 +228,15 @@ class Inventory {
    * @return {Inventory}
    * @memberof Inventory
    */
-  addOrUpdateWeapon(weaponId, _weaponLabel, level, maxMagazine = 0) {
+  addOrUpdateWeapon(weaponId, _weaponLabel, level, ammoUsed = 0) {
     const weaponLabel = _weaponLabel.split(" ")[0];
     const existingWeapon = this.getWeapon(weaponLabel, level);
     if (existingWeapon) {
-      /**
-       * @todo
-       * マックスマガジンの概念を作る所から始める
-       */
-      /* const newQuantity = existingWeapon.quantity + quantity;
-            existingWeapon.setQuantity(newQuantity);
-            console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingWeapon.quantity}.`); */
+      // ammoUsedで使用された最大の弾数を更新したかったが、現状は未実装
+      // 理由: ammoUsedに武器名が入っていないため、実装不可
+      // if (existingWeapon.maxMagazine < ammoUsed) {
+      //   existingWeapon.maxMagazine = ammoUsed;
+      // }
     } else {
       // アイテムが存在しない場合は、新規追加
       const newWeapon = new Weapon(weaponId, weaponLabel, level);
@@ -613,10 +611,10 @@ class Player {
     this.damageReceived = new Statistics();
 
     /**
-     * 生存状態
-     * @type {boolean}
+     * プレイヤーの状態
+     * @type {string}
      */
-    this.isAlive = true;
+    this.status = "Alive";
 
     /**
      * 接続状態
@@ -694,12 +692,12 @@ class Player {
   }
 
   /**
-   * プレイヤーの生存状態を変更するメソッド
-   * @param {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
+   * プレイヤーのステータスを変更するメソッド
+   * @param {string} status プレイヤーが生きている場合は"alive"、ダウン中は"down"、死んでいる場合は"death"、部隊壊滅時は"eliminated"
    * @memberof Player
    */
-  setAliveStatus(status) {
-    this.isAlive = status;
+  setStatus(status) {
+    this.status = status;
   }
 
   /**
@@ -767,7 +765,6 @@ class Player {
    */
   setKillsReceived(perpetrator, awardedto, legend) {
     this.killsReceived.updateStatistics(1, perpetrator, awardedto, legend);
-    this.setAliveStatus(false);
   }
 
   /**
