@@ -1121,7 +1121,7 @@ class CustomMatch {
     /**
      * チームの連想配列
      * キーはteamId、値はnucleusHashを保存
-     * @type {Object<string,string>}
+     * @type {Object<Team>}
      */
     this.teams = {};
     /**

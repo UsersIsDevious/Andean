@@ -832,8 +832,8 @@ function checkShieldPenetrator(perpetrator) {
  * @param {CustomMatch} match
  */
 function getPlayerStatus(match) {
-    for (const teamId in match.teams) {
-        const player = match.getPlayer(match.teams[teamId][0]);
+    for (const team of Object.values(match.teams)) {
+        const player = match.getPlayer(match.players[team.players[0]]);
         if (!["death", "eliminated"].includes(player.getStatus()) || !player.getOnlineStatus()) { continue; }
         apexCommon.change_camera("name", player.name);
     }
