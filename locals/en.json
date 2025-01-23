@@ -32,5 +32,11 @@
         "mp_weapon_vinson": "VK-47 Flatline",
         "mp_weapon_volt_smg": "Volt SMG",
         "mp_weapon_wingman": "Wingman"
+    },
+    "items_label": {
+        "mp_ability_void_ring": "Heat Shield",
+        "mp_weapon_grenade_emp": "Arc Star",
+        "mp_weapon_thermite_grenade": "Thermite Grenade",
+        "mp_weapon_frag_grenade": "Frag Grenade"
     }
 }

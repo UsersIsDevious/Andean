@@ -198,7 +198,7 @@ class Inventory {
    * @memberof Inventory
    */
   addOrUpdateItem(_itemName, quantity, level) {
-    const itemName = _itemName.split(" ")[0];
+    const itemName = _itemName.split(" (")[0];
     const existingItem = this.getItem(itemName, level);
     if (existingItem) {
       // 同じ名前とレベルのアイテムが既に存在する場合は、所持数を更新
@@ -229,7 +229,7 @@ class Inventory {
    * @memberof Inventory
    */
   addOrUpdateWeapon(weaponId, _weaponLabel, level, ammoUsed = 0) {
-    const weaponLabel = _weaponLabel.split(" ")[0];
+    const weaponLabel = _weaponLabel.split(" (")[0];
     const existingWeapon = this.getWeapon(weaponLabel, level);
     if (existingWeapon) {
       // ammoUsedで使用された最大の弾数を更新したかったが、現状は未実装
@@ -644,6 +644,39 @@ class Player {
      * @type {string}
      */
     this.inHand = "mp_weapon_melee_survival";
+
+    /**
+     * プレイヤーがアビリティを使用した回数
+     * @type {number}
+     */
+    this.abilityUseCount = 0;
+
+    /**
+     * ジップラインを使用した回数
+     * @type {number}
+     */
+    this.ziplineUseCount = 0;
+
+    /**
+     * 種類ごとのグレネードを使用した回数
+     * @type {object}
+     */
+    this.grenadeUseCount = {};
+
+    /**
+     * ブラックマーケットを使用した回数
+     * @type {number}
+     */
+    this.blackMarket = {
+      useCount: 0,
+      items: {}
+    };
+
+    /**
+     * レイスのポータルを使用した回数
+     * @type {number}
+     */
+    this.wraithPortalUseCount = 0;
   }
 
   /**
@@ -892,6 +925,55 @@ class Player {
 
     // 更新後の体力・シールド状態を返す
     return [resultHealth, this.maxHealth, resultShield, this.shieldMaxHealth];
+  }
+
+  /**
+   * プレイヤーのアビリティ使用回数を増加させるメソッド
+   * @memberof Player
+   */
+  addAbilityUseCount() {
+    this.abilityUseCount++;
+  }
+
+  /**
+   * プレイヤーのジップライン使用回数を増加させるメソッド
+   * @memberof Player
+   */
+  addZiplineUseCount() {
+    this.ziplineUseCount++;
+  }
+
+  /**
+   * プレイヤーのグレネード使用回数を増加させるメソッド
+   * @param {string} grenadeId - 使用したグレネードの名前
+   * @memberof Player
+   */
+  addGrenadeUseCount(grenadeId) {
+    if (!this.grenadeUseCount[grenadeId]) {
+      this.grenadeUseCount[grenadeId] = 0;
+    }
+    this.grenadeUseCount[grenadeId]++;
+  }
+
+  /**
+   * プレイヤーのブラックマーケット使用回数を増加させるメソッド
+   * @param {string} itemId - 使用したアイテムの名前
+   * @memberof Player
+   */
+  addBlackMarketUseCount(itemId) {
+    if (!this.blackMarket.items[itemId]) {
+      this.blackMarket.items[itemId] = 0;
+    }
+    this.blackMarket.items[itemId]++;
+    this.blackMarket.useCount++;
+  }
+
+  /**
+   * プレイヤーのレイスのポータル使用回数を増加させるメソッド
+   * @memberof Player
+   */
+  addWraithPortalUseCount() {
+    this.wraithPortalUseCount++;
   }
 }
 
@@ -1626,6 +1708,56 @@ class Team {
      * @type {string}
      */
     this.teamImg = "";
+    /**
+     * チームの最終順位
+     * @type {number}
+     */
+    this.rank = 0;
+    /**
+     * チームのスコア
+     * @type {number}
+     */
+    this.score = 0;
+    /**
+     * チームの全体でダウンさせた数
+     * @type {number}
+     */
+    this.totalDowns = 0;
+    /**
+     * チームの合計キル数
+     * @type {number}
+     */
+    this.totalKills = 0;
+    /**
+     * チームの合計アシスト数
+     * @type {number}
+     */
+    this.totalKillAssists = 0;
+    /**
+     * チームの合計ダメージ量
+     * @type {number}
+     */
+    this.totalDamageDealt = 0;
+    /**
+     * チーム全体で受けたダメージ量
+     * @type {number}
+     */
+    this.totalDamageRecived = 0;
+    /**
+     * チームの合計回復量
+     * @type {number}
+     */
+    this.totalHealing = 0;
+    /**
+     * チームの合計リバイブ数
+     * @type {number}
+     */
+    this.totalRevives = 0;
+    /**
+     * チームの合計リスポーン数
+     * @type {number}
+     */
+    this.totalRespawns = 0;
   }
 
   /**

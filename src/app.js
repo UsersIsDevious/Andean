@@ -251,6 +251,11 @@ function analyze_message(category, msg) {
             const player = processUpdatePlayer(msg, match);
             player.level[String(msg.level)] = { "upgradename": "", "upgradedesc": "" };
             player.level.now = String(msg.level);
+            const data = processEventData(msg.player, match);
+            data["level"] = msg.level;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "PlayerDamaged": {
@@ -513,8 +518,8 @@ function analyze_message(category, msg) {
         case "PlayerRespawnTeam": {
             const msg_player = msg.player;
             const player = processUpdatePlayer(msg, match);
-            let data = processEventData(msg_player, match);
-            let respawnedteammatesList = [];
+            const data = processEventData(msg_player, match);
+            const respawnedteammatesList = [];
             for (const msg_respawnedteammates of msg.respawnedteammatesList) {
                 const teammate = processUpdateMsgPlayer(msg_respawnedteammates, match);
                 teammate.setStatus("alive");
@@ -530,7 +535,7 @@ function analyze_message(category, msg) {
             const player = processUpdatePlayer(msg, match);
             const revived = processUpdateMsgPlayer(msg.revived, match);
             revived.setStatus("alive");
-            let data = processEventData(msg.player, match);
+            const data = processEventData(msg.player, match);
             data["revived"] = processEventData(msg.revived, match);
             const event = new Event(msg.timestamp, msg.category, data);
             match.addEventElement(event);
@@ -546,18 +551,22 @@ function analyze_message(category, msg) {
         case "InventoryPickUp": {
             const player = processUpdatePlayer(msg, match);
             const item = msg.item;
-            const weaponId = getWeaponId(item)
+            const data = processEventData(msg.player, match);
+            const weaponId = getWeaponId(item);
             if (weaponId != undefined) {
                 player.inventory.addOrUpdateWeapon(weaponId, item, checkItemLevel(item));
+                data["item"] = weaponId;
+            } else {
+                player.inventory.addOrUpdateItem(item, item.quantity, checkItemLevel(item));
+                data["item"] = item;
             }
-            player.inventory.addOrUpdateItem(item, item.quantity, checkItemLevel(item));
+            data["quantity"] = msg.quantity;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "InventoryDrop": {
-            /**
-             * @todo
-             * 武器を捨てた際にアタッチメントがすべてドロップイベントが発火しているか確認
-             */
             const player = processUpdatePlayer(msg, match);
             const item = msg.item;
             const weaponId = getWeaponId(item)
@@ -568,10 +577,15 @@ function analyze_message(category, msg) {
             break;
         }
         case "InventoryUse": {
-            // 仮置き
             const player = processUpdatePlayer(msg, match);
             const item = msg.item;
             player.inventory.addOrUpdateItem(item, -(item.quantity), checkItemLevel(item));
+            const data = processEventData(msg.player, match);
+            data["item"] = item;
+            data["quantity"] = msg.quantity;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "BannerCollected": {
@@ -585,6 +599,14 @@ function analyze_message(category, msg) {
             break;
         }
         case "PlayerAbilityUsed": {
+            const player = processUpdatePlayer(msg, match);
+            player.addAbilityUseCount();
+            const data = processEventData(msg.player, match);
+            data["linkedentity"] = msg.linkedentity;
+            data["character"] = msg.player.character;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "LegendUpgradeSelected": {
@@ -592,22 +614,55 @@ function analyze_message(category, msg) {
             const levelObj = player.level[String(msg.level)];
             levelObj.upgradename = msg.upgradename;
             levelObj.upgradedesc = msg.upgradedesc;
+            const data = processEventData(msg.player, match);
+            data["character"] = msg.player.character;
+            data["upgradename"] = msg.upgradename;
+            data["upgradedesc"] = msg.upgradedesc;
+            data["level"] = msg.level;
             break;
         }
         case "ZiplineUsed": {
+            const player = processUpdatePlayer(msg, match);
+            player.addZiplineUseCount();
+            const data = processEventData(msg.player, match);
+            data["linkedentity"] = msg.linkedentity;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "GrenadeThrown": {
-            //仮置き
             const player = processUpdatePlayer(msg, match);
             const itemName = msg.linkedentity;
+            // const itemId = getItemId(itemName); // 未実装
             player.inventory.addOrUpdateItem(itemName, -1, checkItemLevel(itemName));
+            player.addGrenadeUseCount(itemName);
+            const data = processEventData(msg.player, match);
+            data["linkedentity"] = msg.linkedentity;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "BlackMarketAction": {
+            const player = processUpdatePlayer(msg, match);
+            const item = msg.item;
+            // const itemId = getItemId(itemName); // 未実装
+            player.addBlackMarketUseCount(item);
+            const data = processEventData(msg.player, match);
+            data["item"] = item;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "WraithPortal": {
+            const player = processUpdatePlayer(msg, match);
+            player.addWraithPortalUseCount();
+            const data = processEventData(msg.player, match);
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "WarpGateUsed": {
@@ -617,7 +672,7 @@ function analyze_message(category, msg) {
             const player = processUpdatePlayer(msg, match);
             const ammoType = msg.ammotype;
             player.inventory.addOrUpdateItem(ammoType, -(msg.amountused), checkItemLevel(ammoType));
-            let data = processEventData(msg.player, match);
+            const data = processEventData(msg.player, match);
             data["ammotype"] = msg.ammotype;
             data["amountused"] = msg.amountused;
             data["oldammocount"] = msg.oldammocount;
@@ -630,7 +685,7 @@ function analyze_message(category, msg) {
         case "WeaponSwitched": {
             const player = processUpdatePlayer(msg, match);
             player.inHand = msg.newweapon;
-            let data = processEventData(msg.player, match);
+            const data = processEventData(msg.player, match);
             data["oldweapon"] = msg.oldweapon;
             data["newweapon"] = msg.newweapon;
             const event = new Event(msg.timestamp, msg.category, data);
@@ -779,9 +834,19 @@ function getPlayerStatus(match) {
 /**
  * 武器名からゲーム内IDをチェックする
  * @param {String} name
+ * @returns {String}
  */
 function getWeaponId(name) {
     return Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === name);
+}
+
+/**
+ * アイテム名からゲーム内IDをチェックする
+ * @param {String} name
+ * @returns {String}
+ */
+function getItemId(name) {
+    return Object.keys(language.items_label).find((key) => language.items_label[key] === name);
 }
 
 /**
