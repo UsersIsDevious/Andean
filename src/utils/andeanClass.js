@@ -1577,6 +1577,70 @@ class Ring {
   }
 }
 
+class Team {
+  /**
+   * @constructor
+   * @param {string} teamName チーム名
+   * @param {Array<string>} players プレイヤーリスト
+   * @memberof Team
+   */
+  constructor(teamName, players = []) {
+    /**
+     * チーム名
+     * @type {string}
+     */
+    this.teamName = teamName;
+    /**
+     * プレイヤーリスト
+     * @type {Array<string>}
+     */
+    this.players = players;
+    /**
+     * チームを壊滅させたプレイヤーのnucleusHash
+     * @type {string}
+     */
+    this.destroyerId = "";
+  }
+
+  /**
+   * プレイヤーを追加するメソッド
+   * @param {string} nucleusHash 追加するプレイヤーのnucleusHash
+   * @memberof Team
+   */
+  addPlayer(nucleusHash) {
+    this.players.push(nucleusHash);
+  }
+
+  /**
+   * プレイヤーを削除するメソッド
+   * @param {string} nucleusHash 削除するプレイヤーのnucleusHash
+   * @memberof Team
+   */
+  removePlayer(nucleusHash) {
+    const index = this.players.indexOf(nucleusHash);
+    if (index > -1) {
+      this.players.splice(index, 1);
+    }
+  }
+
+  /**
+   * チームの残り人数を取得するメソッド
+   * @return {number} チームの残り人数
+   * @memberof Team
+   */
+  getPlayerCount() {
+    return this.players.length;
+  }
+
+  /**
+   * チームを壊滅させたプレイヤーのnucleusHashを設定するメソッド
+   * @param {string} nucleusHash チームを壊滅させたプレイヤーのnucleusHash
+   */
+  setDestroyerId(nucleusHash) {
+    this.destroyerId = nucleusHash;
+  }
+}
+
 module.exports = {
   Vector3,
   Item,
@@ -1589,4 +1653,5 @@ module.exports = {
   Event,
   Packet,
   Ring,
+  Team
 };
