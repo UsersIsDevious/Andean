@@ -614,7 +614,7 @@ class Player {
      * プレイヤーの状態
      * @type {string}
      */
-    this.status = "Alive";
+    this.status = "alive";
 
     /**
      * 接続状態
@@ -739,7 +739,7 @@ class Player {
    * @memberof Player
    */
   setOnlineStatus(status) {
-    this.isAlive = status;
+    this.isOnline = status;
   }
 
   /**
@@ -762,11 +762,11 @@ class Player {
 
   /**
    * プレイヤーの生存状態を返すメソッド
-   * @return {boolean} status プレイヤーが生きている場合はtrue、死んでいる場合はfalse
+   * @return {boolean} status プレイヤーが生きている場合は"alive"、死んでいる場合は"death"、ダウン時は"down"、部隊壊滅時は"eliminated"
    * @memberof Player
    */
-  getAliveStatus() {
-    return this.isAlive;
+  getStatus() {
+    return this.status;
   }
 
   /**
@@ -1788,7 +1788,7 @@ class Team {
    * @memberof Team
    */
   getPlayerCount(match) {
-    return this.players.filter((nucleusHash) => match.players[nucleusHash].isAlive()).length;
+    return this.players.filter((nucleusHash) => !["death", "eliminated"].includes(match.players[nucleusHash].getStatus())).length;
   }
 
   /**

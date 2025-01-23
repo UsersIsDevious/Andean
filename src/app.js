@@ -45,11 +45,19 @@ function startApexLegends() {
             console.error('Apex Legendsの起動オプションが指定されていません。');
             return;
         }
+        if (!config.apexlegends.api_option) {
+            console.error('Apex LegendsのAPI起動オプションが指定されていません。');
+            return;
+        }
+        if (!config.apexlegends.api_port) {
+            console.error('Apex LegendsのAPIポートが指定されていません。');
+            return;
+        }
     } else {
         config = common.readConfig();
     }
-
-    const command = `"${config.apexlegends.path}" + ${config.apexlegends.option} '+cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"'`; // パスが空でない場合に起動コマンドを構築
+    const command = `"${config.apexlegends.path}" ${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`; // パスが空でない場合に起動コマンドを構築
+    console.log('Command->', command);
     common.runRegularCommand(command)
         .then(output => {
             common.logMessage('Apex Legendsが起動しました:', output);
@@ -826,7 +834,7 @@ function checkShieldPenetrator(perpetrator) {
 function getPlayerStatus(match) {
     for (const teamId in match.teams) {
         const player = match.getPlayer(match.teams[teamId][0]);
-        if (!player.getAliveStatus() || !player.getOnlineStatus()) { continue; }
+        if (!["death", "eliminated"].includes(player.getStatus()) || !player.getOnlineStatus()) { continue; }
         apexCommon.change_camera("name", player.name);
     }
 }

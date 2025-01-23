@@ -50,7 +50,7 @@ export default function MatchManagement({ config, updateConfig }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: lobbyIdInput ? JSON.stringify({ lobbyId: lobbyIdInput }) : undefined,
+        body: lobbyIdInput ? JSON.stringify({ token: lobbyIdInput }) : undefined,
       })
 
       if (response.ok) {

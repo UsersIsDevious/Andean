@@ -12,7 +12,8 @@ export default function SystemManagement() {
       <CardContent className="space-y-4">
         <div className="flex space-x-4">
           <RequestButton
-            url="/api/stopServer"
+            url="/stopServer"
+            method = "POST"
             onSuccess={() => alert("Server stopped successfully")}
             onError={(error) => alert(`Failed to stop server: ${error}`)}
             variant="destructive"
@@ -24,7 +25,8 @@ export default function SystemManagement() {
         </div>
         <div className="flex space-x-4">
           <RequestButton
-            url="/api/startGame"
+            url="/startGame"
+            method = "POST"
             onSuccess={() => alert("Game started successfully")}
             onError={(error) => alert(`Failed to start game: ${error}`)}
             variant="default"

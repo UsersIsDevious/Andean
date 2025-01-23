@@ -95,7 +95,7 @@ export default function Settings({ config, updateConfig }) {
         <CardContent className="space-y-4">
           <div className="space-y-4">
             <RequestButton
-              url="/api/saveConfig"
+              url="/saveConfig"
               method="POST"
               body={config}
               onSuccess={() => alert("Settings saved successfully")}
@@ -106,7 +106,7 @@ export default function Settings({ config, updateConfig }) {
               <span>Save Settings</span>
             </RequestButton>
             <RequestButton
-              url="/api/resetConfig"
+              url="/resetConfig"
               method="POST"
               onSuccess={() => {
                 if (confirm("Are you sure you want to reset all settings to default? This action cannot be undone.")) {

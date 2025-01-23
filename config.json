@@ -2,8 +2,8 @@
     "apexlegends": {
         "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Apex Legends\\r5apex.exe",
         "api_port": "7777",
-        "api_option": "+cl_liveapi_enabled 1 +cl_liveapi_allow_requests 1  +cl_liveapi_use_protobuf 1",
-        "option": "+miles_language english +cl_liveapi_ws_keepalive 30 +cl_liveapi_ws_retry_count 10 +cl_liveapi_ws_retry_time 30 +cl_liveapi_ws_timeout 300"
+        "api_option": "+cl_liveapi_enabled 1",
+        "option": "+miles_language english"
     },
     "penetrator": [
         "Caustic Gas"
