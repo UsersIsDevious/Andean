@@ -56,7 +56,8 @@ function startApexLegends() {
     } else {
         config = common.readConfig();
     }
-    const command = `"${config.apexlegends.path}" ${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`; // パスが空でない場合に起動コマンドを構築
+    const option = `${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`;
+    const command = `"${config.apexlegends.path}" + ${option}`;  // パスが空でない場合に起動コマンドを構築
     console.log('Command->', command);
     common.runRegularCommand(command)
         .then(output => {
