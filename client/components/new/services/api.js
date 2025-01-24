@@ -8,7 +8,7 @@ export const api = {
     const response = await fetchWithTimeout("/api/join_lobby", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lobbyId }),
+      body: JSON.stringify({ token: lobbyId }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to join lobby")

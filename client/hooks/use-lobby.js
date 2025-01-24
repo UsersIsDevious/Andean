@@ -49,7 +49,7 @@ export function useLobby() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ lobbyId }),
+        body: JSON.stringify({ token: lobbyId }),
       })
       if (response.ok) {
         setIsInLobby(true)

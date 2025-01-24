@@ -1120,7 +1120,7 @@ class CustomMatch {
     this.players = {};
     /**
      * チームの連想配列
-     * キーはteamId、値はnucleusHashを保存
+     * キーはteamId、値はTeamクラスを保存
      * @type {Object<Team>}
      */
     this.teams = {};
@@ -1186,7 +1186,7 @@ class CustomMatch {
      * パケットリスト
      * @type {Array<Event>}
      */
-    this.packetLists = [];
+    this.packetLists = {};
     /**
      * リングデータの配列
      * 各要素はRingクラスのインスタンス
@@ -1251,9 +1251,9 @@ class CustomMatch {
    * @param {Event} event - 追加する要素
    * @memberof CustomMatch
    */
-  addPacketElement(event) {
+  addPacketElement(time, event) {
     // 新しい要素を末尾に追加
-    this.packetLists.push(event);
+    this.packetLists[time] = event;
   }
 
   /**
@@ -1262,7 +1262,7 @@ class CustomMatch {
    * @param {string} teamName チーム名
    * @memberof CustomMatch
    */
-  addPlayer(player, teamName) {
+  addPlayer(player, teamName="") {
     if (Object.keys(this.players).length >= this.maxPlayers) {
       //console.log("Cannot add more players, the match is full.");
     } else if (this.players[player.nucleusHash]) {
@@ -1788,7 +1788,7 @@ class Team {
    * @memberof Team
    */
   getPlayerCount(match) {
-    return this.players.filter((nucleusHash) => !["death", "eliminated"].includes(match.players[nucleusHash].getStatus())).length;
+    return this.players.filter((nucleusHash) => ["alive", "down"].includes(match.getPlayer(nucleusHash).getStatus())).length;
   }
 
   /**

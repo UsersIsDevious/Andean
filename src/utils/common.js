@@ -69,6 +69,25 @@ function saveData(filename,_class) {
 
 
 /**
+ * JSONファイルにPacketデータを保存します。
+ * 
+ * @param {Object} _class - 新しく保存するPacketデータ
+ * @param {string} filename - ファイル名
+ * @param {string} newData.class - クラス名
+ */
+function savePacket(filename,_class) {
+  let filePath = path.join(__dirname, '../../output/', filename + ".json");
+
+  try {
+    // データをファイルに書き込み
+    fs.writeFileSync(filePath, JSON.stringify(_class, null, 2));
+  } catch (error) {
+    console.error(`Packet ファイルの保存エラー (パス: ${filePath}):`, error.message);
+  }
+}
+
+
+/**
  * サーバーが全て立ち上がった時に呼ばれるコールバックを登録する関数
  * @param {Function} callback - サーバーが立ち上がった際に実行したい関数
  */
@@ -225,6 +244,7 @@ module.exports = {
   registerOnServersStarted,
   saveConfig,
   saveData,
+  savePacket,
   logMessage,
   ensureFolderExists,
 };

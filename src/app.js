@@ -58,7 +58,6 @@ function startApexLegends() {
     }
     const option = `${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`;
     const command = `"${config.apexlegends.path}" + ${option}`;  // パスが空でない場合に起動コマンドを構築
-    console.log('Command->', command);
     common.runRegularCommand(command)
         .then(output => {
             common.logMessage('Apex Legendsが起動しました:', output);
@@ -95,6 +94,11 @@ let matchBase;
  */
 let packet;
 let lobby = new CustomMatch("lobby");
+/**
+ * リングイベントが発生した時間を記録する
+ * @type {Array<string>}
+ */
+let ringTimes = {};
 /**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
@@ -175,11 +179,18 @@ function analyze_message(category, msg) {
         }
         case "GameStateChanged": {
             try {
-                if (msg.state === "Prematch") { matchBase = JSON.parse(JSON.stringify(match)); };
-                if (msg.state === "Playing") { match.setStartTimeStamp(msg.timestamp) };
+                if (msg.state === "Prematch") {
+                    match.setStartTimeStamp(msg.timestamp);
+                    matchBase = JSON.parse(JSON.stringify(match));
+                    ringTimes = {};
+                };
                 if (msg.state === "Postmatch") {
+                    const times = Object.keys(ringTimes);
+                    for (i=0; i<times.length; i+=2) {
+                        match.packetLists[times[i]].events.find((event) => event.type === "ringStartClosing").center = ringTimes[times[i+1]];
+                    }
                     matchBase.packetLists = match.packetLists;
-                    common.saveData(`Packet Log - ${match.startTimeStamp}`, matchBase);
+                    common.savePacket(`Packet Log - ${match.startTimeStamp}`, matchBase);
                 }
                 match.setState(msg.state);
             } catch (error) {
@@ -271,8 +282,8 @@ function analyze_message(category, msg) {
             //ダメージを与えた側
             const msg_attacker = msg.attacker;
             const msg_victim = msg.victim;
+            let weaponName = getWeaponId(msg.weapon);
             const penetrator = checkShieldPenetrator(weaponName);
-            let weaponName = getWeaponId(msg.weapon)
             if (weaponName === undefined) {
                 weaponName = msg.weapon;
             }
@@ -289,8 +300,8 @@ function analyze_message(category, msg) {
              */
             let event;
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
-                const msg_attacker = processUpdateMsgPlayer(msg_attacker, match);
-                msg_attacker.addDamageDealt(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character, penetrator)
+                const attacker = processUpdateMsgPlayer(msg_attacker, match);
+                attacker.addDamageDealt(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character, penetrator)
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -375,7 +386,7 @@ function analyze_message(category, msg) {
 
             // AndeanのTeamクラスに追加する 
             const team = match.getTeam(msg_victim.teamid);
-            if (team.getPlayerCount() === 0) {
+            if (team.getPlayerCount(match) === 0) {
                 if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
                     team.setDestroyerId("World");
                 } else {
@@ -409,8 +420,8 @@ function analyze_message(category, msg) {
              */
             let event;
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
-                const msg_attacker = processUpdateMsgPlayer(msg_attacker, match);
-                msg_attacker.setDowns(weaponName, msg_victim.nucleushash, msg_victim.character)
+                const attacker = processUpdateMsgPlayer(msg_attacker, match);
+                attacker.setDowns(weaponName, msg_victim.nucleushash, msg_victim.character)
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -461,8 +472,8 @@ function analyze_message(category, msg) {
              */
             let event;
             if ("nucleushash" in msg_assistant && msg_assistant.nucleushash !== "") {
-                const msg_assistant = processUpdateMsgPlayer(msg_assistant, match);
-                msg_assistant.setKillAssists(weaponName, msg_victim.nucleushash, msg_victim.character)
+                const assistant = processUpdateMsgPlayer(msg_assistant, match);
+                assistant.setKillAssists(weaponName, msg_victim.nucleushash, msg_victim.character)
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -699,11 +710,17 @@ function analyze_message(category, msg) {
             data["newweapon"] = msg.newweapon;
             const event = new Event(msg.timestamp, msg.category, data);
             match.addEventElement(event);
-            packet.addEvent(event);
+            if (match.state === "Playing") {
+                packet.addEvent(event);
+            }
             break;
         }
         case "ObserverSwitched": {
             const targetPlayerList = msg.targetteamList
+            const keepedIds = [];
+            for (i = 0; i < Object.keys(packet.data).length; i++) {
+                keepedIds.push(packet.data[i].id);
+            }
             for (let i = 0; i < targetPlayerList.length; i++) {
                 const msg_target = targetPlayerList[i];
 
@@ -711,11 +728,7 @@ function analyze_message(category, msg) {
                 updatePlayer(msg_target, match.getPlayer(msg_target.nucleushash), match.mapOffset);
 
                 // AndeanのPacketクラスに追加する
-                const ids = [];
-                for (i = 0; i < targetPlayerList.length; i++) {
-                    ids.push(packet.data.id);
-                }
-                if (!ids.includes(msg_target.nucleushash)) {
+                if (!keepedIds.includes(msg_target.nucleushash)) {
                     packet.addData({ id: msg_target.nucleushash, pos: convertLeefletPOS(match.mapOffset, msg_target.pos), ang: msg_target.angles.y, hp: [msg_target.currenthealth, msg_target.maxhealth, msg_target.shieldhealth, msg_target.shieldmaxhealth] });
                 }
             }
@@ -834,8 +847,8 @@ function checkShieldPenetrator(perpetrator) {
  */
 function getPlayerStatus(match) {
     for (const team of Object.values(match.teams)) {
-        const player = match.getPlayer(match.players[team.players[0]]);
-        if (!["death", "eliminated"].includes(player.getStatus()) || !player.getOnlineStatus()) { continue; }
+        const player = match.getPlayer(team.players[0]);
+        if (["death", "eliminated"].includes(player.getStatus()) || !player.getOnlineStatus()) { continue; }
         apexCommon.change_camera("name", player.name);
     }
 }
@@ -867,10 +880,17 @@ async function update() {
         sendMapData.sendPlayerPositionUpdate(match);
     }
     if (match && match.startTimeStamp != 0 && !["Resolution", "Postmatch"].includes(match.state)) {
-        if (packet && (packet.data.length + packet.events.length) != 0) {
-            match.addPacketElement(packet.toJSON());
+        if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 0) {
+            match.addPacketElement(packet.t, packet.toJSON());
         }
-        packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
+        const time = (Date.now() / 1000) - match.startTimeStamp;
+        if (packet) {
+            const ringEvent = packet.events.find((event) => ["ringFinishedClosing", "ringStartClosing"].includes(event.type));
+            if (ringEvent != undefined) {
+                ringTimes[time] = ringEvent.center;
+            }
+        }
+        packet = new Packet(time);
     }
 }
 
