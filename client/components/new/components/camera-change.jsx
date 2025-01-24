@@ -9,6 +9,7 @@ import { fetchWithTimeout } from "../lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { MapPin, User } from "lucide-react"
+import { api } from "../services/api"
 
 const POI_OPTIONS = [
   { value: "KillReader", label: "Kill Reader" },
@@ -64,18 +65,8 @@ export function CameraChange({ isSimulated, simulatedLobbyData }) {
       alert(`Simulated: Camera changed to ${isPOI ? "POI" : "Player"}: ${selectedOption}`)
     } else {
       try {
-        const response = await fetchWithTimeout("/api/change_camera", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ type: isPOI ? "POI" : "Player", target: selectedOption }),
-        })
-        if (response.ok) {
-          alert("Camera changed successfully")
-        } else {
-          throw new Error("Failed to change camera")
-        }
+        await api.changeCamera(isPOI ? "POI" : "Player", selectedOption)
+        alert("Camera changed successfully")
       } catch (error) {
         alert(`Failed to change camera: ${error.message}`)
       }

@@ -1,8 +1,23 @@
 import * as React from "react"
+import { useState, useEffect } from "react"
 
 import { cn } from "@/lib/utils"
 
-const Input = React.forwardRef(({ className, type, ...props }, ref) => {
+const Input = React.forwardRef(({ className, type, value: propValue, onChange, ...props }, ref) => {
+  const [localValue, setLocalValue] = useState(propValue)
+
+  useEffect(() => {
+    setLocalValue(propValue)
+  }, [propValue])
+
+  const handleChange = (e) => {
+    const newValue = e.target.value
+    setLocalValue(newValue)
+    if (onChange) {
+      onChange(e)
+    }
+  }
+
   return (
     <input
       type={type}
@@ -11,6 +26,8 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
         className,
       )}
       ref={ref}
+      value={localValue}
+      onChange={handleChange}
       {...props}
     />
   )

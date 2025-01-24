@@ -9,11 +9,11 @@ import MatchManagement from "./match-management"
 import LobbyManagement from "./lobby-management"
 import CameraSettings from "./camera-settings"
 import Settings from "./settings"
-import { useLobby } from "../contexts/LobbyContext" // 変更
+import { useLobby } from "../contexts/LobbyContext"
 
 export default function Layout({ config, updateConfig, simulatedLobbyData, updateSimulatedLobbyData }) {
   const [isDarkMode, setIsDarkMode] = useState(false)
-  const { isInLobby } = useLobby() // 変更
+  const { isInLobby } = useLobby()
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme")

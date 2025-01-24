@@ -4,20 +4,20 @@ import { useState, useEffect } from "react"
 import { RequestButton } from "./request-button"
 import { Input } from "@/components/ui/input"
 import { ConfigInput } from "./config-input"
-// import { useConfig } from "../hooks/use-config" //Removed as per update 5
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Check, X, Users, Play, Pause, Calculator, Shield, LogOut } from "lucide-react"
 import { useLobby } from "../contexts/LobbyContext"
 import { Button } from "@/components/ui/button"
+import { api } from "../services/api"
 
 export default function MatchManagement({ config, updateConfig }) {
   const [readyStatus, setReadyStatus] = useState(false)
   const [lobbyIdInput, setLobbyIdInput] = useState("")
-  // Remove the following line:
-  // const { config, updateConfig } = useConfig()
   const { lobbyId, isInLobby, joinLobby, leaveLobby } = useLobby()
   const [rankPoints, setRankPoints] = useState(Array(20).fill(0))
+  const [matchmakingStatus, setMatchmakingStatus] = useState(false) // Updated state
+  const [pauseTime, setPauseTime] = useState(0) // Added state
 
   useEffect(() => {
     if (config.score_setting && config.score_setting.rank_points) {
@@ -29,13 +29,13 @@ export default function MatchManagement({ config, updateConfig }) {
     const newRankPoints = [...rankPoints]
     newRankPoints[index] = Number.parseInt(value, 10)
     setRankPoints(newRankPoints)
-    updateConfig({
-      ...config,
+    const newConfig = {
       score_setting: {
         ...config.score_setting,
         rank_points: newRankPoints,
       },
-    })
+    }
+    updateConfig(newConfig)
   }
 
   const handleJoinOrCreateLobby = async () => {
@@ -45,23 +45,16 @@ export default function MatchManagement({ config, updateConfig }) {
     }
 
     try {
-      const response = await fetch(lobbyIdInput ? "/api/join_lobby" : "/api/create_lobby", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: lobbyIdInput ? JSON.stringify({ token: lobbyIdInput }) : undefined,
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        const newLobbyId = lobbyIdInput || data.lobbyId
-        joinLobby(newLobbyId)
-        alert(lobbyIdInput ? "Joined lobby successfully" : `Created lobby with ID: ${newLobbyId}`)
-        setLobbyIdInput("")
+      let data
+      if (lobbyIdInput) {
+        data = await api.joinLobby(lobbyIdInput)
       } else {
-        throw new Error("Failed to join or create lobby")
+        data = await api.createLobby()
       }
+      const newLobbyId = lobbyIdInput || data.lobbyId
+      joinLobby(newLobbyId)
+      alert(lobbyIdInput ? "Joined lobby successfully" : `Created lobby with ID: ${newLobbyId}`)
+      setLobbyIdInput("")
     } catch (error) {
       alert(`Error: ${error.message}`)
     }
@@ -69,16 +62,9 @@ export default function MatchManagement({ config, updateConfig }) {
 
   const handleLeaveLobby = async () => {
     try {
-      const response = await fetch("/api/leave_lobby", {
-        method: "POST",
-      })
-
-      if (response.ok) {
-        leaveLobby()
-        alert("Left lobby successfully")
-      } else {
-        throw new Error("Failed to leave lobby")
-      }
+      await api.leaveLobby()
+      leaveLobby()
+      alert("Left lobby successfully")
     } catch (error) {
       alert(`Error: ${error.message}`)
     }
@@ -111,19 +97,33 @@ export default function MatchManagement({ config, updateConfig }) {
               <span>{lobbyIdInput ? "Join Lobby" : "Create Lobby"}</span>
             </Button>
           </div>
-          <div className="flex space-x-4">
-            <RequestButton
-              url="/api/set_ready"
-              method="POST"
-              body={{ ready: !readyStatus }}
-              onSuccess={() => setReadyStatus(!readyStatus)}
-              variant={readyStatus ? "outline" : "default"}
-              className="flex items-center space-x-2"
+          <div className="w-full">
+            <Button
+              onClick={async () => {
+                try {
+                  await api.setReady(!readyStatus)
+                  setReadyStatus(!readyStatus)
+                } catch (error) {
+                  console.error("Failed to set ready status:", error)
+                  alert(`Error: ${error.message}`)
+                }
+              }}
+              variant={readyStatus ? "destructive" : "default"}
+              className="flex items-center justify-center space-x-2 w-full"
               disabled={!isInLobby}
             >
-              {readyStatus ? <X className="w-4 h-4" /> : <Check className="w-4 h-4" />}
-              <span>{readyStatus ? "Set Not Ready" : "Set Ready"}</span>
-            </RequestButton>
+              {readyStatus ? (
+                <>
+                  <X className="w-4 h-4" />
+                  <span>Cancel Ready</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4" />
+                  <span>Set Ready</span>
+                </>
+              )}
+            </Button>
           </div>
           <Button
             onClick={handleLeaveLobby}
@@ -144,28 +144,34 @@ export default function MatchManagement({ config, updateConfig }) {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <ConfigInput
-              configKey="kill_point"
+              configKey="score_setting.kill_point"
               label="Points per Kill"
               type="number"
               value={config.score_setting?.kill_point}
-              onChange={(value) =>
-                updateConfig({
-                  ...config,
-                  score_setting: { ...config.score_setting, kill_point: Number(value) },
-                })
-              }
+              onChange={(value) => {
+                const newConfig = {
+                  score_setting: {
+                    ...config.score_setting,
+                    kill_point: Number(value),
+                  },
+                }
+                updateConfig(newConfig)
+              }}
             />
             <ConfigInput
-              configKey="max_kill"
+              configKey="score_setting.max_kill"
               label="Max Kills"
               type="number"
               value={config.score_setting?.max_kill}
-              onChange={(value) =>
-                updateConfig({
-                  ...config,
-                  score_setting: { ...config.score_setting, max_kill: Number(value) },
-                })
-              }
+              onChange={(value) => {
+                const newConfig = {
+                  score_setting: {
+                    ...config.score_setting,
+                    max_kill: Number(value),
+                  },
+                }
+                updateConfig(newConfig)
+              }}
             />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -182,8 +188,7 @@ export default function MatchManagement({ config, updateConfig }) {
             ))}
           </div>
           <RequestButton
-            url="/api/score_calculation"
-            method="GET"
+            onClick={api.calculateScores}
             onSuccess={(data) => alert(`Score calculation complete: ${JSON.stringify(data)}`)}
             variant="outline"
             className="flex items-center space-x-2 w-full justify-center"
@@ -203,37 +208,54 @@ export default function MatchManagement({ config, updateConfig }) {
           <CardDescription>Control matchmaking and game flow</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 gap-4">
-            <RequestButton
-              url="/api/set_matchmaking"
-              method="POST"
-              body={{ status: "start" }}
-              onSuccess={() => alert("Matchmaking started")}
-              className="flex items-center space-x-2 w-full"
+          <div className="w-full">
+            <Button
+              onClick={async () => {
+                const newStatus = !matchmakingStatus
+                try {
+                  await api.setMatchmaking(newStatus)
+                  setMatchmakingStatus(newStatus)
+                  alert(`Matchmaking ${newStatus ? "started" : "stopped"}`)
+                } catch (error) {
+                  alert(`Failed to ${newStatus ? "start" : "stop"} matchmaking: ${error.message}`)
+                }
+              }}
+              className={`flex items-center justify-center space-x-2 w-full ${
+                matchmakingStatus ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
+              }`}
             >
-              <Play className="w-4 h-4" />
-              <span>Start Matchmaking</span>
-            </RequestButton>
-            <RequestButton
-              url="/api/set_matchmaking"
-              method="POST"
-              body={{ status: "stop" }}
-              onSuccess={() => alert("Matchmaking stopped")}
-              variant="secondary"
-              className="flex items-center space-x-2 w-full"
-            >
-              <Pause className="w-4 h-4" />
-              <span>Stop Matchmaking</span>
-            </RequestButton>
+              {matchmakingStatus ? (
+                <>
+                  <Pause className="w-4 h-4" />
+                  <span>Stop Matchmaking</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  <span>Start Matchmaking</span>
+                </>
+              )}
+            </Button>
           </div>
           <div className="flex space-x-4 items-end">
             <div className="flex-1">
-              <ConfigInput configKey="pauseTime" label="Pause Time (seconds)" type="number" />
+              <ConfigInput
+                configKey="pauseTime"
+                label="Pause Time (seconds)"
+                type="number"
+                value={pauseTime}
+                onChange={(value) => setPauseTime(Number(value))}
+              />
             </div>
             <RequestButton
-              url="/api/pause_toggle"
-              method="POST"
-              onSuccess={() => alert("Game paused/unpaused")}
+              onClick={async () => {
+                try {
+                  await api.togglePause({ preTimer: pauseTime })
+                  alert(`Game paused/unpaused with ${pauseTime} seconds pre-timer`)
+                } catch (error) {
+                  alert(`Failed to toggle pause: ${error.message}`)
+                }
+              }}
               className="flex items-center space-x-2"
             >
               <Pause className="w-4 h-4" />

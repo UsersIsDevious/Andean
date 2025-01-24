@@ -8,12 +8,39 @@ import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Globe, Network, Folder, Save, RefreshCw, Bug } from "lucide-react"
-// import { useConfig } from "../hooks/use-config" // Removed useConfig hook
+import { Button } from "@/components/ui/button"
+import { api } from "../services/api"
 
-export default function Settings({ config, updateConfig }) {
-  // Added config and updateConfig props
+export default function Settings({ config: initialConfig, updateConfig }) {
+  const [localConfig, setLocalConfig] = useState(initialConfig)
   const [showDebug, setShowDebug] = useState(false)
-  // const { config, updateConfig } = useConfig() // Removed useConfig hook
+
+  useEffect(() => {
+    setLocalConfig(initialConfig)
+  }, [initialConfig])
+
+  const handleLocalConfigChange = (key, value) => {
+    setLocalConfig((prevConfig) => {
+      const newConfig = { ...prevConfig }
+      const keys = key.split(".")
+      let current = newConfig
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {}
+        current = current[keys[i]]
+      }
+      current[keys[keys.length - 1]] = value
+      return newConfig
+    })
+  }
+
+  const handleSaveSettings = async () => {
+    try {
+      await api.saveConfig(localConfig)
+      alert("Settings saved successfully")
+    } catch (error) {
+      alert(`Error saving settings: ${error.message}`)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -30,8 +57,8 @@ export default function Settings({ config, updateConfig }) {
             <Label htmlFor="language">Game Language</Label>
             <Select
               id="language"
-              value={config.language || "en"}
-              onValueChange={(value) => updateConfig({ ...config, language: value })}
+              value={localConfig.language || "en"}
+              onValueChange={(value) => handleLocalConfigChange("language", value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select language" />
@@ -45,8 +72,18 @@ export default function Settings({ config, updateConfig }) {
               </SelectContent>
             </Select>
           </div>
-          <ConfigInput configKey="log_dir" label="Log Directory" value={config.log_dir} />
-          <ConfigInput configKey="apexlegends.option" label="Command Options" value={config.apexlegends?.option} />
+          <ConfigInput
+            configKey="log_dir"
+            label="Log Directory"
+            value={localConfig.log_dir}
+            onChange={(value) => handleLocalConfigChange("log_dir", value)}
+          />
+          <ConfigInput
+            configKey="apexlegends.option"
+            label="Command Options"
+            value={localConfig.apexlegends?.option}
+            onChange={(value) => handleLocalConfigChange("apexlegends.option", value)}
+          />
         </CardContent>
       </Card>
       <Card>
@@ -62,9 +99,16 @@ export default function Settings({ config, updateConfig }) {
             configKey="apexlegends.api_port"
             label="WebSocket Port"
             type="number"
-            value={config.apexlegends?.api_port}
+            value={localConfig.apexlegends?.api_port}
+            onChange={(value) => handleLocalConfigChange("apexlegends.api_port", value)}
           />
-          <ConfigInput configKey="data_fps" label="Data Frequency (per second)" type="number" value={config.data_fps} />
+          <ConfigInput
+            configKey="data_fps"
+            label="Data Frequency (per second)"
+            type="number"
+            value={localConfig.data_fps}
+            onChange={(value) => handleLocalConfigChange("data_fps", value)}
+          />
         </CardContent>
       </Card>
       <Card>
@@ -76,11 +120,17 @@ export default function Settings({ config, updateConfig }) {
           <CardDescription>Set file paths for various operations</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <ConfigInput configKey="output" label="Data Export Directory" value={config.output} />
+          <ConfigInput
+            configKey="output"
+            label="Data Export Directory"
+            value={localConfig.output}
+            onChange={(value) => handleLocalConfigChange("output", value)}
+          />
           <ConfigInput
             configKey="apexlegends.path"
             label="Game Installation Directory"
-            value={config.apexlegends?.path}
+            value={localConfig.apexlegends?.path}
+            onChange={(value) => handleLocalConfigChange("apexlegends.path", value)}
           />
         </CardContent>
       </Card>
@@ -94,20 +144,19 @@ export default function Settings({ config, updateConfig }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-4">
-            <RequestButton
-              url="/saveConfig"
-              method="POST"
-              body={config}
-              onSuccess={() => alert("Settings saved successfully")}
-              onError={(error) => alert(`Failed to save settings: ${error}`)}
+            <Button
+              onClick={() => {
+                if (confirm("Are you sure you want to save these settings?")) {
+                  handleSaveSettings()
+                }
+              }}
               className="flex items-center space-x-2 w-full justify-center"
             >
               <Save className="w-4 h-4" />
               <span>Save Settings</span>
-            </RequestButton>
+            </Button>
             <RequestButton
-              url="/resetConfig"
-              method="POST"
+              onClick={api.resetConfig}
               onSuccess={() => {
                 if (confirm("Are you sure you want to reset all settings to default? This action cannot be undone.")) {
                   alert("Settings reset to default")
@@ -148,10 +197,8 @@ export default function Settings({ config, updateConfig }) {
               <div className="flex items-center space-x-2">
                 <Switch
                   id="simulateLobby"
-                  checked={config?.simulateLobby ?? false}
-                  onCheckedChange={(checked) => {
-                    updateConfig({ ...config, simulateLobby: checked })
-                  }}
+                  checked={localConfig?.simulateLobby ?? false}
+                  onCheckedChange={(checked) => handleLocalConfigChange("simulateLobby", checked)}
                   className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-600"
                 />
                 <Label htmlFor="simulateLobby" className="text-gray-300">
@@ -159,8 +206,7 @@ export default function Settings({ config, updateConfig }) {
                 </Label>
               </div>
               <RequestButton
-                url="/api/togglePeriodicFetch"
-                method="POST"
+                onClick={api.togglePeriodicFetch}
                 onSuccess={(data) => alert(`Periodic fetch ${data.enabled ? "enabled" : "disabled"}`)}
                 className="flex items-center space-x-2"
               >

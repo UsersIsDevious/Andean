@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Layout from "@/components/new/components/layout"
+import Layout from "@/components/new//components/layout"
 import { useConfig } from "@/components/new/hooks/use-config"
-import { LobbyProvider } from "@/components/new/contexts/LobbyContext"
+import { LobbyProvider } from "@/components/new//contexts/LobbyContext"
 
 export default function Home() {
   const { config, updateConfig, fetchConfig } = useConfig()

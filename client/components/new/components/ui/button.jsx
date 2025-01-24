@@ -1,6 +1,8 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva } from "class-variance-authority"
+import { useState } from "react"
+import { api } from "../../services/api"
 
 import { cn } from "@/lib/utils"
 
@@ -37,10 +39,64 @@ const buttonVariants = cva(
   },
 )
 
-const Button = React.forwardRef(({ className, variant, size, width, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button"
-  return <Comp className={cn(buttonVariants({ variant, size, width, className }))} ref={ref} {...props} />
-})
+const Button = React.forwardRef(
+  ({ className, variant, size, width, asChild = false, isMatchmakingButton = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
+    const [isMatchmaking, setIsMatchmaking] = useState(false)
+    const [isReady, setIsReady] = useState(false)
+
+    const handleClick = async (event) => {
+      if (isMatchmakingButton) {
+        try {
+          const newStatus = !isMatchmaking
+          await api.setMatchmaking(newStatus)
+          setIsMatchmaking(newStatus)
+          if (props.onClick) {
+            props.onClick(event)
+          }
+        } catch (error) {
+          console.error("Failed to set matchmaking status:", error)
+        }
+      } else if (props.onClick) {
+        const newReadyStatus = !isReady
+        try {
+          const response = await fetch("/api/set_ready", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ready: newReadyStatus }),
+          })
+          if (response.ok) {
+            setIsReady(newReadyStatus)
+            props.onClick(event)
+          } else {
+            console.error("Failed to set ready status")
+          }
+        } catch (error) {
+          console.error("Error setting ready status:", error)
+        }
+      }
+    }
+
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, width, className }))}
+        ref={ref}
+        {...props}
+        onClick={handleClick}
+      >
+        {isMatchmakingButton
+          ? isMatchmaking
+            ? "Stop Matchmaking"
+            : "Start Matchmaking"
+          : isReady
+            ? "Set Not Ready"
+            : "Set Ready"}
+      </Comp>
+    )
+  },
+)
 Button.displayName = "Button"
 
 export { Button, buttonVariants }

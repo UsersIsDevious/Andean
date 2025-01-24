@@ -2,19 +2,19 @@
 
 import React, { createContext, useContext, useReducer, useEffect } from "react"
 
-// 初期状態
+// Initial state
 const initialState = {
   lobbyId: null,
   isInLobby: false,
 }
 
-// アクションタイプ
+// Action types
 const ActionTypes = {
   JOIN_LOBBY: "JOIN_LOBBY",
   LEAVE_LOBBY: "LEAVE_LOBBY",
 }
 
-// リデューサー
+// Reducer
 function lobbyReducer(state, action) {
   switch (action.type) {
     case ActionTypes.JOIN_LOBBY:
@@ -34,28 +34,30 @@ function lobbyReducer(state, action) {
   }
 }
 
-// コンテキストの作成
+// Context
 const LobbyContext = createContext()
 
-// プロバイダーコンポーネント
+// Provider component
 export function LobbyProvider({ children }) {
   const [state, dispatch] = useReducer(lobbyReducer, initialState)
 
-  // ローカルストレージから状態を復元
+  // Load state from localStorage on mount
   useEffect(() => {
     const savedState = localStorage.getItem("lobbyState")
     if (savedState) {
       const { lobbyId, isInLobby } = JSON.parse(savedState)
-      dispatch({ type: ActionTypes.JOIN_LOBBY, payload: lobbyId })
+      if (isInLobby && lobbyId) {
+        dispatch({ type: ActionTypes.JOIN_LOBBY, payload: lobbyId })
+      }
     }
   }, [])
 
-  // 状態が変更されたらローカルストレージに保存
+  // Save state to localStorage when it changes
   useEffect(() => {
     localStorage.setItem("lobbyState", JSON.stringify(state))
   }, [state])
 
-  // アクション
+  // Actions
   const joinLobby = (lobbyId) => {
     dispatch({ type: ActionTypes.JOIN_LOBBY, payload: lobbyId })
   }
@@ -67,6 +69,6 @@ export function LobbyProvider({ children }) {
   return <LobbyContext.Provider value={{ ...state, joinLobby, leaveLobby }}>{children}</LobbyContext.Provider>
 }
 
-// カスタムフック
+// Custom hook
 export const useLobby = () => useContext(LobbyContext)
 
