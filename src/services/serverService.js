@@ -9,4 +9,11 @@ function saveConfig(req, res) {
     common.saveConfig(config);
 }
 
+
+function makeScore() {
+    app.match
+
+    return score;
+}
+
 module.exports = { saveConfig };

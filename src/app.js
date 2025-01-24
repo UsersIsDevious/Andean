@@ -299,6 +299,7 @@ function analyze_message(category, msg) {
                 weaponName = msg.weapon;
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
+            match.getTeam(msg_victim.teamid).addTotalDamageRecived(msg.damageinflicted);
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") { 
                 victim.addDamageReceived(msg.damageinflicted, weaponName, msg_attacker.nucleushash, msg_attacker.character, penetrator);
             } else {
@@ -313,6 +314,7 @@ function analyze_message(category, msg) {
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
                 const attacker = processUpdateMsgPlayer(msg_attacker, match);
                 attacker.addDamageDealt(msg.damageinflicted, weaponName, msg_victim.nucleushash, msg_victim.character, penetrator)
+                match.getTeam(msg_attacker.teamid).addTotalDamageDealt(msg.damageinflicted);
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -367,6 +369,7 @@ function analyze_message(category, msg) {
             if ("nucleushash" in msg_awardedto && msg_awardedto.nucleushash !== "") {
                 const awardedto = processUpdateMsgPlayer(msg_awardedto, match);
                 awardedto.setKills(weaponName, msg_victim.nucleushash, msg_victim.character)
+                match.getTeam(msg_awardedto.teamid).addTotalKills();
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -433,6 +436,7 @@ function analyze_message(category, msg) {
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
                 const attacker = processUpdateMsgPlayer(msg_attacker, match);
                 attacker.setDowns(weaponName, msg_victim.nucleushash, msg_victim.character)
+                match.getTeam(msg_attacker.teamid).addTotalDowns();
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -485,6 +489,7 @@ function analyze_message(category, msg) {
             if ("nucleushash" in msg_assistant && msg_assistant.nucleushash !== "") {
                 const assistant = processUpdateMsgPlayer(msg_assistant, match);
                 assistant.setKillAssists(weaponName, msg_victim.nucleushash, msg_victim.character)
+                match.getTeam(msg_assistant.teamid).addTotalKillAssists();
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -657,6 +662,7 @@ function analyze_message(category, msg) {
                 const teammate = processUpdateMsgPlayer(msg_respawnedteammates, match);
                 teammate.setStatus("alive");
                 respawnedteammatesList.push(processEventData(msg_respawnedteammates, match));
+                match.getTeam(msg_respawnedteammates.teamid).addTotalRespawns();
             }
             data["respawnedteammatesList"] = respawnedteammatesList;
             const event = new Event(msg.timestamp, msg.category, data);
@@ -668,6 +674,7 @@ function analyze_message(category, msg) {
             const player = processUpdatePlayer(msg, match);
             const revived = processUpdateMsgPlayer(msg.revived, match);
             revived.setStatus("alive");
+            match.getTeam(msg.player.teamid).addTotalRevives();
             const data = processEventData(msg.player, match);
             data["revived"] = processEventData(msg.revived, match);
             const event = new Event(msg.timestamp, msg.category, data);
@@ -713,6 +720,30 @@ function analyze_message(category, msg) {
             const player = processUpdatePlayer(msg, match);
             const item = msg.item;
             player.inventory.addOrUpdateItem(item, -(item.quantity), checkItemLevel(item));
+            let name = splitBracketParts(item);
+            if (name === null) {
+                name = item;
+            } else {
+                name = name[0];
+            }
+            let healHealth = 0;
+            let rechargeShield = 0;
+            switch (name) {
+                case "Med Kit":
+                    healHealth = 100;
+                    break;
+                case "Syringe":
+                    healHealth = 25;
+                    break;
+                case "Shield Battery":
+                    rechargeShield = 100;
+                    break;
+                case "Shield Cell":
+                    rechargeShield = 25;
+                    break;
+            }
+            player.updateHealthAndShields(msg.currenthealth + healHealth, msg.maxhealth, msg.shieldhealth + rechargeShield, msg.shieldmaxhealth);
+            match.getTeam(msg.player.teamid).addTotalHealing(healHealth + rechargeShield);
             const data = processEventData(msg.player, match);
             data["item"] = item;
             data["quantity"] = msg.quantity;
@@ -1087,4 +1118,4 @@ function handleMessage(message, messageType) {
     analyze_message(messageType, message.toObject());
 }
 
-module.exports = { config, startApexLegends, analyze_message }
+module.exports = { match, config, startApexLegends, analyze_message }

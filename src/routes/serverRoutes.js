@@ -9,5 +9,6 @@ router.post('/startGame', serverController.startGame);
 router.post('/saveConfig', serverController.saveConfig);
 router.post('/loadConfig', serverController.loadConfig);
 router.post('/resetConfig', serverController.resetConfig);
+router.post('/getScore', serverController.getScore);
 
 module.exports = router;

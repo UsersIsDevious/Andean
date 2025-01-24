@@ -1507,8 +1507,8 @@ class CustomMatch {
 
   /**
    * 特定のチームを取得するメソッド
-   * @param {*} teamId 
-   * @returns {Team|null} 見つかったチームのステータス、見つからなければnull
+   * @param {number} teamId 
+   * @returns {Team|null} 見つかったチームインスタンス、見つからなければnull
    */
   getTeam(teamId) {
     if (this.teams[teamId]) {
@@ -1774,7 +1774,7 @@ class Team {
    * @param {string} teamName チーム名
    * @memberof Team
    */
-  constructor(teamName) {
+  constructor(teamName, rank = 0) {
     /**
      * チーム名
      * @type {string}
@@ -1804,7 +1804,7 @@ class Team {
      * チームの最終順位
      * @type {number}
      */
-    this.rank = 0;
+    this.rank = rank;
     /**
      * チームのスコア
      * @type {number}
@@ -1913,6 +1913,91 @@ class Team {
    */
   setTeamName(newTeamName) {
     this.teamName = newTeamName;
+  }
+
+  /**
+   * チームの順位を設定するメソッド
+   * @param {Array<Team>} teams - チームデータの配列
+   * @memberof Team
+   */
+  setRank(teams) {
+    this.rank = (Object.keys(teams).length - 2) - Object.values(teams).filter((team) => team.rank === 0).length;
+  }
+
+  /**
+   * チームのスコアを設定するメソッド
+   * @param {number} score スコア
+   * @memberof Team
+   */
+  setScore(score) {
+    this.score = score;
+  }
+
+  /**
+   * チームの合計ダウン数を増加させるメソッド
+   * @memberof Team
+   */
+  addTotalDowns() {
+    this.totalDowns++;
+  }
+
+  /**
+   * チームの合計キル数を増加させるメソッド
+   * @memberof Team
+   */
+  addTotalKills() {
+    this.totalKills++;
+  }
+
+  /**
+   * チームの合計アシスト数を増加させるメソッド
+   * @memberof Team
+   */
+  addTotalKillAssists() {
+    this.totalKillAssists++;
+  }
+
+  /**
+   * チームの合計ダメージ量を増加させるメソッド
+   * @param {number} amount 増加させるダメージ量
+   * @memberof Team
+   */
+  addTotalDamageDealt(amount) {
+    this.totalDamageDealt += amount;
+  }
+
+  /**
+   * チーム全体で受けたダメージ量を増加させるメソッド
+   * @param {number} amount 増加させるダメージ量
+   * @memberof Team
+   */
+  addTotalDamageRecived(amount) {
+    this.totalDamageRecived += amount;
+  }
+
+  /**
+   * チームの合計回復量を増加させるメソッド
+   * @param {number} amount 増加させる回復量
+   * @memberof Team
+   */
+  addTotalHealing(amount) {
+    this.totalHealing += amount;
+  }
+
+  /**
+   * チームの合計リバイブ数を増加させるメソッド
+   * @memberof Team
+   */
+  addTotalRevives() {
+    this.totalRevives++;
+  }
+
+  /**
+   * チームの合計リスポーン数を増加させるメソッド
+   * @memberof Team
+   */
+  addTotalRespawns() {
+    this.totalRespawns++;
   }
 }
 

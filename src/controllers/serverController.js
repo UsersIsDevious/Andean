@@ -1,7 +1,8 @@
 const { sendClients } = require('./sseController'); // SSE のクライアント管理関数をインポート
 const common = require('../utils/shutdownManager');
 const app = require('../app')
-const serverService = require('../services/serverService')
+const serverService = require('../services/serverService');
+const server = require('react-dom/server');
 
 /**
  * ボタンが押された時に色をクライアントに送信するエンドポイント
@@ -66,5 +67,16 @@ function resetConfig(req, res) {
 }
 
 
+/**
+ * 計算したスコアを返すエンドポイント
+ * @param {Request} req - クライアントのリクエストオブジェクト
+ * @param {Response} res - クライアントに対するレスポンスオブジェクト
+ */
+function getScore(req, res) {
+  const score = serverService.makeScore();
+  res.status(200).send(score);
+}
 
-module.exports = { handleNotify, stopServer, startGame , saveConfig, loadConfig, resetConfig };
+
+
+module.exports = { handleNotify, stopServer, startGame , saveConfig, loadConfig, resetConfig, getScore };
