@@ -534,9 +534,111 @@ function analyze_message(category, msg) {
             break;
         }
         case "GibraltarShieldAbsorbed": {
+            //ダメージを与えた側
+            const msg_attacker = msg.attacker;
+            const msg_victim = msg.victim;
+            let weaponName = getWeaponId(msg.weapon);
+            const penetrator = checkShieldPenetrator(weaponName);
+            if (weaponName === undefined) {
+                weaponName = msg.weapon;
+            }
+            const victim = processUpdateMsgPlayer(msg_victim, match);
+            victim.addGibraltarShieldAbsorbed(msg.damageinflicted);
+            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
+                victim.addDamageReceived(msg.damageinflicted, "Unknown by GibraltarShieldAbsorbed", msg_attacker.nucleushash, msg_attacker.character, penetrator);
+            } else {
+                victim.addDamageReceived(msg.damageinflicted, "Unknown by GibraltarShieldAbsorbed", "World", "World", penetrator);
+            }
+            //ダメージを受けた側
+            /**
+             * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
+             * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
+             */
+            let event;
+            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
+                const attacker = processUpdateMsgPlayer(msg_attacker, match);
+                attacker.addDamageDealt(msg.damageinflicted, "Unknown by GibraltarShieldAbsorbed", msg_victim.nucleushash, msg_victim.character, penetrator)
+
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    { attacker: processEventData(msg_attacker, match), victim: processEventData(msg_victim, match), damageinflicted: msg.damageinflicted }
+                );
+            } else {
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    {
+                        attacker: {
+                            id: "World",
+                            pos: [0, 0, 0],
+                            hp: [0, 0, 0, 0],
+                            ang: 0
+                        },
+                        victim: processEventData(msg_victim, match),
+                        damageinflicted: msg.damageinflicted
+                    }
+                );
+            }
+
+            // AndeanのEventクラスに追加する
+            match.addEventElement(event);
+            // AndeanのPacketクラスに追加する
+            packet.addEvent(event);
             break;
         }
         case "RevenantForgedShadowDamaged": {
+            //ダメージを与えた側
+            const msg_attacker = msg.attacker;
+            const msg_victim = msg.victim;
+            let weaponName = getWeaponId(msg.weapon);
+            const penetrator = checkShieldPenetrator(weaponName);
+            if (weaponName === undefined) {
+                weaponName = msg.weapon;
+            }
+            const victim = processUpdateMsgPlayer(msg_victim, match);
+            victim.addForgedShadowDamaged(msg.damageinflicted);
+            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
+                victim.addDamageReceived(msg.damageinflicted, "Unknown by RevenantForgedShadowDamaged", msg_attacker.nucleushash, msg_attacker.character, penetrator);
+            } else {
+                victim.addDamageReceived(msg.damageinflicted, "Unknown by RevenantForgedShadowDamaged", "World", "World", penetrator);
+            }
+            //ダメージを受けた側
+            /**
+             * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
+             * If the attacker is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
+             */
+            let event;
+            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
+                const attacker = processUpdateMsgPlayer(msg_attacker, match);
+                attacker.addDamageDealt(msg.damageinflicted, "Unknown by RevenantForgedShadowDamaged", msg_victim.nucleushash, msg_victim.character, penetrator)
+
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    { attacker: processEventData(msg_attacker, match), victim: processEventData(msg_victim, match), damageinflicted: msg.damageinflicted }
+                );
+            } else {
+                // AndeanのEventクラスに追加する
+                event = new Event(
+                    msg.timestamp, msg.category,
+                    {
+                        attacker: {
+                            id: "World",
+                            pos: [0, 0, 0],
+                            hp: [0, 0, 0, 0],
+                            ang: 0
+                        },
+                        victim: processEventData(msg_victim, match),
+                        damageinflicted: msg.damageinflicted
+                    }
+                );
+            }
+
+            // AndeanのEventクラスに追加する
+            match.addEventElement(event);
+            // AndeanのPacketクラスに追加する
+            packet.addEvent(event);
             break;
         }
         case "ChangeCamera": {  // 今のところ何もイベント発生しない
@@ -705,6 +807,12 @@ function analyze_message(category, msg) {
             break;
         }
         case "WarpGateUsed": {
+            const player = processUpdatePlayer(msg, match);
+            player.addWarpGateUseCount();
+            const data = processEventData(msg.player, match);
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "AmmoUsed": {

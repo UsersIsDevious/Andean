@@ -689,6 +689,24 @@ class Player {
      * @type {boolean}
      */
     this.ultimateCharged = false;
+
+    /**
+     * レヴナントのフォージドシャドウが受けたダメージの合計を保持
+     * @type {number}
+     */
+    this.forgedShadowDamaged = 0;
+
+    /**
+     * ワープゲートを使用した回数
+     * @type {number}
+     */
+    this.warpGateUseCount = 0;
+
+    /**
+     * ジブラルタルのシールドが吸収したダメージの合計を保持
+     * @type {number}
+     */
+    this.gibraltarShieldAbsorbed = 0;
   }
 
   /**
@@ -882,6 +900,16 @@ class Player {
     // 受けたダメージ、攻撃手段、攻撃者の識別子とレジェンド名を記録
     this.damageReceived.updateStatistics(amount, perpetrator, attacker, legend);
 
+    if (["Unknown by RevenantForgedShadowDamaged", "Unknown by GibraltarShieldAbsorbed"].includes(perpetrator)) {
+      // 更新後の体力・シールド状態を返す
+      return [
+        this.resultHealth,
+        this.maxHealth,
+        this.shieldHealth,
+        this.shieldMaxHealth,
+      ];
+    }
+
     // シールドを貫通する攻撃の場合
     if (penetrator) {
       // 現在の体力からダメージを引いた結果を計算
@@ -1012,6 +1040,32 @@ class Player {
    */
   getUltimateCharged() {
     return this.ultimateCharged;
+  }
+
+  /**
+   * プレイヤーのレヴナントのフォージドシャドウが受けたダメージを増加させるメソッド
+   * @param {number} amount - 増加させるダメージ量
+   * @memberof Player
+   */
+  addForgedShadowDamaged(amount) {
+    this.forgedShadowDamaged.total += amount;
+  }
+
+  /**
+   * プレイヤーのワープゲート使用回数を増加させるメソッド
+   * @memberof Player
+   */
+  addWarpGateUseCount() {
+    this.warpGateUseCount++;
+  }
+
+  /**
+   * プレイヤーのジブラルタルのシールドが吸収したダメージを増加させるメソッド
+   * @param {number} amount - 増加させるダメージ量
+   * @memberof Player
+   */
+  addGibraltarShieldAbsorbed(amount) {
+    this.gibraltarShieldAbsorbed += amount;
   }
 }
 
