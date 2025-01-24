@@ -51,31 +51,13 @@ const Button = React.forwardRef(
           const newStatus = !isMatchmaking
           await api.setMatchmaking(newStatus)
           setIsMatchmaking(newStatus)
-          if (props.onClick) {
-            props.onClick(event)
-          }
         } catch (error) {
           console.error("Failed to set matchmaking status:", error)
         }
-      } else if (props.onClick) {
-        const newReadyStatus = !isReady
-        try {
-          const response = await fetch("/api/set_ready", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ ready: newReadyStatus }),
-          })
-          if (response.ok) {
-            setIsReady(newReadyStatus)
-            props.onClick(event)
-          } else {
-            console.error("Failed to set ready status")
-          }
-        } catch (error) {
-          console.error("Error setting ready status:", error)
-        }
+      }
+
+      if (props.onClick) {
+        props.onClick(event)
       }
     }
 
@@ -86,13 +68,7 @@ const Button = React.forwardRef(
         {...props}
         onClick={handleClick}
       >
-        {isMatchmakingButton
-          ? isMatchmaking
-            ? "Stop Matchmaking"
-            : "Start Matchmaking"
-          : isReady
-            ? "Set Not Ready"
-            : "Set Ready"}
+        {isMatchmakingButton ? (isMatchmaking ? "Stop Matchmaking" : "Start Matchmaking") : props.children}
       </Comp>
     )
   },
