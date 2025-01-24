@@ -96,9 +96,9 @@ let packet;
 let lobby = new CustomMatch("lobby");
 /**
  * リングイベントが発生した時間を記録する
- * @type {Array<string>}
+ * @type {Array<Event>}
  */
-let ringTimes = {};
+let ringEvents = [];
 /**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
@@ -182,15 +182,13 @@ function analyze_message(category, msg) {
                 if (msg.state === "Prematch") {
                     match.setStartTimeStamp(msg.timestamp);
                     matchBase = JSON.parse(JSON.stringify(match));
-                    ringTimes = {};
+                    ringEvents = [];
                 };
                 if (msg.state === "Postmatch") {
-                    const times = Object.keys(ringTimes);
-                    for (i=0; i<times.length; i+=2) {
-                        if ((i + 1) === times.length - 1) { continue; }
-                        const startClosing = match.packetLists[times[i]].events.find((event) => event.type === "ringStartClosing");
-                        console.log(startClosing);
-                        startClosing.center = ringTimes[times[i+1]];
+                    for (i=0; i<ringEvents.length; i+=2) {
+                        if ((i + 1) !== ringEvents.length && ringEvents[i].type === "RingStartClosing" && ringEvents[i + 1].type === "RingFinishedClosing" && ringEvents[i].stage === ringEvents[i + 1].stage) {
+                            ringEvents[i].center = ringEvents[i + 1].center;
+                        }
                     }
                     matchBase.packetLists = match.packetLists;
                     common.savePacket(`Packet Log - ${match.startTimeStamp}`, matchBase);
@@ -1029,7 +1027,7 @@ async function update() {
         if (packet) {
             const ringEvent = packet.events.find((event) => ["ringFinishedClosing", "ringStartClosing"].includes(event.type));
             if (ringEvent != undefined) {
-                ringTimes[time] = ringEvent.center;
+                ringEvents.push(ringEvent);
             }
         }
         packet = new Packet(time);
