@@ -187,7 +187,10 @@ function analyze_message(category, msg) {
                 if (msg.state === "Postmatch") {
                     const times = Object.keys(ringTimes);
                     for (i=0; i<times.length; i+=2) {
-                        match.packetLists[times[i]].events.find((event) => event.type === "ringStartClosing").center = ringTimes[times[i+1]];
+                        if ((i + 1) === times.length - 1) { continue; }
+                        const startClosing = match.packetLists[times[i]].events.find((event) => event.type === "ringStartClosing");
+                        console.log(startClosing);
+                        startClosing.center = ringTimes[times[i+1]];
                     }
                     matchBase.packetLists = match.packetLists;
                     common.savePacket(`Packet Log - ${match.startTimeStamp}`, matchBase);
@@ -265,6 +268,16 @@ function analyze_message(category, msg) {
         }
         case "PlayerStatChanged": {
             const player = processUpdatePlayer(msg, match);
+            break;
+        }
+        case "PlayerUltimateCharged": {
+            const player = processUpdatePlayer(msg, match);
+            player.setUltimateCharged(true);
+            const data = processEventData(msg.player, match);
+            data["linkedentity"] = msg.linkedentity;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "PlayerUpgradeTierChanged": {
@@ -620,7 +633,13 @@ function analyze_message(category, msg) {
         }
         case "PlayerAbilityUsed": {
             const player = processUpdatePlayer(msg, match);
-            player.addAbilityUseCount();
+            const ability = splitBracketParts(msg.linkedentity);
+            if (ability[0] === "Ultimate") {
+                player.addUltimateUseCount();
+                player.setUltimateCharged(false);
+            } else if (ability[0] === "Tactical") {
+                player.addAbilityUseCount();
+            }
             const data = processEventData(msg.player, match);
             data["linkedentity"] = msg.linkedentity;
             data["character"] = msg.player.character;
@@ -850,6 +869,21 @@ function getPlayerStatus(match) {
         const player = match.getPlayer(team.players[0]);
         if (["death", "eliminated"].includes(player.getStatus()) || !player.getOnlineStatus()) { continue; }
         apexCommon.change_camera("name", player.name);
+    }
+}
+
+/**
+ * 括弧で囲まれた部分とそうでない部分で分割する
+ * @param {string} input
+ * @returns {string} 見つかった場合は配列、見つからなかった場合はnullを返す
+ */
+function splitBracketParts(input) {
+    const match = input.match(/^(.+?) （(.+?)）$/);
+    if (match) {
+        return [match[1], match[2]];
+    } else {
+        console.log("[splitBracketParts] フォーマットが一致しませんでした。");
+        return null;
     }
 }
 

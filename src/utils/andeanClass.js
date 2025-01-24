@@ -652,6 +652,12 @@ class Player {
     this.abilityUseCount = 0;
 
     /**
+     * アルティメットを使用した回数
+     * @type {number}
+     */
+    this.ultimateUseCount = 0;
+
+    /**
      * ジップラインを使用した回数
      * @type {number}
      */
@@ -677,6 +683,12 @@ class Player {
      * @type {number}
      */
     this.wraithPortalUseCount = 0;
+
+    /**
+     * アルティメットのチャージ状態
+     * @type {boolean}
+     */
+    this.ultimateCharged = false;
   }
 
   /**
@@ -936,6 +948,14 @@ class Player {
   }
 
   /**
+   * プレイヤーのアルティメット使用回数を増加させるメソッド
+   * @memberof Player
+   */
+  addUltimateUseCount() {
+    this.ultimateUseCount++;
+  }
+
+  /**
    * プレイヤーのジップライン使用回数を増加させるメソッド
    * @memberof Player
    */
@@ -974,6 +994,24 @@ class Player {
    */
   addWraithPortalUseCount() {
     this.wraithPortalUseCount++;
+  }
+
+  /**
+   * プレイヤーのアルティメットチャージ状態を変更するメソッド
+   * @param {boolean} status アルティメットがチャージされている場合はtrue、チャージされていない場合はfalse
+   * @memberof Player
+   */
+  setUltimateCharged(status) {
+    this.ultimateCharged = status;
+  }
+
+  /**
+   * プレイヤーのアルティメットチャージ状態を取得するメソッド
+   * @return {boolean} アルティメットがチャージされている場合はtrue、チャージされていない場合はfalseを返す
+   * @memberof Player
+   */
+  getUltimateCharged() {
+    return this.ultimateCharged;
   }
 }
 
