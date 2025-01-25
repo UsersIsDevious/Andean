@@ -42,8 +42,8 @@ function startGame(req, res) {
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
 function saveConfig(req, res) {
-  res.sendStatus(200);
-  serverService.saveConfig(req.body);
+  const result = serverService.saveConfig(req.body);
+  res.status(200).send(result);
 }
 
 /**
@@ -52,7 +52,6 @@ function saveConfig(req, res) {
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
 function loadConfig(req, res) {
-  console.log("ログ読み込みたいリクエストきてるー")
   res.status(200).send(app.config);
 }
 

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+const app = require('../app');
 let servers = {}; // サーバーリストを保持するオブジェクト
 
 // コールバックリストを保持
@@ -75,8 +76,8 @@ function saveData(filename,_class) {
  * @param {string} filename - ファイル名
  * @param {string} newData.class - クラス名
  */
-function savePacket(filename,_class) {
-  let filePath = path.join(__dirname, '../../output/', filename + ".json");
+function saveUpdate(filename, _class) {
+  let filePath = path.join(__dirname, `${app.config.output}`, filename + ".json");
 
   try {
     // データをファイルに書き込み
@@ -166,7 +167,7 @@ function saveLog(message, logFileName = 'app.log') {
  * 
  * @param {Object} _class - 新しく保存するデータオブジェクト
  */
-function saveConfig(configPath = "../../config.json", _class) {
+function saveConfig(configPath = "./config.json", _class) {
   try {
     // データをファイルに書き込み
     const result = fs.writeFileSync(configPath, JSON.stringify(_class, null, 2));
@@ -244,7 +245,7 @@ module.exports = {
   registerOnServersStarted,
   saveConfig,
   saveData,
-  savePacket,
+  saveUpdate,
   logMessage,
   ensureFolderExists,
 };

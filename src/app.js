@@ -174,7 +174,12 @@ function analyze_message(category, msg) {
             }
             match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, msg.aimassiston, msg.anonymousmode, msg.serverid);
             match.datacenter.update(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name);
-            sendMapData.sendMapInitialization(msg.map, match)
+            const playlistName = splitBracketParts(msg.playlistname);
+            if (playlistName === null) {
+                match.setMaxPlayersAndTeams(msg.playlistname);
+            } else {
+                match.setMaxPlayersAndTeams(playlistName[0], playlistName[1]);
+            }
             break;
         }
         case "GameStateChanged": {
@@ -191,7 +196,7 @@ function analyze_message(category, msg) {
                         }
                     }
                     matchBase.packetLists = match.packetLists;
-                    common.savePacket(`Packet Log - ${match.startTimeStamp}`, matchBase);
+                    common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, matchBase);
                 }
                 match.setState(msg.state);
             } catch (error) {
@@ -254,6 +259,11 @@ function analyze_message(category, msg) {
             const nucleushash = msg_player.nucleushash;
             if (match.getPlayer(nucleushash) == null) {
                 match.addPlayer(new Player(msg_player.name, msg_player.teamid, nucleushash, msg_player.hardwarename), msg_player.teamname);
+            }
+            for (let i = 0; i < match.maxTeams + 2; i++) {
+                if (match.getTeam(i) == null) {
+                    match.addTeam(i, `Team ${i + 1}`);
+                }
             }
             const player = processUpdatePlayer(msg, match);
             player.setOnlineStatus(true);
@@ -930,6 +940,7 @@ function updatePlayer(json, player, mapOffset, characterSelected = false) {
  */
 function processUpdatePlayer(msg, match, characterSelected = false) {
     const msg_player = msg.player;
+    checkPlayerInstance(msg_player, match);
     const player = match.getPlayer(msg_player.nucleushash);
     updatePlayer(msg_player, player, match.mapOffset, characterSelected);
     return player;
@@ -943,9 +954,24 @@ function processUpdatePlayer(msg, match, characterSelected = false) {
  * @return {Player} 
  */
 function processUpdateMsgPlayer(msg_player, match) {
+    checkPlayerInstance(msg_player, match);
     const player = match.getPlayer(msg_player.nucleushash);
     updatePlayer(msg_player, player, match.mapOffset);
     return player;
+}
+
+
+/**
+ * プレイヤーのインスタンスが存在するかどうかのチェック
+ * なければ追加する
+ * @param {JSON} msg_player 
+ * @param {CustomMatch} match 
+ */
+function checkPlayerInstance(msg_player, match) {
+    const nucleushash = msg_player.nucleushash;
+    if (match.getPlayer(nucleushash) == null) {
+        match.addPlayer(new Player(msg_player.name, msg_player.teamid, nucleushash, msg_player.hardwarename), msg_player.teamname);
+    }
 }
 
 
@@ -1003,6 +1029,7 @@ function checkShieldPenetrator(perpetrator) {
  */
 function getPlayerStatus(match) {
     for (const team of Object.values(match.teams)) {
+        if (team.players.length === 0) { continue; }
         const player = match.getPlayer(team.players[0]);
         if (["death", "eliminated"].includes(player.getStatus()) || !player.getOnlineStatus()) { continue; }
         apexCommon.change_camera("name", player.name);
@@ -1015,9 +1042,9 @@ function getPlayerStatus(match) {
  * @returns {string} 見つかった場合は配列、見つからなかった場合はnullを返す
  */
 function splitBracketParts(input) {
-    const match = input.match(/^(.*?)\s*\((.*?)\)$/);
+    const match = input.match(/^(.*?)\s*[\(（](.*?)[\)）]$/);
     if (match) {
-        return [match[1], match[2]];
+        return [match[1].trim(), match[2].trim()];
     } else {
         return null;
     }

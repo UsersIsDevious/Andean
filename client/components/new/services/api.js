@@ -67,7 +67,7 @@ export const api = {
 
   calculateScores: async () => {
     const response = await fetchWithTimeout("/api/score_calculation", {
-      method: "GET",
+      method: "POST",
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to calculate scores")
@@ -77,6 +77,7 @@ export const api = {
   // Config-related API calls
   loadConfig: async () => {
     const response = await fetchWithTimeout("/loadConfig", {
+      method: "POST",
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to load config")

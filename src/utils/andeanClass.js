@@ -370,9 +370,7 @@ class Statistics {
    * @memberof Statistics
    */
   addToTotal(amount) {
-    let total = this.total;
-    total += amount;
-    return total;
+    this.total += amount;
   }
 
   /**
@@ -385,9 +383,7 @@ class Statistics {
     if (!this.weapons[weaponId]) {
       this.weapons[weaponId] = 0;
     }
-    let total = this.weapons[weaponId];
-    total += amount;
-    return total;
+    this.weapons[weaponId] += amount;
   }
 
   /**
@@ -400,9 +396,7 @@ class Statistics {
     if (!this.players[playerId]) {
       this.players[playerId] = 0;
     }
-    let total = this.players[playerId];
-    total += amount;
-    return total;
+    this.players[playerId] += amount;
   }
 
   /**
@@ -415,9 +409,7 @@ class Statistics {
     if (!this.legends[legendName]) {
       this.legends[legendName] = 0;
     }
-    let total = this.legends[legendName];
-    total += amount;
-    return total;
+    this.legends[legendName] += amount;
   }
 
   /**
@@ -434,7 +426,6 @@ class Statistics {
     this.addWeaponUsage(weaponId, amount);
     this.addPlayerStat(playerId, amount);
     this.addLegendStat(legendName, amount);
-    return this;
   }
 
   /**
@@ -1222,6 +1213,11 @@ class CustomMatch {
      */
     this.maxPlayers = 60;
     /**
+     * 最大チーム数
+     * @type {number}
+     */
+    this.maxTeams = 20;
+    /**
      * 現在の状態
      * gameStateChangedを格納
      * @type {string}
@@ -1390,6 +1386,44 @@ class CustomMatch {
    */
   setState(state) {
     this.state = state;
+  }
+
+  /**
+   * 最大プレイヤー数と最大チーム数を設定するメソッド
+   * @param {string} name - プレイリストの名前
+   * @param {string} description - プレイリストの説明
+   */
+  setMaxPlayersAndTeams(name, description = null) {
+    switch (name) {
+      case "Duos":
+        this.maxPlayers = 60;
+        this.maxTeams = 30;
+        break;
+      case "Team Deathmatch":
+        this.maxPlayers = 12;
+        this.maxTeams = 4;
+        break;
+      case "Gun Run":
+        this.maxPlayers = 12;
+        this.maxTeams = 4;
+        break;
+      case "Control":
+        this.maxPlayers = 18;
+        this.maxTeams = 6;
+        break;
+      case "Big Team Deathmatch":
+        this.maxPlayers = 24;
+        this.maxTeams = 8;
+        break;
+      case "Lockdown":
+        this.maxPlayers = 12;
+        this.maxTeams = 4;
+        break;
+      default:
+        this.maxPlayers = 60;
+        this.maxTeams = 20;
+        break;
+    }
   }
 
   /**

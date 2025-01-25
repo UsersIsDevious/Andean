@@ -1,19 +1,21 @@
 const app = require('../app')
+const common = require('../utils/common');
 
-function saveConfig(req, res) {
+function saveConfig(body) {
     const config = app.config;
-    const body = JSON.parse(req.body);
-    for (const key in Object.keys(body)) {
+    for (const key in body) {
         config[key] = body[key];
     }
-    common.saveConfig(config);
+    common.saveConfig('./config.json', config);
+    return config;
 }
 
 
 function makeScore() {
+    return null;
     app.match
 
     return score;
 }
 
-module.exports = { saveConfig };
+module.exports = { makeScore, saveConfig };
