@@ -1,3 +1,5 @@
+chcp 65001
+
 @echo off
 REM スクリプトがあるディレクトリに移動
 cd /d "%~dp0"

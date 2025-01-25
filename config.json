@@ -3,7 +3,7 @@
     "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Apex Legends\\r5apex.exe",
     "api_port": "7777",
     "api_option": "+cl_liveapi_enabled 1",
-    "option": "+miles_language english"
+    "option": "+miles_language english +cl_liveapi_ws_retry_count 20 +cl_liveapi_ws_retry_time 3 +cl_liveapi_ws_timeout 20"
   },
   "penetrator": [
     "Caustic Gas"

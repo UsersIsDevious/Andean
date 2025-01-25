@@ -184,6 +184,7 @@ function analyze_message(category, msg) {
         }
         case "GameStateChanged": {
             try {
+                match.setState(msg.state);
                 if (msg.state === "Prematch") {
                     match.setStartTimeStamp(msg.timestamp);
                     matchBase = JSON.parse(JSON.stringify(match));
@@ -198,7 +199,6 @@ function analyze_message(category, msg) {
                     matchBase.packetLists = match.packetLists;
                     common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, config.output, matchBase);
                 }
-                match.setState(msg.state);
             } catch (error) {
                 lobby.setState(msg.state);
             }
@@ -260,9 +260,9 @@ function analyze_message(category, msg) {
             if (match.getPlayer(nucleushash) == null) {
                 match.addPlayer(new Player(msg_player.name, msg_player.teamid, nucleushash, msg_player.hardwarename), msg_player.teamname);
             }
-            for (let i = 0; i < match.maxTeams + 2; i++) {
+            for (let i = 2; i < match.maxTeams + 2; i++) {
                 if (match.getTeam(i) == null) {
-                    match.addTeam(i, `Team ${i + 1}`);
+                    match.addTeam(i, `Team ${i - 1}`);
                 }
             }
             const player = processUpdatePlayer(msg, match);
