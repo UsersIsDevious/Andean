@@ -5,7 +5,7 @@ const language = common.readConfig('../../locals/en.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
 const sendMapData = require('./services/sendMapData')
-const apexCommon = require('./services/apexCommon')
+const apexCommon = require('./services/apexCommon');
 
 
 /**
@@ -196,7 +196,7 @@ function analyze_message(category, msg) {
                         }
                     }
                     matchBase.packetLists = match.packetLists;
-                    common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, matchBase);
+                    common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, config.output, matchBase);
                 }
                 match.setState(msg.state);
             } catch (error) {
@@ -1074,7 +1074,7 @@ function getItemId(name) {
 async function update() {
     if (match && match.startTimeStamp != 0 && match.endTimeStamp === 0) {
         getPlayerStatus(match);
-        sendMapData.sendPlayerPositionUpdate(match);
+        sendMapData.sendPlayerPositionUpdate(match, config.output);
     }
     if (match && match.startTimeStamp != 0 && !["Resolution", "Postmatch"].includes(match.state)) {
         if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 0) {

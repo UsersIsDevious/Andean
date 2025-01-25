@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
-const app = require('../app');
 let servers = {}; // サーバーリストを保持するオブジェクト
 
 // コールバックリストを保持
@@ -71,13 +70,12 @@ function saveData(filename,_class) {
 
 /**
  * JSONファイルにPacketデータを保存します。
- * 
- * @param {Object} _class - 新しく保存するPacketデータ
  * @param {string} filename - ファイル名
- * @param {string} newData.class - クラス名
+ * @param {string} outputPath - ファイルの保存先のパス
+ * @param {Object} _class - 新しく保存するPacketデータオブジェクト
  */
-function saveUpdate(filename, _class) {
-  let filePath = path.join(__dirname, `${app.config.output}`, filename + ".json");
+function saveUpdate(filename, outputPath, _class) {
+  let filePath = path.join(__dirname, `${outputPath}`, filename + ".json");
 
   try {
     // データをファイルに書き込み

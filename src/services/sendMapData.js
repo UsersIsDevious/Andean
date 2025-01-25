@@ -34,9 +34,10 @@ function sendMapInitialization(mapName, match) {
 
 /**
  * プレイヤーの座標変更のメッセージを送信する関数
- * @param {CustomMatch} match 
+ * @param {CustomMatch} match
+ * @param {String} outputPath
  */
-function sendPlayerPositionUpdate(match) {
+function sendPlayerPositionUpdate(match, outputPath) {
   let message = {
     type: 'player_update',
     updates: []
@@ -53,7 +54,7 @@ function sendPlayerPositionUpdate(match) {
       }
     )
   }
-  send(match, message);
+  send(match, outputPath);
 }
 
 /**
@@ -73,8 +74,8 @@ function sendRingUpdate(match) {
  * メッセージを送信する関数
  * @param {CustomMatch} match 
  */
-async function send(match, message){
-  common.saveUpdate(match.matchName, match)
+async function send(match, outputPath){
+  common.saveUpdate(match.matchName, outputPath, match)
   //await common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(message));
   await common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(match));
   match.refreshEventLists();
