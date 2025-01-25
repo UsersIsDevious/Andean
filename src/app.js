@@ -186,7 +186,7 @@ function analyze_message(category, msg) {
                 };
                 if (msg.state === "Postmatch") {
                     for (i=0; i<ringEvents.length; i+=2) {
-                        if ((i + 1) !== ringEvents.length && ringEvents[i].type === "RingStartClosing" && ringEvents[i + 1].type === "RingFinishedClosing" && ringEvents[i].stage === ringEvents[i + 1].stage) {
+                        if ((i + 1) !== ringEvents.length && ringEvents[i].type === "ringStartClosing" && ringEvents[i + 1].type === "ringFinishedClosing" && ringEvents[i].stage === ringEvents[i + 1].stage) {
                             ringEvents[i].center = ringEvents[i + 1].center;
                         }
                     }
