@@ -1015,11 +1015,10 @@ function getPlayerStatus(match) {
  * @returns {string} 見つかった場合は配列、見つからなかった場合はnullを返す
  */
 function splitBracketParts(input) {
-    const match = input.match(/^(.+?) （(.+?)）$/);
+    const match = input.match(/^(.*?)\s*\((.*?)\)$/);
     if (match) {
         return [match[1], match[2]];
     } else {
-        console.log("[splitBracketParts] フォーマットが一致しませんでした。");
         return null;
     }
 }
