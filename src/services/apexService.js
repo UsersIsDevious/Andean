@@ -5,7 +5,7 @@ const apexCommon = require('./apexCommon');
  * @param {Request} req - クライアントのリクエストオブジェクト
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
-function apexLiveApiCall(req, res) {
+async function apexLiveApiCall(req, res) {
   // リクエストのクエリパラメーターを取得（例：/API?param=value）
   const operation = req.params.operation;
 
@@ -102,7 +102,7 @@ function apexLiveApiCall(req, res) {
       console.log("[GET_LOBBY_PLAYERS] Fetching players in lobby");
       // ロビープレイヤー情報の取得
       apexCommon.get_lobby_players();
-      res.json({ operation: 'get_lobby_players', message: "Lobby players fetched" });
+      res.status(200).send({ success: true });
       break;
 
     case 'set_team_name':
@@ -116,7 +116,7 @@ function apexLiveApiCall(req, res) {
       console.log("[GET_MATCH_SETTINGS] Fetching match settings");
       // 試合設定を取得
       apexCommon.get_match_settings();
-      res.json({ operation: 'get_match_settings', message: "Match settings fetched" });
+      res.status(200).send({ success: true });
       break;
 
     case 'set_spawn_point':

@@ -78,7 +78,6 @@ async function send(match, outputPath){
   common.saveUpdate(match.matchName, outputPath, match)
   //await common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(message));
   await common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(match));
-  match.refreshEventLists();
 }
 
 module.exports = { sendMapInitialization, sendPlayerPositionUpdate, sendRingUpdate }

@@ -39,8 +39,24 @@ const buttonVariants = cva(
   },
 )
 
+const handleScoreClick = async () => {
+  try {
+    const response = await fetch("/getScore")
+    const data = await response.json()
+    const scoreText = `${data.score}`
+    await navigator.clipboard.writeText(scoreText)
+    alert("Score copied to clipboard!")
+  } catch (error) {
+    console.error("Failed to fetch or copy score:", error)
+    alert("Failed to fetch or copy score")
+  }
+}
+
 const Button = React.forwardRef(
-  ({ className, variant, size, width, asChild = false, isMatchmakingButton = false, ...props }, ref) => {
+  (
+    { className, variant, size, width, asChild = false, isMatchmakingButton = false, isScoreButton = false, ...props },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : "button"
     const [isMatchmaking, setIsMatchmaking] = useState(false)
     const [isReady, setIsReady] = useState(false)
@@ -54,6 +70,8 @@ const Button = React.forwardRef(
         } catch (error) {
           console.error("Failed to set matchmaking status:", error)
         }
+      } else if (isScoreButton) {
+        await handleScoreClick()
       }
 
       if (props.onClick) {
@@ -68,7 +86,13 @@ const Button = React.forwardRef(
         {...props}
         onClick={handleClick}
       >
-        {isMatchmakingButton ? (isMatchmaking ? "Stop Matchmaking" : "Start Matchmaking") : props.children}
+        {isMatchmakingButton
+          ? isMatchmaking
+            ? "Stop Matchmaking"
+            : "Start Matchmaking"
+          : isScoreButton
+            ? "Copy Score"
+            : props.children}
       </Comp>
     )
   },
@@ -76,4 +100,3 @@ const Button = React.forwardRef(
 Button.displayName = "Button"
 
 export { Button, buttonVariants }
-

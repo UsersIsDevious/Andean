@@ -73,7 +73,11 @@ function resetConfig(req, res) {
  */
 function getScore(req, res) {
   const score = serverService.makeScore();
-  res.status(200).send(score);
+  if (score === false) {
+      res.status(400).send({success: false});
+  } else {
+      res.status(200).send({success: true, score: score});
+  }
 }
 
 

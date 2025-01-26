@@ -1,6 +1,6 @@
 import { fetchWithTimeout } from "../lib/utils"
 
-const API_TIMEOUT = 8000 // 8 seconds
+const API_TIMEOUT = 10000 // 8 seconds
 
 export const api = {
   // Lobby-related API calls
@@ -107,6 +107,7 @@ export const api = {
   // Other API calls
   getLobbyPlayers: async () => {
     const response = await fetchWithTimeout("/api/get_lobby_players", {
+      method: "POST",
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to get lobby players")
@@ -115,6 +116,7 @@ export const api = {
 
   getMatchSettings: async () => {
     const response = await fetchWithTimeout("/api/get_match_settings", {
+      method: "POST",
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to get match settings")
