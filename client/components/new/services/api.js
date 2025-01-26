@@ -66,7 +66,7 @@ export const api = {
   },
 
   calculateScores: async () => {
-    const response = await fetchWithTimeout("/api/score_calculation", {
+    const response = await fetchWithTimeout("/getScore", {
       method: "POST",
       timeout: API_TIMEOUT,
     })

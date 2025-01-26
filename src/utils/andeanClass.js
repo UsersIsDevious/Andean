@@ -1965,11 +1965,11 @@ class Team {
 
   /**
    * チームの順位を設定するメソッド
-   * @param {Array<Team>} teams - チームデータの配列
+   * @param {number} rank - 順位
    * @memberof Team
    */
-  setRank(teams) {
-    this.rank = (Object.keys(teams).length - 2) - Object.values(teams).filter((team) => team.rank === 0).length;
+  setRank(rank) {
+    this.rank = rank;
   }
 
   /**

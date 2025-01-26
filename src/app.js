@@ -100,10 +100,10 @@ let lobby = new CustomMatch("lobby");
  */
 let ringEvents = [];
 /**
- * APIから送られてくるイベントを保持するスタック
- * @type {Array<Message>}
+ * ランクを記録する配列
+ * @type {Array<Number>}
  */
-let queStack = {};
+let ranks = [];
 /**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
@@ -194,6 +194,13 @@ function analyze_message(category, msg) {
                     match.setStartTimeStamp(msg.timestamp);
                     matchBase = JSON.parse(JSON.stringify(match));
                     ringEvents = [];
+                    ranks = [];
+                    for (let i = match.maxTeams + 2; i >= 2 ; i--) {
+                        const team = match.getTeam(i);
+                        if (team.players.length === 0) {
+                            ranks.push(i);
+                        }
+                    }
                 };
                 if (msg.state === "Postmatch") {
                     for (i=0; i<ringEvents.length; i+=2) {
@@ -205,6 +212,10 @@ function analyze_message(category, msg) {
                                 match.packetLists[startRing_t].events.find((event) => event.type === "ringStartClosing") = endRing.center;
                             }
                         }
+                    }
+                    for (let i = 0; i < ranks.length; i++) {
+                        const team = match.getTeam(ranks[i]);
+                        team.setRank(ranks.length - i);
                     }
                     matchBase.packetLists = match.packetLists;
                     common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, config.output, matchBase);
@@ -552,7 +563,7 @@ function analyze_message(category, msg) {
                 player.setStatus("eliminated");
             }
             const team = match.getTeam(msg_player.teamid);
-            team.setRank(match.teams);
+            ranks.push(msg_player.teamid);
             const event = new Event(msg.timestamp, msg.category, { teamId: msg_player.teamid, lastPlayer: team.lastDeath, destroyer: team.destroyerId });
             match.addEventElement(event);
             packet.addEvent(event);
@@ -1055,9 +1066,9 @@ function getPlayerStatus(match) {
  * @returns {string} 見つかった場合は配列、見つからなかった場合はnullを返す
  */
 function splitBracketParts(input) {
-    const match = input.match(/^(.*?)\s*[\(（](.*?)[\)）]$/);
-    if (match) {
-        return [match[1].trim(), match[2].trim()];
+    const split = input.match(/^(.*?)\s*[\(（](.*?)[\)）]$/);
+    if (split) {
+        return [split[1].trim(), split[2].trim()];
     } else {
         return null;
     }
@@ -1082,6 +1093,40 @@ function getItemId(name) {
 }
 
 /**
+ * スコアを計算し結果を返す関数
+ * @returns {boolean|Object} - スコアが更新されたかどうか
+ */
+function calcScore() {
+    let scoreBoard = "";
+    if (!match) { return false; }
+    const score_setting = config.score_setting;
+    match.setScoreSettings(score_setting);
+    const killPoint = score_setting.kill_point;
+    const maxKill = score_setting.max_kill;
+    for (let i = 2; i < match.maxTeams + 2; i++) {
+        let teamScore = 0;
+        let team = match.getTeam(i);
+        // Teamが存在し、かつプレイヤーがいる場合
+        if (team != null && team.players.length > 0) {
+            let rankPoint = score_setting.rank_points[team.rank - 1];
+            for (const playerId of team.players) {
+                let kill = match.getPlayer(playerId).kills.total;
+                console.log(playerId, teamScore, rankPoint, kill, maxKill, killPoint, typeof kill, typeof maxKill, typeof killPoint);
+                if (kill > maxKill) {
+                    teamScore += maxKill * killPoint;
+                } else {
+                    teamScore += kill * killPoint;
+                }
+            }
+            team.score = teamScore + rankPoint;
+        }
+        scoreBoard += `${team.rank}\t${team.totalKills}\t${team.score}\n`;
+    }
+    console.log("[GET SCORE] scoreBoard", scoreBoard);
+    return scoreBoard;
+}
+
+/**
  * メインスレッド
  */
 async function update() {
@@ -1093,7 +1138,7 @@ async function update() {
         if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 0) {
             match.addPacketElement(packet.t, packet.toJSON());
         }
-        console.log("Make Packet");
+        // console.log("Make Packet");
         packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
     }
 }
@@ -1151,4 +1196,4 @@ function handleMessage(message, messageType) {
     analyze_message(messageType, message.toObject());
 }
 
-module.exports = { match, config, startApexLegends, analyze_message }
+module.exports = { match, config, calcScore, startApexLegends, analyze_message }

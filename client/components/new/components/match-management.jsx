@@ -188,8 +188,18 @@ export default function MatchManagement({ config, updateConfig }) {
             ))}
           </div>
           <RequestButton
-            onClick={api.calculateScores}
-            onSuccess={(data) => alert(`Score calculation complete: ${JSON.stringify(data)}`)}
+            onClick={async () => {
+              try {
+                const response = await fetch("/getScore", {method: "POST"})
+                const data = await response.json()
+                const scoreString = `${data.score}`
+                await navigator.clipboard.writeText(scoreString)
+                alert("Score copied to clipboard: " + scoreString)
+              } catch (error) {
+                console.error("Error calculating scores:", error)
+                alert("Failed to calculate scores: " + error.message)
+              }
+            }}
             variant="outline"
             className="flex items-center space-x-2 w-full justify-center"
           >
@@ -267,4 +277,3 @@ export default function MatchManagement({ config, updateConfig }) {
     </div>
   )
 }
-
