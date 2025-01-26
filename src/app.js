@@ -241,6 +241,8 @@ function analyze_message(category, msg) {
             match.addEventElement(event);
             // AndeanのPacketクラスに追加する
             packet.addEvent(event);
+            // リングイベントが発生した時間を記録する
+            ringEvents.push([packet.t, event]);
             break;
         }
         case "RingFinishedClosing": {
@@ -252,14 +254,13 @@ function analyze_message(category, msg) {
             match.addEventElement(event);
             // AndeanのPacketクラスに追加する
             packet.addEvent(event);
+            // リングイベントが発生した時間を記録する
+            ringEvents.push([packet.t, event]);
             break;
         }
         case "PlayerConnected": {
             const msg_player = msg.player;
-            const nucleushash = msg_player.nucleushash;
-            if (match.getPlayer(nucleushash) == null) {
-                match.addPlayer(new Player(msg_player.name, msg_player.teamid, nucleushash, msg_player.hardwarename), msg_player.teamname);
-            }
+            checkPlayerInstance(msg_player, match);
             for (let i = 2; i < match.maxTeams + 2; i++) {
                 if (match.getTeam(i) == null) {
                     match.addTeam(i, `Team ${i - 1}`);
@@ -541,6 +542,7 @@ function analyze_message(category, msg) {
                 player.setStatus("eliminated");
             }
             const team = match.getTeam(msg_player.teamid);
+            team.setRank(match.teams);
             const event = new Event(msg.timestamp, msg.category, { teamId: msg_player.teamid, lastPlayer: team.lastDeath, destroyer: team.destroyerId });
             match.addEventElement(event);
             packet.addEvent(event);
@@ -1080,14 +1082,8 @@ async function update() {
         if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 0) {
             match.addPacketElement(packet.t, packet.toJSON());
         }
-        const time = (Date.now() / 1000) - match.startTimeStamp;
-        if (packet) {
-            const ringEvent = packet.events.find((event) => ["ringFinishedClosing", "ringStartClosing"].includes(event.type));
-            if (ringEvent != undefined) {
-                ringEvents.push(ringEvent);
-            }
-        }
-        packet = new Packet(time);
+        console.log("Make Packet");
+        packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
     }
 }
 
