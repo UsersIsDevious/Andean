@@ -1272,7 +1272,7 @@ class CustomMatch {
     this.eventLists = [];
     /**
      * パケットリスト
-     * @type {Array<Event>}
+     * @type {Array<Packet>}
      */
     this.packetLists = {};
     /**
@@ -1335,13 +1335,13 @@ class CustomMatch {
   }
 
   /**
-   * eventListsの末尾に新しい要素を追加します。
-   * @param {Event} event - 追加する要素
+   * packetListsの末尾に新しい要素を追加します。
+   * @param {Packet} packetWeb - 追加する要素
    * @memberof CustomMatch
    */
-  addPacketElement(time, event) {
+  addPacketElement(time, packetWeb) {
     // 新しい要素を末尾に追加
-    this.packetLists[time] = event;
+    this.packetLists[time] = packetWeb;
   }
 
   /**
