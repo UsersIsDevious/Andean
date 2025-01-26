@@ -1272,7 +1272,7 @@ class CustomMatch {
     this.eventLists = [];
     /**
      * パケットリスト
-     * @type {Array<Event>}
+     * @type {Array<Packet>}
      */
     this.packetLists = {};
     /**
@@ -1286,6 +1286,11 @@ class CustomMatch {
      * @type {Array<number>}
      */
     this.mapOffset = [0, 0, 1];
+    /**
+     * スコア設定の保存
+     * @type {Object}
+     */
+    this.scoreSettings = {};
   }
 
   /**
@@ -1335,13 +1340,13 @@ class CustomMatch {
   }
 
   /**
-   * eventListsの末尾に新しい要素を追加します。
-   * @param {Event} event - 追加する要素
+   * packetListsの末尾に新しい要素を追加します。
+   * @param {Packet} packetWeb - 追加する要素
    * @memberof CustomMatch
    */
-  addPacketElement(time, event) {
+  addPacketElement(time, packetWeb) {
     // 新しい要素を末尾に追加
-    this.packetLists[time] = event;
+    this.packetLists[time] = packetWeb;
   }
 
   /**
@@ -1386,6 +1391,15 @@ class CustomMatch {
    */
   setState(state) {
     this.state = state;
+  }
+
+  /**
+   * スコア設定を更新するメソッド
+   * @param {Object} scoreSettings スコア設定
+   * @memberof CustomMatch
+   */
+  setScoreSettings(scoreSettings) {
+    this.scoreSettings = scoreSettings;
   }
 
   /**
@@ -1916,7 +1930,7 @@ class Team {
   getPlayerCount(match) {
     return this.players.filter((nucleusHash) => ["alive", "down"].includes(match.getPlayer(nucleusHash).getStatus())).length;
   }
-
+    
   /**
    * チームを壊滅させたプレイヤーのnucleusHashを設定するメソッド
    * @param {string} nucleusHash チームを壊滅させたプレイヤーのnucleusHash
