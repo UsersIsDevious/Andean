@@ -100,6 +100,11 @@ let lobby = new CustomMatch("lobby");
  */
 let ringEvents = [];
 /**
+ * APIから送られてくるイベントを保持するスタック
+ * @type {Array<Message>}
+ */
+let queStack = {};
+/**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
  * @param {Object} msg
@@ -192,8 +197,13 @@ function analyze_message(category, msg) {
                 };
                 if (msg.state === "Postmatch") {
                     for (i=0; i<ringEvents.length; i+=2) {
-                        if ((i + 1) !== ringEvents.length && ringEvents[i].type === "ringStartClosing" && ringEvents[i + 1].type === "ringFinishedClosing" && ringEvents[i].stage === ringEvents[i + 1].stage) {
-                            ringEvents[i].center = ringEvents[i + 1].center;
+                        if ((i + 1) !== ringEvents.length) {
+                            const startRing = ringEvents[i][1];
+                            const startRing_t = ringEvents[i][0];
+                            const endRing = ringEvents[i + 1][1];
+                            if (startRing.category == "ringStartClosing" && endRing.category == "ringFinishedClosing" && startRing.data.stage === endRing.data.stage) {
+                                match.packetLists[startRing_t].events.find((event) => event.type === "ringStartClosing") = endRing.center;
+                            }
                         }
                     }
                     matchBase.packetLists = match.packetLists;
@@ -663,6 +673,7 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_SetSettings": {
+            settings = msg.settings;
             break;
         }
         case "PlayerRespawnTeam": {
