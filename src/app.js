@@ -195,7 +195,7 @@ function analyze_message(category, msg) {
                     matchBase = JSON.parse(JSON.stringify(match));
                     ringEvents = [];
                     ranks = [];
-                    for (let i = match.maxTeams + 2; i >= 2 ; i--) {
+                    for (let i = match.maxTeams + 1; i >= 2 ; i--) {
                         const team = match.getTeam(i);
                         if (team.players.length === 0) {
                             ranks.push(i);
@@ -205,11 +205,20 @@ function analyze_message(category, msg) {
                 if (msg.state === "Postmatch") {
                     for (i=0; i<ringEvents.length; i+=2) {
                         if ((i + 1) !== ringEvents.length) {
+                            /**
+                             * @type {Event}
+                             */
                             const startRing = ringEvents[i][1];
+                            /**
+                             * @type {string}
+                             */
                             const startRing_t = ringEvents[i][0];
+                            /**
+                             * @type {Event}
+                             */
                             const endRing = ringEvents[i + 1][1];
                             if (startRing.category == "ringStartClosing" && endRing.category == "ringFinishedClosing" && startRing.data.stage === endRing.data.stage) {
-                                match.packetLists[startRing_t].events.find((event) => event.type === "ringStartClosing") = endRing.center;
+                                match.packetLists[startRing_t].events.find((event) => event.type === "ringStartClosing").center = endRing.data.center;
                             }
                         }
                     }
@@ -221,6 +230,7 @@ function analyze_message(category, msg) {
                     common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, config.output, matchBase);
                 }
             } catch (error) {
+                console.log(error);
                 lobby.setState(msg.state);
             }
             break;
@@ -908,8 +918,10 @@ function analyze_message(category, msg) {
         case "ObserverSwitched": {
             const targetPlayerList = msg.targetteamList
             const keepedIds = [];
-            for (i = 0; i < Object.keys(packet.data).length; i++) {
-                keepedIds.push(packet.data[i].id);
+            if (packet.data) {
+                for (i = 0; i < Object.keys(packet.data).length; i++) {
+                    keepedIds.push(packet.data[i].id);
+                }
             }
             for (let i = 0; i < targetPlayerList.length; i++) {
                 const msg_target = targetPlayerList[i];
@@ -1135,10 +1147,9 @@ async function update() {
         sendMapData.sendPlayerPositionUpdate(match, config.output);
     }
     if (match && match.startTimeStamp != 0 && !["Resolution", "Postmatch"].includes(match.state)) {
-        if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 0) {
+        if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 0.75) {
             match.addPacketElement(packet.t, packet.toJSON());
         }
-        // console.log("Make Packet");
         packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
     }
 }
@@ -1146,7 +1157,7 @@ async function update() {
 /** @type {*} */
 const intervalId = setInterval(() => {
     update();
-}, 16);
+}, 1000 / config.data_fps);
 
 // サーバーが全て起動した後に呼ばれる処理
 common.registerOnServersStarted((servers) => {
