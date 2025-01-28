@@ -1,6 +1,6 @@
 import { fetchWithTimeout } from "../lib/utils"
 
-const API_TIMEOUT = 10000 // 8 seconds
+const API_TIMEOUT = 8000 // 8 seconds
 
 export const api = {
   // Lobby-related API calls
@@ -8,7 +8,7 @@ export const api = {
     const response = await fetchWithTimeout("/api/join_lobby", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: lobbyId }),
+      body: JSON.stringify({ lobbyId }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to join lobby")
@@ -56,9 +56,11 @@ export const api = {
     return response.json()
   },
 
-  togglePause: async () => {
+  togglePause: async (preTimer) => {
     const response = await fetchWithTimeout("/api/pause_toggle", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ preTimer }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to toggle pause")
@@ -66,8 +68,8 @@ export const api = {
   },
 
   calculateScores: async () => {
-    const response = await fetchWithTimeout("/getScore", {
-      method: "POST",
+    const response = await fetchWithTimeout("/api/getScore", {
+      method: "GET",
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to calculate scores")
@@ -96,7 +98,7 @@ export const api = {
   },
 
   resetConfig: async () => {
-    const response = await fetchWithTimeout("/resetConfig", {
+    const response = await fetchWithTimeout("/api/resetConfig", {
       method: "POST",
       timeout: API_TIMEOUT,
     })
@@ -157,37 +159,21 @@ export const api = {
   },
 
   stopServer: async () => {
-    try {
-      const response = await fetchWithTimeout("/stopServer", {
-        method: "POST",
-        timeout: API_TIMEOUT,
-      })
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to stop server")
-      }
-      return response.json()
-    } catch (error) {
-      console.error("Error stopping server:", error)
-      throw error
-    }
+    const response = await fetchWithTimeout("/stopServer", {
+      method: "POST",
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to stop server")
+    return response.json()
   },
 
   startGame: async () => {
-    try {
-      const response = await fetchWithTimeout("/startGame", {
-        method: "POST",
-        timeout: API_TIMEOUT,
-      })
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to start game")
-      }
-      return response.json()
-    } catch (error) {
-      console.error("Error starting game:", error)
-      throw error
-    }
+    const response = await fetchWithTimeout("/startGame", {
+      method: "POST",
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to start game")
+    return response.json()
   },
 
   togglePeriodicFetch: async () => {

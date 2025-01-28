@@ -39,19 +39,19 @@ function startApexLegends() {
     if (config) {
         if (!config.apexlegends.path) {
             console.error('Apex Legendsのパスが指定されていません。');
-            return;
+            return false;
         }
         if (!config.apexlegends.option) {
             console.error('Apex Legendsの起動オプションが指定されていません。');
-            return;
+            return false;
         }
         if (!config.apexlegends.api_option) {
             console.error('Apex LegendsのAPI起動オプションが指定されていません。');
-            return;
+            return false;
         }
         if (!config.apexlegends.api_port) {
             console.error('Apex LegendsのAPIポートが指定されていません。');
-            return;
+            return false;
         }
     } else {
         config = common.readConfig();
@@ -61,9 +61,11 @@ function startApexLegends() {
     common.runRegularCommand(command)
         .then(output => {
             common.logMessage('Apex Legendsが起動しました:', output);
+            return true;
         })
         .catch(err => {
             console.error('Apex Legendsの起動中にエラーが発生しました:', err);
+            return false;
         });
 }
 

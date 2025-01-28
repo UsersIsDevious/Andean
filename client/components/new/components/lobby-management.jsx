@@ -41,8 +41,8 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
       if (isInLobby && lobbyId) {
         try {
           const [playersResponse, settingsResponse] = await Promise.all([
-            fetch("/api/get_lobby_players"),
-            fetch("/api/get_match_settings"),
+            fetch("/api/get_lobby_players", {method: "POST"}),
+            fetch("/api/get_match_settings", {method: "POST"}),
           ])
           const players = await playersResponse.json()
           const settings = await settingsResponse.json()

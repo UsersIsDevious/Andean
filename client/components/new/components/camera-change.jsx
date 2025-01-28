@@ -34,7 +34,7 @@ export function CameraChange({ isSimulated, simulatedLobbyData }) {
     } else {
       const fetchPlayers = async () => {
         try {
-          const response = await fetchWithTimeout("/api/get_lobby_players")
+          const response = await fetchWithTimeout("/api/get_lobby_players", {method: "POST"})
           if (response.ok) {
             const data = await response.json()
             const formattedPlayers = Object.entries(data)

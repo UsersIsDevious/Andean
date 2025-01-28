@@ -31,8 +31,8 @@ function stopServer(req, res) {
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
 function startGame(req, res) {
-  app.startApexLegends(); // Apex Legends を起動
-  res.status(200).send({ success: true });
+  const result = app.startApexLegends(); // Apex Legends を起動
+  res.status(200).send({ success: result });
 }
 
 

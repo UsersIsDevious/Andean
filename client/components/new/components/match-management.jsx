@@ -16,8 +16,8 @@ export default function MatchManagement({ config, updateConfig }) {
   const [lobbyIdInput, setLobbyIdInput] = useState("")
   const { lobbyId, isInLobby, joinLobby, leaveLobby } = useLobby()
   const [rankPoints, setRankPoints] = useState(Array(20).fill(0))
-  const [matchmakingStatus, setMatchmakingStatus] = useState(false) // Updated state
-  const [pauseTime, setPauseTime] = useState(0) // Added state
+  const [matchmakingStatus, setMatchmakingStatus] = useState(false)
+  const [pauseTime, setPauseTime] = useState(0)
 
   useEffect(() => {
     if (config.score_setting && config.score_setting.rank_points) {
@@ -190,8 +190,7 @@ export default function MatchManagement({ config, updateConfig }) {
           <RequestButton
             onClick={async () => {
               try {
-                const response = await fetch("/getScore", {method: "POST"})
-                const data = await response.json()
+                const data = await api.calculateScores()
                 const scoreString = `${data.score}`
                 await navigator.clipboard.writeText(scoreString)
                 alert("Score copied to clipboard: " + scoreString)
@@ -260,7 +259,7 @@ export default function MatchManagement({ config, updateConfig }) {
             <RequestButton
               onClick={async () => {
                 try {
-                  await api.togglePause({ preTimer: pauseTime })
+                  await api.togglePause(pauseTime)
                   alert(`Game paused/unpaused with ${pauseTime} seconds pre-timer`)
                 } catch (error) {
                   alert(`Failed to toggle pause: ${error.message}`)
@@ -277,3 +276,4 @@ export default function MatchManagement({ config, updateConfig }) {
     </div>
   )
 }
+
