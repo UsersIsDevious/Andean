@@ -1679,7 +1679,7 @@ class Packet {
       t: this.t,
       data: this.data,
       events: this.events.map((event) => ({
-        type: event.category,
+        category: event.category,
         ...event.data,
       })),
     };
@@ -1688,13 +1688,20 @@ class Packet {
   /**
    * データを追加する
    * @param {Object} entityData 追加するエンティティ情報
-   * @param {string} entityData.id エンティティのID
-   * @param {Array<number>} entityData.pos エンティティの位置情報 [x, y, z]
-   * @param {Array<number>} entityData.hp エンティティの体力情報 [currentHP, maxHP, currentShield, maxShield]
    * @memberof Packet
    */
   addData(entityData) {
     this.data.push(entityData);
+  }
+
+  /**
+   * データを更新する
+   * @param {number} index 更新するデータのインデックス
+   * @param {Object} entityData 更新するエンティティ情報
+   * @memberof Packet
+   */
+  updateData(index, entityData) {
+    this.data[index] = entityData;
   }
 
   /**

@@ -191,7 +191,6 @@ function analyze_message(category, msg) {
             try {
                 match.setState(msg.state);
                 if (msg.state === "Prematch") {
-                    match.setStartTimeStamp(msg.timestamp);
                     matchBase = JSON.parse(JSON.stringify(match));
                     ringEvents = [];
                     ranks = [];
@@ -202,7 +201,11 @@ function analyze_message(category, msg) {
                         }
                     }
                 };
+                if (msg.state === "Playing") {
+                    match.setStartTimeStamp(msg.timestamp);
+                }
                 if (msg.state === "Postmatch") {
+                    matchBase.packetLists = JSON.parse(JSON.stringify(match.packetLists));
                     for (i=0; i<ringEvents.length; i+=2) {
                         if ((i + 1) !== ringEvents.length) {
                             /**
@@ -218,7 +221,7 @@ function analyze_message(category, msg) {
                              */
                             const endRing = ringEvents[i + 1][1];
                             if (startRing.category == "ringStartClosing" && endRing.category == "ringFinishedClosing" && startRing.data.stage === endRing.data.stage) {
-                                match.packetLists[startRing_t].events.find((event) => event.type === "ringStartClosing").center = endRing.data.center;
+                                matchBase.packetLists[startRing_t].events.find((event) => event.category === "ringStartClosing").center = [...endRing.data.center];
                             }
                         }
                     }
@@ -226,7 +229,6 @@ function analyze_message(category, msg) {
                         const team = match.getTeam(ranks[i]);
                         team.setRank(ranks.length - i);
                     }
-                    matchBase.packetLists = match.packetLists;
                     common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, config.output, matchBase);
                 }
             } catch (error) {
@@ -910,18 +912,17 @@ function analyze_message(category, msg) {
             data["newweapon"] = msg.newweapon;
             const event = new Event(msg.timestamp, msg.category, data);
             match.addEventElement(event);
-            if (match.state === "Playing") {
+            if (match.state === "Playing" && packet) {
                 packet.addEvent(event);
             }
             break;
         }
         case "ObserverSwitched": {
+            if (!packet) { break; }
             const targetPlayerList = msg.targetteamList
-            const keepedIds = [];
-            if (packet.data) {
-                for (i = 0; i < Object.keys(packet.data).length; i++) {
-                    keepedIds.push(packet.data[i].id);
-                }
+            const keepedIds = {};
+            for (i = 0; i < packet.data.length; i++) {
+                keepedIds[packet.data[i].id] = i;
             }
             for (let i = 0; i < targetPlayerList.length; i++) {
                 const msg_target = targetPlayerList[i];
@@ -929,9 +930,14 @@ function analyze_message(category, msg) {
                 // AndeanのPlayerクラスに追加する
                 updatePlayer(msg_target, match.getPlayer(msg_target.nucleushash), match.mapOffset);
 
+                // 追加するdataを作成する
+                const data = { id: msg_target.nucleushash, pos: convertLeefletPOS(match.mapOffset, msg_target.pos), ang: msg_target.angles.y, hp: [msg_target.currenthealth, msg_target.maxhealth, msg_target.shieldhealth, msg_target.shieldmaxhealth] };
+
                 // AndeanのPacketクラスに追加する
-                if (!keepedIds.includes(msg_target.nucleushash)) {
-                    packet.addData({ id: msg_target.nucleushash, pos: convertLeefletPOS(match.mapOffset, msg_target.pos), ang: msg_target.angles.y, hp: [msg_target.currenthealth, msg_target.maxhealth, msg_target.shieldhealth, msg_target.shieldmaxhealth] });
+                if (!Object.keys(keepedIds).includes(msg_target.nucleushash)) {
+                    packet.addData(data);
+                } else {
+                    packet.updateData(keepedIds[msg_target.nucleushash], data);
                 }
             }
             break;
@@ -1147,8 +1153,12 @@ async function update() {
         sendMapData.sendPlayerPositionUpdate(match, config.output);
     }
     if (match && match.startTimeStamp != 0 && !["Resolution", "Postmatch"].includes(match.state)) {
-        if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 0.75) {
-            match.addPacketElement(packet.t, packet.toJSON());
+        if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 2) {
+            if (packet.events.length == 0 && Number.isInteger(packet.t)) {
+                console.log("[UPDATE] Packet is skipped");
+            } else {
+                match.addPacketElement(packet.t, packet.toJSON());
+            }
         }
         packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
     }
