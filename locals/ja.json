@@ -55,5 +55,163 @@
         "shotgun": "ショットガンアモ",
         "sniper": "スナイパーアモ",
         "energy": "エネルギーアモ"
+    },
+    "legends_label": {
+        "Bloodhound": {
+            "name": "ブラッドハウンド",
+            "passive": "トラッカー",
+            "tactical": "全能の目",
+            "ultimate": "ハンティングビースト"
+        },
+        "Gibraltar": {
+            "name": "ジブラルタル",
+            "passive": "ガンシールド",
+            "tactical": "プロテクトドーム",
+            "ultimate": "防衛爆撃"
+        },
+        "Lifeline": {
+            "name": "ライフライン",
+            "passive": "コンバットグライド",
+            "tactical": "D.O.C.ヒールドローン",
+            "ultimate": "D.O.C.ヘイローシールド"
+        },
+        "Pathfinder": {
+            "name": "パスファインダー",
+            "passive": "内部情報",
+            "tactical": "グラップリングフック",
+            "ultimate": "ジップラインガン"
+        },
+        "Wraith": {
+            "name": "レイス",
+            "passive": "虚空からの声",
+            "tactical": "虚空へ",
+            "ultimate": "ディメンションリフト"
+        },
+        "Bangalore": {
+            "name": "バンガロール",
+            "passive": "駆け足",
+            "tactical": "スモークランチャー",
+            "ultimate": "ローリングサンダー"
+        },
+        "Caustic": {
+            "name": "コースティック",
+            "passive": "Noxビジョン",
+            "tactical": "Noxガストラップ",
+            "ultimate": "Noxガスグレネード"
+        },
+        "Mirage": {
+            "name": "ミラージュ",
+            "passive": "神出鬼没",
+            "tactical": "サイクアウト",
+            "ultimate": "パーティーライフ"
+        },
+        "Octane": {
+            "name": "オクタン",
+            "passive": "高速修復",
+            "tactical": "興奮剤",
+            "ultimate": "ジャンプパッド"
+        },
+        "Wattson": {
+            "name": "ワットソン",
+            "passive": "天才のひらめき",
+            "tactical": "周辺セキュリティ",
+            "ultimate": "インターセプターパイロン"
+        },
+        "Crypto": {
+            "name": "クリプト",
+            "passive": "ニューロリンク",
+            "tactical": "スパイドローン",
+            "ultimate": "ドローンEMP"
+        },
+        "Revenant": {
+            "name": "レヴナント",
+            "passive": "アサシンの本能",
+            "tactical": "シャドウパウンス",
+            "ultimate": "フォージシャドウ"
+        },
+        "Loba": {
+            "name": "ローバ",
+            "passive": "アイ・フォー・クオリティ",
+            "tactical": "盗賊の相棒",
+            "ultimate": "ブラックマーケットブティック"
+        },
+        "Rampart": {
+            "name": "ランパート",
+            "passive": "改造ローダー",
+            "tactical": "増幅バリケード",
+            "ultimate": "固定式ミニガン「シーラ」"
+        },
+        "Horizon": {
+            "name": "ホライゾン",
+            "passive": "スペースウォーク",
+            "tactical": "グラビティリフト",
+            "ultimate": "ブラックホール"
+        },
+        "Fuse": {
+            "name": "ヒューズ",
+            "passive": "グレネーダー",
+            "tactical": "ナックルクラスター",
+            "ultimate": "マザーロード"
+        },
+        "Valkyrie": {
+            "name": "ヴァルキリー",
+            "passive": "VTOLジェット",
+            "tactical": "ミサイルスワーム",
+            "ultimate": "スカイワードダイブ"
+        },
+        "Seer": {
+            "name": "シア",
+            "passive": "ハートシーカー",
+            "tactical": "フォーカス・オブ・アテンション",
+            "ultimate": "ショーケース"
+        },
+        "Ash": {
+            "name": "アッシュ",
+            "passive": "死の烙印",
+            "tactical": "アークスネア",
+            "ultimate": "フェーズティア"
+        },
+        "Mad Maggie": {
+            "name": "マッドマギー",
+            "passive": "ウォーロードの憤怒",
+            "tactical": "ライオットドリル",
+            "ultimate": "レッキングボール"
+        },
+        "Newcastle": {
+            "name": "ニューキャッスル",
+            "passive": "負傷者の回収",
+            "tactical": "モバイルシールド",
+            "ultimate": "キャッスルウォール"
+        },
+        "Vantage": {
+            "name": "ヴァンテージ",
+            "passive": "スポッターズレンズ",
+            "tactical": "エコー配置",
+            "ultimate": "スナイパーズマーク"
+        },
+        "Catalyst": {
+            "name": "カタリスト",
+            "passive": "バリケード",
+            "tactical": "スパイクトラップ",
+            "ultimate": "ダークヴェール"
+        },
+        "Conduit": {
+            "name": "コンジット",
+            "passive": "セイバースピード",
+            "tactical": "レイディアントトランスファー",
+            "ultimate": "エネルギーバリケード"
+        },
+        "Alter": {
+            "name": "オルター",
+            "passive": "次元の残響",
+            "tactical": "ヴォイドパッセージ",
+            "ultimate": "リアリティフラクチャー"
+        },
+        "Ballistic": {
+            "name": "バリスティック",
+            "passive": "スリング",
+            "tactical": "ウィスラー",
+            "ultimate": "テンペスト"
+        }
     }
 }

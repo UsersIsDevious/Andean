@@ -640,13 +640,13 @@ class Player {
      * プレイヤーがアビリティを使用した回数
      * @type {number}
      */
-    this.abilityUseCount = 0;
+    this.abilityUseCount = {};
 
     /**
      * アルティメットを使用した回数
      * @type {number}
      */
-    this.ultimateUseCount = 0;
+    this.ultimateUseCount = {};
 
     /**
      * ジップラインを使用した回数
@@ -960,18 +960,26 @@ class Player {
 
   /**
    * プレイヤーのアビリティ使用回数を増加させるメソッド
+   * @param {string} abilityId - 使用したアビリティの名前
    * @memberof Player
    */
-  addAbilityUseCount() {
-    this.abilityUseCount++;
+  addAbilityUseCount(abilityId) {
+    if (!this.abilityUseCount[abilityId]) {
+      this.abilityUseCount[abilityId] = 0;
+    }
+    this.abilityUseCount[abilityId]++;
   }
 
   /**
    * プレイヤーのアルティメット使用回数を増加させるメソッド
+   * @param {string} ultimateId - 使用したアルティメットの名前
    * @memberof Player
    */
-  addUltimateUseCount() {
-    this.ultimateUseCount++;
+  addUltimateUseCount(ultimateId) {
+    if (!this.ultimateUseCount[ultimateId]) {
+      this.ultimateUseCount[ultimateId] = 0;
+    }
+    this.ultimateUseCount[ultimateId]++;
   }
 
   /**

@@ -55,5 +55,163 @@
         "shotgun": "Shotgun Shells",
         "sniper": "Sniper Ammo",
         "energy": "Energy Ammo"
+    },
+    "legends_label": {
+        "Bloodhound": {
+            "name": "Bloodhound",
+            "passive": "Tracker",
+            "tactical": "Eye of the Allfather",
+            "ultimate": "Beast of the Hunt"
+        },
+        "Gibraltar": {
+            "name": "Gibraltar",
+            "passive": "Gun Shield",
+            "tactical": "Dome of Protection",
+            "ultimate": "Defensive Bombardment"
+        },
+        "Lifeline": {
+            "name": "Lifeline",
+            "passive": "Combat Glide",
+            "tactical": "D.O.C. Heal Drone",
+            "ultimate": "Halo Shield"
+        },
+        "Pathfinder": {
+            "name": "Pathfinder",
+            "passive": "Insider Knowledge",
+            "tactical": "Grappling Hook",
+            "ultimate": "Zipline Gun"
+        },
+        "Wraith": {
+            "name": "Wraith",
+            "passive": "Voices from the Void",
+            "tactical": "Into the Void",
+            "ultimate": "Dimensional Rift"
+        },
+        "Bangalore": {
+            "name": "Bangalore",
+            "passive": "Double Time",
+            "tactical": "Smoke Launcher",
+            "ultimate": "Rolling Thunder"
+        },
+        "Caustic": {
+            "name": "Caustic",
+            "passive": "Nox Vision",
+            "tactical": "Nox Gas Trap",
+            "ultimate": "Nox Gas Grenade"
+        },
+        "Mirage": {
+            "name": "Mirage",
+            "passive": "Now You See Me...",
+            "tactical": "Psyche Out",
+            "ultimate": "Life of the Party"
+        },
+        "Octane": {
+            "name": "Octane",
+            "passive": "Swift Mend",
+            "tactical": "Stim",
+            "ultimate": "Launch Pad"
+        },
+        "Wattson": {
+            "name": "Wattson",
+            "passive": "Spark of Genius",
+            "tactical": "Perimeter Security",
+            "ultimate": "Interception Pylon"
+        },
+        "Crypto": {
+            "name": "Crypto",
+            "passive": "Neurolink",
+            "tactical": "Surveillance Drone",
+            "ultimate": "Drone EMP"
+        },
+        "Revenant": {
+            "name": "Revenant",
+            "passive": "Assassin's Instinct",
+            "tactical": "Shadow Pounce",
+            "ultimate": "Forged Shadows"
+        },
+        "Loba": {
+            "name": "Loba",
+            "passive": "Eye for Quality",
+            "tactical": "Burglar's Best Friend",
+            "ultimate": "Black Market Boutique"
+        },
+        "Rampart": {
+            "name": "Rampart",
+            "passive": "Modded Loader",
+            "tactical": "Amped Cover",
+            "ultimate": "Emplaced Minigun 'Sheila'"
+        },
+        "Horizon": {
+            "name": "Horizon",
+            "passive": "Spacewalk",
+            "tactical": "Gravity Lift",
+            "ultimate": "Black Hole"
+        },
+        "Fuse": {
+            "name": "Fuse",
+            "passive": "Grenadier",
+            "tactical": "Knuckle Cluster",
+            "ultimate": "The Motherlode"
+        },
+        "Valkyrie": {
+            "name": "Valkyrie",
+            "passive": "VTOL Jets",
+            "tactical": "Missile Swarm",
+            "ultimate": "Skyward Dive"
+        },
+        "Seer": {
+            "name": "Seer",
+            "passive": "Heart Seeker",
+            "tactical": "Focus of Attention",
+            "ultimate": "Exhibit"
+        },
+        "Ash": {
+            "name": "Ash",
+            "passive": "Marked for Death",
+            "tactical": "Arc Snare",
+            "ultimate": "Phase Breach"
+        },
+        "Mad Maggie": {
+            "name": "Mad Maggie",
+            "passive": "Warlord's Ire",
+            "tactical": "Riot Drill",
+            "ultimate": "Wrecking Ball"
+        },
+        "Newcastle": {
+            "name": "Newcastle",
+            "passive": "Retrieve the Wounded",
+            "tactical": "Mobile Shield",
+            "ultimate": "Castle Wall"
+        },
+        "Vantage": {
+            "name": "Vantage",
+            "passive": "Spotter's Lens",
+            "tactical": "Echo Relocation",
+            "ultimate": "Sniper's Mark"
+        },
+        "Catalyst": {
+            "name": "Catalyst",
+            "passive": "Barricade",
+            "tactical": "Piercing Spikes",
+            "ultimate": "Dark Veil"
+        },
+        "Conduit": {
+            "name": "Conduit",
+            "passive": "Savior's Speed",
+            "tactical": "Radiant Transfer",
+            "ultimate": "Energy Barricade"
+        },
+        "Alter": {
+            "name": "Alter",
+            "passive": "Dimensional Echo",
+            "tactical": "Void Passage",
+            "ultimate": "Reality Fracture"
+        },
+        "Ballistic": {
+            "name": "Ballistic",
+            "passive": "Sling",
+            "tactical": "Whistler",
+            "ultimate": "Tempest"
+        }
     }
 }

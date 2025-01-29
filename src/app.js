@@ -841,7 +841,6 @@ function analyze_message(category, msg) {
             }
             player.updateHealthAndShields(msg.currenthealth + healHealth, msg.maxhealth, msg.shieldhealth + rechargeShield, msg.shieldmaxhealth);
             match.getTeam(msg.player.teamid).addTotalHealing(healHealth + rechargeShield);
-            data["item"] = item;
             data["quantity"] = msg.quantity;
             const event = new Event(msg.timestamp, msg.category, data);
             match.addEventElement(event);
@@ -860,16 +859,18 @@ function analyze_message(category, msg) {
         }
         case "PlayerAbilityUsed": {
             const player = processUpdatePlayer(msg, match);
-            const ability = splitBracketParts(msg.linkedentity);
-            if (ability[0] === "Ultimate") {
-                player.addUltimateUseCount();
+            const abilityType = splitBracketParts(msg.linkedentity);
+            const characterName = getLegendId(msg.player.character);
+            const abilityName = getAbilityId(characterName, msg.linkedentity);
+            if (abilityType[0] === "Ultimate") {
+                player.addUltimateUseCount(abilityName);
                 player.setUltimateCharged(false);
-            } else if (ability[0] === "Tactical") {
-                player.addAbilityUseCount();
+            } else if (abilityType[0] === "Tactical") {
+                player.addAbilityUseCount(abilityName);
             }
             const data = processEventData(msg.player, match);
-            data["linkedentity"] = msg.linkedentity;
-            data["character"] = msg.player.character;
+            data["linkedentity"] = abilityName;
+            data["character"] = characterName;
             const event = new Event(msg.timestamp, msg.category, data);
             match.addEventElement(event);
             packet.addEvent(event);
@@ -877,11 +878,12 @@ function analyze_message(category, msg) {
         }
         case "LegendUpgradeSelected": {
             const player = processUpdatePlayer(msg, match);
+            const characterName = getLegendId(msg.player.character);
             const levelObj = player.level[String(msg.level)];
             levelObj.upgradename = msg.upgradename;
             levelObj.upgradedesc = msg.upgradedesc;
             const data = processEventData(msg.player, match);
-            data["character"] = msg.player.character;
+            data["character"] = characterName;
             data["upgradename"] = msg.upgradename;
             data["upgradedesc"] = msg.upgradedesc;
             data["level"] = msg.level;
@@ -1018,7 +1020,7 @@ function updatePlayer(json, player, mapOffset, characterSelected = false) {
         player.setSquadIndex(json.squadindex);
     }
     if (characterSelected) {
-        player.updateLegend(json.character, json.skin);
+        player.updateLegend(getLegendId(json.character), json.skin);
     }
     return player
 }
@@ -1157,6 +1159,34 @@ function getWeaponId(name) {
     }
     if (result === undefined) {
         console.log(`[GET WEAPON ID] Weapon ID not found: ${name}`);
+    }
+    return result;
+}
+
+/**
+ * アビリティ名からゲーム内IDをチェックする
+ * @param {String} character - キャラクター名
+ * @param {String} name - アビリティ名
+ * @returns {String|undefined} 存在した場合はアビリティID、存在しない場合はundefined
+ */
+function getAbilityId(character, name) {
+    const split = splitBracketParts(name);
+    const result = language.abilities_label[character][split[0].toLowerCase()];
+    if (result != split[1]) {
+        console.log(`[GET ABILITY ID] Ability name is not match: ${name}`);
+    }
+    return result;
+}
+
+/**
+ * レジェンド名からゲーム内IDをチェックする
+ * @param {String} name
+ * @returns {String|undefined} 存在した場合はレジェンドID、存在しない場合はundefined
+ */
+function getLegendId(name) {
+    let result = Object.keys(language.legends_label).find((key) => language.legends_label[key].name === name);
+    if (result === undefined) {
+        console.log(`[GET LEGEND ID] Legend ID not found: ${name}`);
     }
     return result;
 }
