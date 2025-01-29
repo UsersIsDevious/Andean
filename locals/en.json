@@ -35,8 +35,25 @@
     },
     "items_label": {
         "mp_ability_void_ring": "Heat Shield",
+        "mp_ability_mobile_respawn_beacon": "Mobile Respawn Beacon",
+        "mp_ability_redeploy_balloon": "Evac Tower",
         "mp_weapon_grenade_emp": "Arc Star",
         "mp_weapon_thermite_grenade": "Thermite Grenade",
-        "mp_weapon_frag_grenade": "Frag Grenade"
+        "mp_weapon_frag_grenade": "Frag Grenade",
+        "Shield Cell": "Shield Cell",
+        "Shield Battery": "Shield Battery",
+        "Syringe": "Syringe",
+        "Med Kit": "Med Kit",
+        "Phoenix Kit": "Phoenix Kit",
+        "Ultimate Accelerant": "Ultimate Accelerant",
+        "Helmet": "Helmet",
+        "Body Shield": "Body Shield",
+        "Knockdown Shield": "Knockdown Shield",
+        "Backpack": "Backpack",
+        "bullet": "Heavy Rounds",
+        "highcal": "Light Rounds",
+        "shotgun": "Shotgun Shells",
+        "sniper": "Sniper Ammo",
+        "energy": "Energy Ammo"
     }
 }

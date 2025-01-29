@@ -1,11 +1,20 @@
 const common = require('./utils/common');
 const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event, Packet } = require('./utils/andeanClass');
 let config = common.readConfig('../../config.json');
-const language = common.readConfig('../../locals/en.json');
+let language = common.readConfig('../../locals/en.default.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
 const sendMapData = require('./services/sendMapData')
 const apexCommon = require('./services/apexCommon');
+
+if (!config) {
+    console.error('設定ファイルが見つかりません。');
+    return;
+} else if (!config.language || config.language === '') {
+    console.error('言語設定が見つからないため、デフォルトの言語設定(English)を使用します。');
+} else {
+    language = common.readConfig(`../../locals/${config.language}.json`);
+}
 
 
 /**
@@ -739,16 +748,25 @@ function analyze_message(category, msg) {
         case "InventoryPickUp": {
             const player = processUpdatePlayer(msg, match);
             const item = msg.item;
-            const data = processEventData(msg.player, match);
+            const itemName = splitBracketParts(item);
+            const quantity = msg.quantity;
             const weaponId = getWeaponId(item);
+            const itemId = getItemId(item);
+            const data = processEventData(msg.player, match);
             if (weaponId != undefined) {
                 player.inventory.addOrUpdateWeapon(weaponId, item, checkItemLevel(item));
                 data["item"] = weaponId;
+            } else if (itemId != undefined) {
+                player.inventory.addOrUpdateItem(itemId, quantity, checkItemLevel(item));
+                data["item"] = itemId;
+            } else if (itemName != null) {
+                player.inventory.addOrUpdateItem(itemName, quantity, checkItemLevel(item));
+                data["item"] = itemName;
             } else {
-                player.inventory.addOrUpdateItem(item, item.quantity, checkItemLevel(item));
+                player.inventory.addOrUpdateItem(item, quantity, checkItemLevel(item));
                 data["item"] = item;
             }
-            data["quantity"] = msg.quantity;
+            data["quantity"] = quantity;
             const event = new Event(msg.timestamp, msg.category, data);
             match.addEventElement(event);
             packet.addEvent(event);
@@ -757,17 +775,48 @@ function analyze_message(category, msg) {
         case "InventoryDrop": {
             const player = processUpdatePlayer(msg, match);
             const item = msg.item;
-            const weaponId = getWeaponId(item)
+            const itemName = splitBracketParts(item);
+            const quantity = msg.quantity;
+            const weaponId = getWeaponId(item);
+            const itemId = getItemId(item);
+            const data = processEventData(msg.player, match);
             if (weaponId != undefined) {
                 player.inventory.removeWeapon(weaponId, checkItemLevel(item));
+                data["item"] = weaponId;
+            } else if (itemId != undefined) {
+                player.inventory.addOrUpdateItem(itemId, -(quantity), checkItemLevel(item));
+                data["item"] = itemId;
+            } else if (itemName != null) {
+                player.inventory.addOrUpdateItem(itemName, -(quantity), checkItemLevel(item));
+                data["item"] = itemName;
+            } else {
+                player.inventory.addOrUpdateItem(item, -(quantity), checkItemLevel(item));
+                data["item"] = item;
             }
-            player.inventory.addOrUpdateItem(item, -(item.quantity), checkItemLevel(item));
+            data["quantity"] = quantity;
+            data["extradataList"] = msg.extradataList;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "InventoryUse": {
             const player = processUpdatePlayer(msg, match);
             const item = msg.item;
-            player.inventory.addOrUpdateItem(item, -(item.quantity), checkItemLevel(item));
+            const itemName = splitBracketParts(item);
+            const quantity = msg.quantity;
+            const itemId = getItemId(item);
+            const data = processEventData(msg.player, match);
+            if (itemId != undefined) {
+                player.inventory.addOrUpdateItem(itemId, -(quantity), checkItemLevel(item));
+                data["item"] = itemId;
+            } else if (itemName != null) {
+                player.inventory.addOrUpdateItem(itemName, -(quantity), checkItemLevel(item));
+                data["item"] = itemName;
+            } else {
+                player.inventory.addOrUpdateItem(item, -(quantity), checkItemLevel(item));
+                data["item"] = item;
+            }
             let name = splitBracketParts(item);
             if (name === null) {
                 name = item;
@@ -792,7 +841,6 @@ function analyze_message(category, msg) {
             }
             player.updateHealthAndShields(msg.currenthealth + healHealth, msg.maxhealth, msg.shieldhealth + rechargeShield, msg.shieldmaxhealth);
             match.getTeam(msg.player.teamid).addTotalHealing(healHealth + rechargeShield);
-            const data = processEventData(msg.player, match);
             data["item"] = item;
             data["quantity"] = msg.quantity;
             const event = new Event(msg.timestamp, msg.category, data);
@@ -1083,7 +1131,7 @@ function getPlayerStatus(match) {
 /**
  * 括弧で囲まれた部分とそうでない部分で分割する
  * @param {string} input
- * @returns {string} 見つかった場合は配列、見つからなかった場合はnullを返す
+ * @returns {string|null} 見つかった場合は配列、見つからなかった場合はnullを返す
  */
 function splitBracketParts(input) {
     const split = input.match(/^(.*?)\s*[\(（](.*?)[\)）]$/);
@@ -1097,19 +1145,39 @@ function splitBracketParts(input) {
 /**
  * 武器名からゲーム内IDをチェックする
  * @param {String} name
- * @returns {String}
+ * @returns {String|undefined}
  */
 function getWeaponId(name) {
-    return Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === name);
+    const split = splitBracketParts(name);
+    let result = "";
+    if (split == null) {
+        result = Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === name);
+    } else {
+        result = Object.keys(language.weapons_label).find((key) => language.weapons_label[key] === split[0]);
+    }
+    if (result === undefined) {
+        console.log(`[GET WEAPON ID] Weapon ID not found: ${name}`);
+    }
+    return result;
 }
 
 /**
  * アイテム名からゲーム内IDをチェックする
  * @param {String} name
- * @returns {String}
+ * @returns {String|undefined}
  */
 function getItemId(name) {
-    return Object.keys(language.items_label).find((key) => language.items_label[key] === name);
+    const split = splitBracketParts(name);
+    let result = "";
+    if (split == null) {
+        result = Object.keys(language.items_label).find((key) => language.items_label[key] === name);
+    } else {
+        result = Object.keys(language.items_label).find((key) => language.items_label[key] === split[0]);
+    }
+    if (result === undefined) {
+        console.log(`[GET ITEM ID] Item ID not found: ${name}`);
+    }
+    return result;
 }
 
 /**
