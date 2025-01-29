@@ -902,11 +902,17 @@ function analyze_message(category, msg) {
         case "GrenadeThrown": {
             const player = processUpdatePlayer(msg, match);
             const itemName = msg.linkedentity;
-            // const itemId = getItemId(itemName); // 未実装
-            player.inventory.addOrUpdateItem(itemName, -1, checkItemLevel(itemName));
-            player.addGrenadeUseCount(itemName);
+            const itemId = getItemId(itemName);
             const data = processEventData(msg.player, match);
-            data["linkedentity"] = msg.linkedentity;
+            if (itemId !== undefined) {
+                player.inventory.addOrUpdateItem(itemId, -1, checkItemLevel(itemName));
+                player.addGrenadeUseCount(itemId);
+                data["linkedentity"] = itemId;
+            } else {
+                player.inventory.addOrUpdateItem(itemName, -1, checkItemLevel(itemName));
+                player.addGrenadeUseCount(itemName);
+                data["linkedentity"] = itemName;
+            }
             const event = new Event(msg.timestamp, msg.category, data);
             match.addEventElement(event);
             packet.addEvent(event);
@@ -915,10 +921,15 @@ function analyze_message(category, msg) {
         case "BlackMarketAction": {
             const player = processUpdatePlayer(msg, match);
             const item = msg.item;
-            // const itemId = getItemId(itemName); // 未実装
-            player.addBlackMarketUseCount(item);
+            const itemId = getItemId(item);
             const data = processEventData(msg.player, match);
-            data["item"] = item;
+            if (itemId !== undefined) {
+                player.addBlackMarketUseCount(itemId);
+                data["item"] = itemId;
+            } else {
+                player.addBlackMarketUseCount(item);
+                data["item"] = item;
+            }
             const event = new Event(msg.timestamp, msg.category, data);
             match.addEventElement(event);
             packet.addEvent(event);
