@@ -1307,7 +1307,7 @@ function getItemId(name) {
  * スコアを計算し結果を返す関数
  * @returns {boolean|Object} - スコアが更新されたかどうか
  */
-function calcScore() {
+async function calcScore() {
     let scoreBoard = "";
     if (!match) { return false; }
     const score_setting = config.score_setting;
