@@ -1,4 +1,5 @@
 const apexCommon = require('./apexCommon');
+const app = require('../app');
 
 /**
  * API エンドポイント用の処理関数
@@ -100,23 +101,71 @@ async function apexLiveApiCall(req, res) {
 
     case 'get_lobby_players':
       console.log("[GET_LOBBY_PLAYERS] Fetching players in lobby");
-      // ロビープレイヤー情報の取得
       apexCommon.get_lobby_players();
-      res.status(200).send({ success: true });
+
+      // Promise と setTimeout を使ってタイムアウト処理を実装
+      const getLobbyPlayersWithTimeout = new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          reject(new Error('Timeout'));
+        }, 1000); // 1秒でタイムアウト
+
+        const checkResult = () => {
+          const result = app.readMessage("CustomMatch_LobbyPlayers");
+          if (result) {
+            clearTimeout(timeoutId);
+            resolve(result);
+          } else {
+            setTimeout(checkResult, 100); // 100ms後に再試行
+          }
+        };
+        checkResult();
+      });
+
+      try {
+        const result = await getLobbyPlayersWithTimeout;
+        res.status(200).send({ success: true, result: result });
+      } catch (error) {
+        res.status(200).send({ success: false });
+        console.error("[GET_LOBBY_PLAYERS] Timeout");
+      }
       break;
 
     case 'set_team_name':
       console.log("[SET_TEAM_NAME] TEAM_ID: " + req.body.teamId + " NAME: " + req.body.teamName);
       // チーム名を設定
       apexCommon.set_team_name(req.body.teamId, req.body.teamName);
-      res.json({ operation: 'set_team_name', teamId: req.body.teamId, teamName: req.body.teamName });
+      res.status(200).send({ success: true });
       break;
 
     case 'get_match_settings':
       console.log("[GET_MATCH_SETTINGS] Fetching match settings");
       // 試合設定を取得
       apexCommon.get_match_settings();
-      res.status(200).send({ success: true });
+      // Promise と setTimeout を使ってタイムアウト処理を実装
+      const getMatchSettingsWithTimeout = new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          reject(new Error('Timeout'));
+        }, 1000); // 1秒でタイムアウト
+
+        const checkResult = () => {
+          const result = app.readMessage("CustomMatch_SetSettings");
+          if (result) {
+            clearTimeout(timeoutId);
+            resolve(result);
+          } else {
+            setTimeout(checkResult, 100); // 100ms後に再試行
+          }
+        };
+        checkResult();
+      });
+
+      try {
+        const result = await getMatchSettingsWithTimeout;
+        res.status(200).send({ success: true, result: result });
+      } catch (error) {
+        res.status(200).send({ success: false });
+        console.error("[GET_MATCH_SETTINGS] Timeout");
+      }
       break;
 
     case 'set_spawn_point':

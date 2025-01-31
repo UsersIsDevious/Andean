@@ -13,7 +13,7 @@ export function useLobby() {
     if (isInLobby) {
       const interval = setInterval(() => {
         fetchLobbyInfo()
-      }, 5000) // Fetch every 5 seconds
+      }, 3000) // Fetch every 5 seconds
 
       return () => clearInterval(interval)
     }

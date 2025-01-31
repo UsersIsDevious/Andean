@@ -116,6 +116,11 @@ let ringEvents = [];
  */
 let ranks = [];
 /**
+ * Webに送信するメッセージを格納する配列
+ * @type {Object}
+ */
+let waitMessages = {};
+/**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
  * @param {Object} msg
@@ -160,9 +165,31 @@ function analyze_message(category, msg) {
                 lobby.addTeam(msg_team.id, msg_team.name);
             }
             for (let i = 0; i < msg.playersList.length; i++) {
-                const msg_player = msg.playersList[i]
+                const msg_player = msg.playersList[i];
                 lobby.addPlayer(new Player(msg_player.name, msg_player.teamid, msg_player.nucleushash, msg_player.hardwarename))
             }
+            const data = {};
+            for (const teamId in lobby.teams) {
+                const team = lobby.getTeam(teamId);
+                const teamName = team.teamName;
+                const logoUrl = team.teamImg;
+                const players = [];
+                if (team.players.length === 0) {
+                    continue;
+                } else {
+                    for (let i = 0; team.players.length; i++) {
+                        const player = lobby.getPlayer(team.players[i]);
+                        if (player === null) continue;
+                        players.push({ index: i, id: player.nucleusHash, name: player.name });
+                    }
+                }
+                data[teamId] = { name: teamName, logoUrl: logoUrl, players: players };
+            }
+
+            if (!waitMessages["CustomMatch_LobbyPlayers"]) {
+                waitMessages["CustomMatch_LobbyPlayers"] = [];
+            }
+            waitMessages["CustomMatch_LobbyPlayers"].push(data);
             break;
         }
         case "RequestStatus": {  // 今のところ何もイベント発生しない
@@ -250,6 +277,12 @@ function analyze_message(category, msg) {
         }
         case "CharacterSelected": {
             const player = processUpdatePlayer(msg, match, true);
+            const msg_player = msg.player;
+            const data = processEventData(msg_player, match);
+            data["character"] = msg_player.character;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "MatchStateEnd": {
@@ -616,7 +649,7 @@ function analyze_message(category, msg) {
             let event;
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
                 const attacker = processUpdateMsgPlayer(msg_attacker, match);
-                attacker.addDamageDealt(msg.damageinflicted, "Unknown by GibraltarShieldAbsorbed", msg_victim.nucleushash, msg_victim.character, penetrator)
+                attacker.addDamageDealt(msg.damageinflicted, "Unknown by GibraltarShieldAbsorbed", msg_victim.nucleushash, msg_victim.character, penetrator);
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -707,7 +740,56 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_SetSettings": {
-            settings = msg.settings;
+            let maxPlayers = 60;
+            let gameMode = ""
+            let map = ""
+            switch (msg.playlistname) {
+                case "can_hu_cm":
+                    maxPlayers = 60;
+                    gameMode = "Battle Royale";
+                    map = "mp_rr_canyonlands_hu";
+                    break;
+                case "district_cm":
+                    maxPlayers = 60;
+                    gameMode = "Battle Royale";
+                    map = "mp_rr_district";
+                    break;
+                case "moon_cm":
+                    maxPlayers = 60;
+                    gameMode = "Battle Royale";
+                    map = "mp_rr_divided_moon_mu1";
+                    break;
+                case "olympus_cm":
+                    maxPlayers = 60;
+                    gameMode = "Battle Royale";
+                    map = "mp_rr_olympus_mu2";
+                    break;
+                case "tropic_cm":
+                    maxPlayers = 60;
+                    gameMode = "Battle Royale";
+                    map = "mp_rr_tropic_island_mu2";
+                    break;
+                case "desert_cm":
+                    maxPlayers = 60;
+                    gameMode = "Battle Royale";
+                    map = "mp_rr_desertlands_hu";
+                    break;
+                default:
+                    console.log("[CustomMatch_SetSettings] Unknown playlist: " + msg.playlistname);
+                    maxPlayers = 60;
+                    gameMode = "Battle Royale";
+                    map = "mp_rr_canyonlands_hu";
+                    break;
+            }
+            // {"playlistname":"can_hu_cm","adminchat":false,"teamrename":true,"selfassign":true,"aimassist":true,"anonmode":false}
+            const data = msg;
+            if (!waitMessages["CustomMatch_SetSettings"]) {
+                waitMessages["CustomMatch_SetSettings"] = [];
+            }
+            data["maxPlayers"] = lobby.maxPlayers;
+            data["gameMode"] = gameMode;
+            data["map"] = map;
+            waitMessages["CustomMatch_SetSettings"].push(data);
             break;
         }
         case "PlayerRespawnTeam": {
@@ -1256,6 +1338,18 @@ function calcScore() {
 }
 
 /**
+ * 格納しているメッセージを読みだす
+ * @param {string} messageType - メッセージの種類
+ * @return {Object|null} - メッセージのオブジェクト
+ */
+function readMessage(messageType) {
+    if (!waitMessages[messageType] || waitMessages[messageType].length === 0) {
+        return null;
+    }
+    return waitMessages[messageType].shift();
+}
+
+/**
  * メインスレッド
  */
 async function update() {
@@ -1328,4 +1422,4 @@ function handleMessage(message, messageType) {
     analyze_message(messageType, message.toObject());
 }
 
-module.exports = { match, config, calcScore, startApexLegends, analyze_message }
+module.exports = { match, config, calcScore, startApexLegends, analyze_message, readMessage }

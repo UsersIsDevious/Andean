@@ -7,7 +7,7 @@ const sendComponent = require('../services/sendComponent');
  * @param {Request} req - HTTP リクエストオブジェクト
  * @param {Response} res - HTTP レスポンスオブジェクト
  */
-function handleApiRequest(req, res) {
+async function handleApiRequest(req, res) {
   const { slug } = req.query;
   
   // /view/* のリクエストを特定

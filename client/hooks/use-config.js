@@ -12,7 +12,7 @@ export function useConfig() {
 
   const fetchConfig = async () => {
     try {
-      const response = await fetchWithTimeout("/api/loadConfig")
+      const response = await fetchWithTimeout("/loadConfig")
       if (response.ok) {
         const data = await response.json()
         setConfig(data || {})
@@ -26,7 +26,7 @@ export function useConfig() {
 
   const updateConfig = async (newConfig) => {
     try {
-      const response = await fetchWithTimeout("/api/saveConfig", {
+      const response = await fetchWithTimeout("/saveConfig", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
