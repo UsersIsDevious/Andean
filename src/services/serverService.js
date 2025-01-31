@@ -15,4 +15,9 @@ function makeScore() {
     return app.calcScore();
 }
 
-module.exports = { makeScore, saveConfig };
+
+function readCSV(csv) {
+    return app.readCSV(csv);
+}
+
+module.exports = { makeScore, saveConfig, readCSV };

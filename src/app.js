@@ -116,6 +116,11 @@ let ringEvents = [];
  */
 let ranks = [];
 /**
+ * CSVファイルを保存する配列
+ * @type {Object}
+ */
+let csvData = {};
+/**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
  * @param {Object} msg
@@ -153,8 +158,7 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_LobbyPlayers": {
-            // 一旦lobbyと言う名前のマッチが有るものとして扱う
-            lobby = new CustomMatch("lobby")
+            lobby = new CustomMatch("lobby");
             for (let i = 0; i < msg.teamsList.length; i++) {
                 const msg_team = msg.teamsList[i];
                 lobby.addTeam(msg_team.id, msg_team.name);
@@ -162,6 +166,9 @@ function analyze_message(category, msg) {
             for (let i = 0; i < msg.playersList.length; i++) {
                 const msg_player = msg.playersList[i]
                 lobby.addPlayer(new Player(msg_player.name, msg_player.teamid, msg_player.nucleushash, msg_player.hardwarename))
+            }
+            if (csvData) {
+                applyCSVData(lobby, csvData);
             }
             break;
         }
@@ -1255,6 +1262,46 @@ function calcScore() {
     return scoreBoard;
 }
 
+
+/**
+ * CSVファイルを読み込む
+ * @param {Object} csv - CSVファイル
+ * @returns {Boolean} - 読み込みが成功したかどうか
+ */
+function readCSV(csv) {
+    try {
+        const lines = csv.split("\n");
+        for (let i = 1; i < lines.length; i++) {
+            const row = lines[i].split(",");
+            const teamId = row[0] + 1;
+            const teamName = row[1];
+            const logoUrl = row[2];
+            csvData[teamId] = { teamName, logoUrl };
+        }
+        applyCSVData(csvData);
+        return true;
+    } catch (error) {
+        console.error("[READ CSV] Error:", error);
+        return false;
+    }
+}
+
+
+/**
+ * lobbyにCSVデータを反映する
+ * @param {CustomMatch} lobby - ロビー
+ * @param {Object} csvData - CSVデータ
+ */
+function applyCSVData(lobby, csvData) {
+    for (const teamId in csvData) {
+        const team = lobby.getTeam(teamId);
+        if (team) {
+            team.setTeamName(csvData[teamId].teamName);
+            team.setTeamImg(csvData[teamId].logoUrl);
+        }
+    }
+}
+
 /**
  * メインスレッド
  */
@@ -1328,4 +1375,4 @@ function handleMessage(message, messageType) {
     analyze_message(messageType, message.toObject());
 }
 
-module.exports = { match, config, calcScore, startApexLegends, analyze_message }
+module.exports = { match, config, calcScore, startApexLegends, analyze_message, readCSV }
