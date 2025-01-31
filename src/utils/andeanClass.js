@@ -198,21 +198,20 @@ class Inventory {
    * @memberof Inventory
    */
   addOrUpdateItem(_itemName, quantity, level) {
-    const itemName = _itemName.split(" (")[0];
-    const existingItem = this.getItem(itemName, level);
+    const existingItem = this.getItem(_itemName, level);
     if (existingItem) {
       // 同じ名前とレベルのアイテムが既に存在する場合は、所持数を更新
       let newQuantity = existingItem.quantity + quantity;
       //もし所持数が0を下回ったら
       if (newQuantity < 0) {
-        const item = this.removeItem(itemName, level);
+        const item = this.removeItem(_itemName, level);
         return item;
       }
       existingItem.setQuantity(newQuantity);
       // console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingItem.quantity}.`);
     } else {
       // アイテムが存在しない場合は、新規追加
-      const newItem = new Item(itemName, level, quantity);
+      const newItem = new Item(_itemName, level, quantity);
       this.addItem(newItem);
       // console.log(`${itemName} (Level ${level}) has been added with a quantity of ${quantity}.`);
     }
