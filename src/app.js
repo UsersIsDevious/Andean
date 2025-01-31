@@ -116,6 +116,11 @@ let ringEvents = [];
  */
 let ranks = [];
 /**
+ * ローカライズ書き込みモードON/OFF
+ * @type {Boolean}
+ */
+let localizeWriteMode = true;
+/**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
  * @param {Object} msg
@@ -887,7 +892,10 @@ function analyze_message(category, msg) {
             data["upgradename"] = msg.upgradename;
             data["upgradedesc"] = msg.upgradedesc;
             data["level"] = msg.level;
-            break;
+            if (localizeWriteMode && !Object.keys(legends_label[characterName].upgrade).includes(msg.upgradename)) {
+                legends_label[characterName].upgrade[msg.upgradename] = msg.upgradename;
+                legends_label[characterName].upgrade[msg.upgradedesc] = msg.upgradedesc;
+            }
         }
         case "ZiplineUsed": {
             const player = processUpdatePlayer(msg, match);

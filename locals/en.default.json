@@ -61,157 +61,183 @@
             "name": "Bloodhound",
             "passive": "Tracker",
             "tactical": "Eye of the Allfather",
-            "ultimate": "Beast of the Hunt"
+            "ultimate": "Beast of the Hunt",
+            "upgrade": {}
         },
         "Gibraltar": {
             "name": "Gibraltar",
             "passive": "Gun Shield",
             "tactical": "Dome of Protection",
-            "ultimate": "Defensive Bombardment"
+            "ultimate": "Defensive Bombardment",
+            "upgrade": {}
         },
         "Lifeline": {
             "name": "Lifeline",
             "passive": "Combat Glide",
             "tactical": "D.O.C. Heal Drone",
-            "ultimate": "Halo Shield"
+            "ultimate": "Halo Shield",
+            "upgrade": {}
         },
         "Pathfinder": {
             "name": "Pathfinder",
             "passive": "Insider Knowledge",
             "tactical": "Grappling Hook",
-            "ultimate": "Zipline Gun"
+            "ultimate": "Zipline Gun",
+            "upgrade": {}
         },
         "Wraith": {
             "name": "Wraith",
             "passive": "Voices from the Void",
             "tactical": "Into the Void",
-            "ultimate": "Dimensional Rift"
+            "ultimate": "Dimensional Rift",
+            "upgrade": {}
         },
         "Bangalore": {
             "name": "Bangalore",
             "passive": "Double Time",
             "tactical": "Smoke Launcher",
-            "ultimate": "Rolling Thunder"
+            "ultimate": "Rolling Thunder",
+            "upgrade": {}
         },
         "Caustic": {
             "name": "Caustic",
             "passive": "Nox Vision",
             "tactical": "Nox Gas Trap",
-            "ultimate": "Nox Gas Grenade"
+            "ultimate": "Nox Gas Grenade",
+            "upgrade": {}
         },
         "Mirage": {
             "name": "Mirage",
             "passive": "Now You See Me...",
             "tactical": "Psyche Out",
-            "ultimate": "Life of the Party"
+            "ultimate": "Life of the Party",
+            "upgrade": {}
         },
         "Octane": {
             "name": "Octane",
             "passive": "Swift Mend",
             "tactical": "Stim",
-            "ultimate": "Launch Pad"
+            "ultimate": "Launch Pad",
+            "upgrade": {}
         },
         "Wattson": {
             "name": "Wattson",
             "passive": "Spark of Genius",
             "tactical": "Perimeter Security",
-            "ultimate": "Interception Pylon"
+            "ultimate": "Interception Pylon",
+            "upgrade": {}
         },
         "Crypto": {
             "name": "Crypto",
             "passive": "Neurolink",
             "tactical": "Surveillance Drone",
-            "ultimate": "Drone EMP"
+            "ultimate": "Drone EMP",
+            "upgrade": {}
         },
         "Revenant": {
             "name": "Revenant",
             "passive": "Assassin's Instinct",
             "tactical": "Shadow Pounce",
-            "ultimate": "Forged Shadows"
+            "ultimate": "Forged Shadows",
+            "upgrade": {}
         },
         "Loba": {
             "name": "Loba",
             "passive": "Eye for Quality",
             "tactical": "Burglar's Best Friend",
-            "ultimate": "Black Market Boutique"
+            "ultimate": "Black Market Boutique",
+            "upgrade": {}
         },
         "Rampart": {
             "name": "Rampart",
             "passive": "Modded Loader",
             "tactical": "Amped Cover",
-            "ultimate": "Emplaced Minigun 'Sheila'"
+            "ultimate": "Emplaced Minigun 'Sheila'",
+            "upgrade": {}
         },
         "Horizon": {
             "name": "Horizon",
             "passive": "Spacewalk",
             "tactical": "Gravity Lift",
-            "ultimate": "Black Hole"
+            "ultimate": "Black Hole",
+            "upgrade": {}
         },
         "Fuse": {
             "name": "Fuse",
             "passive": "Grenadier",
             "tactical": "Knuckle Cluster",
-            "ultimate": "The Motherlode"
+            "ultimate": "The Motherlode",
+            "upgrade": {}
         },
         "Valkyrie": {
             "name": "Valkyrie",
             "passive": "VTOL Jets",
             "tactical": "Missile Swarm",
-            "ultimate": "Skyward Dive"
+            "ultimate": "Skyward Dive",
+            "upgrade": {}
         },
         "Seer": {
             "name": "Seer",
             "passive": "Heart Seeker",
             "tactical": "Focus of Attention",
-            "ultimate": "Exhibit"
+            "ultimate": "Exhibit",
+            "upgrade": {}
         },
         "Ash": {
             "name": "Ash",
             "passive": "Marked for Death",
             "tactical": "Arc Snare",
-            "ultimate": "Phase Breach"
+            "ultimate": "Phase Breach",
+            "upgrade": {}
         },
         "Mad Maggie": {
             "name": "Mad Maggie",
             "passive": "Warlord's Ire",
             "tactical": "Riot Drill",
-            "ultimate": "Wrecking Ball"
+            "ultimate": "Wrecking Ball",
+            "upgrade": {}
         },
         "Newcastle": {
             "name": "Newcastle",
             "passive": "Retrieve the Wounded",
             "tactical": "Mobile Shield",
-            "ultimate": "Castle Wall"
+            "ultimate": "Castle Wall",
+            "upgrade": {}
         },
         "Vantage": {
             "name": "Vantage",
             "passive": "Spotter's Lens",
             "tactical": "Echo Relocation",
-            "ultimate": "Sniper's Mark"
+            "ultimate": "Sniper's Mark",
+            "upgrade": {}
         },
         "Catalyst": {
             "name": "Catalyst",
             "passive": "Barricade",
             "tactical": "Piercing Spikes",
-            "ultimate": "Dark Veil"
+            "ultimate": "Dark Veil",
+            "upgrade": {}
         },
         "Conduit": {
             "name": "Conduit",
             "passive": "Savior's Speed",
             "tactical": "Radiant Transfer",
-            "ultimate": "Energy Barricade"
+            "ultimate": "Energy Barricade",
+            "upgrade": {}
         },
         "Alter": {
             "name": "Alter",
             "passive": "Dimensional Echo",
             "tactical": "Void Passage",
-            "ultimate": "Reality Fracture"
+            "ultimate": "Reality Fracture",
+            "upgrade": {}
         },
         "Ballistic": {
             "name": "Ballistic",
             "passive": "Sling",
             "tactical": "Whistler",
-            "ultimate": "Tempest"
+            "ultimate": "Tempest",
+            "upgrade": {}
         }
     }
 }

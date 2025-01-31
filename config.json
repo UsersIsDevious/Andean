@@ -9,7 +9,7 @@
     "Caustic Gas"
   ],
   "output": "../../output",
-  "language": "en",
+  "language": "en.defalut",
   "log_dir": "../../logs",
   "data_fps": 60,
   "score_setting": {

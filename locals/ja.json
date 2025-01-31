@@ -61,157 +61,183 @@
             "name": "ブラッドハウンド",
             "passive": "トラッカー",
             "tactical": "全能の目",
-            "ultimate": "ハンティングビースト"
+            "ultimate": "ハンティングビースト",
+            "upgrade": {}
         },
         "Gibraltar": {
             "name": "ジブラルタル",
             "passive": "ガンシールド",
             "tactical": "プロテクトドーム",
-            "ultimate": "防衛爆撃"
+            "ultimate": "防衛爆撃",
+            "upgrade": {}
         },
         "Lifeline": {
             "name": "ライフライン",
             "passive": "コンバットグライド",
             "tactical": "D.O.C.ヒールドローン",
-            "ultimate": "D.O.C.ヘイローシールド"
+            "ultimate": "D.O.C.ヘイローシールド",
+            "upgrade": {}
         },
         "Pathfinder": {
             "name": "パスファインダー",
             "passive": "内部情報",
             "tactical": "グラップリングフック",
-            "ultimate": "ジップラインガン"
+            "ultimate": "ジップラインガン",
+            "upgrade": {}
         },
         "Wraith": {
             "name": "レイス",
             "passive": "虚空からの声",
             "tactical": "虚空へ",
-            "ultimate": "ディメンションリフト"
+            "ultimate": "ディメンションリフト",
+            "upgrade": {}
         },
         "Bangalore": {
             "name": "バンガロール",
             "passive": "駆け足",
             "tactical": "スモークランチャー",
-            "ultimate": "ローリングサンダー"
+            "ultimate": "ローリングサンダー",
+            "upgrade": {}
         },
         "Caustic": {
             "name": "コースティック",
             "passive": "Noxビジョン",
             "tactical": "Noxガストラップ",
-            "ultimate": "Noxガスグレネード"
+            "ultimate": "Noxガスグレネード",
+            "upgrade": {}
         },
         "Mirage": {
             "name": "ミラージュ",
             "passive": "神出鬼没",
             "tactical": "サイクアウト",
-            "ultimate": "パーティーライフ"
+            "ultimate": "パーティーライフ",
+            "upgrade": {}
         },
         "Octane": {
             "name": "オクタン",
             "passive": "高速修復",
             "tactical": "興奮剤",
-            "ultimate": "ジャンプパッド"
+            "ultimate": "ジャンプパッド",
+            "upgrade": {}
         },
         "Wattson": {
             "name": "ワットソン",
             "passive": "天才のひらめき",
             "tactical": "周辺セキュリティ",
-            "ultimate": "インターセプターパイロン"
+            "ultimate": "インターセプターパイロン",
+            "upgrade": {}
         },
         "Crypto": {
             "name": "クリプト",
             "passive": "ニューロリンク",
             "tactical": "スパイドローン",
-            "ultimate": "ドローンEMP"
+            "ultimate": "ドローンEMP",
+            "upgrade": {}
         },
         "Revenant": {
             "name": "レヴナント",
             "passive": "アサシンの本能",
             "tactical": "シャドウパウンス",
-            "ultimate": "フォージシャドウ"
+            "ultimate": "フォージシャドウ",
+            "upgrade": {}
         },
         "Loba": {
             "name": "ローバ",
             "passive": "アイ・フォー・クオリティ",
             "tactical": "盗賊の相棒",
-            "ultimate": "ブラックマーケットブティック"
+            "ultimate": "ブラックマーケットブティック",
+            "upgrade": {}
         },
         "Rampart": {
             "name": "ランパート",
             "passive": "改造ローダー",
             "tactical": "増幅バリケード",
-            "ultimate": "固定式ミニガン「シーラ」"
+            "ultimate": "固定式ミニガン「シーラ」",
+            "upgrade": {}
         },
         "Horizon": {
             "name": "ホライゾン",
             "passive": "スペースウォーク",
             "tactical": "グラビティリフト",
-            "ultimate": "ブラックホール"
+            "ultimate": "ブラックホール",
+            "upgrade": {}
         },
         "Fuse": {
             "name": "ヒューズ",
             "passive": "グレネーダー",
             "tactical": "ナックルクラスター",
-            "ultimate": "マザーロード"
+            "ultimate": "マザーロード",
+            "upgrade": {}
         },
         "Valkyrie": {
             "name": "ヴァルキリー",
             "passive": "VTOLジェット",
             "tactical": "ミサイルスワーム",
-            "ultimate": "スカイワードダイブ"
+            "ultimate": "スカイワードダイブ",
+            "upgrade": {}
         },
         "Seer": {
             "name": "シア",
             "passive": "ハートシーカー",
             "tactical": "フォーカス・オブ・アテンション",
-            "ultimate": "ショーケース"
+            "ultimate": "ショーケース",
+            "upgrade": {}
         },
         "Ash": {
             "name": "アッシュ",
             "passive": "死の烙印",
             "tactical": "アークスネア",
-            "ultimate": "フェーズティア"
+            "ultimate": "フェーズティア",
+            "upgrade": {}
         },
         "Mad Maggie": {
             "name": "マッドマギー",
             "passive": "ウォーロードの憤怒",
             "tactical": "ライオットドリル",
-            "ultimate": "レッキングボール"
+            "ultimate": "レッキングボール",
+            "upgrade": {}
         },
         "Newcastle": {
             "name": "ニューキャッスル",
             "passive": "負傷者の回収",
             "tactical": "モバイルシールド",
-            "ultimate": "キャッスルウォール"
+            "ultimate": "キャッスルウォール",
+            "upgrade": {}
         },
         "Vantage": {
             "name": "ヴァンテージ",
             "passive": "スポッターズレンズ",
             "tactical": "エコー配置",
-            "ultimate": "スナイパーズマーク"
+            "ultimate": "スナイパーズマーク",
+            "upgrade": {}
         },
         "Catalyst": {
             "name": "カタリスト",
             "passive": "バリケード",
             "tactical": "スパイクトラップ",
-            "ultimate": "ダークヴェール"
+            "ultimate": "ダークヴェール",
+            "upgrade": {}
         },
         "Conduit": {
             "name": "コンジット",
             "passive": "セイバースピード",
             "tactical": "レイディアントトランスファー",
-            "ultimate": "エネルギーバリケード"
+            "ultimate": "エネルギーバリケード",
+            "upgrade": {}
         },
         "Alter": {
             "name": "オルター",
             "passive": "次元の残響",
             "tactical": "ヴォイドパッセージ",
-            "ultimate": "リアリティフラクチャー"
+            "ultimate": "リアリティフラクチャー",
+            "upgrade": {}
         },
         "Ballistic": {
             "name": "バリスティック",
             "passive": "スリング",
             "tactical": "ウィスラー",
-            "ultimate": "テンペスト"
+            "ultimate": "テンペスト",
+            "upgrade": {}
         }
     }
 }
