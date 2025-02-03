@@ -14,7 +14,7 @@ async function handleApiRequest(req, res) {
   if (slug === 'view') {
     sendComponent.sendComponentToClients("mapView");
   } else {
-    apexService.apexLiveApiCall(req, res); 
+    await apexService.apexLiveApiCall(req, res);
   }
 }
 

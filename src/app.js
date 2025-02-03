@@ -119,13 +119,34 @@ let ranks = [];
  * Webに送信するメッセージを格納する配列
  * @type {Object}
  */
-let waitMessages = {};
+let waitMessages = { "CustomMatch_LobbyPlayers": {}, "CustomMatch_SetSettings": {} };
+/**
+ * ゲーム中かどうか
+ * @type {Boolean}
+ */
+let isPlaying = false;
+/**
+ * 最後にポーリングした時間
+ * @type {Date}
+ */
+let lastPollTime = Date.now();
+/**
+ * 最後にCustomMatch_LobbyPlayersを受信した時間
+ * @type {Date}
+ */
+let lastLobbyPlayersTime = 0;
+/**
+ * 何秒間の間、CustomMatch_LobbyPlayersを受信しない場合、ロビーにいないと判断するか
+ * @type {Number}
+ */
+let lobbyPlayersTimeout = 15;
 /**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
  * @param {Object} msg
  */
 function analyze_message(category, msg) {
+    // console.log(`[analyze_message] category: ${category}, msg: ${msg}`);
     // common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
         case "Init": {
@@ -134,6 +155,7 @@ function analyze_message(category, msg) {
              */
             if (msg.platform != "") { break; }
             match = new CustomMatch(`${msg.timestamp}`);
+            isPlaying = true;
             break;
         }
         case "Vector3": {  // 今のところ何もイベント発生しない
@@ -177,7 +199,7 @@ function analyze_message(category, msg) {
                 if (team.players.length === 0) {
                     continue;
                 } else {
-                    for (let i = 0; team.players.length; i++) {
+                    for (let i = 0; i < team.players.length; i++) {
                         const player = lobby.getPlayer(team.players[i]);
                         if (player === null) continue;
                         players.push({ index: i, id: player.nucleusHash, name: player.name });
@@ -185,11 +207,8 @@ function analyze_message(category, msg) {
                 }
                 data[teamId] = { name: teamName, logoUrl: logoUrl, players: players };
             }
-
-            if (!waitMessages["CustomMatch_LobbyPlayers"]) {
-                waitMessages["CustomMatch_LobbyPlayers"] = [];
-            }
-            waitMessages["CustomMatch_LobbyPlayers"].push(data);
+            waitMessages["CustomMatch_LobbyPlayers"] = data;
+            lastLobbyPlayersTime = Date.now();
             break;
         }
         case "RequestStatus": {  // 今のところ何もイベント発生しない
@@ -232,7 +251,7 @@ function analyze_message(category, msg) {
                     matchBase = JSON.parse(JSON.stringify(match));
                     ringEvents = [];
                     ranks = [];
-                    for (let i = match.maxTeams + 1; i >= 2 ; i--) {
+                    for (let i = match.maxTeams + 1; i >= 2; i--) {
                         const team = match.getTeam(i);
                         if (team.players.length === 0) {
                             ranks.push(i);
@@ -244,7 +263,7 @@ function analyze_message(category, msg) {
                 }
                 if (msg.state === "Postmatch") {
                     matchBase.packetLists = JSON.parse(JSON.stringify(match.packetLists));
-                    for (i=0; i<ringEvents.length; i+=2) {
+                    for (i = 0; i < ringEvents.length; i += 2) {
                         if ((i + 1) !== ringEvents.length) {
                             /**
                              * @type {Event}
@@ -268,6 +287,7 @@ function analyze_message(category, msg) {
                         team.setRank(ranks.length - i);
                     }
                     common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, config.output, matchBase);
+                    isPlaying = false;
                 }
             } catch (error) {
                 console.log(error);
@@ -298,7 +318,7 @@ function analyze_message(category, msg) {
                     winnerTeams.push(msg.winnersList[i].teamid);
                 }
             }
-            const event = new Event(msg.timestamp, msg.category, {teamId: winnerTeams, state: msg.state });
+            const event = new Event(msg.timestamp, msg.category, { teamId: winnerTeams, state: msg.state });
             match.addEventElement(event);
             // AndeanのPacketクラスに追加する
             packet.addEvent(event);
@@ -388,7 +408,7 @@ function analyze_message(category, msg) {
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
             match.getTeam(msg_victim.teamid).addTotalDamageRecived(msg.damageinflicted);
-            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") { 
+            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
                 victim.addDamageReceived(msg.damageinflicted, weaponName, msg_attacker.nucleushash, msg_attacker.character, penetrator);
             } else {
                 victim.addDamageReceived(msg.damageinflicted, weaponName, "World", "World", penetrator);
@@ -513,7 +533,7 @@ function analyze_message(category, msg) {
             } else {
                 victim.setDownsReceived(weaponName, "World", "World");
             }
-            
+
 
             //ダウンさせた側
             /**
@@ -740,56 +760,357 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_SetSettings": {
-            let maxPlayers = 60;
+            let maxPlayers = 0;
+            let maxTeams = 0;
             let gameMode = ""
             let map = ""
             switch (msg.playlistname) {
                 case "can_hu_cm":
                     maxPlayers = 60;
-                    gameMode = "Battle Royale";
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS";
                     map = "mp_rr_canyonlands_hu";
+                    break;
+                case "des_hu_cm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS";
+                    map = "mp_rr_desertlands_hu";
                     break;
                 case "district_cm":
                     maxPlayers = 60;
-                    gameMode = "Battle Royale";
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS";
                     map = "mp_rr_district";
                     break;
                 case "moon_cm":
                     maxPlayers = 60;
-                    gameMode = "Battle Royale";
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS";
                     map = "mp_rr_divided_moon_mu1";
                     break;
-                case "olympus_cm":
+                case "oly_mu2_cm":
                     maxPlayers = 60;
-                    gameMode = "Battle Royale";
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS";
                     map = "mp_rr_olympus_mu2";
                     break;
-                case "tropic_cm":
+                case "tropic_mu2_cm":
                     maxPlayers = 60;
-                    gameMode = "Battle Royale";
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS";
                     map = "mp_rr_tropic_island_mu2";
                     break;
-                case "desert_cm":
+                case "duo_can_hu_cm":
                     maxPlayers = 60;
-                    gameMode = "Battle Royale";
+                    maxTeams = 30;
+                    gameMode = "BATTLE ROYALE: DUOS";
+                    map = "mp_rr_canyonlands_hu";
+                    break;
+                case "duo_des_hu_cm":
+                    maxPlayers = 60;
+                    maxTeams = 30;
+                    gameMode = "BATTLE ROYALE: DUOS";
                     map = "mp_rr_desertlands_hu";
+                    break;
+                case "duo_district_cm":
+                    maxPlayers = 60;
+                    maxTeams = 30;
+                    gameMode = "BATTLE ROYALE: DUOS";
+                    map = "mp_rr_district";
+                    break;
+                case "duo_moon_cm":
+                    maxPlayers = 60;
+                    maxTeams = 30;
+                    gameMode = "BATTLE ROYALE: DUOS";
+                    map = "mp_rr_divided_moon_mu1";
+                    break;
+                case "duo_oly_mu2_cm":
+                    maxPlayers = 60;
+                    maxTeams = 30;
+                    gameMode = "BATTLE ROYALE: DUOS";
+                    map = "mp_rr_olympus_mu2";
+                    break;
+                case "duo_tropic_mu2_cm":
+                    maxPlayers = 60;
+                    maxTeams = 30;
+                    gameMode = "BATTLE ROYALE: DUOS";
+                    map = "mp_rr_tropic_island_mu2";
+                    break;
+                case "des_new_spawn_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "ALGS";
+                    map = "mp_rr_desertlands_hu";
+                    break;
+                case "tropic_new_spawn_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "ALGS";
+                    map = "mp_rr_tropic_island_mu2";
+                    break;
+                case "district_new_spawn_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "ALGS";
+                    map = "mp_rr_district";
+                    break;
+                case "moon_new_spawn_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "ALGS";
+                    map = "mp_rr_divided_moon_mu1";
+                    break;
+                case "dayzero_canyonlands_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "LAUNCH ROYALE";
+                    map = "mp_rr_canyonlands_hu";
+                    break;
+                case "dayzero_desertlands_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "LAUNCH ROYALE";
+                    map = "mp_rr_desertlands_hu";
+                    break;
+                case "dayzero_olympus_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "LAUNCH ROYALE";
+                    map = "mp_rr_olympus_mu2";
+                    break;
+                case "dayzero_tropics_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "LAUNCH ROYALE";
+                    map = "mp_rr_tropic_island_mu2";
+                    break;
+                case "dayzero_moon_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "LAUNCH ROYALE";
+                    map = "mp_rr_divided_moon_mu1";
+                    break;
+                case "dayzero_district_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "LAUNCH ROYALE";
+                    map = "mp_rr_district";
+                    break;
+                case "tdm_fragment_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "TEAM DEATHMATCH";
+                    map = "mp_rr_fragment_s";  // 仮置き
+                    break;
+                case "tdm_thunderdome_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "TEAM DEATHMATCH";
+                    map = "mp_rr_thunderdome_s";  // 仮置き
+                    break;
+                case "tdm_skull_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "TEAM DEATHMATCH";
+                    map = "mp_rr_skull_s";  // 仮置き
+                    break;
+                case "tdm_zeus_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "TEAM DEATHMATCH";
+                    map = "mp_rr_zeus_s";  // 仮置き
+                    break;
+                case "tdm_core_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "TEAM DEATHMATCH";
+                    map = "mp_rr_core_s";  // 仮置き
+                    break;
+                case "tdm_monument_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "TEAM DEATHMATCH";
+                    map = "mp_rr_monument_s";  // 仮置き
+                    break;
+                case "tdm_estates_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "TEAM DEATHMATCH";
+                    map = "mp_rr_estates_s";  // 仮置き
+                    break;
+                case "gg_fragment_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "GUN RUN";
+                    map = "mp_rr_fragment_s";  // 仮置き
+                    break;
+                case "gg_thunderdome_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "GUN RUN";
+                    map = "mp_rr_thunderdome_s";  // 仮置き
+                    break;
+                case "gg_skull_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "GUN RUN";
+                    map = "mp_rr_skull_s";  // 仮置き
+                    break;
+                case "gg_pylon_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "GUN RUN";
+                    map = "mp_rr_pylon_s";  // 仮置き
+                    break;
+                case "gg_zeus_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "GUN RUN";
+                    map = "mp_rr_zeus_s";  // 仮置き
+                    break;
+                case "gg_core_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "GUN RUN";
+                    map = "mp_rr_core_s";  // 仮置き
+                    break;
+                case "gg_monument_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "GUN RUN";
+                    map = "mp_rr_monument_s";  // 仮置き
+                case "gg_estates_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "GUN RUN";
+                    map = "mp_rr_estates_s";  // 仮置き
+                    break;
+                case "control_barometer_s_pm":
+                    maxPlayers = 18;
+                    maxTeams = 6;
+                    gameMode = "CONTROL";
+                    map = "mp_rr_barometer_s";  // 仮置き
+                    break;
+                case "control_siphon_s_pm":
+                    maxPlayers = 18;
+                    maxTeams = 6;
+                    gameMode = "CONTROL";
+                    map = "mp_rr_siphon_s";  // 仮置き
+                    break;
+                case "control_thunderdome_s_pm":
+                    maxPlayers = 18;
+                    maxTeams = 6;
+                    gameMode = "CONTROL";
+                    map = "mp_rr_thunderdome_s";  // 仮置き
+                    break;
+                case "control_production_s_pm":
+                    maxPlayers = 18;
+                    maxTeams = 6;
+                    gameMode = "CONTROL";
+                    map = "mp_rr_production_s";  // 仮置き
+                    break;
+                case "control_labs_s_pm":
+                    maxPlayers = 18;
+                    maxTeams = 6;
+                    gameMode = "CONTROL";
+                    map = "mp_rr_labs_s";  // 仮置き
+                    break;
+                case "control_caustic_s_pm":
+                    maxPlayers = 18;
+                    maxTeams = 6;
+                    gameMode = "CONTROL";
+                    map = "mp_rr_caustic_s";  // 仮置き
+                    break;
+                case "btdm_fragment_s_pm":
+                    maxPlayers = 24;
+                    maxTeams = 8;
+                    gameMode = "BIG TEAM DEATHMATCH";
+                    map = "mp_rr_fragment_s";  // 仮置き
+                    break;
+                case "btdm_thunderdome_s_pm":
+                    maxPlayers = 24;
+                    maxTeams = 8;
+                    gameMode = "BIG TEAM DEATHMATCH";
+                    map = "mp_rr_thunderdome_s";  // 仮置き
+                    break;
+                case "btdm_skull_s_pm":
+                    maxPlayers = 24;
+                    maxTeams = 8;
+                    gameMode = "BIG TEAM DEATHMATCH";
+                    map = "mp_rr_skull_s";  // 仮置き
+                    break;
+                case "btdm_zeus_s_pm":
+                    maxPlayers = 24;
+                    maxTeams = 8;
+                    gameMode = "BIG TEAM DEATHMATCH";
+                    map = "mp_rr_zeus_s";  // 仮置き
+                    break;
+                case "btdm_core_s_pm":
+                    maxPlayers = 24;
+                    maxTeams = 8;
+                    gameMode = "BIG TEAM DEATHMATCH";
+                    map = "mp_rr_core_s";  // 仮置き
+                    break;
+                case "btdm_monument_s_pm":
+                    maxPlayers = 24;
+                    maxTeams = 8;
+                    gameMode = "BIG TEAM DEATHMATCH";
+                    map = "mp_rr_monument_s";  // 仮置き
+                    break;
+                case "btdm_estates_s_pm":
+                    maxPlayers = 24;
+                    maxTeams = 8;
+                    gameMode = "BIG TEAM DEATHMATCH";
+                    map = "mp_rr_estates_s";  // 仮置き
+                    break;
+                case "tr_hunt_the_core_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "LOCKDOWN";
+                    map = "mp_rr_core_s";  // 仮置き
+                    break;
+                case "tr_hunt_amps_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "LOCKDOWN";
+                    map = "mp_rr_amps_s";  // 仮置き
+                    break;
+                case "tr_hunt_monument_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "LOCKDOWN";
+                    map = "mp_rr_monument_s";  // 仮置き
+                    break;
+                case "tr_hunt_skull_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "LOCKDOWN";
+                    map = "mp_rr_skull_s";  // 仮置き
+                    break;
+                case "tr_hunt_estates_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "LOCKDOWN";
+                    map = "mp_rr_estates_s";  // 仮置き
+                    break;
+                case "tr_hunt_thunderdome_s_pm":
+                    maxPlayers = 12;
+                    maxTeams = 4;
+                    gameMode = "LOCKDOWN";
+                    map = "mp_rr_thunderdome_s";  // 仮置き
                     break;
                 default:
                     console.log("[CustomMatch_SetSettings] Unknown playlist: " + msg.playlistname);
-                    maxPlayers = 60;
-                    gameMode = "Battle Royale";
-                    map = "mp_rr_canyonlands_hu";
                     break;
             }
             // {"playlistname":"can_hu_cm","adminchat":false,"teamrename":true,"selfassign":true,"aimassist":true,"anonmode":false}
             const data = msg;
-            if (!waitMessages["CustomMatch_SetSettings"]) {
-                waitMessages["CustomMatch_SetSettings"] = [];
-            }
             data["maxPlayers"] = lobby.maxPlayers;
+            data["maxTeams"] = lobby.maxTeams;
             data["gameMode"] = gameMode;
             data["map"] = map;
-            waitMessages["CustomMatch_SetSettings"].push(data);
+            waitMessages["CustomMatch_SetSettings"] = data;
             break;
         }
         case "PlayerRespawnTeam": {
@@ -1168,7 +1489,7 @@ function checkPlayerInstance(msg_player, match) {
  * @param {JSON} _pos - LiveAPIEventのposデータ
  */
 function convertLeefletPOS(_mapOffset, _pos) {
-    return [(_pos.x + _mapOffset[0]) / _mapOffset[2] , (_pos.y + _mapOffset[1]) / _mapOffset[2], _pos.z / _mapOffset[2]];
+    return [(_pos.x + _mapOffset[0]) / _mapOffset[2], (_pos.y + _mapOffset[1]) / _mapOffset[2], _pos.z / _mapOffset[2]];
 }
 
 /**
@@ -1342,11 +1663,12 @@ async function calcScore() {
  * @param {string} messageType - メッセージの種類
  * @return {Object|null} - メッセージのオブジェクト
  */
-function readMessage(messageType) {
-    if (!waitMessages[messageType] || waitMessages[messageType].length === 0) {
+function readLobbyMessage(messageType) {
+    if (waitMessages[messageType] || Date.now() - lastLobbyPlayersTime < lobbyPlayersTimeout * 1000) {
+        return waitMessages[messageType];
+    } else {
         return null;
     }
-    return waitMessages[messageType].shift();
 }
 
 /**
@@ -1367,6 +1689,12 @@ async function update() {
         }
         packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
     }
+    const now = Date.now();
+    if (!isPlaying && (now - lastPollTime >= 5000)) {
+        apexCommon.get_lobby_players();
+        apexCommon.get_match_settings();
+        lastPollTime = now;
+    }
 }
 
 /** @type {*} */
@@ -1380,7 +1708,7 @@ common.registerOnServersStarted((servers) => {
     // メッセージ処理用のコールバック関数を設定
     common.getServerList().websocketServer.setHandleMessageCallback((message, ws) => {
         const liveAPIEvent = LiveAPIEvent.deserializeBinary(message);
-        // common.logMessage('LiveAPIEvent:', liveAPIEvent.toObject());
+        // common.logMessage('LiveAPIEvent:', liveAPIEvent.toString());
 
         const gamemessage = liveAPIEvent.getGamemessage();
         const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得
@@ -1413,8 +1741,9 @@ common.registerOnServersStarted((servers) => {
  * @param {WebSocket} ws - 送信元のWebSocketインスタンス
  */
 function handleMessage(message, messageType) {
+    // console.log(`[HANDLE MESSAGE] Received ${messageType} message:`, message.toObject());
     // ログを保存
-    if (!(["ObserverSwitched", "Response"].includes(messageType))) {  // logにObserverSwitchedとResponseを含めないようにする
+    if (!(["ObserverSwitched", "Response", "CustomMatch_SetSettings", "CustomMatch_LobbyPlayers"].includes(messageType))) {  // logにObserverSwitchedとResponseを含めないようにする
         common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
     }
     // common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
@@ -1422,4 +1751,4 @@ function handleMessage(message, messageType) {
     analyze_message(messageType, message.toObject());
 }
 
-module.exports = { match, config, calcScore, startApexLegends, analyze_message, readMessage }
+module.exports = { match, config, calcScore, startApexLegends, analyze_message, readLobbyMessage }

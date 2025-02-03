@@ -99,37 +99,18 @@ async function apexLiveApiCall(req, res) {
       res.json({ operation: 'send_chat', message: req.body.message });
       break;
 
-    case 'get_lobby_players':
-      console.log("[GET_LOBBY_PLAYERS] Fetching players in lobby");
+    case 'get_lobby_players': {
+      // console.log("[GET_LOBBY_PLAYERS] Fetching players in lobby");
+      // ロビーにいるプレイヤーを取得
       apexCommon.get_lobby_players();
-
-      // Promise と setTimeout を使ってタイムアウト処理を実装
-      const getLobbyPlayersWithTimeout = new Promise((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          reject(new Error('Timeout'));
-        }, 1000); // 1秒でタイムアウト
-
-        const checkResult = () => {
-          const result = app.readMessage("CustomMatch_LobbyPlayers");
-          if (result) {
-            clearTimeout(timeoutId);
-            resolve(result);
-          } else {
-            setTimeout(checkResult, 100); // 100ms後に再試行
-          }
-        };
-        checkResult();
-      });
-
-      try {
-        const result = await getLobbyPlayersWithTimeout;
+      const result = app.readLobbyMessage("CustomMatch_LobbyPlayers");
+      if (result !== null) {
         res.status(200).send({ success: true, result: result });
-      } catch (error) {
-        res.status(200).send({ success: false });
-        console.error("[GET_LOBBY_PLAYERS] Timeout");
+      } else {
+        res.status(504).send({ success: false, result: null });
       }
       break;
-
+    }
     case 'set_team_name':
       console.log("[SET_TEAM_NAME] TEAM_ID: " + req.body.teamId + " NAME: " + req.body.teamName);
       // チーム名を設定
@@ -137,37 +118,18 @@ async function apexLiveApiCall(req, res) {
       res.status(200).send({ success: true });
       break;
 
-    case 'get_match_settings':
-      console.log("[GET_MATCH_SETTINGS] Fetching match settings");
+    case 'get_match_settings': {
+      // console.log("[GET_MATCH_SETTINGS] Fetching match settings");
       // 試合設定を取得
       apexCommon.get_match_settings();
-      // Promise と setTimeout を使ってタイムアウト処理を実装
-      const getMatchSettingsWithTimeout = new Promise((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          reject(new Error('Timeout'));
-        }, 1000); // 1秒でタイムアウト
-
-        const checkResult = () => {
-          const result = app.readMessage("CustomMatch_SetSettings");
-          if (result) {
-            clearTimeout(timeoutId);
-            resolve(result);
-          } else {
-            setTimeout(checkResult, 100); // 100ms後に再試行
-          }
-        };
-        checkResult();
-      });
-
-      try {
-        const result = await getMatchSettingsWithTimeout;
+      const result = app.readLobbyMessage("CustomMatch_SetSettings");
+      if (result !== null) {
         res.status(200).send({ success: true, result: result });
-      } catch (error) {
-        res.status(200).send({ success: false });
-        console.error("[GET_MATCH_SETTINGS] Timeout");
+      } else {
+        res.status(504).send({ success: false, result: null });
       }
       break;
-
+    }
     case 'set_spawn_point':
       console.log(`[SET_SPAWN_POINT] TEAMID: ${req.body.teamId}  LANDMARK: ${req.body.landmark}`);
       // チームごとにスポーンポイントを設定
