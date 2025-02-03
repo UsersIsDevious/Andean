@@ -350,7 +350,7 @@ function analyze_message(category, msg) {
         }
         case "PlayerUpgradeTierChanged": {
             const player = processUpdatePlayer(msg, match);
-            player.level[String(msg.level)] = { "upgradename": "", "upgradedesc": "" };
+            player.level[String(msg.level)] = { "upgradename": "", "upgradedesc": "", "selected": "" };
             player.level.now = String(msg.level);
             const data = processEventData(msg.player, match);
             data["level"] = msg.level;
@@ -898,13 +898,31 @@ function analyze_message(category, msg) {
             const player = processUpdatePlayer(msg, match);
             const characterName = getLegendId(msg.player.character);
             const levelObj = player.level[String(msg.level)];
-            levelObj.upgradename = msg.upgradename;
-            levelObj.upgradedesc = msg.upgradedesc;
+            const level = msg.level;
+            const upgradeName = msg.upgradename;
+            const upgradeDesc = msg.upgradedesc;
+            levelObj.upgradename = upgradeName;
+            levelObj.upgradedesc = upgradeDesc;
+            let select;
+            const upgradesObj = language.legends_label[characterName].upgrade[level];
+            for (const key in upgradesObj) {
+                if (upgradesObj[key].name === upgradeName && upgradesObj[key].description === upgradeDesc) {
+                    select = key;
+                }
+            }
+            if (select === undefined) {
+                console.log(`[LegendUpgradeSelected] Error: ${upgradeName} is not found in ${characterName} upgrade\nPlease update localization file`);
+                break;
+            }
+            levelObj.selected = select;
             const data = processEventData(msg.player, match);
             data["character"] = characterName;
-            data["upgradename"] = msg.upgradename;
-            data["upgradedesc"] = msg.upgradedesc;
-            data["level"] = msg.level;
+            data["selected"] = select;
+            data["level"] = level;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
+            break;
         }
         case "ZiplineUsed": {
             const player = processUpdatePlayer(msg, match);
