@@ -1294,6 +1294,7 @@ function readCSV(csv) {
  */
 function applyCSVData(lobby, csvData) {
     for (const teamId in csvData) {
+        apexCommon.set_team_name(teamId, csvData[teamId].teamName);
         const team = lobby.getTeam(teamId);
         if (team) {
             team.setTeamName(csvData[teamId].teamName);
