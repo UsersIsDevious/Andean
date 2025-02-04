@@ -159,6 +159,8 @@ function set_matchmaking(matchmaking) {
 /**
  * チームを設定
  * @param {number} teamId - 設定するチームID
+ * @param {string} targetHardwareName - チームに追加するプレイヤーのハードウェア名
+ * @param {string} targetNucleushash - チームに追加するプレイヤーのハッシュID
  */
 function set_team(teamId, targetHardwareName, targetNucleushash) {
     const req = new Request();

@@ -1276,7 +1276,11 @@ function readCSV(csv) {
             const teamId = row[0] + 1;
             const teamName = row[1];
             const logoUrl = row[2];
-            csvData[teamId] = { teamName, logoUrl };
+            const players = [];
+            for (let j = 3; j < row.length; j++) {
+                players.push(row[j]);
+            }
+            csvData[teamId] = { teamName, logoUrl, players };
         }
         applyCSVData(csvData);
         return true;
@@ -1299,6 +1303,12 @@ function applyCSVData(lobby, csvData) {
         if (team) {
             team.setTeamName(csvData[teamId].teamName);
             team.setTeamImg(csvData[teamId].logoUrl);
+        }
+        for (const playerId of csvData[teamId].players) {
+            const player = lobby.getPlayer(playerId);
+            if (player) {
+                apexCommon.set_team(teamId, player.hardwareName, player.nucleusHash);
+            }
         }
     }
 }
