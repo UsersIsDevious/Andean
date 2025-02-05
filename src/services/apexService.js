@@ -1,4 +1,5 @@
 const apexCommon = require('./apexCommon');
+const app = require('../app');
 
 /**
  * API エンドポイント用の処理関数
@@ -98,27 +99,37 @@ async function apexLiveApiCall(req, res) {
       res.json({ operation: 'send_chat', message: req.body.message });
       break;
 
-    case 'get_lobby_players':
-      console.log("[GET_LOBBY_PLAYERS] Fetching players in lobby");
-      // ロビープレイヤー情報の取得
+    case 'get_lobby_players': {
+      // console.log("[GET_LOBBY_PLAYERS] Fetching players in lobby");
+      // ロビーにいるプレイヤーを取得
       apexCommon.get_lobby_players();
-      res.status(200).send({ success: true });
+      const result = app.readLobbyMessage("CustomMatch_LobbyPlayers");
+      if (result !== null) {
+        res.status(200).send({ success: true, result: result });
+      } else {
+        res.status(504).send({ success: false, result: null });
+      }
       break;
-
+    }
     case 'set_team_name':
       console.log("[SET_TEAM_NAME] TEAM_ID: " + req.body.teamId + " NAME: " + req.body.teamName);
       // チーム名を設定
       apexCommon.set_team_name(req.body.teamId, req.body.teamName);
-      res.json({ operation: 'set_team_name', teamId: req.body.teamId, teamName: req.body.teamName });
-      break;
-
-    case 'get_match_settings':
-      console.log("[GET_MATCH_SETTINGS] Fetching match settings");
-      // 試合設定を取得
-      apexCommon.get_match_settings();
       res.status(200).send({ success: true });
       break;
 
+    case 'get_match_settings': {
+      // console.log("[GET_MATCH_SETTINGS] Fetching match settings");
+      // 試合設定を取得
+      apexCommon.get_match_settings();
+      const result = app.readLobbyMessage("CustomMatch_SetSettings");
+      if (result !== null) {
+        res.status(200).send({ success: true, result: result });
+      } else {
+        res.status(504).send({ success: false, result: null });
+      }
+      break;
+    }
     case 'set_spawn_point':
       console.log(`[SET_SPAWN_POINT] TEAMID: ${req.body.teamId}  LANDMARK: ${req.body.landmark}`);
       // チームごとにスポーンポイントを設定

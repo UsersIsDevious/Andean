@@ -1,6 +1,6 @@
 import { fetchWithTimeout } from "../lib/utils"
 
-const API_TIMEOUT = 8000 // 8 seconds
+const API_TIMEOUT = 3000 // 3 seconds
 
 export const api = {
   // Lobby-related API calls
@@ -69,7 +69,7 @@ export const api = {
 
   calculateScores: async () => {
     const response = await fetchWithTimeout("/api/getScore", {
-      method: "GET",
+      method: "POST",
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to calculate scores")
@@ -98,7 +98,7 @@ export const api = {
   },
 
   resetConfig: async () => {
-    const response = await fetchWithTimeout("/api/resetConfig", {
+    const response = await fetchWithTimeout("/resetConfig", {
       method: "POST",
       timeout: API_TIMEOUT,
     })
@@ -136,11 +136,22 @@ export const api = {
     return response.json()
   },
 
-  setTeam: async (teamId, name) => {
+  setTeam: async (teamId, targetHardwareName, targetNucleushash) => {
     const response = await fetchWithTimeout("/api/set_team", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ teamId, name }),
+      body: JSON.stringify({ teamId: teamId, targetHardwareName: targetHardwareName, targetNucleushash: targetNucleushash }),
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to set team")
+    return response.json()
+  },
+
+  setTeamName: async (teamId, name) => {
+    const response = await fetchWithTimeout("/api/set_team_name", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ teamId: teamId, teamName: name }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to set team")

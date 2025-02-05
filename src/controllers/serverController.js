@@ -71,7 +71,7 @@ function resetConfig(req, res) {
  * @param {Request} req - クライアントのリクエストオブジェクト
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
-function getScore(req, res) {
+async function getScore(req, res) {
   const score = serverService.makeScore();
   console.log("[GET SCORE] result", score);
   if (score === false) {

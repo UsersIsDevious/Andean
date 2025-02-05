@@ -62,11 +62,12 @@ const { getServerList, wss } = require('../utils/common');
 /**
  * シリアライズされたリクエストをWebSocket経由でクライアントに送信
  * @param {Request} request - リクエストオブジェクト
+ * @param {boolean} ack - 確認応答を要求するかどうか
  */
-function serialized_request(request) {
-    request.setWithack(false);  // 確認応答を要求
+async function serialized_request(request, ack = true) {
+    request.setWithack(ack);  // 確認応答を要求
     const serialized = request.serializeBinary();
-    getServerList().websocketServer.broadcastToAllClients(serialized);  // シリアライズされたデータをWebSocket経由で送信
+    await getServerList().websocketServer.broadcastToAllClients(serialized);  // シリアライズされたデータをWebSocket経由で送信
 }
 
 /**
@@ -86,7 +87,7 @@ function change_camera(type, value) {
     }
 
     req.setChangecam(changeCamera);
-    serialized_request(req);
+    serialized_request(req, false);
 }
 
 /**
@@ -185,7 +186,7 @@ function kick_player(targetHardwareName, targetNucleushash) {
 
 /**
  * 試合設定を適用
- * @param {String} matchName - 現在のマッチプレイリスト名を指定
+ * @param {String} matchName - 現在のマッチプレイリスト名(モード・マップ)を指定
  * @param {boolean} adminChat - チャットを管理者のみに制限
  * @param {boolean} teamRename - チーム名の変更をプレイヤーに許可する
  * @param {boolean} selfAssign - チーム変更をプレイヤーに許可する
@@ -195,12 +196,12 @@ function kick_player(targetHardwareName, targetNucleushash) {
 function set_settings(matchName, adminChat, teamRename, selfAssign, aimAssist, anonMode) {
     const req = new Request();
     const setSettings = new CustomMatch_SetSettings();
-    // setSettings.setPlaylistname(matchName);
+    setSettings.setPlaylistname(matchName);
     setSettings.setAdminchat(adminChat);
-    // setSettings.setTeamrename(teamRename);
-    // setSettings.setSelfassign(selfAssign);
-    // setSettings.setAimassist(aimAssist);
-    // setSettings.setAnonmode(anonMode);
+    setSettings.setTeamrename(teamRename);
+    setSettings.setSelfassign(selfAssign);
+    setSettings.setAimassist(aimAssist);
+    setSettings.setAnonmode(anonMode);
     req.setCustommatchSetsettings(setSettings);
     serialized_request(req);
 }
@@ -224,7 +225,7 @@ function get_lobby_players() {
     const req = new Request();
     const getLobbyPlayers = new CustomMatch_GetLobbyPlayers();
     req.setCustommatchGetlobbyplayers(getLobbyPlayers);
-    serialized_request(req);
+    serialized_request(req, false);
 }
 
 /**

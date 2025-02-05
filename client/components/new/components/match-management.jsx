@@ -1,15 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { RequestButton } from "./request-button"
 import { Input } from "@/components/ui/input"
 import { ConfigInput } from "./config-input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Check, X, Users, Play, Pause, Calculator, Shield, LogOut } from "lucide-react"
+import { Check, X, Users, Play, Pause, Calculator, Shield, LogOut, Upload, Send } from "lucide-react"
 import { useLobby } from "../contexts/LobbyContext"
 import { Button } from "@/components/ui/button"
 import { api } from "../services/api"
+import Papa from "papaparse"
 
 export default function MatchManagement({ config, updateConfig }) {
   const [readyStatus, setReadyStatus] = useState(false)
@@ -18,6 +19,8 @@ export default function MatchManagement({ config, updateConfig }) {
   const [rankPoints, setRankPoints] = useState(Array(20).fill(0))
   const [matchmakingStatus, setMatchmakingStatus] = useState(false)
   const [pauseTime, setPauseTime] = useState(0)
+  const [csvData, setCSVData] = useState(null)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     if (config.score_setting && config.score_setting.rank_points) {
@@ -67,6 +70,34 @@ export default function MatchManagement({ config, updateConfig }) {
       alert("Left lobby successfully")
     } catch (error) {
       alert(`Error: ${error.message}`)
+    }
+  }
+
+  const handleCSVUpload = (event) => {
+    const file = event.target.files[0]
+    if (file) {
+      Papa.parse(file, {
+        complete: (results) => {
+          setCSVData(results.data)
+          alert("CSV file loaded successfully")
+        },
+        header: true,
+        skipEmptyLines: true,
+      })
+    }
+  }
+
+  const handleSendCSVData = async () => {
+    if (!csvData) {
+      alert("Please upload a CSV file first")
+      return
+    }
+
+    try {
+      await api.sendCSVData(csvData)
+      alert("CSV data sent successfully")
+    } catch (error) {
+      alert(`Error sending CSV data: ${error.message}`)
     }
   }
 
@@ -190,7 +221,8 @@ export default function MatchManagement({ config, updateConfig }) {
           <RequestButton
             onClick={async () => {
               try {
-                const data = await api.calculateScores()
+                const response = await fetch("/getScore")
+                const data = await response.json()
                 const scoreString = `${data.score}`
                 await navigator.clipboard.writeText(scoreString)
                 alert("Score copied to clipboard: " + scoreString)
@@ -205,6 +237,26 @@ export default function MatchManagement({ config, updateConfig }) {
             <Calculator className="w-4 h-4" />
             <span>Calculate Scores</span>
           </RequestButton>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>CSV Data Management</CardTitle>
+          <CardDescription>Upload CSV and send data to API</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <input type="file" accept=".csv" onChange={handleCSVUpload} ref={fileInputRef} className="hidden" />
+            <Button onClick={() => fileInputRef.current.click()} className="flex items-center space-x-2">
+              <Upload className="w-4 h-4" />
+              <span>Upload CSV</span>
+            </Button>
+            <Button onClick={handleSendCSVData} disabled={!csvData} className="flex items-center space-x-2">
+              <Send className="w-4 h-4" />
+              <span>Send CSV Data</span>
+            </Button>
+          </div>
+          {csvData && <p className="text-sm text-muted-foreground">CSV file loaded: {csvData.length} rows</p>}
         </CardContent>
       </Card>
       <Card className="border-2 border-yellow-500">
@@ -259,7 +311,7 @@ export default function MatchManagement({ config, updateConfig }) {
             <RequestButton
               onClick={async () => {
                 try {
-                  await api.togglePause(pauseTime)
+                  await api.togglePause({ preTimer: pauseTime })
                   alert(`Game paused/unpaused with ${pauseTime} seconds pre-timer`)
                 } catch (error) {
                   alert(`Failed to toggle pause: ${error.message}`)

@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Shield } from "lucide-react"
-import { fetchWithTimeout } from "../lib/utils"
+import { api } from "../services/api"
 
 export function LobbySettings({ settings = {}, onSettingsChange }) {
   const [localSettings, setLocalSettings] = useState({
@@ -34,19 +34,8 @@ export function LobbySettings({ settings = {}, onSettingsChange }) {
     setLocalSettings(newSettings)
 
     try {
-      const response = await fetchWithTimeout("/api/set_settings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ body: newSettings }),
-      })
-      if (response.ok) {
-        onSettingsChange(newSettings)
-      } else {
-        console.error("Failed to update settings")
-        setLocalSettings(localSettings)
-      }
+      await api.setSettings(newSettings)
+      onSettingsChange(newSettings)
     } catch (error) {
       console.error("Error updating settings:", error)
       setLocalSettings(localSettings)

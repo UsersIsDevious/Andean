@@ -1385,11 +1385,15 @@ class CustomMatch {
    * チームを追加するメソッド
    * @param {number} teamId チームID
    * @param {string} teamName チーム名
+   * @return {Team} チームのインスタンス
    */
   addTeam(teamId, teamName) {
     if (!this.teams[teamId]) {
-      this.teams[teamId] = new Team(teamName);
+      const team = new Team(teamName);
+      this.teams[teamId] = team;
+      return team;
     }
+    return this.teams[teamId];
   }
 
   /**
@@ -1863,6 +1867,11 @@ class Team {
      * @type {string}
      */
     this.teamImg = "";
+    /**
+     * チームのスポーンポイント
+     * @type {number}
+     */
+    this.spawnPoint = 0;
     /**
      * チームの最終順位
      * @type {number}
