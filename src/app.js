@@ -184,7 +184,8 @@ function analyze_message(category, msg) {
             lobby = new CustomMatch("lobby")
             for (let i = 0; i < msg.teamsList.length; i++) {
                 const msg_team = msg.teamsList[i];
-                lobby.addTeam(msg_team.id, msg_team.name);
+                const team = lobby.addTeam(msg_team.id, msg_team.name);
+                team.spawnPoint = msg_team.spawnpoint;
             }
             for (let i = 0; i < msg.playersList.length; i++) {
                 const msg_player = msg.playersList[i];
@@ -195,6 +196,7 @@ function analyze_message(category, msg) {
                 const team = lobby.getTeam(teamId);
                 const teamName = team.teamName;
                 const logoUrl = team.teamImg;
+                const spawnPoint = team.spawnPoint;
                 const players = [];
                 if (team.players.length === 0) {
                     continue;
@@ -205,7 +207,7 @@ function analyze_message(category, msg) {
                         players.push({ index: i, id: player.nucleusHash, name: player.name });
                     }
                 }
-                data[teamId] = { name: teamName, logoUrl: logoUrl, players: players };
+                data[teamId] = { name: teamName, logoUrl: logoUrl, spawnPoint: spawnPoint, players: players };
             }
             waitMessages["CustomMatch_LobbyPlayers"] = data;
             lastLobbyPlayersTime = Date.now();
@@ -360,7 +362,7 @@ function analyze_message(category, msg) {
             checkPlayerInstance(msg_player, match);
             for (let i = 2; i < match.maxTeams + 2; i++) {
                 if (match.getTeam(i) == null) {
-                    match.addTeam(i, `Team ${i - 1}`);
+                    const team = match.addTeam(i, `Team ${i - 1}`);
                 }
             }
             const player = processUpdatePlayer(msg, match);
