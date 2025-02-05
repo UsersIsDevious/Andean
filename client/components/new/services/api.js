@@ -1,6 +1,6 @@
 import { fetchWithTimeout } from "../lib/utils"
 
-const API_TIMEOUT = 3000 // 8 seconds
+const API_TIMEOUT = 3000 // 3 seconds
 
 export const api = {
   // Lobby-related API calls
