@@ -75,28 +75,28 @@ async function apexLiveApiCall(req, res) {
       console.log("[SET_TEAM] TEAM_ID: " + req.body.teamId + "  TARGET_HARDWARE_NAME: " + req.body.targetHardwareName + "  TARGET_NUCLEUS_HASH: " + req.body.targetNucleushash);
       // チームの設定
       apexCommon.set_team(req.body.teamId, req.body.targetHardwareName, req.body.targetNucleushash);
-      res.json({ operation: 'set_team', teamId: req.body.teamId, targetHardwareName: req.body.targetHardwareName, targetNucleushash: req.body.targetNucleushash });
+      res.json({ success: true });
       break;
 
     case 'kick_player':
       console.log(`[KICK_PLAYER] TARGET_HARDWARE_NAME: ${req.body.targetHardwareName}  TARGET_NUCLEUS_HASH: ${req.body.targetNucleushash}`);
       // プレイヤーをキック
       apexCommon.kick_player(req.body.targetHardwareName, req.body.targetNucleushash);
-      res.json({ operation: 'kick_player', targetHardwareName: req.body.targetHardwareName, targetNucleushash: req.body.targetNucleushash });
+      res.json({ success: true });
       break;
 
     case 'set_settings':
       console.log(`[SET_SETTINGS] MATCH_NAME: ${req.body.matchName}  ADMIN_CHAT: ${req.body.adminChat}  TEAM_RENAME: ${req.body.teamRename}  SELF_ASSIGN: ${req.body.selfAssign}  AIM_ASSIST: ${req.body.aimAssist}  ANON_MODE: ${req.body.anonMode}`);
       // 試合設定を適用
       apexCommon.set_settings(req.body.matchName, req.body.adminChat, req.body.teamRename, req.body.selfAssign, req.body.aimAssist, req.body.anonMode);
-      res.json({ operation: 'set_settings', matchName: req.body.matchName, adminChat: req.body.adminChat, teamRename: req.body.teamRename, selfAssign: req.body.selfAssign, aimAssist: req.body.aimAssist, anonMode: req.body.anonMode });
+      res.json({ success: true });
       break;
 
     case 'send_chat':
       console.log("[SEND_CHAT] MESSAGE: " + req.body.message);
       // チャットメッセージを送信
       apexCommon.send_chat(req.body.message);
-      res.json({ operation: 'send_chat', message: req.body.message });
+      res.json({ success: true });
       break;
 
     case 'get_lobby_players': {
@@ -134,7 +134,14 @@ async function apexLiveApiCall(req, res) {
       console.log(`[SET_SPAWN_POINT] TEAMID: ${req.body.teamId}  LANDMARK: ${req.body.landmark}`);
       // チームごとにスポーンポイントを設定
       apexCommon.set_spawn_point(req.body.teamId, req.body.landmark);
-      res.json({ operation: 'set_spawn_point', teamId: req.body.teamId, landmark: req.body.landmark });
+      res.json({ success: true });
+      break;
+
+    case 'set_end_ring_exclusion':
+      console.log(`[SET_END_RING_EXCLUSION] EXCLUSION: ${req.body.exclusion}`);
+      // エンドリングエクスクルージョンを設定
+      apexCommon.set_end_ring_exclusion(req.body.exclusion);
+      res.json({ success: true });
       break;
 
     default:

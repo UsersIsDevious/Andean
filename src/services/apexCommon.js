@@ -268,14 +268,12 @@ function set_spawn_point(teamId, landmark) {
 
 /**
  * スポーンポイントを設定
- * @param {number} ringId - リングIDを指定
  * @param {number} exclusion - 除外設定の有無を指定
  */
-function set_end_ring_exclusion(ringId, exclusion) {
+function set_end_ring_exclusion(exclusion) {
     const req = new Request();
     const endRingExclusion = new CustomMatch_SetEndRingExclusion();
-    endRingExclusion.setRingId(ringId);
-    endRingExclusion.setExcluded(exclusion);
+    endRingExclusion.setSectiontoexclude(exclusion);
     req.setCustomMatchSetEndRingExclusion(endRingExclusion);
     serialized_request(req);
 }
