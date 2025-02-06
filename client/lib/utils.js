@@ -6,7 +6,7 @@ export function cn(...inputs) {
 }
 
 export async function fetchWithTimeout(resource, options = {}) {
-  const { timeout = 8000 } = options
+  const { timeout = 3000 } = options
 
   const controller = new AbortController()
   const id = setTimeout(() => controller.abort(), timeout)

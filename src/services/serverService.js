@@ -11,8 +11,8 @@ function saveConfig(body) {
 }
 
 
-function makeScore() {
-    return app.calcScore();
+async function makeScore() {
+    return await app.calcScore();
 }
 
 

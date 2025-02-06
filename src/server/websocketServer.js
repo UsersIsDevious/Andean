@@ -46,7 +46,7 @@ class WebSocketServer {
    * @param {WebSocket} ws - 送信元のWebSocketインスタンス
    * @memberof WebSocketServer
    */
-  handleIncomingMessage(message, ws) {
+  async handleIncomingMessage(message, ws) {
     try {
       // ここで設定されたコールバック関数を呼び出す
       if (this.handleMessageCallback) {
@@ -66,7 +66,7 @@ class WebSocketServer {
    * @param {string} message - 送信するメッセージ
    * @memberof WebSocketServer
    */
-  sendToClient(ws, message) {
+  async sendToClient(ws, message) {
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(message);
     }
@@ -77,19 +77,20 @@ class WebSocketServer {
    * @param {string} message - 送信するメッセージ
    * @memberof WebSocketServer
    */
-  broadcastToAllClients(message) {
+  async broadcastToAllClients(message) {
     this.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(message);
       }
     });
   }
+  
   /**
    * サーバーを停止する
    * @return {*} 
    * @memberof WebSocketServer
    */
-  stopServer() {
+  async stopServer() {
     return new Promise((resolve, reject) => {
       this.wss.close((err) => {
         if (err) {

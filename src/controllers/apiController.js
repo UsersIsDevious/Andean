@@ -7,14 +7,14 @@ const sendComponent = require('../services/sendComponent');
  * @param {Request} req - HTTP リクエストオブジェクト
  * @param {Response} res - HTTP レスポンスオブジェクト
  */
-function handleApiRequest(req, res) {
+async function handleApiRequest(req, res) {
   const { slug } = req.query;
   
   // /view/* のリクエストを特定
   if (slug === 'view') {
     sendComponent.sendComponentToClients("mapView");
   } else {
-    apexService.apexLiveApiCall(req, res); 
+    await apexService.apexLiveApiCall(req, res);
   }
 }
 
