@@ -1397,6 +1397,15 @@ class CustomMatch {
   }
 
   /**
+   * マッチ名を設定するメソッド
+   * @param {string} matchName マッチ名
+   * @memberof CustomMatch
+   */
+  setMatchName(matchName) {
+    this.matchName = matchName;
+  }
+
+  /**
    * ゲームステータスを設定するメソッド
    * @param {String} state ゲームステータス
    * @memberof CustomMatch

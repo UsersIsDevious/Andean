@@ -195,5 +195,16 @@ export const api = {
     if (!response.ok) throw new Error("Failed to toggle periodic fetch")
     return response.json()
   },
+
+  sendCSVData: async (csvData) => {
+    const response = await fetchWithTimeout("/readCSV", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ csvData }),
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to send CSV data")
+    return response.json()
+  },
 }
 

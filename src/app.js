@@ -136,16 +136,6 @@ let isPlaying = false;
  */
 let lastPollTime = Date.now();
 /**
- * 最後にCustomMatch_LobbyPlayersを受信した時間
- * @type {Date}
- */
-let lastLobbyPlayersTime = 0;
-/**
- * 何秒間の間、CustomMatch_LobbyPlayersを受信しない場合、ロビーにいないと判断するか
- * @type {Number}
- */
-let lobbyPlayersTimeout = 15;
-/**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
  * @param {Object} msg
@@ -155,11 +145,19 @@ function analyze_message(category, msg) {
     // common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
         case "Init": {
-            /**
-             * @todo web側で名前の指定があれば適用する
-             */
             if (msg.platform != "") { break; }
-            match = new CustomMatch(`${msg.timestamp}`);
+            // 変換したいUnixTime（ミリ秒単位）
+            const unixTime = Number(msg.timestamp) * 1000;
+            // Dateクラスのインスタンスを生成（ローカルタイムが使用される）
+            const date = new Date(unixTime);
+            // 年、月、日、秒を取得
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2); // 月は0～11のため+1し、2桁に整形
+            const day = ('0' + date.getDate()).slice(-2);
+            const seconds = ('0' + date.getSeconds()).slice(-2);
+            // YYYY-MM-DD-SS形式の文字列を生成
+            const formattedDate = `${year}-${month}-${day}-${seconds}`;
+            match = new CustomMatch(`${formattedDate}`);
             isPlaying = true;
             break;
         }
@@ -217,7 +215,6 @@ function analyze_message(category, msg) {
                 data[teamId] = { name: teamName, logoUrl: logoUrl, spawnPoint: spawnPoint, players: players };
             }
             waitMessages["CustomMatch_LobbyPlayers"] = data;
-            lastLobbyPlayersTime = Date.now();
             break;
         }
         case "RequestStatus": {  // 今のところ何もイベント発生しない
@@ -245,6 +242,7 @@ function analyze_message(category, msg) {
             }
             match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, msg.aimassiston, msg.anonymousmode, msg.serverid);
             match.datacenter.update(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name);
+            match.setMatchName(`${match.matchName}-${msg.map}`);
             const playlistName = splitBracketParts(msg.playlistname);
             if (playlistName === null) {
                 match.setMaxPlayersAndTeams(msg.playlistname);
@@ -295,7 +293,7 @@ function analyze_message(category, msg) {
                         const team = match.getTeam(ranks[i]);
                         team.setRank(ranks.length - i);
                     }
-                    common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, config.output, matchBase);
+                    common.saveUpdate(`Packet Log - ${match.matchName}`, config.output, matchBase);
                     isPlaying = false;
                 }
             } catch (error) {
@@ -1675,19 +1673,14 @@ async function calcScore() {
  */
 function readCSV(csv) {
     try {
-        const lines = csv.split("\n");
-        for (let i = 1; i < lines.length; i++) {
-            const row = lines[i].split(",");
-            const teamId = row[0] + 1;
-            const teamName = row[1];
-            const logoUrl = row[2];
+        for (const team of csv) {
             const players = [];
-            for (let j = 3; j < row.length; j++) {
-                players.push(row[j]);
+            for (let i = 0; i < team.MEMBER_NUM; i++) {
+                players.push(team[`MEMBER${i + 1}`]);
             }
-            csvData[teamId] = { teamName, logoUrl, players };
+            csvData[team.TEAM] = { teamName: team.NAME, logoUrl: team.IMG_URL, players };
         }
-        applyCSVData(csvData);
+        applyCSVData(lobby, csvData);
         return true;
     } catch (error) {
         console.error("[READ CSV] Error:", error);
@@ -1702,6 +1695,15 @@ function readCSV(csv) {
  * @param {Object} csvData - CSVデータ
  */
 function applyCSVData(lobby, csvData) {
+    const playerNames = {};
+    for (const playerId in lobby.players) {
+        const player = lobby.getPlayer(playerId);
+        if (playerNames[player.name]) {
+            delete playerNames[player.name];
+        } else {
+            playerNames[player.name] = player;
+        }
+    }
     for (const teamId in csvData) {
         apexCommon.set_team_name(teamId, csvData[teamId].teamName);
         const team = lobby.getTeam(teamId);
@@ -1709,10 +1711,14 @@ function applyCSVData(lobby, csvData) {
             team.setTeamName(csvData[teamId].teamName);
             team.setTeamImg(csvData[teamId].logoUrl);
         }
-        for (const playerId of csvData[teamId].players) {
-            const player = lobby.getPlayer(playerId);
-            if (player) {
-                apexCommon.set_team(teamId, player.hardwareName, player.nucleusHash);
+        for (const playerName of csvData[teamId].players) {
+            if (playerNames[playerName]) {
+                const player = playerNames[playerName];
+                if (lobby.getTeam(0).players.includes(player.nucleusHash)) {
+                    apexCommon.set_team(teamId, player.hardwareName, player.nucleusHash);
+                }
+            } else {
+                console.log(`[APPLY CSV DATA] Player not found: ${playerName}`);
             }
         }
     }
@@ -1724,7 +1730,7 @@ function applyCSVData(lobby, csvData) {
  * @return {Object|null} - メッセージのオブジェクト
  */
 function readLobbyMessage(messageType) {
-    if (waitMessages[messageType] || Date.now() - lastLobbyPlayersTime < lobbyPlayersTimeout * 1000) {
+    if (waitMessages[messageType]) {
         return waitMessages[messageType];
     } else {
         return null;

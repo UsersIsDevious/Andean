@@ -88,7 +88,7 @@ async function getScore(req, res) {
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
 function readCSV(req, res) {
-  const result = serverService.readCSV(req.body);
+  const result = serverService.readCSV(req.body.csvData);
   res.status(200).send(result);
 }
 
