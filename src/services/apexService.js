@@ -68,7 +68,7 @@ async function apexLiveApiCall(req, res) {
       console.log("[SET_MATCHMAKING] MATCHMAKING: " + req.body.matchmaking);
       // マッチメイキングを設定
       apexCommon.set_matchmaking(req.body.matchmaking);
-      res.json({ operation: 'set_matchmaking', matchmaking: req.body.matchmaking });
+      res.json({ success: true });
       break;
 
     case 'set_team':

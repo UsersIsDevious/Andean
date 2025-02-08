@@ -49,7 +49,7 @@ export const api = {
     const response = await fetchWithTimeout("/api/set_matchmaking", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ matchmaking: status }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to set matchmaking status")

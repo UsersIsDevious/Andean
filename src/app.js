@@ -104,7 +104,7 @@ let matchBase;
  * @type {Packet}
  */
 let packet;
-let lobby = new CustomMatch("lobby");
+const lobby = new CustomMatch("lobby");
 /**
  * リングイベントが発生した時間を記録する
  * @type {Array<Event>}
@@ -119,7 +119,7 @@ let ranks = [];
  * CSVファイルを保存する配列
  * @type {Object}
  */
-let csvData = {};
+let csvData;
 /**
  * Webに送信するメッセージを格納する配列
  * @type {Object}
@@ -183,18 +183,45 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_LobbyPlayers": {
-            lobby = new CustomMatch("lobby");
+            lobby.teams = {};
+            lobby.players = {};
             for (let i = 0; i < msg.teamsList.length; i++) {
                 const msg_team = msg.teamsList[i];
-                const team = lobby.addTeam(msg_team.id, msg_team.name);
+                const teamId = msg_team.id;
+                const teamName = msg_team.name;
+                const team = lobby.addTeam(teamId, teamName);
                 team.spawnPoint = msg_team.spawnpoint;
+                if (csvData && csvData[teamId] && csvData[teamId].teamName && csvData[teamId].teamName !== teamName && !copyCSVData[teamId]) {
+                    copyCSVData[teamId] = JSON.parse(JSON.stringify(csvData[teamId]));
+                }
             }
             for (let i = 0; i < msg.playersList.length; i++) {
                 const msg_player = msg.playersList[i];
-                lobby.addPlayer(new Player(msg_player.name, msg_player.teamid, msg_player.nucleushash, msg_player.hardwarename))
+                const teamId = msg_player.teamid;
+                const playerName = msg_player.name;
+                lobby.addPlayer(new Player(playerName, teamId, msg_player.nucleushash, msg_player.hardwarename));
+                playerNames = {};
+                if (playerNames[playerName]) {
+                    console.log(`[APPLY CSV DATA] Duplicate player name: ${playerName}`);
+                    delete playerNames[playerName];
+                } else {
+                    playerNames[playerName] = { teamId: teamId, name: playerName, nucleusHash: msg_player.nucleushash, hardwareName: msg_player.hardwarename };
+                }
             }
             if (csvData) {
-                applyCSVData(lobby, csvData);
+                for (const teamId in csvData) {
+                    if (csvData[teamId] && csvData[teamId].players) {
+                        for (const playerName of csvData[teamId].players) {
+                            console.log(`[APPLY CSV DATA] Found TeamID: ${teamId} PlayerName: ${playerName}`);
+                            if (playerNames[playerName] && playerNames[playerName].teamId !== teamId && !copyCSVData[teamId]) {
+                                console.log(`[APPLY CSV DATA] TeamID: ${teamId} PlayerNames: ${JSON.stringify(playerNames)}`);
+                                copyCSVData[teamId] = JSON.parse(JSON.stringify(csvData[teamId]));
+                            } else if (!playerNames[playerName]) {
+                                console.log(`[APPLY CSV DATA] PlayerName: ${playerName} is not in the lobby`);
+                            }
+                        }
+                    }
+                }
             }
             const data = {};
             for (const teamId in lobby.teams) {
@@ -1107,17 +1134,23 @@ function analyze_message(category, msg) {
                     gameMode = "LOCKDOWN";
                     map = "mp_rr_thunderdome_s";  // 仮置き
                     break;
+                case "":
+                    console.log("[CustomMatch_SetSettings] Playlist name is empty");
+                    break;
                 default:
                     console.log("[CustomMatch_SetSettings] Unknown playlist: " + msg.playlistname);
                     break;
             }
             // {"playlistname":"can_hu_cm","adminchat":false,"teamrename":true,"selfassign":true,"aimassist":true,"anonmode":false}
             const data = msg;
-            data["maxPlayers"] = lobby.maxPlayers;
-            data["maxTeams"] = lobby.maxTeams;
+            data["maxPlayers"] = maxPlayers;
+            data["maxTeams"] = maxTeams;
             data["gameMode"] = gameMode;
             data["map"] = map;
             waitMessages["CustomMatch_SetSettings"] = data;
+            lobby.maxPlayers = maxPlayers;
+            lobby.maxTeams = maxTeams;
+            lobby.mapName = msg.map;
             break;
         }
         case "PlayerRespawnTeam": {
@@ -1466,7 +1499,7 @@ function processUpdatePlayer(msg, match, characterSelected = false) {
  *
  * @param {Object} msg_player
  * @param {CustomMatch} match
- * @return {Player} 
+ * @return {Player}
  */
 function processUpdateMsgPlayer(msg_player, match) {
     checkPlayerInstance(msg_player, match);
@@ -1665,6 +1698,13 @@ async function calcScore() {
     return scoreBoard;
 }
 
+/**
+ * csvDataをコピーする変数
+ * @type {Object}
+ * @global
+ * @link readCSV
+ */
+let copyCSVData = {};
 
 /**
  * CSVファイルを読み込む
@@ -1673,14 +1713,16 @@ async function calcScore() {
  */
 function readCSV(csv) {
     try {
+        csvData = {};
         for (const team of csv) {
             const players = [];
             for (let i = 0; i < team.MEMBER_NUM; i++) {
                 players.push(team[`MEMBER${i + 1}`]);
             }
-            csvData[team.TEAM] = { teamName: team.NAME, logoUrl: team.IMG_URL, players };
+            csvData[`${Number(team.TEAM) + 1}`] = { teamName: team.NAME, logoUrl: team.IMG_URL, players };
         }
-        applyCSVData(lobby, csvData);
+        copyCSVData = JSON.parse(JSON.stringify(csvData));
+        apexCommon.get_lobby_players();
         return true;
     } catch (error) {
         console.error("[READ CSV] Error:", error);
@@ -1690,38 +1732,66 @@ function readCSV(csv) {
 
 
 /**
+ * すでに設定されているプレイヤー名のリスト
+ * @type {Array}
+ * @global
+ * @link applyCSVData
+ */
+let playerNames = {};
+
+/**
+ * プレイヤーが設定済みかどうかのフラグ
+ * @type {Boolean}
+ * @global
+ * @link applyCSVData
+ */
+let isPlayerSet = {
+    success: false,
+    index: 0
+};
+
+/**
  * lobbyにCSVデータを反映する
  * @param {CustomMatch} lobby - ロビー
- * @param {Object} csvData - CSVデータ
+ * @param {Object} copyCSVData - CSVデータ
  */
-function applyCSVData(lobby, csvData) {
-    const playerNames = {};
-    for (const playerId in lobby.players) {
-        const player = lobby.getPlayer(playerId);
-        if (playerNames[player.name]) {
-            delete playerNames[player.name];
-        } else {
-            playerNames[player.name] = player;
-        }
+function applyCSVData(lobby, copyCSVData) {
+    if (Object.keys(copyCSVData).length === 0) {
+        return false;
     }
-    for (const teamId in csvData) {
-        apexCommon.set_team_name(teamId, csvData[teamId].teamName);
+    const teamId = Object.keys(copyCSVData)[0];
+    if (isPlayerSet.success) {
         const team = lobby.getTeam(teamId);
         if (team) {
-            team.setTeamName(csvData[teamId].teamName);
-            team.setTeamImg(csvData[teamId].logoUrl);
-        }
-        for (const playerName of csvData[teamId].players) {
-            if (playerNames[playerName]) {
-                const player = playerNames[playerName];
-                if (lobby.getTeam(0).players.includes(player.nucleusHash)) {
-                    apexCommon.set_team(teamId, player.hardwareName, player.nucleusHash);
-                }
-            } else {
-                console.log(`[APPLY CSV DATA] Player not found: ${playerName}`);
+            if (copyCSVData[teamId].teamName !== team.teamName) {
+                apexCommon.set_team_name(teamId, copyCSVData[teamId].teamName);
             }
+            team.setTeamImg(copyCSVData[teamId].logoUrl);
+        }
+        delete copyCSVData[teamId];
+        isPlayerSet.success = false;
+        isPlayerSet.index = 0;
+        console.log(`[APPLY CSV DATA] csvData:`, JSON.stringify(copyCSVData));
+        // apexCommon.get_lobby_players();
+    } else {
+        const playerName = copyCSVData[teamId].players[isPlayerSet.index];
+        if (playerNames[playerName]) {
+            const player = playerNames[playerName];
+            if (lobby.getTeam(0).players.includes(player.nucleusHash)) {
+                apexCommon.set_team(teamId, player.hardwareName, player.nucleusHash);
+            }
+        } else if (playerName === undefined) {
+            console.log(`[APPLY CSV DATA] Player is empty, TEAM_ID: ${teamId - 1}`);
+        } else {
+            console.log(`[APPLY CSV DATA] Player not found, TEAM_ID: ${teamId - 1} PLAYER_NAME: ${playerName}`);
+        }
+        if (isPlayerSet.index >= copyCSVData[teamId].players.length - 1) {
+            isPlayerSet.success = true;
+        } else {
+            isPlayerSet.index++;
         }
     }
+    return true;
 }
 
 /**
@@ -1738,9 +1808,18 @@ function readLobbyMessage(messageType) {
 }
 
 /**
+ * Apply CSV Dataの最終適用時間
+ * @type {number}
+ * @global
+ * @link update
+ */
+let lastApplyTime = 0;
+
+/**
  * メインスレッド
  */
 async function update() {
+    const now = Date.now();
     if (match && match.startTimeStamp != 0 && match.endTimeStamp === 0) {
         getPlayerStatus(match);
         sendMapData.sendPlayerPositionUpdate(match, config.output);
@@ -1753,13 +1832,18 @@ async function update() {
                 match.addPacketElement(packet.t, packet.toJSON());
             }
         }
-        packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
+        packet = new Packet((now / 1000) - match.startTimeStamp);
     }
-    const now = Date.now();
-    if (!isPlaying && (now - lastPollTime >= 5000)) {
-        apexCommon.get_lobby_players();
-        apexCommon.get_match_settings();
-        lastPollTime = now;
+    if (!isPlaying) {
+        if (now - lastPollTime >= 5000) {
+            apexCommon.get_lobby_players();
+            apexCommon.get_match_settings();
+            lastPollTime = now;
+        }
+        if (copyCSVData && lobby && now - lastApplyTime >= 100) {
+            applyCSVData(lobby, copyCSVData);
+            lastApplyTime = now;
+        }
     }
 }
 
@@ -1809,7 +1893,7 @@ common.registerOnServersStarted((servers) => {
 function handleMessage(message, messageType) {
     // console.log(`[HANDLE MESSAGE] Received ${messageType} message:`, message.toObject());
     // ログを保存
-    if (!(["ObserverSwitched", "Response", "CustomMatch_SetSettings", "CustomMatch_LobbyPlayers"].includes(messageType))) {  // logにObserverSwitchedとResponseを含めないようにする
+    if (!(["ObserverSwitched", "Response"].includes(messageType))) {  // logにObserverSwitchedとResponseを含めないようにする
         common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
     }
     // common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);

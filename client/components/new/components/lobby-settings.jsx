@@ -66,9 +66,12 @@ export function LobbySettings({ settings = {}, onSettingsChange }) {
                 <SelectValue placeholder="Select match name" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="mp_rr_olympus">Olympus</SelectItem>
-                <SelectItem value="mp_rr_kings_canyon">Kings Canyon</SelectItem>
-                <SelectItem value="mp_rr_worlds_edge">World's Edge</SelectItem>
+                <SelectItem value="mp_rr_olympus_mu2">Olympus</SelectItem>
+                <SelectItem value="mp_rr_canyonlands_hu">Kings Canyon</SelectItem>
+                <SelectItem value="mp_rr_desertlands_hu">World's Edge</SelectItem>
+                <SelectItem value="mp_rr_district">E-District</SelectItem>
+                <SelectItem value="mp_rr_divided_moon_mu1">Broken Moon</SelectItem>
+                <SelectItem value="mp_rr_tropic_island_mu2">Storm Point</SelectItem>
               </SelectContent>
             </Select>
           </div>
