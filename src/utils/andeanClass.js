@@ -697,6 +697,18 @@ class Player {
      * @type {number}
      */
     this.gibraltarShieldAbsorbed = 0;
+
+    /**
+     * バナーを回収した回数
+     * @type {number}
+     */
+    this.bannerCollectedCount = 0;
+
+    /**
+     * 蘇生可能状態かどうかを持つ
+     * @type {boolean}
+     */
+    this.canRevive = false;
   }
 
   /**
@@ -1064,6 +1076,23 @@ class Player {
    */
   addGibraltarShieldAbsorbed(amount) {
     this.gibraltarShieldAbsorbed += amount;
+  }
+
+  /**
+   * プレイヤーのバナー回収回数を増加させるメソッド
+   * @memberof Player
+   */
+  addBannerCollectedCount() {
+    this.bannerCollectedCount++;
+  }
+
+  /**
+   * プレイヤーの蘇生可能状態を変更するメソッド
+   * @param {boolean} status プレイヤーが蘇生可能な場合はtrue、蘇生不可能な場合はfalse
+   * @memberof Player
+   */
+  setCanRevive(status) {
+    this.canRevive = status;
   }
 }
 

@@ -746,6 +746,7 @@ function analyze_message(category, msg) {
             const player = processUpdatePlayer(msg, match);
             const revived = processUpdateMsgPlayer(msg.revived, match);
             revived.setStatus("alive");
+            revived.setCanRevive(false);
             match.getTeam(msg.player.teamid).addTotalRevives();
             const data = processEventData(msg.player, match);
             data["revived"] = processEventData(msg.revived, match);
@@ -866,12 +867,14 @@ function analyze_message(category, msg) {
         }
         case "BannerCollected": {
             const player = processUpdatePlayer(msg, match);
-            /**
-             * @todo
-             * アビリティを使用した際にどのアビリティを使用したかがわかるため、
-             * プレイヤーごとにアビリティが溜まっているかどうかや使用済みかどうかなどのデータを保持できる。
-             * 追加します？
-             */
+            const collecter = processUpdateMsgPlayer(msg.collected, match);
+            collecter.addBannerCollectedCount();
+            player.setCanRevive(true);
+            const data = processEventData(msg.player, match);
+            data["collected"] = processEventData(msg.collected, match);
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "PlayerAbilityUsed": {
