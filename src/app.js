@@ -872,12 +872,15 @@ function analyze_message(category, msg) {
             let mapName = "";
             for (const key in basePlaylist.include) {
                 if (key.includes("map")) {
-                    mapName = basePlaylist.include[key];
+                    mapName = key;
                 }
             }
             const mapObj = playlists_r5.playlists.Includes[mapName];
-            const map = Object.keys(mapObj.gamemodes.survival.maps)[0];
-            const gamemodeKey = gamemodeVars[Object.keys(gamemodeVars).filter(key => gamemodeVars[key] === playlistName)[0]];
+            let map = null;
+            if (mapObj) {
+                map = Object.keys(mapObj.gamemodes.survival.maps)[0];
+            }
+            const gamemodeKey = Object.keys(gamemodeVars).filter(key => gamemodeVars[key] === playlistName)[0];
             const gamemodeNum = gamemodeKey.match(/\D*(\d+)/)[1];
             const gamemode = gamemodeVars[`custom_match_playlist_category_${gamemodeNum}_name`]
 

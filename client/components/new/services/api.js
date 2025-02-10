@@ -79,7 +79,7 @@ export const api = {
 
   // Config-related API calls
   loadConfig: async () => {
-    const response = await fetchWithTimeout("/api/loadConfig", {
+    const response = await fetchWithTimeout("/loadConfig", {
       method: "POST",
       timeout: API_TIMEOUT,
     })
@@ -88,7 +88,7 @@ export const api = {
   },
 
   saveConfig: async (config) => {
-    const response = await fetchWithTimeout("/api/saveConfig", {
+    const response = await fetchWithTimeout("/saveConfig", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(config),
@@ -99,7 +99,7 @@ export const api = {
   },
 
   resetConfig: async () => {
-    const response = await fetchWithTimeout("/api/resetConfig", {
+    const response = await fetchWithTimeout("/resetConfig", {
       method: "POST",
       timeout: API_TIMEOUT,
     })
@@ -180,7 +180,7 @@ export const api = {
 
   stopServer: async () => {
     try {
-      const response = await fetchWithTimeout("/api/stopServer", {
+      const response = await fetchWithTimeout("/stopServer", {
         method: "POST",
         timeout: API_TIMEOUT,
       })
@@ -197,7 +197,7 @@ export const api = {
 
   startGame: async () => {
     try {
-      const response = await fetchWithTimeout("/api/startGame", {
+      const response = await fetchWithTimeout("/startGame", {
         method: "POST",
         timeout: API_TIMEOUT,
       })
@@ -223,7 +223,7 @@ export const api = {
 
   // 新しいAPIコール
   sendCSVData: async (csvData) => {
-    const response = await fetchWithTimeout("/api/send_csv_data", {
+    const response = await fetchWithTimeout("/send_csv_data", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ csvData }),
