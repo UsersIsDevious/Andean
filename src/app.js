@@ -882,7 +882,10 @@ function analyze_message(category, msg) {
             }
             const gamemodeKey = Object.keys(gamemodeVars).filter(key => gamemodeVars[key] === playlistName)[0];
             const gamemodeNum = gamemodeKey.match(/\D*(\d+)/)[1];
-            const gamemode = gamemodeVars[`custom_match_playlist_category_${gamemodeNum}_name`]
+            let gamemode = gamemodeVars[`custom_match_playlist_category_${gamemodeNum}_name`]
+            if (gamemode.includes("#")) {
+                gamemode = gamemode.replace("#", "");
+            }
 
             const data = msg;
             data["maxPlayers"] = maxPlayers;
