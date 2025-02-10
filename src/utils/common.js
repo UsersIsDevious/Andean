@@ -162,13 +162,13 @@ function saveLog(message, logFileName = 'app.log') {
 
 /**
  * Configファイルに保存します。
- * 
  * @param {Object} _class - 新しく保存するデータオブジェクト
  */
-function saveConfig(configPath = "./config.json", _class) {
+function saveConfig(configPath = "../../config.json", _class) {
   try {
     // データをファイルに書き込み
-    const result = fs.writeFileSync(configPath, JSON.stringify(_class, null, 2));
+    const absolutePath = path.resolve(__dirname, configPath);
+    const result = fs.writeFileSync(absolutePath, JSON.stringify(_class, null, 2));
     return result;
   } catch (error) {
     console.error(`Config ファイルの保存エラー (パス: ${configPath}):`, error.message);
@@ -183,11 +183,27 @@ function saveConfig(configPath = "./config.json", _class) {
  */
 function readConfig(configPath = '../../config.json') {
   try {
-    const absolutePath = path.resolve(__dirname, configPath);
-    const configData = fs.readFileSync(absolutePath, 'utf8');
+    const configData = readText(configPath);
     return JSON.parse(configData);
   } catch (error) {
     console.error(`Config ファイルの読み込みエラー (パス: ${configPath}):`, error.message);
+    return null;
+  }
+}
+
+/**
+ * テキストを読み込む関数
+ * @param {string} - 設定ファイルのパス
+ * @returns {Object|null} - 読み込んだ設定内容（エラー時は null を返す）
+ */
+function readText(filePath) {
+  try {
+    const absolutePath = path.resolve(__dirname, filePath);
+    const data = fs.readFileSync(absolutePath, 'utf8');
+    return data;
+  }
+  catch (error) {
+    console.error(`ファイルの読み込みエラー (パス: ${filePath}):`, error.message);
     return null;
   }
 }
@@ -235,6 +251,7 @@ function runRegularCommand(command) {
 module.exports = {
   startAllServers,
   readConfig,
+  readText,
   runCommand,
   runPowerShellCommand,
   runRegularCommand,

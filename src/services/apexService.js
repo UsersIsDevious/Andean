@@ -47,7 +47,7 @@ async function apexLiveApiCall(req, res) {
       console.log("[JOIN_LOBBY] TOKEN: " + req.body.token);
       // カスタムマッチのロビーに参加
       apexCommon.join_lobby(req.body.token);
-      res.json({ operation: 'join_lobby', token: req.body.token });
+      res.json({ success: true });
       break;
 
     case 'leave_lobby':
@@ -86,9 +86,9 @@ async function apexLiveApiCall(req, res) {
       break;
 
     case 'set_settings':
-      console.log(`[SET_SETTINGS] MATCH_NAME: ${req.body.matchName}  ADMIN_CHAT: ${req.body.adminChat}  TEAM_RENAME: ${req.body.teamRename}  SELF_ASSIGN: ${req.body.selfAssign}  AIM_ASSIST: ${req.body.aimAssist}  ANON_MODE: ${req.body.anonMode}`);
+      console.log(`[SET_SETTINGS] PLAYLIST_NAME: ${req.body.playlistName}  ADMIN_CHAT: ${req.body.adminChat}  TEAM_RENAME: ${req.body.teamRename}  SELF_ASSIGN: ${req.body.selfAssign}  AIM_ASSIST: ${req.body.aimAssist}  ANON_MODE: ${req.body.anonMode}`);
       // 試合設定を適用
-      apexCommon.set_settings(req.body.matchName, req.body.adminChat, req.body.teamRename, req.body.selfAssign, req.body.aimAssist, req.body.anonMode);
+      apexCommon.set_settings(req.body.playlistName, req.body.adminChat, req.body.teamRename, req.body.selfAssign, req.body.aimAssist, req.body.anonMode);
       res.json({ success: true });
       break;
 

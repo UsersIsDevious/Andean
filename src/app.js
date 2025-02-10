@@ -6,6 +6,7 @@ const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセー�
 const messageTypes = require('./utils/messageTypes');
 const sendMapData = require('./services/sendMapData')
 const apexCommon = require('./services/apexCommon');
+const vdf = require('vdf');
 
 if (!config) {
     console.error('設定ファイルが見つかりません。');
@@ -66,7 +67,7 @@ function startApexLegends() {
         config = common.readConfig();
     }
     const option = `${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`;
-    const command = `"${config.apexlegends.path}" + ${option}`;  // パスが空でない場合に起動コマンドを構築
+    const command = `"${config.apexlegends.path}\\r5apex.exe" + ${option}`;  // パスが空でない場合に起動コマンドを構築
     common.runRegularCommand(command)
         .then(output => {
             common.logMessage('Apex Legendsが起動しました:', output);
@@ -79,6 +80,24 @@ function startApexLegends() {
 }
 
 
+/**
+ * playlists_r5.txtを変換したJSONオブジェクト
+ * @type {Object}
+ */
+let playlists_r5 = {}
+
+/**
+ * playlists_r5.txt を読み込み、VDF を JSON に変換する
+ * @return {Object}
+ */
+const data = common.readText(`${config.apexlegends.path}\\r2\\playlists_r5.txt`)
+try {
+    // vdf.parse() を利用して KeyValue 形式を JSON オブジェクトに変換する
+    playlists_r5 = vdf.parse(data);
+    common.saveConfig('../../playlists_r5.json', playlists_r5);  // 後で消す
+} catch (parseErr) {
+    console.error('パースに失敗しました:', parseErr);
+}
 
 // サーバーを起動
 // server.startServer();
@@ -827,6 +846,42 @@ function analyze_message(category, msg) {
                     maxPlayers = 60;
                     maxTeams = 20;
                     gameMode = "BATTLE ROYALE: TRIOS";
+                    map = "mp_rr_tropic_island_mu2";
+                    break;
+                case "can_hu_no_ring_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
+                    map = "mp_rr_canyonlands_hu";
+                    break;
+                case "des_no_ring_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
+                    map = "mp_rr_desertlands_hu";
+                    break;
+                case "district_no_ring_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
+                    map = "mp_rr_district";
+                    break;
+                case "moon_no_ring_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
+                    map = "mp_rr_divided_moon_mu1";
+                    break;
+                case "oly_no_ring_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
+                    map = "mp_rr_olympus_mu2";
+                    break;
+                case "tropic_no_ring_pm":
+                    maxPlayers = 60;
+                    maxTeams = 20;
+                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
                     map = "mp_rr_tropic_island_mu2";
                     break;
                 case "duo_can_hu_cm":

@@ -54,7 +54,7 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
     if (isInLobby && lobbyId) {
       try {
         const [playersData, settingsData] = await Promise.all([api.getLobbyPlayers(), api.getMatchSettings()])
-        setLobbyData({ players: playersData, settings: settingsData })
+        setLobbyData({ players: playersData.result, settings: settingsData })
         setError(null)
       } catch (error) {
         console.error("Error fetching lobby data:", error)
@@ -167,22 +167,29 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
     const team = (isSimulated ? simulatedLobbyData.players : lobbyData.players || {})[teamId] || {
       name: `Team ${index + 1}`,
       players: [],
+      logoUrl: "",
+      spawnPoint: 0,
     }
     return {
       id: teamId,
       name: team.name,
       players: team.players || [],
       logoUrl: team.logoUrl || `/team-logos/team-${teamId}.png`,
+      spawnPoint: team.spawnPoint,
     }
   })
 
   const unassignedTeam = (isSimulated ? simulatedLobbyData.players : lobbyData.players || {})["0"] || {
-    name: "未割当",
+    name: "Unassigned",
     players: [],
+    logoUrl: "",
+    spawnPoint: 0,
   }
   const observerTeam = (isSimulated ? simulatedLobbyData.players : lobbyData.players || {})["1"] || {
-    name: "オブザーバー",
+    name: "Observers",
     players: [],
+    logoUrl: "",
+    spawnPoint: 0,
   }
 
   return (
@@ -200,10 +207,10 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="w-full">
                 <TabsTrigger value="unassigned" className="flex-1">
-                  未割当
+                  Unassigned
                 </TabsTrigger>
                 <TabsTrigger value="observer" className="flex-1">
-                  オブザーバー
+                  Observers
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="unassigned">
