@@ -44,6 +44,83 @@ const teamColors = [
   "bg-cyan-200",
 ]
 
+const lobbyOptions = {
+  CUSTOMMATCH_BR_TRIOS: {
+    can_hu_cm: "MP_RR_CANYONLANDS_HU",
+    des_hu_cm: "MP_RR_DESERTLANDS_MU3",
+    district_cm: "MP_RR_DISTRICT",
+    moon_cm: "MP_RR_DIVIDED_MOON",
+    oly_mu2_cm: "MP_RR_OLYMPUS_MU2",
+    tropic_mu2_cm: "MP_RR_TROPIC_ISLAND_MU2",
+  },
+  CUSTOMMATCH_BR_DUOS: {
+    duo_can_hu_cm: "duo_can_hu_cm",
+    duo_des_hu_cm: "duo_des_hu_cm",
+    duo_district_cm: "duo_district_cm",
+    duo_moon_cm: "duo_moon_cm",
+    duo_oly_mu2_cm: "duo_oly_mu2_cm",
+    duo_tropic_mu2_cm: "duo_tropic_mu2_cm",
+  },
+  CUSTOMMATCH_ALGS: {
+    des_new_spawn_pm: "PL_ALGS_DESERTLANDS",
+    tropic_new_spawn_pm: "PL_ALGS_TROPIC",
+    district_new_spawn_pm: "PL_ALGS_DISTRICT",
+    moon_new_spawn_pm: "PL_ALGS_MOON",
+  },
+  PL_DAYZERO: {
+    sm_dayzero_canyonlands_pm: "sm_dayzero_canyonlands_pm",
+    sm_dayzero_district_pm: "sm_dayzero_district_pm",
+    sm_dayzero_moon_pm: "sm_dayzero_moon_pm",
+    sm_dayzero_desertlands_pm: "sm_dayzero_desertlands_pm",
+    sm_dayzero_tropics_pm: "sm_dayzero_tropics_pm",
+    sm_dayzero_olympus_pm: "sm_dayzero_olympus_pm",
+  },
+  TDM_NAME: {
+    tdm_fragment_s_pm: "tdm_fragment_s_pm",
+    tdm_thunderdome_s_pm: "tdm_thunderdome_s_pm",
+    tdm_skull_s_pm: "tdm_skull_s_pm",
+    tdm_zeus_s_pm: "tdm_zeus_s_pm",
+    tdm_core_s_pm: "tdm_core_s_pm",
+    tdm_monument_s_pm: "tdm_monument_s_pm",
+    tdm_estates_s_pm: "tdm_estates_s_pm",
+  },
+  GAME_MODE_GUNGAME: {
+    gg_fragment_s_pm: "gg_fragment_s_pm",
+    gg_thunderdome_s_pm: "gg_thunderdome_s_pm",
+    gg_skull_s_pm: "gg_skull_s_pm",
+    gg_pylon_s_pm: "gg_pylon_s_pm",
+    gg_zeus_s_pm: "gg_zeus_s_pm",
+    gg_core_s_pm: "gg_core_s_pm",
+    gg_monument_s_pm: "gg_monument_s_pm",
+    gg_estates_s_pm: "gg_estates_s_pm",
+  },
+  CONTROL_NAME: {
+    control_barometer_s_pm: "control_barometer_s_pm",
+    control_siphon_s_pm: "control_siphon_s_pm",
+    control_thunderdome_s_pm: "control_thunderdome_s_pm",
+    control_production_s_pm: "control_production_s_pm",
+    control_labs_s_pm: "control_labs_s_pm",
+    control_caustic_s_pm: "control_caustic_s_pm",
+  },
+  BTDM_NAME: {
+    btdm_fragment_s_pm: "btdm_fragment_s_pm",
+    btdm_thunderdome_s_pm: "btdm_thunderdome_s_pm",
+    btdm_skull_s_pm: "btdm_skull_s_pm",
+    btdm_zeus_s_pm: "btdm_zeus_s_pm",
+    btdm_core_s_pm: "btdm_core_s_pm",
+    btdm_monument_s_pm: "btdm_monument_s_pm",
+    btdm_estates_s_pm: "btdm_estates_s_pm",
+  },
+  FREEDM_LOCKDOWN_MODE: {
+    tr_hunt_the_core_s_pm: "tr_hunt_the_core_s_pm",
+    tr_hunt_amps_s_pm: "tr_hunt_amps_s_pm",
+    tr_hunt_monument_s_pm: "tr_hunt_monument_s_pm",
+    tr_hunt_skull_s_pm: "tr_hunt_skull_s_pm",
+    tr_hunt_estates_s_pm: "tr_hunt_estates_s_pm",
+    tr_hunt_thunderdome_s_pm: "tr_hunt_thunderdome_s_pm",
+  },
+}
+
 export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLobbyData, isSimulated }) {
   const { isInLobby, lobbyId } = useLobby()
   const [lobbyData, setLobbyData] = useState({ players: {}, settings: {} })
@@ -69,9 +146,9 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
   useEffect(() => {
     fetchLobbyData()
 
-    const intervalId = setInterval(fetchLobbyData, 5000) // 5秒ごとに更新
+    const intervalId = setInterval(fetchLobbyData, 5000)
 
-    return () => clearInterval(intervalId) // コンポーネントのアンマウント時にインターバルをクリア
+    return () => clearInterval(intervalId)
   }, [fetchLobbyData])
 
   const handleSettingsChange = async (newSettings) => {
@@ -198,6 +275,7 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
         <LobbySettings
           settings={isSimulated ? simulatedLobbyData.settings : lobbyData.settings}
           onSettingsChange={handleSettingsChange}
+          lobbyOptions={lobbyOptions}
         />
         <Card>
           <CardHeader>

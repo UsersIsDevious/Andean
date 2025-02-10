@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { Shield } from "lucide-react"
 import { api } from "../services/api"
 
-export function LobbySettings({ settings = {}, onSettingsChange }) {
+export function LobbySettings({ settings = {}, onSettingsChange, lobbyOptions }) {
   const [localSettings, setLocalSettings] = useState({
     playlistname: settings.playlistname || "can_hu_cm",
     adminchat: settings.adminchat || false,
@@ -19,7 +19,7 @@ export function LobbySettings({ settings = {}, onSettingsChange }) {
     anonmode: settings.anonmode || false,
     maxPlayers: settings.maxPlayers || 60,
     maxTeams: settings.maxTeams || 20,
-    gameMode: settings.gameMode || "BATTLE ROYALE: TRIOS",
+    gameMode: settings.gamemode || "BATTLE ROYALE: TRIOS",
     map: settings.map || "mp_rr_canyonlands_hu",
   })
 
@@ -33,13 +33,31 @@ export function LobbySettings({ settings = {}, onSettingsChange }) {
       anonmode: settings.anonmode || false,
       maxPlayers: settings.maxPlayers || 60,
       maxTeams: settings.maxTeams || 20,
-      gameMode: settings.gameMode || "BATTLE ROYALE: TRIOS",
+      gameMode: settings.gamemode || "BATTLE ROYALE: TRIOS",
       map: settings.map || "mp_rr_canyonlands_hu",
     })
   }, [settings])
 
   const handleSettingChange = async (key, value) => {
-    const newSettings = { ...localSettings, [key]: value }
+    let newSettings = { ...localSettings, [key]: value }
+
+    if (key === "gameMode") {
+      // When game mode changes, update the map to the first available map for that mode
+      const firstMapKey = Object.keys(lobbyOptions[value])[0]
+      newSettings = {
+        ...newSettings,
+        gameMode: value,
+        map: firstMapKey,
+        playlistname: firstMapKey,
+      }
+    } else if (key === "map") {
+      newSettings = {
+        ...newSettings,
+        map: value,
+        playlistname: value,
+      }
+    }
+
     setLocalSettings(newSettings)
 
     try {
@@ -63,24 +81,41 @@ export function LobbySettings({ settings = {}, onSettingsChange }) {
       <CardContent>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="playlistname" className="text-sm font-medium">
-              Playlist Name
+            <Label htmlFor="gameMode" className="text-sm font-medium">
+              Game Mode
             </Label>
             <Select
-              id="playlistname"
-              value={localSettings.playlistname}
-              onValueChange={(value) => handleSettingChange("playlistname", value)}
+              id="gameMode"
+              value={localSettings.gameMode}
+              onValueChange={(value) => handleSettingChange("gameMode", value)}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select playlist name" />
+                <SelectValue placeholder="Select game mode" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="can_hu_cm">Kings Canyon</SelectItem>
-                <SelectItem value="oly_mu2_cm">Olympus</SelectItem>
-                <SelectItem value="district_cm">E-District</SelectItem>
-                <SelectItem value="des_hu_cm">World's Edge</SelectItem>
-                <SelectItem value="moon_cm">Broken Moon</SelectItem>
-                <SelectItem value="tropic_mu2_cm">Storm Point</SelectItem>
+                {Object.keys(lobbyOptions).map((mode) => (
+                  <SelectItem key={mode} value={mode}>
+                    {mode}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="map" className="text-sm font-medium">
+              Map
+            </Label>
+            <Select id="map" value={localSettings.playlistname} onValueChange={(value) => handleSettingChange("map", value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select map" />
+              </SelectTrigger>
+              <SelectContent>
+                {lobbyOptions[localSettings.gameMode] &&
+                  Object.entries(lobbyOptions[localSettings.gameMode]).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      {value}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
@@ -137,45 +172,8 @@ export function LobbySettings({ settings = {}, onSettingsChange }) {
               />
             </div>
           </div>
-          <Separator />
-          <div className="space-y-2">
-            <Label htmlFor="gameMode" className="text-sm font-medium">
-              Game Mode
-            </Label>
-            <Select
-              id="gameMode"
-              value={localSettings.gameMode}
-              onValueChange={(value) => handleSettingChange("gameMode", value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select game mode" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="BATTLE ROYALE: TRIOS">Battle Royale: Trios</SelectItem>
-                <SelectItem value="BATTLE ROYALE: DUOS">Battle Royale: Duos</SelectItem>
-                <SelectItem value="ARENAS: TRIOS">Arenas: Trios</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="map" className="text-sm font-medium">
-              Map
-            </Label>
-            <Select id="map" value={localSettings.map} onValueChange={(value) => handleSettingChange("map", value)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select map" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="mp_rr_canyonlands_hu">Canyon Lands</SelectItem>
-                <SelectItem value="mp_rr_olympus">Olympus</SelectItem>
-                <SelectItem value="mp_rr_kings_canyon">Kings Canyon</SelectItem>
-                <SelectItem value="mp_rr_worlds_edge">World's Edge</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
       </CardContent>
     </Card>
   )
 }
-

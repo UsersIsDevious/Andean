@@ -856,7 +856,10 @@ function analyze_message(category, msg) {
             const playlistName = msg.playlistname;
             const playlists = playlists_r5.playlists.Playlists;
             const playlist = playlists[playlistName];
-            let inherit = playlist.inherit;
+            let inherit = null;
+            if (playlist["inherit"]) {
+                inherit = playlist.inherit;
+            }
             if (!playlist.vars["max_teams"]) {
                 while (playlists[inherit].vars["max_teams"]) {
                     inherit = playlists[inherit].inherit;
