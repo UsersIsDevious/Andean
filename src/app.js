@@ -1,7 +1,7 @@
 const common = require('./utils/common');
 const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event, Packet } = require('./utils/andeanClass');
-let config = common.readConfig('../../config.json');
-let language = common.readConfig('../../locals/en.default.json');
+let config = common.readFile('../../config.json');
+let language = common.readFile('../../locals/en.default.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
 const sendMapData = require('./services/sendMapData')
@@ -14,7 +14,7 @@ if (!config) {
 } else if (!config.language || config.language === '') {
     console.error('言語設定が見つからないため、デフォルトの言語設定(English)を使用します。');
 } else {
-    language = common.readConfig(`../../locals/${config.language}.json`);
+    language = common.readFile(`../../locals/${config.language}.json`);
 }
 
 
@@ -64,7 +64,7 @@ function startApexLegends() {
             return false;
         }
     } else {
-        config = common.readConfig();
+        config = common.readFile();
     }
     const option = `${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`;
     const command = `"${config.apexlegends.path}\\r5apex.exe" + ${option}`;  // パスが空でない場合に起動コマンドを構築
@@ -82,6 +82,7 @@ function startApexLegends() {
 
 /**
  * playlists_r5.txtを変換したJSONオブジェクト
+ * @global
  * @type {Object}
  */
 let playlists_r5 = {}
@@ -94,10 +95,55 @@ const data = common.readText(`${config.apexlegends.path}\\r2\\playlists_r5.txt`)
 try {
     // vdf.parse() を利用して KeyValue 形式を JSON オブジェクトに変換する
     playlists_r5 = vdf.parse(data);
-    common.saveConfig('../../playlists_r5.json', playlists_r5);  // 後で消す
+    const load = common.readFile('../../playlists_r5.json', playlists_r5);
+    if (playlists_r5.playlists.versionNum !== load.playlists.versionNum) {
+        common.saveFile('../../playlists_r5.json', playlists_r5);
+    }
 } catch (parseErr) {
     console.error('パースに失敗しました:', parseErr);
 }
+
+/**
+ * ゲームモードの一覧を格納するオブジェクト
+ * @global
+ * @type {Object}
+ */
+let gamemodes = {};
+
+/**
+ * ゲームモードの一覧を取得する
+ */
+const gamemodeVars = playlists_r5.playlists.Gamemodes.defaults.vars;
+const modeNum = gamemodeVars.custom_match_playlist_category_count;
+const playlists = playlists_r5.playlists.Playlists;
+for (let i = 0; i < modeNum; i++) {
+    const entryNum = gamemodeVars[`custom_match_playlist_category_${i}_count`];
+    let name = gamemodeVars[`custom_match_playlist_category_${i}_name`];
+    const data = {};
+    for (let j = 0; j < entryNum; j++) {
+        const entryName = `custom_match_playlist_category_${i}_entry_${j}`;
+        const entry = gamemodeVars[entryName];
+        const playlist = playlists[entry];
+        let playlistName = `${entry}`;
+        for (const key in playlist.vars) {
+            if (["name", "description", "map_name"].includes(key)) {
+                playlistName = playlist.vars[key];
+            }
+        }
+        if (entry === "can_hu_cm") {
+            playlistName = "#MP_RR_CANYONLANDS_HU";
+        }
+        if (playlistName.includes("#")) {
+            playlistName = playlistName.replace("#", "");
+        }
+        data[entry] = playlistName;
+    }
+    if (name.includes("#")) {
+        name = name.replace("#", "");
+    }
+    gamemodes[name] = data;
+}
+
 
 // サーバーを起動
 // server.startServer();
@@ -807,399 +853,43 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_SetSettings": {
-            let maxPlayers = 0;
-            let maxTeams = 0;
-            let gameMode = ""
-            let map = ""
-            switch (msg.playlistname) {
-                case "can_hu_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_canyonlands_hu";
-                    break;
-                case "des_hu_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_desertlands_hu";
-                    break;
-                case "district_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_district";
-                    break;
-                case "moon_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_divided_moon_mu1";
-                    break;
-                case "oly_mu2_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_olympus_mu2";
-                    break;
-                case "tropic_mu2_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_tropic_island_mu2";
-                    break;
-                case "can_hu_no_ring_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
-                    map = "mp_rr_canyonlands_hu";
-                    break;
-                case "des_no_ring_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
-                    map = "mp_rr_desertlands_hu";
-                    break;
-                case "district_no_ring_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
-                    map = "mp_rr_district";
-                    break;
-                case "moon_no_ring_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
-                    map = "mp_rr_divided_moon_mu1";
-                    break;
-                case "oly_no_ring_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
-                    map = "mp_rr_olympus_mu2";
-                    break;
-                case "tropic_no_ring_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS (No Ring)";
-                    map = "mp_rr_tropic_island_mu2";
-                    break;
-                case "duo_can_hu_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_canyonlands_hu";
-                    break;
-                case "duo_des_hu_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_desertlands_hu";
-                    break;
-                case "duo_district_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_district";
-                    break;
-                case "duo_moon_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_divided_moon_mu1";
-                    break;
-                case "duo_oly_mu2_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_olympus_mu2";
-                    break;
-                case "duo_tropic_mu2_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_tropic_island_mu2";
-                    break;
-                case "des_new_spawn_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "ALGS";
-                    map = "mp_rr_desertlands_hu";
-                    break;
-                case "tropic_new_spawn_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "ALGS";
-                    map = "mp_rr_tropic_island_mu2";
-                    break;
-                case "district_new_spawn_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "ALGS";
-                    map = "mp_rr_district";
-                    break;
-                case "moon_new_spawn_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "ALGS";
-                    map = "mp_rr_divided_moon_mu1";
-                    break;
-                case "dayzero_canyonlands_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_canyonlands_hu";
-                    break;
-                case "dayzero_desertlands_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_desertlands_hu";
-                    break;
-                case "dayzero_olympus_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_olympus_mu2";
-                    break;
-                case "dayzero_tropics_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_tropic_island_mu2";
-                    break;
-                case "dayzero_moon_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_divided_moon_mu1";
-                    break;
-                case "dayzero_district_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_district";
-                    break;
-                case "tdm_fragment_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_fragment_s";  // 仮置き
-                    break;
-                case "tdm_thunderdome_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                case "tdm_skull_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_skull_s";  // 仮置き
-                    break;
-                case "tdm_zeus_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_zeus_s";  // 仮置き
-                    break;
-                case "tdm_core_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_core_s";  // 仮置き
-                    break;
-                case "tdm_monument_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_monument_s";  // 仮置き
-                    break;
-                case "tdm_estates_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_estates_s";  // 仮置き
-                    break;
-                case "gg_fragment_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_fragment_s";  // 仮置き
-                    break;
-                case "gg_thunderdome_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                case "gg_skull_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_skull_s";  // 仮置き
-                    break;
-                case "gg_pylon_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_pylon_s";  // 仮置き
-                    break;
-                case "gg_zeus_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_zeus_s";  // 仮置き
-                    break;
-                case "gg_core_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_core_s";  // 仮置き
-                    break;
-                case "gg_monument_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_monument_s";  // 仮置き
-                case "gg_estates_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_estates_s";  // 仮置き
-                    break;
-                case "control_barometer_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_barometer_s";  // 仮置き
-                    break;
-                case "control_siphon_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_siphon_s";  // 仮置き
-                    break;
-                case "control_thunderdome_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                case "control_production_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_production_s";  // 仮置き
-                    break;
-                case "control_labs_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_labs_s";  // 仮置き
-                    break;
-                case "control_caustic_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_caustic_s";  // 仮置き
-                    break;
-                case "btdm_fragment_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_fragment_s";  // 仮置き
-                    break;
-                case "btdm_thunderdome_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                case "btdm_skull_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_skull_s";  // 仮置き
-                    break;
-                case "btdm_zeus_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_zeus_s";  // 仮置き
-                    break;
-                case "btdm_core_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_core_s";  // 仮置き
-                    break;
-                case "btdm_monument_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_monument_s";  // 仮置き
-                    break;
-                case "btdm_estates_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_estates_s";  // 仮置き
-                    break;
-                case "tr_hunt_the_core_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_core_s";  // 仮置き
-                    break;
-                case "tr_hunt_amps_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_amps_s";  // 仮置き
-                    break;
-                case "tr_hunt_monument_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_monument_s";  // 仮置き
-                    break;
-                case "tr_hunt_skull_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_skull_s";  // 仮置き
-                    break;
-                case "tr_hunt_estates_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_estates_s";  // 仮置き
-                    break;
-                case "tr_hunt_thunderdome_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                case "":
-                    console.log("[CustomMatch_SetSettings] Playlist name is empty");
-                    break;
-                default:
-                    console.log("[CustomMatch_SetSettings] Unknown playlist: " + msg.playlistname);
-                    break;
+            const playlistName = msg.playlistname;
+            const playlists = playlists_r5.playlists.Playlists;
+            const playlist = playlists[playlistName];
+            let inherit = playlist.inherit;
+            if (!playlist.vars["max_teams"]) {
+                while (playlists[inherit].vars["max_teams"]) {
+                    inherit = playlists[inherit].inherit;
+                    if (!playlists[inherit]) {
+                        console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not have max_teams`);
+                        break;
+                    }
+                }
             }
-            // {"playlistname":"can_hu_cm","adminchat":false,"teamrename":true,"selfassign":true,"aimassist":true,"anonmode":false}
+            const basePlaylist = playlists[inherit];
+            const maxTeams = basePlaylist.vars["max_teams"];
+            const maxPlayers = basePlaylist.vars["max_players"];
+            let mapName = "";
+            for (const key in basePlaylist.include) {
+                if (key.includes("map")) {
+                    mapName = basePlaylist.include[key];
+                }
+            }
+            const mapObj = playlists_r5.playlists.Includes[mapName];
+            const map = Object.keys(mapObj.gamemodes.survival.maps)[0];
+            const gamemodeKey = gamemodeVars[Object.keys(gamemodeVars).filter(key => gamemodeVars[key] === playlistName)[0]];
+            const gamemodeNum = gamemodeKey.match(/\D*(\d+)/)[1];
+            const gamemode = gamemodeVars[`custom_match_playlist_category_${gamemodeNum}_name`]
+
             const data = msg;
             data["maxPlayers"] = maxPlayers;
             data["maxTeams"] = maxTeams;
-            data["gameMode"] = gameMode;
+            data["gamemode"] = gamemode;
             data["map"] = map;
             waitMessages["CustomMatch_SetSettings"] = data;
             lobby.maxPlayers = maxPlayers;
             lobby.maxTeams = maxTeams;
-            lobby.mapName = msg.map;
+            lobby.mapName = map;
             break;
         }
         case "PlayerRespawnTeam": {
