@@ -183,6 +183,7 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_LobbyPlayers": {
+            playerNames = {};
             lobby.teams = {};
             lobby.players = {};
             for (let i = 0; i < msg.teamsList.length; i++) {
@@ -200,7 +201,6 @@ function analyze_message(category, msg) {
                 const teamId = msg_player.teamid;
                 const playerName = msg_player.name;
                 lobby.addPlayer(new Player(playerName, teamId, msg_player.nucleushash, msg_player.hardwarename));
-                playerNames = {};
                 if (playerNames[playerName]) {
                     console.log(`[APPLY CSV DATA] Duplicate player name: ${playerName}`);
                     delete playerNames[playerName];
@@ -212,12 +212,10 @@ function analyze_message(category, msg) {
                 for (const teamId in csvData) {
                     if (csvData[teamId] && csvData[teamId].players) {
                         for (const playerName of csvData[teamId].players) {
-                            console.log(`[APPLY CSV DATA] Found TeamID: ${teamId} PlayerName: ${playerName}`);
-                            if (playerNames[playerName] && playerNames[playerName].teamId !== teamId && !copyCSVData[teamId]) {
-                                console.log(`[APPLY CSV DATA] TeamID: ${teamId} PlayerNames: ${JSON.stringify(playerNames)}`);
+                            if (playerNames[playerName] && playerNames[playerName].teamId != teamId && !copyCSVData[teamId]) {
                                 copyCSVData[teamId] = JSON.parse(JSON.stringify(csvData[teamId]));
                             } else if (!playerNames[playerName]) {
-                                console.log(`[APPLY CSV DATA] PlayerName: ${playerName} is not in the lobby`);
+                                console.log(`[APPLY CSV DATA] PlayerName: ${playerName} is not in the lobby or duplicate player name`);
                             }
                         }
                     }
@@ -1707,6 +1705,14 @@ async function calcScore() {
 let copyCSVData = {};
 
 /**
+ * CSVから取得したプレイヤー名のリスト
+ * @type {Object}
+ * @global
+ * @link readCSV
+ */
+let csvPlayerNames = {};
+
+/**
  * CSVファイルを読み込む
  * @param {Object} csv - CSVファイル
  * @returns {Boolean} - 読み込みが成功したかどうか
@@ -1714,12 +1720,22 @@ let copyCSVData = {};
 function readCSV(csv) {
     try {
         csvData = {};
+        csvPlayerNames = { dupulicate: [] };
         for (const team of csv) {
+            const teamId = Number(team.TEAM) + 1;
             const players = [];
             for (let i = 0; i < team.MEMBER_NUM; i++) {
-                players.push(team[`MEMBER${i + 1}`]);
+                const name = team[`MEMBER${i + 1}`];
+                if (csvPlayerNames[name] || csvPlayerNames.dupulicate.includes(name)) {
+                    console.log(`[READ CSV] Duplicate player name: ${name}`);
+                    csvData[csvPlayerNames[name].teamId].players = csvData[csvPlayerNames[name].teamId].players.filter((playerName) => playerName !== name);
+                    csvPlayerNames.dupulicate.push(name);
+                } else {
+                    csvPlayerNames[name] = { teamId };
+                    players.push(name);
+                }
             }
-            csvData[`${Number(team.TEAM) + 1}`] = { teamName: team.NAME, logoUrl: team.IMG_URL, players };
+            csvData[`${teamId}`] = { teamName: team.NAME, logoUrl: team.IMG_URL, players };
         }
         copyCSVData = JSON.parse(JSON.stringify(csvData));
         apexCommon.get_lobby_players();
@@ -1732,8 +1748,8 @@ function readCSV(csv) {
 
 
 /**
- * すでに設定されているプレイヤー名のリスト
- * @type {Array}
+ * LiveAPIから取得したプレイヤー名のリスト
+ * @type {Object}
  * @global
  * @link applyCSVData
  */
@@ -1771,8 +1787,7 @@ function applyCSVData(lobby, copyCSVData) {
         delete copyCSVData[teamId];
         isPlayerSet.success = false;
         isPlayerSet.index = 0;
-        console.log(`[APPLY CSV DATA] csvData:`, JSON.stringify(copyCSVData));
-        // apexCommon.get_lobby_players();
+        apexCommon.get_lobby_players();
     } else {
         const playerName = copyCSVData[teamId].players[isPlayerSet.index];
         if (playerNames[playerName]) {
@@ -1840,7 +1855,7 @@ async function update() {
             apexCommon.get_match_settings();
             lastPollTime = now;
         }
-        if (copyCSVData && lobby && now - lastApplyTime >= 100) {
+        if (copyCSVData && lobby && now - lastApplyTime >= 50) {
             applyCSVData(lobby, copyCSVData);
             lastApplyTime = now;
         }
