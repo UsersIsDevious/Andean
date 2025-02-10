@@ -9,7 +9,7 @@ import { api } from "../services/api"
 
 export function LobbySettings({ settings = {}, onSettingsChange }) {
   const [localSettings, setLocalSettings] = useState({
-    matchName: settings.matchName || "mp_rr_olympus",
+    matchName: settings.matchName || "can_hu_cm",
     adminChat: settings.adminChat || false,
     teamRename: settings.teamRename || false,
     selfAssign: settings.selfAssign || false,
@@ -20,7 +20,7 @@ export function LobbySettings({ settings = {}, onSettingsChange }) {
 
   useEffect(() => {
     setLocalSettings({
-      matchName: settings.matchName || "mp_rr_olympus",
+      matchName: settings.matchName || "can_hu_cm",
       adminChat: settings.adminChat || false,
       teamRename: settings.teamRename || false,
       selfAssign: settings.selfAssign || false,
@@ -66,12 +66,12 @@ export function LobbySettings({ settings = {}, onSettingsChange }) {
                 <SelectValue placeholder="Select match name" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="mp_rr_olympus_mu2">Olympus</SelectItem>
-                <SelectItem value="mp_rr_canyonlands_hu">Kings Canyon</SelectItem>
-                <SelectItem value="mp_rr_desertlands_hu">World's Edge</SelectItem>
-                <SelectItem value="mp_rr_district">E-District</SelectItem>
-                <SelectItem value="mp_rr_divided_moon_mu1">Broken Moon</SelectItem>
-                <SelectItem value="mp_rr_tropic_island_mu2">Storm Point</SelectItem>
+                <SelectItem value="oly_mu2_cm">Olympus</SelectItem>
+                <SelectItem value="can_hu_cm">Kings Canyon</SelectItem>
+                <SelectItem value="des_hu_cm">World's Edge</SelectItem>
+                <SelectItem value="district_cm">E-District</SelectItem>
+                <SelectItem value="moon_cm">Broken Moon</SelectItem>
+                <SelectItem value="tropic_mu2_cm">Storm Point</SelectItem>
               </SelectContent>
             </Select>
           </div>
