@@ -1959,7 +1959,7 @@ common.registerOnServersStarted((servers) => {
 function handleMessage(message, messageType) {
     // console.log(`[HANDLE MESSAGE] Received ${messageType} message:`, message.toObject());
     // ログを保存
-    if (!(["ObserverSwitched", "Response"].includes(messageType))) {  // logにObserverSwitchedとResponseを含めないようにする
+    if (!(["ObserverSwitched", "Response", "CustomMatch_SetSettings", "CustomMatch_LobbyPlayers"].includes(messageType))) {  // logにObserverSwitchedとResponseを含めないようにする
         common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
     }
     // common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
