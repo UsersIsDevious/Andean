@@ -228,14 +228,10 @@ function analyze_message(category, msg) {
                 const logoUrl = team.teamImg;
                 const spawnPoint = team.spawnPoint;
                 const players = [];
-                if (team.players.length === 0) {
-                    continue;
-                } else {
-                    for (let i = 0; i < team.players.length; i++) {
-                        const player = lobby.getPlayer(team.players[i]);
-                        if (player === null) continue;
-                        players.push({ index: i, id: player.nucleusHash, name: player.name });
-                    }
+                for (let i = 0; i < team.players.length; i++) {
+                    const player = lobby.getPlayer(team.players[i]);
+                    if (player === null) continue;
+                    players.push({ index: i, id: player.nucleusHash, name: player.name });
                 }
                 data[teamId] = { name: teamName, logoUrl: logoUrl, spawnPoint: spawnPoint, players: players };
             }
