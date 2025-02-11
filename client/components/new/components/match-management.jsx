@@ -54,6 +54,8 @@ export default function MatchManagement({ config, updateConfig }) {
       } else {
         data = await api.createLobby()
       }
+      await new Promise(resolve => setTimeout(resolve, 10000))
+      data = await api.getLobbyId()
       const newLobbyId = lobbyIdInput || data.lobbyId
       joinLobby(newLobbyId)
       alert(lobbyIdInput ? "Joined lobby successfully" : `Created lobby with ID: ${newLobbyId}`)

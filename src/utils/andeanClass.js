@@ -1237,6 +1237,11 @@ class CustomMatch {
      */
     this.mapName = "";
     /**
+     * ロビーのIDを格納
+     * @type {string}
+     */
+    this.lobbyId = "";
+    /**
      * プレイリスト名
      * 例: World's Edge（リングなし）
      * @type {string}

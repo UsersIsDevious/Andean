@@ -33,6 +33,15 @@ export const api = {
     return response.json()
   },
 
+  getLobbyId: async () => {
+    const response = await fetchWithTimeout("/api/get_lobby_id", {
+      method: "POST",
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to get lobby ID")
+    return response.json()
+  },
+
   setReady: async (ready) => {
     const response = await fetchWithTimeout("/api/set_ready", {
       method: "POST",
@@ -230,6 +239,15 @@ export const api = {
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to send CSV data")
+    return response.json()
+  },
+  
+  getGameModes: async () => {
+    const response = await fetchWithTimeout("/api/get_gamemodes", {
+      method: "POST",
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to get game modes")
     return response.json()
   },
 }

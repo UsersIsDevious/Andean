@@ -10,7 +10,7 @@ const vdf = require('vdf');
 
 if (!config) {
     console.error('設定ファイルが見つかりません。');
-    return;
+    return false;
 } else if (!config.language || config.language === '') {
     console.error('言語設定が見つからないため、デフォルトの言語設定(English)を使用します。');
 } else {
@@ -248,6 +248,7 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_LobbyPlayers": {
+            lobby.lobbyId = msg.playertoken;
             playerNames = {};
             lobby.teams = {};
             lobby.players = {};
@@ -854,11 +855,21 @@ function analyze_message(category, msg) {
         }
         case "CustomMatch_SetSettings": {
             const playlistName = msg.playlistname;
+            if (playlistName === "") {
+                console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not exist`);
+                break;
+            }
             const playlists = playlists_r5.playlists.Playlists;
             const playlist = playlists[playlistName];
+            if (!playlist) {
+                console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not exist`);
+                break;
+            }
             let inherit = null;
-            if (playlist["inherit"]) {
+            try {
                 inherit = playlist.inherit;
+            } catch (error) {
+                console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not have inherit`);
             }
             if (!playlist.vars["max_teams"]) {
                 while (playlists[inherit].vars["max_teams"]) {
@@ -1666,4 +1677,4 @@ function handleMessage(message, messageType) {
     analyze_message(messageType, message.toObject());
 }
 
-module.exports = { match, config, calcScore, startApexLegends, analyze_message, readCSV, readLobbyMessage }
+module.exports = { match, config, gamemodes, lobby, calcScore, startApexLegends, analyze_message, readCSV, readLobbyMessage }

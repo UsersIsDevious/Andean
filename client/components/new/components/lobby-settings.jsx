@@ -11,7 +11,7 @@ import { api } from "../services/api"
 
 export function LobbySettings({ settings = {}, onSettingsChange, lobbyOptions }) {
   const [localSettings, setLocalSettings] = useState({
-    playlistname: settings.playlistname || "can_hu_cm",
+    playlistname: settings.playlistname || "can_hu_cm", // Use map as playlistname
     adminchat: settings.adminchat || false,
     teamrename: settings.teamrename || false,
     selfassign: settings.selfassign || false,
@@ -19,13 +19,13 @@ export function LobbySettings({ settings = {}, onSettingsChange, lobbyOptions })
     anonmode: settings.anonmode || false,
     maxPlayers: settings.maxPlayers || 60,
     maxTeams: settings.maxTeams || 20,
-    gameMode: settings.gamemode || "BATTLE ROYALE: TRIOS",
-    map: settings.map || "mp_rr_canyonlands_hu",
+    gameMode: settings.gamemode || "CUSTOMMATCH_BR_TRIOS",
+    map: settings.map || "can_hu_cm",
   })
 
   useEffect(() => {
     setLocalSettings({
-      playlistname: settings.playlistname || "can_hu_cm",
+      playlistname: settings.playlistname || "can_hu_cm", // Use map as playlistname
       adminchat: settings.adminchat || false,
       teamrename: settings.teamrename || false,
       selfassign: settings.selfassign || false,
@@ -33,29 +33,20 @@ export function LobbySettings({ settings = {}, onSettingsChange, lobbyOptions })
       anonmode: settings.anonmode || false,
       maxPlayers: settings.maxPlayers || 60,
       maxTeams: settings.maxTeams || 20,
-      gameMode: settings.gamemode || "BATTLE ROYALE: TRIOS",
-      map: settings.map || "mp_rr_canyonlands_hu",
+      gameMode: settings.gamemode || "CUSTOMMATCH_BR_TRIOS",
+      map: settings.map || "can_hu_cm",
     })
   }, [settings])
 
   const handleSettingChange = async (key, value) => {
-    let newSettings = { ...localSettings, [key]: value }
+    const newSettings = { ...localSettings, [key]: value }
 
-    if (key === "gameMode") {
-      // When game mode changes, update the map to the first available map for that mode
-      const firstMapKey = Object.keys(lobbyOptions[value])[0]
-      newSettings = {
-        ...newSettings,
-        gameMode: value,
-        map: firstMapKey,
-        playlistname: firstMapKey,
-      }
-    } else if (key === "map") {
-      newSettings = {
-        ...newSettings,
-        map: value,
-        playlistname: value,
-      }
+    // Update playlistname when gameMode or map changes
+    if (key === "gameMode" || key === "map") {
+      const selectedMap = key === "map" ? value : localSettings.playlistname
+      const selectedGameMode = key === "gameMode" ? value : localSettings.gameMode
+      newSettings.playlistname = selectedMap // Use the map key as playlistname
+      newSettings.gameMode = selectedGameMode
     }
 
     setLocalSettings(newSettings)
@@ -177,3 +168,4 @@ export function LobbySettings({ settings = {}, onSettingsChange, lobbyOptions })
     </Card>
   )
 }
+
