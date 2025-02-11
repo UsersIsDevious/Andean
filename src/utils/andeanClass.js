@@ -1237,6 +1237,11 @@ class CustomMatch {
      */
     this.mapName = "";
     /**
+     * ロビーのIDを格納
+     * @type {string}
+     */
+    this.lobbyId = "";
+    /**
      * プレイリスト名
      * 例: World's Edge（リングなし）
      * @type {string}
@@ -1394,6 +1399,15 @@ class CustomMatch {
       return team;
     }
     return this.teams[teamId];
+  }
+
+  /**
+   * マッチ名を設定するメソッド
+   * @param {string} matchName マッチ名
+   * @memberof CustomMatch
+   */
+  setMatchName(matchName) {
+    this.matchName = matchName;
   }
 
   /**

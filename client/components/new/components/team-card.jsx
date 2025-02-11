@@ -77,7 +77,9 @@ export function TeamCard({ team, onTeamNameChange }) {
         </div>
       </CardHeader>
       <CardContent className="p-2 flex-grow">
-        <p className={`text-sm font-medium mb-2 text-${contrastTextColor}`}>Players: {team.players.length} / 3</p>
+        <p className={`text-sm font-medium mb-2 text-${contrastTextColor}`}>
+          Players: {team.players.length} / 3 | Spawn: {team.spawnPoint}
+        </p>
         <div className="grid grid-cols-1 gap-1 text-xs">
           {[0, 1, 2].map((index) => {
             const player = team.players[index]

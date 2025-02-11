@@ -11,50 +11,36 @@ import { api } from "../services/api"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 
-const teamColors = [
-  "bg-red-100",
-  "bg-blue-100",
-  "bg-green-100",
-  "bg-yellow-100",
-  "bg-indigo-100",
-  "bg-purple-100",
-  "bg-pink-100",
-  "bg-teal-100",
-  "bg-orange-100",
-  "bg-cyan-100",
-  "bg-lime-100",
-  "bg-emerald-100",
-  "bg-sky-100",
-  "bg-violet-100",
-  "bg-fuchsia-100",
-  "bg-rose-100",
-  "bg-amber-100",
-  "bg-gray-100",
-  "bg-slate-100",
-  "bg-zinc-100",
-  "bg-red-200",
-  "bg-blue-200",
-  "bg-green-200",
-  "bg-yellow-200",
-  "bg-indigo-200",
-  "bg-purple-200",
-  "bg-pink-200",
-  "bg-teal-200",
-  "bg-orange-200",
-  "bg-cyan-200",
-]
-
 export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLobbyData, isSimulated }) {
-  const { isInLobby, lobbyId } = useLobby()
+  const { isInLobby, lobbyId, joinLobby, leaveLobby } = useLobby()
   const [lobbyData, setLobbyData] = useState({ players: {}, settings: {} })
   const [activeTab, setActiveTab] = useState("unassigned")
   const [error, setError] = useState(null)
+  const [lobbyOptions, setLobbyOptions] = useState({})
+
+  const fetchGameModes = useCallback(async () => {
+    try {
+      const gamemodes = await api.getGameModes()
+      console.log("Game modes:", gamemodes.result)
+      if (gamemodes.success) {
+        setLobbyOptions(gamemodes.result)
+      } else {
+        throw new Error("Failed to fetch game modes")
+      }
+    } catch (error) {
+      console.error("Error fetching game modes:", error)
+      setError({
+        message: `Failed to fetch game modes: ${error.message}`,
+        details: "Unable to retrieve game mode options. Please try again later.",
+      })
+    }
+  }, [])
 
   const fetchLobbyData = useCallback(async () => {
     if (isInLobby && lobbyId) {
       try {
         const [playersData, settingsData] = await Promise.all([api.getLobbyPlayers(), api.getMatchSettings()])
-        setLobbyData({ players: playersData, settings: settingsData })
+        setLobbyData({ players: playersData.result, settings: settingsData })
         setError(null)
       } catch (error) {
         console.error("Error fetching lobby data:", error)
@@ -67,12 +53,36 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
   }, [isInLobby, lobbyId])
 
   useEffect(() => {
+    fetchGameModes()
     fetchLobbyData()
 
-    const intervalId = setInterval(fetchLobbyData, 5000) // 5秒ごとに更新
+    const intervalId = setInterval(fetchLobbyData, 5000)
 
-    return () => clearInterval(intervalId) // コンポーネントのアンマウント時にインターバルをクリア
-  }, [fetchLobbyData])
+    return () => clearInterval(intervalId)
+  }, [fetchGameModes, fetchLobbyData])
+
+  const handleJoinOrCreateLobby = async (lobbyIdToJoin = null) => {
+    try {
+      if (lobbyIdToJoin) {
+        await api.joinLobby(lobbyIdToJoin)
+      } else {
+        await api.createLobby()
+      }
+
+      // Wait for 10 seconds before getting the lobby ID
+      await new Promise((resolve) => setTimeout(resolve, 10000))
+
+      const { success, lobbyId: newLobbyId } = await api.getLobbyId()
+      if (success && newLobbyId) {
+        joinLobby(newLobbyId)
+        alert(lobbyIdToJoin ? "Joined lobby successfully" : `Created lobby with ID: ${newLobbyId}`)
+      } else {
+        throw new Error("Failed to get lobby ID")
+      }
+    } catch (error) {
+      alert(`Error: ${error.message}`)
+    }
+  }
 
   const handleSettingsChange = async (newSettings) => {
     if (isSimulated) {
@@ -97,7 +107,7 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
         players: {
           ...simulatedLobbyData.players,
           [teamId]: {
-            ...simulatedLobbyData.players[teamId],
+            ...(simulatedLobbyData.players[teamId] || {}),
             name: newName,
           },
         },
@@ -110,7 +120,7 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
           players: {
             ...prevData.players,
             [teamId]: {
-              ...prevData.players[teamId],
+              ...(prevData.players[teamId] || {}),
               name: newName,
             },
           },
@@ -167,22 +177,29 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
     const team = (isSimulated ? simulatedLobbyData.players : lobbyData.players || {})[teamId] || {
       name: `Team ${index + 1}`,
       players: [],
+      logoUrl: "",
+      spawnPoint: 0,
     }
     return {
       id: teamId,
       name: team.name,
       players: team.players || [],
       logoUrl: team.logoUrl || `/team-logos/team-${teamId}.png`,
+      spawnPoint: team.spawnPoint,
     }
   })
 
   const unassignedTeam = (isSimulated ? simulatedLobbyData.players : lobbyData.players || {})["0"] || {
-    name: "未割当",
+    name: "Unassigned",
     players: [],
+    logoUrl: "",
+    spawnPoint: 0,
   }
   const observerTeam = (isSimulated ? simulatedLobbyData.players : lobbyData.players || {})["1"] || {
-    name: "オブザーバー",
+    name: "Observers",
     players: [],
+    logoUrl: "",
+    spawnPoint: 0,
   }
 
   return (
@@ -191,6 +208,7 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
         <LobbySettings
           settings={isSimulated ? simulatedLobbyData.settings : lobbyData.settings}
           onSettingsChange={handleSettingsChange}
+          lobbyOptions={lobbyOptions}
         />
         <Card>
           <CardHeader>
@@ -200,10 +218,10 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="w-full">
                 <TabsTrigger value="unassigned" className="flex-1">
-                  未割当
+                  Unassigned
                 </TabsTrigger>
                 <TabsTrigger value="observer" className="flex-1">
-                  オブザーバー
+                  Observers
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="unassigned">

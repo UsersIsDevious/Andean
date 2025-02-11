@@ -1,19 +1,20 @@
 const common = require('./utils/common');
 const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event, Packet } = require('./utils/andeanClass');
-let config = common.readConfig('../../config.json');
-let language = common.readConfig('../../locals/en.default.json');
+let config = common.readFile('../../config.json');
+let language = common.readFile('../../locals/en.default.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
 const sendMapData = require('./services/sendMapData')
 const apexCommon = require('./services/apexCommon');
+const vdf = require('vdf');
 
 if (!config) {
     console.error('設定ファイルが見つかりません。');
-    return;
+    return false;
 } else if (!config.language || config.language === '') {
     console.error('言語設定が見つからないため、デフォルトの言語設定(English)を使用します。');
 } else {
-    language = common.readConfig(`../../locals/${config.language}.json`);
+    language = common.readFile(`../../locals/${config.language}.json`);
 }
 
 
@@ -63,10 +64,10 @@ function startApexLegends() {
             return false;
         }
     } else {
-        config = common.readConfig();
+        config = common.readFile();
     }
     const option = `${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`;
-    const command = `"${config.apexlegends.path}" + ${option}`;  // パスが空でない場合に起動コマンドを構築
+    const command = `"${config.apexlegends.path}\\r5apex.exe" + ${option}`;  // パスが空でない場合に起動コマンドを構築
     common.runRegularCommand(command)
         .then(output => {
             common.logMessage('Apex Legendsが起動しました:', output);
@@ -78,6 +79,70 @@ function startApexLegends() {
         });
 }
 
+
+/**
+ * playlists_r5.txtを変換したJSONオブジェクト
+ * @global
+ * @type {Object}
+ */
+let playlists_r5 = {}
+
+/**
+ * playlists_r5.txt を読み込み、VDF を JSON に変換する
+ * @return {Object}
+ */
+const data = common.readText(`${config.apexlegends.path}\\r2\\playlists_r5.txt`)
+try {
+    // vdf.parse() を利用して KeyValue 形式を JSON オブジェクトに変換する
+    playlists_r5 = vdf.parse(data);
+    const load = common.readFile('../../playlists_r5.json', playlists_r5);
+    if (playlists_r5.playlists.versionNum !== load.playlists.versionNum) {
+        common.saveFile('../../playlists_r5.json', playlists_r5);
+    }
+} catch (parseErr) {
+    console.error('パースに失敗しました:', parseErr);
+}
+
+/**
+ * ゲームモードの一覧を格納するオブジェクト
+ * @global
+ * @type {Object}
+ */
+let gamemodes = {};
+
+/**
+ * ゲームモードの一覧を取得する
+ */
+const gamemodeVars = playlists_r5.playlists.Gamemodes.defaults.vars;
+const modeNum = gamemodeVars.custom_match_playlist_category_count;
+const playlists = playlists_r5.playlists.Playlists;
+for (let i = 0; i < modeNum; i++) {
+    const entryNum = gamemodeVars[`custom_match_playlist_category_${i}_count`];
+    let name = gamemodeVars[`custom_match_playlist_category_${i}_name`];
+    const data = {};
+    for (let j = 0; j < entryNum; j++) {
+        const entryName = `custom_match_playlist_category_${i}_entry_${j}`;
+        const entry = gamemodeVars[entryName];
+        const playlist = playlists[entry];
+        let playlistName = `${entry}`;
+        for (const key in playlist.vars) {
+            if (["name", "description", "map_name"].includes(key)) {
+                playlistName = playlist.vars[key];
+            }
+        }
+        if (entry === "can_hu_cm") {
+            playlistName = "#MP_RR_CANYONLANDS_HU";
+        }
+        if (playlistName.includes("#")) {
+            playlistName = playlistName.replace("#", "");
+        }
+        data[entry] = playlistName;
+    }
+    if (name.includes("#")) {
+        name = name.replace("#", "");
+    }
+    gamemodes[name] = data;
+}
 
 
 // サーバーを起動
@@ -104,7 +169,7 @@ let matchBase;
  * @type {Packet}
  */
 let packet;
-let lobby = new CustomMatch("lobby");
+const lobby = new CustomMatch("lobby");
 /**
  * リングイベントが発生した時間を記録する
  * @type {Array<Event>}
@@ -115,6 +180,11 @@ let ringEvents = [];
  * @type {Array<Number>}
  */
 let ranks = [];
+/**
+ * CSVファイルを保存する配列
+ * @type {Object}
+ */
+let csvData;
 /**
  * Webに送信するメッセージを格納する配列
  * @type {Object}
@@ -131,16 +201,6 @@ let isPlaying = false;
  */
 let lastPollTime = Date.now();
 /**
- * 最後にCustomMatch_LobbyPlayersを受信した時間
- * @type {Date}
- */
-let lastLobbyPlayersTime = 0;
-/**
- * 何秒間の間、CustomMatch_LobbyPlayersを受信しない場合、ロビーにいないと判断するか
- * @type {Number}
- */
-let lobbyPlayersTimeout = 15;
-/**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
  * @param {Object} msg
@@ -150,11 +210,19 @@ function analyze_message(category, msg) {
     // common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
         case "Init": {
-            /**
-             * @todo web側で名前の指定があれば適用する
-             */
             if (msg.platform != "") { break; }
-            match = new CustomMatch(`${msg.timestamp}`);
+            // 変換したいUnixTime（ミリ秒単位）
+            const unixTime = Number(msg.timestamp) * 1000;
+            // Dateクラスのインスタンスを生成（ローカルタイムが使用される）
+            const date = new Date(unixTime);
+            // 年、月、日、秒を取得
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2); // 月は0～11のため+1し、2桁に整形
+            const day = ('0' + date.getDate()).slice(-2);
+            const seconds = ('0' + date.getSeconds()).slice(-2);
+            // YYYY-MM-DD-SS形式の文字列を生成
+            const formattedDate = `${year}-${month}-${day}-${seconds}`;
+            match = new CustomMatch(`${formattedDate}`);
             isPlaying = true;
             break;
         }
@@ -180,16 +248,44 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_LobbyPlayers": {
-            // 一旦lobbyと言う名前のマッチが有るものとして扱う
-            lobby = new CustomMatch("lobby")
+            lobby.lobbyId = msg.playertoken;
+            playerNames = {};
+            lobby.teams = {};
+            lobby.players = {};
             for (let i = 0; i < msg.teamsList.length; i++) {
                 const msg_team = msg.teamsList[i];
-                const team = lobby.addTeam(msg_team.id, msg_team.name);
+                const teamId = msg_team.id;
+                const teamName = msg_team.name;
+                const team = lobby.addTeam(teamId, teamName);
                 team.spawnPoint = msg_team.spawnpoint;
+                if (csvData && csvData[teamId] && csvData[teamId].teamName && csvData[teamId].teamName !== teamName && !copyCSVData[teamId]) {
+                    copyCSVData[teamId] = JSON.parse(JSON.stringify(csvData[teamId]));
+                }
             }
             for (let i = 0; i < msg.playersList.length; i++) {
                 const msg_player = msg.playersList[i];
-                lobby.addPlayer(new Player(msg_player.name, msg_player.teamid, msg_player.nucleushash, msg_player.hardwarename))
+                const teamId = msg_player.teamid;
+                const playerName = msg_player.name;
+                lobby.addPlayer(new Player(playerName, teamId, msg_player.nucleushash, msg_player.hardwarename));
+                if (playerNames[playerName]) {
+                    console.log(`[APPLY CSV DATA] Duplicate player name: ${playerName}`);
+                    delete playerNames[playerName];
+                } else {
+                    playerNames[playerName] = { teamId: teamId, name: playerName, nucleusHash: msg_player.nucleushash, hardwareName: msg_player.hardwarename };
+                }
+            }
+            if (csvData) {
+                for (const teamId in csvData) {
+                    if (csvData[teamId] && csvData[teamId].players) {
+                        for (const playerName of csvData[teamId].players) {
+                            if (playerNames[playerName] && playerNames[playerName].teamId != teamId && !copyCSVData[teamId]) {
+                                copyCSVData[teamId] = JSON.parse(JSON.stringify(csvData[teamId]));
+                            } else if (!playerNames[playerName]) {
+                                console.log(`[APPLY CSV DATA] PlayerName: ${playerName} is not in the lobby or duplicate player name`);
+                            }
+                        }
+                    }
+                }
             }
             const data = {};
             for (const teamId in lobby.teams) {
@@ -198,19 +294,14 @@ function analyze_message(category, msg) {
                 const logoUrl = team.teamImg;
                 const spawnPoint = team.spawnPoint;
                 const players = [];
-                if (team.players.length === 0) {
-                    continue;
-                } else {
-                    for (let i = 0; i < team.players.length; i++) {
-                        const player = lobby.getPlayer(team.players[i]);
-                        if (player === null) continue;
-                        players.push({ index: i, id: player.nucleusHash, name: player.name });
-                    }
+                for (let i = 0; i < team.players.length; i++) {
+                    const player = lobby.getPlayer(team.players[i]);
+                    if (player === null) continue;
+                    players.push({ index: i, id: player.nucleusHash, name: player.name });
                 }
                 data[teamId] = { name: teamName, logoUrl: logoUrl, spawnPoint: spawnPoint, players: players };
             }
             waitMessages["CustomMatch_LobbyPlayers"] = data;
-            lastLobbyPlayersTime = Date.now();
             break;
         }
         case "RequestStatus": {  // 今のところ何もイベント発生しない
@@ -238,6 +329,7 @@ function analyze_message(category, msg) {
             }
             match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, msg.aimassiston, msg.anonymousmode, msg.serverid);
             match.datacenter.update(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name);
+            match.setMatchName(`${match.matchName}-${msg.map}`);
             const playlistName = splitBracketParts(msg.playlistname);
             if (playlistName === null) {
                 match.setMaxPlayersAndTeams(msg.playlistname);
@@ -288,7 +380,7 @@ function analyze_message(category, msg) {
                         const team = match.getTeam(ranks[i]);
                         team.setRank(ranks.length - i);
                     }
-                    common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, config.output, matchBase);
+                    common.saveUpdate(`Packet Log - ${match.matchName}`, config.output, matchBase);
                     isPlaying = false;
                 }
             } catch (error) {
@@ -762,357 +854,62 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_SetSettings": {
-            let maxPlayers = 0;
-            let maxTeams = 0;
-            let gameMode = ""
-            let map = ""
-            switch (msg.playlistname) {
-                case "can_hu_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_canyonlands_hu";
-                    break;
-                case "des_hu_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_desertlands_hu";
-                    break;
-                case "district_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_district";
-                    break;
-                case "moon_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_divided_moon_mu1";
-                    break;
-                case "oly_mu2_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_olympus_mu2";
-                    break;
-                case "tropic_mu2_cm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "BATTLE ROYALE: TRIOS";
-                    map = "mp_rr_tropic_island_mu2";
-                    break;
-                case "duo_can_hu_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_canyonlands_hu";
-                    break;
-                case "duo_des_hu_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_desertlands_hu";
-                    break;
-                case "duo_district_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_district";
-                    break;
-                case "duo_moon_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_divided_moon_mu1";
-                    break;
-                case "duo_oly_mu2_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_olympus_mu2";
-                    break;
-                case "duo_tropic_mu2_cm":
-                    maxPlayers = 60;
-                    maxTeams = 30;
-                    gameMode = "BATTLE ROYALE: DUOS";
-                    map = "mp_rr_tropic_island_mu2";
-                    break;
-                case "des_new_spawn_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "ALGS";
-                    map = "mp_rr_desertlands_hu";
-                    break;
-                case "tropic_new_spawn_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "ALGS";
-                    map = "mp_rr_tropic_island_mu2";
-                    break;
-                case "district_new_spawn_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "ALGS";
-                    map = "mp_rr_district";
-                    break;
-                case "moon_new_spawn_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "ALGS";
-                    map = "mp_rr_divided_moon_mu1";
-                    break;
-                case "dayzero_canyonlands_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_canyonlands_hu";
-                    break;
-                case "dayzero_desertlands_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_desertlands_hu";
-                    break;
-                case "dayzero_olympus_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_olympus_mu2";
-                    break;
-                case "dayzero_tropics_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_tropic_island_mu2";
-                    break;
-                case "dayzero_moon_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_divided_moon_mu1";
-                    break;
-                case "dayzero_district_pm":
-                    maxPlayers = 60;
-                    maxTeams = 20;
-                    gameMode = "LAUNCH ROYALE";
-                    map = "mp_rr_district";
-                    break;
-                case "tdm_fragment_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_fragment_s";  // 仮置き
-                    break;
-                case "tdm_thunderdome_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                case "tdm_skull_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_skull_s";  // 仮置き
-                    break;
-                case "tdm_zeus_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_zeus_s";  // 仮置き
-                    break;
-                case "tdm_core_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_core_s";  // 仮置き
-                    break;
-                case "tdm_monument_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_monument_s";  // 仮置き
-                    break;
-                case "tdm_estates_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "TEAM DEATHMATCH";
-                    map = "mp_rr_estates_s";  // 仮置き
-                    break;
-                case "gg_fragment_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_fragment_s";  // 仮置き
-                    break;
-                case "gg_thunderdome_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                case "gg_skull_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_skull_s";  // 仮置き
-                    break;
-                case "gg_pylon_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_pylon_s";  // 仮置き
-                    break;
-                case "gg_zeus_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_zeus_s";  // 仮置き
-                    break;
-                case "gg_core_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_core_s";  // 仮置き
-                    break;
-                case "gg_monument_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_monument_s";  // 仮置き
-                case "gg_estates_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "GUN RUN";
-                    map = "mp_rr_estates_s";  // 仮置き
-                    break;
-                case "control_barometer_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_barometer_s";  // 仮置き
-                    break;
-                case "control_siphon_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_siphon_s";  // 仮置き
-                    break;
-                case "control_thunderdome_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                case "control_production_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_production_s";  // 仮置き
-                    break;
-                case "control_labs_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_labs_s";  // 仮置き
-                    break;
-                case "control_caustic_s_pm":
-                    maxPlayers = 18;
-                    maxTeams = 6;
-                    gameMode = "CONTROL";
-                    map = "mp_rr_caustic_s";  // 仮置き
-                    break;
-                case "btdm_fragment_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_fragment_s";  // 仮置き
-                    break;
-                case "btdm_thunderdome_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                case "btdm_skull_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_skull_s";  // 仮置き
-                    break;
-                case "btdm_zeus_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_zeus_s";  // 仮置き
-                    break;
-                case "btdm_core_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_core_s";  // 仮置き
-                    break;
-                case "btdm_monument_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_monument_s";  // 仮置き
-                    break;
-                case "btdm_estates_s_pm":
-                    maxPlayers = 24;
-                    maxTeams = 8;
-                    gameMode = "BIG TEAM DEATHMATCH";
-                    map = "mp_rr_estates_s";  // 仮置き
-                    break;
-                case "tr_hunt_the_core_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_core_s";  // 仮置き
-                    break;
-                case "tr_hunt_amps_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_amps_s";  // 仮置き
-                    break;
-                case "tr_hunt_monument_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_monument_s";  // 仮置き
-                    break;
-                case "tr_hunt_skull_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_skull_s";  // 仮置き
-                    break;
-                case "tr_hunt_estates_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_estates_s";  // 仮置き
-                    break;
-                case "tr_hunt_thunderdome_s_pm":
-                    maxPlayers = 12;
-                    maxTeams = 4;
-                    gameMode = "LOCKDOWN";
-                    map = "mp_rr_thunderdome_s";  // 仮置き
-                    break;
-                default:
-                    console.log("[CustomMatch_SetSettings] Unknown playlist: " + msg.playlistname);
-                    break;
+            const playlistName = msg.playlistname;
+            if (playlistName === "") {
+                console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not exist`);
+                break;
             }
-            // {"playlistname":"can_hu_cm","adminchat":false,"teamrename":true,"selfassign":true,"aimassist":true,"anonmode":false}
+            const playlists = playlists_r5.playlists.Playlists;
+            const playlist = playlists[playlistName];
+            if (!playlist) {
+                console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not exist`);
+                break;
+            }
+            let inherit = null;
+            try {
+                inherit = playlist.inherit;
+            } catch (error) {
+                console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not have inherit`);
+            }
+            if (!playlist.vars["max_teams"]) {
+                while (playlists[inherit].vars["max_teams"]) {
+                    inherit = playlists[inherit].inherit;
+                    if (!playlists[inherit]) {
+                        console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not have max_teams`);
+                        break;
+                    }
+                }
+            }
+            const basePlaylist = playlists[inherit];
+            const maxTeams = basePlaylist.vars["max_teams"];
+            const maxPlayers = basePlaylist.vars["max_players"];
+            let mapName = "";
+            for (const key in basePlaylist.include) {
+                if (key.includes("map")) {
+                    mapName = key;
+                }
+            }
+            const mapObj = playlists_r5.playlists.Includes[mapName];
+            let map = null;
+            if (mapObj) {
+                map = Object.keys(mapObj.gamemodes.survival.maps)[0];
+            }
+            const gamemodeKey = Object.keys(gamemodeVars).filter(key => gamemodeVars[key] === playlistName)[0];
+            const gamemodeNum = gamemodeKey.match(/\D*(\d+)/)[1];
+            let gamemode = gamemodeVars[`custom_match_playlist_category_${gamemodeNum}_name`]
+            if (gamemode.includes("#")) {
+                gamemode = gamemode.replace("#", "");
+            }
+
             const data = msg;
-            data["maxPlayers"] = lobby.maxPlayers;
-            data["maxTeams"] = lobby.maxTeams;
-            data["gameMode"] = gameMode;
+            data["maxPlayers"] = maxPlayers;
+            data["maxTeams"] = maxTeams;
+            data["gamemode"] = gamemode;
             data["map"] = map;
             waitMessages["CustomMatch_SetSettings"] = data;
+            lobby.maxPlayers = maxPlayers;
+            lobby.maxTeams = maxTeams;
+            lobby.mapName = map;
             break;
         }
         case "PlayerRespawnTeam": {
@@ -1461,7 +1258,7 @@ function processUpdatePlayer(msg, match, characterSelected = false) {
  *
  * @param {Object} msg_player
  * @param {CustomMatch} match
- * @return {Player} 
+ * @return {Player}
  */
 function processUpdateMsgPlayer(msg_player, match) {
     checkPlayerInstance(msg_player, match);
@@ -1661,12 +1458,125 @@ async function calcScore() {
 }
 
 /**
+ * csvDataをコピーする変数
+ * @type {Object}
+ * @global
+ * @link readCSV
+ */
+let copyCSVData = {};
+
+/**
+ * CSVから取得したプレイヤー名のリスト
+ * @type {Object}
+ * @global
+ * @link readCSV
+ */
+let csvPlayerNames = {};
+
+/**
+ * CSVファイルを読み込む
+ * @param {Object} csv - CSVファイル
+ * @returns {Boolean} - 読み込みが成功したかどうか
+ */
+function readCSV(csv) {
+    try {
+        csvData = {};
+        csvPlayerNames = { dupulicate: [] };
+        for (const team of csv) {
+            const teamId = Number(team.TEAM) + 1;
+            const players = [];
+            for (let i = 0; i < team.MEMBER_NUM; i++) {
+                const name = team[`MEMBER${i + 1}`];
+                if (csvPlayerNames[name] || csvPlayerNames.dupulicate.includes(name)) {
+                    console.log(`[READ CSV] Duplicate player name: ${name}`);
+                    csvData[csvPlayerNames[name].teamId].players = csvData[csvPlayerNames[name].teamId].players.filter((playerName) => playerName !== name);
+                    csvPlayerNames.dupulicate.push(name);
+                } else {
+                    csvPlayerNames[name] = { teamId };
+                    players.push(name);
+                }
+            }
+            csvData[`${teamId}`] = { teamName: team.NAME, logoUrl: team.IMG_URL, players };
+        }
+        copyCSVData = JSON.parse(JSON.stringify(csvData));
+        apexCommon.get_lobby_players();
+        return true;
+    } catch (error) {
+        console.error("[READ CSV] Error:", error);
+        return false;
+    }
+}
+
+
+/**
+ * LiveAPIから取得したプレイヤー名のリスト
+ * @type {Object}
+ * @global
+ * @link applyCSVData
+ */
+let playerNames = {};
+
+/**
+ * プレイヤーが設定済みかどうかのフラグ
+ * @type {Boolean}
+ * @global
+ * @link applyCSVData
+ */
+let isPlayerSet = {
+    success: false,
+    index: 0
+};
+
+/**
+ * lobbyにCSVデータを反映する
+ * @param {CustomMatch} lobby - ロビー
+ * @param {Object} copyCSVData - CSVデータ
+ */
+function applyCSVData(lobby, copyCSVData) {
+    if (Object.keys(copyCSVData).length === 0) {
+        return false;
+    }
+    const teamId = Object.keys(copyCSVData)[0];
+    if (isPlayerSet.success) {
+        const team = lobby.getTeam(teamId);
+        if (team) {
+            if (copyCSVData[teamId].teamName !== team.teamName) {
+                apexCommon.set_team_name(teamId, copyCSVData[teamId].teamName);
+            }
+            team.setTeamImg(copyCSVData[teamId].logoUrl);
+        }
+        delete copyCSVData[teamId];
+        isPlayerSet.success = false;
+        isPlayerSet.index = 0;
+        apexCommon.get_lobby_players();
+    } else {
+        const playerName = copyCSVData[teamId].players[isPlayerSet.index];
+        if (playerNames[playerName]) {
+            const player = playerNames[playerName];
+            if (lobby.getTeam(0).players.includes(player.nucleusHash)) {
+                apexCommon.set_team(teamId, player.hardwareName, player.nucleusHash);
+            }
+        } else if (playerName === undefined) {
+            console.log(`[APPLY CSV DATA] Player is empty, TEAM_ID: ${teamId - 1}`);
+        } else {
+            console.log(`[APPLY CSV DATA] Player not found, TEAM_ID: ${teamId - 1} PLAYER_NAME: ${playerName}`);
+        }
+        if (isPlayerSet.index >= copyCSVData[teamId].players.length - 1) {
+            isPlayerSet.success = true;
+        } else {
+            isPlayerSet.index++;
+        }
+    }
+    return true;
+}
+
+/**
  * 格納しているメッセージを読みだす
  * @param {string} messageType - メッセージの種類
  * @return {Object|null} - メッセージのオブジェクト
  */
 function readLobbyMessage(messageType) {
-    if (waitMessages[messageType] || Date.now() - lastLobbyPlayersTime < lobbyPlayersTimeout * 1000) {
+    if (waitMessages[messageType]) {
         return waitMessages[messageType];
     } else {
         return null;
@@ -1674,9 +1584,18 @@ function readLobbyMessage(messageType) {
 }
 
 /**
+ * Apply CSV Dataの最終適用時間
+ * @type {number}
+ * @global
+ * @link update
+ */
+let lastApplyTime = 0;
+
+/**
  * メインスレッド
  */
 async function update() {
+    const now = Date.now();
     if (match && match.startTimeStamp != 0 && match.endTimeStamp === 0) {
         getPlayerStatus(match);
         sendMapData.sendPlayerPositionUpdate(match, config.output);
@@ -1689,13 +1608,18 @@ async function update() {
                 match.addPacketElement(packet.t, packet.toJSON());
             }
         }
-        packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
+        packet = new Packet((now / 1000) - match.startTimeStamp);
     }
-    const now = Date.now();
-    if (!isPlaying && (now - lastPollTime >= 5000)) {
-        apexCommon.get_lobby_players();
-        apexCommon.get_match_settings();
-        lastPollTime = now;
+    if (!isPlaying) {
+        if (now - lastPollTime >= 5000) {
+            apexCommon.get_lobby_players();
+            apexCommon.get_match_settings();
+            lastPollTime = now;
+        }
+        if (copyCSVData && lobby && now - lastApplyTime >= 50) {
+            applyCSVData(lobby, copyCSVData);
+            lastApplyTime = now;
+        }
     }
 }
 
@@ -1753,4 +1677,4 @@ function handleMessage(message, messageType) {
     analyze_message(messageType, message.toObject());
 }
 
-module.exports = { match, config, calcScore, startApexLegends, analyze_message, readLobbyMessage }
+module.exports = { match, config, gamemodes, lobby, calcScore, startApexLegends, analyze_message, readCSV, readLobbyMessage }
