@@ -198,21 +198,20 @@ class Inventory {
    * @memberof Inventory
    */
   addOrUpdateItem(_itemName, quantity, level) {
-    const itemName = _itemName.split(" (")[0];
-    const existingItem = this.getItem(itemName, level);
+    const existingItem = this.getItem(_itemName, level);
     if (existingItem) {
       // 同じ名前とレベルのアイテムが既に存在する場合は、所持数を更新
       let newQuantity = existingItem.quantity + quantity;
       //もし所持数が0を下回ったら
       if (newQuantity < 0) {
-        const item = this.removeItem(itemName, level);
+        const item = this.removeItem(_itemName, level);
         return item;
       }
       existingItem.setQuantity(newQuantity);
       // console.log(`${itemName} (Level ${level}) now has a total quantity of ${existingItem.quantity}.`);
     } else {
       // アイテムが存在しない場合は、新規追加
-      const newItem = new Item(itemName, level, quantity);
+      const newItem = new Item(_itemName, level, quantity);
       this.addItem(newItem);
       // console.log(`${itemName} (Level ${level}) has been added with a quantity of ${quantity}.`);
     }
@@ -698,6 +697,18 @@ class Player {
      * @type {number}
      */
     this.gibraltarShieldAbsorbed = 0;
+
+    /**
+     * バナーを回収した回数
+     * @type {number}
+     */
+    this.bannerCollectedCount = 0;
+
+    /**
+     * 蘇生可能状態かどうかを持つ
+     * @type {boolean}
+     */
+    this.canRevive = false;
   }
 
   /**
@@ -1065,6 +1076,23 @@ class Player {
    */
   addGibraltarShieldAbsorbed(amount) {
     this.gibraltarShieldAbsorbed += amount;
+  }
+
+  /**
+   * プレイヤーのバナー回収回数を増加させるメソッド
+   * @memberof Player
+   */
+  addBannerCollectedCount() {
+    this.bannerCollectedCount++;
+  }
+
+  /**
+   * プレイヤーの蘇生可能状態を変更するメソッド
+   * @param {boolean} status プレイヤーが蘇生可能な場合はtrue、蘇生不可能な場合はfalse
+   * @memberof Player
+   */
+  setCanRevive(status) {
+    this.canRevive = status;
   }
 }
 
