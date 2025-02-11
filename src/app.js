@@ -1,16 +1,17 @@
 const common = require('./utils/common');
 const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event, Packet } = require('./utils/andeanClass');
-let config = common.readConfig('../../config.json');
-let language = common.readConfig('../../locals/en.default.json');
+let config = common.readFile('../../config.json');
+let language = common.readFile('../../locals/en.default.json');
 const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
 const messageTypes = require('./utils/messageTypes');
 const sendMapData = require('./services/sendMapData')
 const apexCommon = require('./services/apexCommon');
+const vdf = require('vdf');
 
 
 if (!config) {
     console.error('設定ファイルが見つかりません。');
-    return;
+    return false;
 } else if (!config.language || config.language === '') {
     console.error('言語設定が見つからないため、デフォルトの言語設定(English)を使用します。');
 } else {
@@ -68,10 +69,10 @@ function startApexLegends() {
             return false;
         }
     } else {
-        config = common.readConfig();
+        config = common.readFile();
     }
     const option = `${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`;
-    const command = `"${config.apexlegends.path}" + ${option}`;  // パスが空でない場合に起動コマンドを構築
+    const command = `"${config.apexlegends.path}\\r5apex.exe" + ${option}`;  // パスが空でない場合に起動コマンドを構築
     common.runRegularCommand(command)
         .then(output => {
             common.logMessage('Apex Legendsが起動しました:', output);
@@ -83,6 +84,70 @@ function startApexLegends() {
         });
 }
 
+
+/**
+ * playlists_r5.txtを変換したJSONオブジェクト
+ * @global
+ * @type {Object}
+ */
+let playlists_r5 = {}
+
+/**
+ * playlists_r5.txt を読み込み、VDF を JSON に変換する
+ * @return {Object}
+ */
+const data = common.readText(`${config.apexlegends.path}\\r2\\playlists_r5.txt`)
+try {
+    // vdf.parse() を利用して KeyValue 形式を JSON オブジェクトに変換する
+    playlists_r5 = vdf.parse(data);
+    const load = common.readFile('../../playlists_r5.json', playlists_r5);
+    if (playlists_r5.playlists.versionNum !== load.playlists.versionNum) {
+        common.saveFile('../../playlists_r5.json', playlists_r5);
+    }
+} catch (parseErr) {
+    console.error('パースに失敗しました:', parseErr);
+}
+
+/**
+ * ゲームモードの一覧を格納するオブジェクト
+ * @global
+ * @type {Object}
+ */
+let gamemodes = {};
+
+/**
+ * ゲームモードの一覧を取得する
+ */
+const gamemodeVars = playlists_r5.playlists.Gamemodes.defaults.vars;
+const modeNum = gamemodeVars.custom_match_playlist_category_count;
+const playlists = playlists_r5.playlists.Playlists;
+for (let i = 0; i < modeNum; i++) {
+    const entryNum = gamemodeVars[`custom_match_playlist_category_${i}_count`];
+    let name = gamemodeVars[`custom_match_playlist_category_${i}_name`];
+    const data = {};
+    for (let j = 0; j < entryNum; j++) {
+        const entryName = `custom_match_playlist_category_${i}_entry_${j}`;
+        const entry = gamemodeVars[entryName];
+        const playlist = playlists[entry];
+        let playlistName = `${entry}`;
+        for (const key in playlist.vars) {
+            if (["name", "description", "map_name"].includes(key)) {
+                playlistName = playlist.vars[key];
+            }
+        }
+        if (entry === "can_hu_cm") {
+            playlistName = "#MP_RR_CANYONLANDS_HU";
+        }
+        if (playlistName.includes("#")) {
+            playlistName = playlistName.replace("#", "");
+        }
+        data[entry] = playlistName;
+    }
+    if (name.includes("#")) {
+        name = name.replace("#", "");
+    }
+    gamemodes[name] = data;
+}
 
 
 // サーバーを起動
@@ -109,7 +174,7 @@ let matchBase;
  * @type {Packet}
  */
 let packet;
-let lobby = new CustomMatch("lobby");
+const lobby = new CustomMatch("lobby");
 /**
  * リングイベントが発生した時間を記録する
  * @type {Array<Event>}
@@ -121,19 +186,49 @@ let ringEvents = [];
  */
 let ranks = [];
 /**
+ * CSVファイルを保存する配列
+ * @type {Object}
+ */
+let csvData;
+/**
+ * Webに送信するメッセージを格納する配列
+ * @type {Object}
+ */
+let waitMessages = { "CustomMatch_LobbyPlayers": {}, "CustomMatch_SetSettings": {} };
+/**
+ * ゲーム中かどうか
+ * @type {Boolean}
+ */
+let isPlaying = false;
+/**
+ * 最後にポーリングした時間
+ * @type {Date}
+ */
+let lastPollTime = Date.now();
+/**
  * メッセージを分析し、要素を抽出する。
  * @param {String} category
  * @param {Object} msg
  */
 function analyze_message(category, msg) {
+    // console.log(`[analyze_message] category: ${category}, msg: ${msg}`);
     // common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
         case "Init": {
-            /**
-             * @todo web側で名前の指定があれば適用する
-             */
             if (msg.platform != "") { break; }
-            match = new CustomMatch(`${msg.timestamp}`);
+            // 変換したいUnixTime（ミリ秒単位）
+            const unixTime = Number(msg.timestamp) * 1000;
+            // Dateクラスのインスタンスを生成（ローカルタイムが使用される）
+            const date = new Date(unixTime);
+            // 年、月、日、秒を取得
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2); // 月は0～11のため+1し、2桁に整形
+            const day = ('0' + date.getDate()).slice(-2);
+            const seconds = ('0' + date.getSeconds()).slice(-2);
+            // YYYY-MM-DD-SS形式の文字列を生成
+            const formattedDate = `${year}-${month}-${day}-${seconds}`;
+            match = new CustomMatch(`${formattedDate}`);
+            isPlaying = true;
             break;
         }
         case "Vector3": {  // 今のところ何もイベント発生しない
@@ -158,16 +253,60 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_LobbyPlayers": {
-            // 一旦lobbyと言う名前のマッチが有るものとして扱う
-            lobby = new CustomMatch("lobby")
+            lobby.lobbyId = msg.playertoken;
+            playerNames = {};
+            lobby.teams = {};
+            lobby.players = {};
             for (let i = 0; i < msg.teamsList.length; i++) {
                 const msg_team = msg.teamsList[i];
-                lobby.addTeam(msg_team.id, msg_team.name);
+                const teamId = msg_team.id;
+                const teamName = msg_team.name;
+                const team = lobby.addTeam(teamId, teamName);
+                team.spawnPoint = msg_team.spawnpoint;
+                if (csvData && csvData[teamId] && csvData[teamId].teamName && csvData[teamId].teamName !== teamName && !copyCSVData[teamId]) {
+                    copyCSVData[teamId] = JSON.parse(JSON.stringify(csvData[teamId]));
+                }
             }
             for (let i = 0; i < msg.playersList.length; i++) {
-                const msg_player = msg.playersList[i]
-                lobby.addPlayer(new Player(msg_player.name, msg_player.teamid, msg_player.nucleushash, msg_player.hardwarename))
+                const msg_player = msg.playersList[i];
+                const teamId = msg_player.teamid;
+                const playerName = msg_player.name;
+                lobby.addPlayer(new Player(playerName, teamId, msg_player.nucleushash, msg_player.hardwarename));
+                if (playerNames[playerName]) {
+                    console.log(`[APPLY CSV DATA] Duplicate player name: ${playerName}`);
+                    delete playerNames[playerName];
+                } else {
+                    playerNames[playerName] = { teamId: teamId, name: playerName, nucleusHash: msg_player.nucleushash, hardwareName: msg_player.hardwarename };
+                }
             }
+            if (csvData) {
+                for (const teamId in csvData) {
+                    if (csvData[teamId] && csvData[teamId].players) {
+                        for (const playerName of csvData[teamId].players) {
+                            if (playerNames[playerName] && playerNames[playerName].teamId != teamId && !copyCSVData[teamId]) {
+                                copyCSVData[teamId] = JSON.parse(JSON.stringify(csvData[teamId]));
+                            } else if (!playerNames[playerName]) {
+                                console.log(`[APPLY CSV DATA] PlayerName: ${playerName} is not in the lobby or duplicate player name`);
+                            }
+                        }
+                    }
+                }
+            }
+            const data = {};
+            for (const teamId in lobby.teams) {
+                const team = lobby.getTeam(teamId);
+                const teamName = team.teamName;
+                const logoUrl = team.teamImg;
+                const spawnPoint = team.spawnPoint;
+                const players = [];
+                for (let i = 0; i < team.players.length; i++) {
+                    const player = lobby.getPlayer(team.players[i]);
+                    if (player === null) continue;
+                    players.push({ index: i, id: player.nucleusHash, name: player.name });
+                }
+                data[teamId] = { name: teamName, logoUrl: logoUrl, spawnPoint: spawnPoint, players: players };
+            }
+            waitMessages["CustomMatch_LobbyPlayers"] = data;
             break;
         }
         case "RequestStatus": {  // 今のところ何もイベント発生しない
@@ -205,6 +344,7 @@ function analyze_message(category, msg) {
             }
             match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, msg.aimassiston, msg.anonymousmode, msg.serverid);
             match.datacenter.update(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name);
+            match.setMatchName(`${match.matchName}-${msg.map}`);
             const playlistName = splitBracketParts(msg.playlistname);
             if (playlistName === null) {
                 match.setMaxPlayersAndTeams(msg.playlistname);
@@ -220,7 +360,7 @@ function analyze_message(category, msg) {
                     matchBase = JSON.parse(JSON.stringify(match));
                     ringEvents = [];
                     ranks = [];
-                    for (let i = match.maxTeams + 1; i >= 2 ; i--) {
+                    for (let i = match.maxTeams + 1; i >= 2; i--) {
                         const team = match.getTeam(i);
                         if (team.players.length === 0) {
                             ranks.push(i);
@@ -232,7 +372,7 @@ function analyze_message(category, msg) {
                 }
                 if (msg.state === "Postmatch") {
                     matchBase.packetLists = JSON.parse(JSON.stringify(match.packetLists));
-                    for (i=0; i<ringEvents.length; i+=2) {
+                    for (i = 0; i < ringEvents.length; i += 2) {
                         if ((i + 1) !== ringEvents.length) {
                             /**
                              * @type {Event}
@@ -255,7 +395,8 @@ function analyze_message(category, msg) {
                         const team = match.getTeam(ranks[i]);
                         team.setRank(ranks.length - i);
                     }
-                    common.saveUpdate(`Packet Log - ${match.startTimeStamp}`, config.output, matchBase);
+                    common.saveUpdate(`Packet Log - ${match.matchName}`, config.output, matchBase);
+                    isPlaying = false;
                 }
             } catch (error) {
                 console.log(error);
@@ -265,6 +406,12 @@ function analyze_message(category, msg) {
         }
         case "CharacterSelected": {
             const player = processUpdatePlayer(msg, match, true);
+            const msg_player = msg.player;
+            const data = processEventData(msg_player, match);
+            data["character"] = msg_player.character;
+            const event = new Event(msg.timestamp, msg.category, data);
+            match.addEventElement(event);
+            packet.addEvent(event);
             break;
         }
         case "MatchStateEnd": {
@@ -280,7 +427,7 @@ function analyze_message(category, msg) {
                     winnerTeams.push(msg.winnersList[i].teamid);
                 }
             }
-            const event = new Event(msg.timestamp, msg.category, {teamId: winnerTeams, state: msg.state });
+            const event = new Event(msg.timestamp, msg.category, { teamId: winnerTeams, state: msg.state });
             match.addEventElement(event);
             // AndeanのPacketクラスに追加する
             packet.addEvent(event);
@@ -322,7 +469,7 @@ function analyze_message(category, msg) {
             checkPlayerInstance(msg_player, match);
             for (let i = 2; i < match.maxTeams + 2; i++) {
                 if (match.getTeam(i) == null) {
-                    match.addTeam(i, `Team ${i - 1}`);
+                    const team = match.addTeam(i, `Team ${i - 1}`);
                 }
             }
             const player = processUpdatePlayer(msg, match);
@@ -370,7 +517,7 @@ function analyze_message(category, msg) {
             }
             const victim = processUpdateMsgPlayer(msg_victim, match);
             match.getTeam(msg_victim.teamid).addTotalDamageRecived(msg.damageinflicted);
-            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") { 
+            if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
                 victim.addDamageReceived(msg.damageinflicted, weaponName, msg_attacker.nucleushash, msg_attacker.character, penetrator);
             } else {
                 victim.addDamageReceived(msg.damageinflicted, weaponName, "World", "World", penetrator);
@@ -495,7 +642,7 @@ function analyze_message(category, msg) {
             } else {
                 victim.setDownsReceived(weaponName, "World", "World");
             }
-            
+
 
             //ダウンさせた側
             /**
@@ -631,7 +778,7 @@ function analyze_message(category, msg) {
             let event;
             if ("nucleushash" in msg_attacker && msg_attacker.nucleushash !== "") {
                 const attacker = processUpdateMsgPlayer(msg_attacker, match);
-                attacker.addDamageDealt(msg.damageinflicted, "Unknown by GibraltarShieldAbsorbed", msg_victim.nucleushash, msg_victim.character, penetrator)
+                attacker.addDamageDealt(msg.damageinflicted, "Unknown by GibraltarShieldAbsorbed", msg_victim.nucleushash, msg_victim.character, penetrator);
 
                 // AndeanのEventクラスに追加する
                 event = new Event(
@@ -722,7 +869,62 @@ function analyze_message(category, msg) {
             break;
         }
         case "CustomMatch_SetSettings": {
-            settings = msg.settings;
+            const playlistName = msg.playlistname;
+            if (playlistName === "") {
+                console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not exist`);
+                break;
+            }
+            const playlists = playlists_r5.playlists.Playlists;
+            const playlist = playlists[playlistName];
+            if (!playlist) {
+                console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not exist`);
+                break;
+            }
+            let inherit = null;
+            try {
+                inherit = playlist.inherit;
+            } catch (error) {
+                console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not have inherit`);
+            }
+            if (!playlist.vars["max_teams"]) {
+                while (playlists[inherit].vars["max_teams"]) {
+                    inherit = playlists[inherit].inherit;
+                    if (!playlists[inherit]) {
+                        console.log(`[CustomMatch_SetSettings] Playlist ${playlistName} does not have max_teams`);
+                        break;
+                    }
+                }
+            }
+            const basePlaylist = playlists[inherit];
+            const maxTeams = basePlaylist.vars["max_teams"];
+            const maxPlayers = basePlaylist.vars["max_players"];
+            let mapName = "";
+            for (const key in basePlaylist.include) {
+                if (key.includes("map")) {
+                    mapName = key;
+                }
+            }
+            const mapObj = playlists_r5.playlists.Includes[mapName];
+            let map = null;
+            if (mapObj) {
+                map = Object.keys(mapObj.gamemodes.survival.maps)[0];
+            }
+            const gamemodeKey = Object.keys(gamemodeVars).filter(key => gamemodeVars[key] === playlistName)[0];
+            const gamemodeNum = gamemodeKey.match(/\D*(\d+)/)[1];
+            let gamemode = gamemodeVars[`custom_match_playlist_category_${gamemodeNum}_name`]
+            if (gamemode.includes("#")) {
+                gamemode = gamemode.replace("#", "");
+            }
+
+            const data = msg;
+            data["maxPlayers"] = maxPlayers;
+            data["maxTeams"] = maxTeams;
+            data["gamemode"] = gamemode;
+            data["map"] = map;
+            waitMessages["CustomMatch_SetSettings"] = data;
+            lobby.maxPlayers = maxPlayers;
+            lobby.maxTeams = maxTeams;
+            lobby.mapName = map;
             break;
         }
         case "PlayerRespawnTeam": {
@@ -1094,7 +1296,7 @@ function processUpdatePlayer(msg, match, characterSelected = false) {
  *
  * @param {Object} msg_player
  * @param {CustomMatch} match
- * @return {Player} 
+ * @return {Player}
  */
 function processUpdateMsgPlayer(msg_player, match) {
     checkPlayerInstance(msg_player, match);
@@ -1124,7 +1326,7 @@ function checkPlayerInstance(msg_player, match) {
  * @param {JSON} _pos - LiveAPIEventのposデータ
  */
 function convertLeefletPOS(_mapOffset, _pos) {
-    return [(_pos.x + _mapOffset[0]) / _mapOffset[2] , (_pos.y + _mapOffset[1]) / _mapOffset[2], _pos.z / _mapOffset[2]];
+    return [(_pos.x + _mapOffset[0]) / _mapOffset[2], (_pos.y + _mapOffset[1]) / _mapOffset[2], _pos.z / _mapOffset[2]];
 }
 
 /**
@@ -1310,7 +1512,7 @@ function getItemId(name) {
  * スコアを計算し結果を返す関数
  * @returns {boolean|Object} - スコアが更新されたかどうか
  */
-function calcScore() {
+async function calcScore() {
     let scoreBoard = "";
     if (!match) { return false; }
     const score_setting = config.score_setting;
@@ -1341,9 +1543,144 @@ function calcScore() {
 }
 
 /**
+ * csvDataをコピーする変数
+ * @type {Object}
+ * @global
+ * @link readCSV
+ */
+let copyCSVData = {};
+
+/**
+ * CSVから取得したプレイヤー名のリスト
+ * @type {Object}
+ * @global
+ * @link readCSV
+ */
+let csvPlayerNames = {};
+
+/**
+ * CSVファイルを読み込む
+ * @param {Object} csv - CSVファイル
+ * @returns {Boolean} - 読み込みが成功したかどうか
+ */
+function readCSV(csv) {
+    try {
+        csvData = {};
+        csvPlayerNames = { dupulicate: [] };
+        for (const team of csv) {
+            const teamId = Number(team.TEAM) + 1;
+            const players = [];
+            for (let i = 0; i < team.MEMBER_NUM; i++) {
+                const name = team[`MEMBER${i + 1}`];
+                if (csvPlayerNames[name] || csvPlayerNames.dupulicate.includes(name)) {
+                    console.log(`[READ CSV] Duplicate player name: ${name}`);
+                    csvData[csvPlayerNames[name].teamId].players = csvData[csvPlayerNames[name].teamId].players.filter((playerName) => playerName !== name);
+                    csvPlayerNames.dupulicate.push(name);
+                } else {
+                    csvPlayerNames[name] = { teamId };
+                    players.push(name);
+                }
+            }
+            csvData[`${teamId}`] = { teamName: team.NAME, logoUrl: team.IMG_URL, players };
+        }
+        copyCSVData = JSON.parse(JSON.stringify(csvData));
+        apexCommon.get_lobby_players();
+        return true;
+    } catch (error) {
+        console.error("[READ CSV] Error:", error);
+        return false;
+    }
+}
+
+
+/**
+ * LiveAPIから取得したプレイヤー名のリスト
+ * @type {Object}
+ * @global
+ * @link applyCSVData
+ */
+let playerNames = {};
+
+/**
+ * プレイヤーが設定済みかどうかのフラグ
+ * @type {Boolean}
+ * @global
+ * @link applyCSVData
+ */
+let isPlayerSet = {
+    success: false,
+    index: 0
+};
+
+/**
+ * lobbyにCSVデータを反映する
+ * @param {CustomMatch} lobby - ロビー
+ * @param {Object} copyCSVData - CSVデータ
+ */
+function applyCSVData(lobby, copyCSVData) {
+    if (Object.keys(copyCSVData).length === 0) {
+        return false;
+    }
+    const teamId = Object.keys(copyCSVData)[0];
+    if (isPlayerSet.success) {
+        const team = lobby.getTeam(teamId);
+        if (team) {
+            if (copyCSVData[teamId].teamName !== team.teamName) {
+                apexCommon.set_team_name(teamId, copyCSVData[teamId].teamName);
+            }
+            team.setTeamImg(copyCSVData[teamId].logoUrl);
+        }
+        delete copyCSVData[teamId];
+        isPlayerSet.success = false;
+        isPlayerSet.index = 0;
+        apexCommon.get_lobby_players();
+    } else {
+        const playerName = copyCSVData[teamId].players[isPlayerSet.index];
+        if (playerNames[playerName]) {
+            const player = playerNames[playerName];
+            if (lobby.getTeam(0).players.includes(player.nucleusHash)) {
+                apexCommon.set_team(teamId, player.hardwareName, player.nucleusHash);
+            }
+        } else if (playerName === undefined) {
+            console.log(`[APPLY CSV DATA] Player is empty, TEAM_ID: ${teamId - 1}`);
+        } else {
+            console.log(`[APPLY CSV DATA] Player not found, TEAM_ID: ${teamId - 1} PLAYER_NAME: ${playerName}`);
+        }
+        if (isPlayerSet.index >= copyCSVData[teamId].players.length - 1) {
+            isPlayerSet.success = true;
+        } else {
+            isPlayerSet.index++;
+        }
+    }
+    return true;
+}
+
+/**
+ * 格納しているメッセージを読みだす
+ * @param {string} messageType - メッセージの種類
+ * @return {Object|null} - メッセージのオブジェクト
+ */
+function readLobbyMessage(messageType) {
+    if (waitMessages[messageType]) {
+        return waitMessages[messageType];
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Apply CSV Dataの最終適用時間
+ * @type {number}
+ * @global
+ * @link update
+ */
+let lastApplyTime = 0;
+
+/**
  * メインスレッド
  */
 async function update() {
+    const now = Date.now();
     if (match && match.startTimeStamp != 0 && match.endTimeStamp === 0) {
         getPlayerStatus(match);
         sendMapData.sendPlayerPositionUpdate(match, config.output);
@@ -1356,7 +1693,18 @@ async function update() {
                 match.addPacketElement(packet.t, packet.toJSON());
             }
         }
-        packet = new Packet((Date.now() / 1000) - match.startTimeStamp);
+        packet = new Packet((now / 1000) - match.startTimeStamp);
+    }
+    if (!isPlaying) {
+        if (now - lastPollTime >= 5000) {
+            apexCommon.get_lobby_players();
+            apexCommon.get_match_settings();
+            lastPollTime = now;
+        }
+        if (copyCSVData && lobby && now - lastApplyTime >= 50) {
+            applyCSVData(lobby, copyCSVData);
+            lastApplyTime = now;
+        }
     }
 }
 
@@ -1371,7 +1719,7 @@ common.registerOnServersStarted((servers) => {
     // メッセージ処理用のコールバック関数を設定
     common.getServerList().websocketServer.setHandleMessageCallback((message, ws) => {
         const liveAPIEvent = LiveAPIEvent.deserializeBinary(message);
-        // common.logMessage('LiveAPIEvent:', liveAPIEvent.toObject());
+        // common.logMessage('LiveAPIEvent:', liveAPIEvent.toString());
 
         const gamemessage = liveAPIEvent.getGamemessage();
         const typeUrl = gamemessage.getTypeUrl(); // メッセージタイプを取得
@@ -1404,8 +1752,9 @@ common.registerOnServersStarted((servers) => {
  * @param {WebSocket} ws - 送信元のWebSocketインスタンス
  */
 function handleMessage(message, messageType) {
+    // console.log(`[HANDLE MESSAGE] Received ${messageType} message:`, message.toObject());
     // ログを保存
-    if (!(["ObserverSwitched", "Response"].includes(messageType))) {  // logにObserverSwitchedとResponseを含めないようにする
+    if (!(["ObserverSwitched", "Response", "CustomMatch_SetSettings", "CustomMatch_LobbyPlayers"].includes(messageType))) {  // logにObserverSwitchedとResponseを含めないようにする
         common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
     }
     // common.saveLog(JSON.stringify(message.toObject()), common.getServerList().websocketServer.fileName);
@@ -1413,4 +1762,4 @@ function handleMessage(message, messageType) {
     analyze_message(messageType, message.toObject());
 }
 
-module.exports = { match, config, calcScore, startApexLegends, analyze_message }
+module.exports = { match, config, gamemodes, lobby, calcScore, startApexLegends, analyze_message, readCSV, readLobbyMessage }

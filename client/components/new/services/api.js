@@ -1,6 +1,6 @@
 import { fetchWithTimeout } from "../lib/utils"
 
-const API_TIMEOUT = 8000 // 8 seconds
+const API_TIMEOUT = 3000 // 3 seconds
 
 export const api = {
   // Lobby-related API calls
@@ -8,7 +8,7 @@ export const api = {
     const response = await fetchWithTimeout("/api/join_lobby", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lobbyId }),
+      body: JSON.stringify({ token: lobbyId }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to join lobby")
@@ -33,6 +33,15 @@ export const api = {
     return response.json()
   },
 
+  getLobbyId: async () => {
+    const response = await fetchWithTimeout("/api/get_lobby_id", {
+      method: "POST",
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to get lobby ID")
+    return response.json()
+  },
+
   setReady: async (ready) => {
     const response = await fetchWithTimeout("/api/set_ready", {
       method: "POST",
@@ -49,18 +58,18 @@ export const api = {
     const response = await fetchWithTimeout("/api/set_matchmaking", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ matchmaking: status }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to set matchmaking status")
     return response.json()
   },
 
-  togglePause: async (preTimer) => {
+  togglePause: async (pauseTime) => {
     const response = await fetchWithTimeout("/api/pause_toggle", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ preTimer }),
+      body: JSON.stringify({ preTimer: pauseTime }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to toggle pause")
@@ -68,12 +77,13 @@ export const api = {
   },
 
   calculateScores: async () => {
-    const response = await fetchWithTimeout("/api/getScore", {
-      method: "GET",
+    const response = await fetchWithTimeout("/getScore", {
+      method: "POST",
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to calculate scores")
-    return response.json()
+    const data = await response.json()
+    return `${data.score}`
   },
 
   // Config-related API calls
@@ -98,7 +108,7 @@ export const api = {
   },
 
   resetConfig: async () => {
-    const response = await fetchWithTimeout("/api/resetConfig", {
+    const response = await fetchWithTimeout("/resetConfig", {
       method: "POST",
       timeout: API_TIMEOUT,
     })
@@ -113,7 +123,9 @@ export const api = {
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to get lobby players")
-    return response.json()
+    const data = await response.json()
+    if (!data.success) throw new Error("Failed to get lobby players")
+    return data.result
   },
 
   getMatchSettings: async () => {
@@ -122,25 +134,42 @@ export const api = {
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to get match settings")
-    return response.json()
+    const data = await response.json()
+    if (!data.success) throw new Error("Failed to get match settings")
+    return data.result
   },
 
   setSettings: async (settings) => {
     const response = await fetchWithTimeout("/api/set_settings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(settings),
+      body: JSON.stringify({ playlistName: settings.playlistname, adminChat: settings.adminchat, teamRename: settings.teamrename, selfAssign: settings.selfassign, aimAssist: settings.aimassist, anonMode: settings.anonmode }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to set settings")
     return response.json()
   },
 
-  setTeam: async (teamId, name) => {
+  setTeam: async (teamId, targetHardwareName, targetNucleushash) => {
     const response = await fetchWithTimeout("/api/set_team", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ teamId, name }),
+      body: JSON.stringify({
+        teamId: teamId,
+        targetHardwareName: targetHardwareName,
+        targetNucleushash: targetNucleushash,
+      }),
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to set team")
+    return response.json()
+  },
+
+  setTeamName: async (teamId, name) => {
+    const response = await fetchWithTimeout("/api/set_team_name", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ teamId: teamId, teamName: name }),
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to set team")
@@ -159,21 +188,37 @@ export const api = {
   },
 
   stopServer: async () => {
-    const response = await fetchWithTimeout("/stopServer", {
-      method: "POST",
-      timeout: API_TIMEOUT,
-    })
-    if (!response.ok) throw new Error("Failed to stop server")
-    return response.json()
+    try {
+      const response = await fetchWithTimeout("/stopServer", {
+        method: "POST",
+        timeout: API_TIMEOUT,
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to stop server")
+      }
+      return response.json()
+    } catch (error) {
+      console.error("Error stopping server:", error)
+      throw error
+    }
   },
 
   startGame: async () => {
-    const response = await fetchWithTimeout("/startGame", {
-      method: "POST",
-      timeout: API_TIMEOUT,
-    })
-    if (!response.ok) throw new Error("Failed to start game")
-    return response.json()
+    try {
+      const response = await fetchWithTimeout("/startGame", {
+        method: "POST",
+        timeout: API_TIMEOUT,
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to start game")
+      }
+      return response.json()
+    } catch (error) {
+      console.error("Error starting game:", error)
+      throw error
+    }
   },
 
   togglePeriodicFetch: async () => {
@@ -182,6 +227,27 @@ export const api = {
       timeout: API_TIMEOUT,
     })
     if (!response.ok) throw new Error("Failed to toggle periodic fetch")
+    return response.json()
+  },
+
+  // 新しいAPIコール
+  sendCSVData: async (csvData) => {
+    const response = await fetchWithTimeout("/send_csv_data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ csvData }),
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to send CSV data")
+    return response.json()
+  },
+  
+  getGameModes: async () => {
+    const response = await fetchWithTimeout("/api/get_gamemodes", {
+      method: "POST",
+      timeout: API_TIMEOUT,
+    })
+    if (!response.ok) throw new Error("Failed to get game modes")
     return response.json()
   },
 }

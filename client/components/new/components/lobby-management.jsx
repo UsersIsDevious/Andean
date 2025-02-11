@@ -1,60 +1,157 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useLobby } from "../contexts/LobbyContext"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LobbySettings } from "./lobby-settings"
 import { PlayerTable } from "./player-table"
 import { TeamCard } from "./team-card"
-
-const teamColors = [
-  "bg-red-100",
-  "bg-blue-100",
-  "bg-green-100",
-  "bg-yellow-100",
-  "bg-indigo-100",
-  "bg-purple-100",
-  "bg-pink-100",
-  "bg-teal-100",
-  "bg-orange-100",
-  "bg-cyan-100",
-  "bg-lime-100",
-  "bg-emerald-100",
-  "bg-sky-100",
-  "bg-violet-100",
-  "bg-fuchsia-100",
-  "bg-rose-100",
-  "bg-amber-100",
-  "bg-gray-100",
-  "bg-slate-100",
-  "bg-zinc-100",
-]
+import { api } from "../services/api"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
 export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLobbyData, isSimulated }) {
-  const { isInLobby, lobbyId } = useLobby()
+  const { isInLobby, lobbyId, joinLobby, leaveLobby } = useLobby()
   const [lobbyData, setLobbyData] = useState({ players: {}, settings: {} })
   const [activeTab, setActiveTab] = useState("unassigned")
+  const [error, setError] = useState(null)
+  const [lobbyOptions, setLobbyOptions] = useState({})
 
-  useEffect(() => {
-    const fetchLobbyData = async () => {
-      if (isInLobby && lobbyId) {
-        try {
-          const [playersResponse, settingsResponse] = await Promise.all([
-            fetch("/api/get_lobby_players", {method: "POST"}),
-            fetch("/api/get_match_settings", {method: "POST"}),
-          ])
-          const players = await playersResponse.json()
-          const settings = await settingsResponse.json()
-          setLobbyData({ players, settings })
-        } catch (error) {
-          console.error("Error fetching lobby data:", error)
-        }
+  const fetchGameModes = useCallback(async () => {
+    try {
+      const gamemodes = await api.getGameModes()
+      console.log("Game modes:", gamemodes.result)
+      if (gamemodes.success) {
+        setLobbyOptions(gamemodes.result)
+      } else {
+        throw new Error("Failed to fetch game modes")
+      }
+    } catch (error) {
+      console.error("Error fetching game modes:", error)
+      setError({
+        message: `Failed to fetch game modes: ${error.message}`,
+        details: "Unable to retrieve game mode options. Please try again later.",
+      })
+    }
+  }, [])
+
+  const fetchLobbyData = useCallback(async () => {
+    if (isInLobby && lobbyId) {
+      try {
+        const [playersData, settingsData] = await Promise.all([api.getLobbyPlayers(), api.getMatchSettings()])
+        setLobbyData({ players: playersData.result, settings: settingsData })
+        setError(null)
+      } catch (error) {
+        console.error("Error fetching lobby data:", error)
+        setError({
+          message: `Failed to fetch lobby data: ${error.message}`,
+          details: error.response ? await error.response.text() : "No additional details available",
+        })
       }
     }
-
-    fetchLobbyData()
   }, [isInLobby, lobbyId])
+
+  useEffect(() => {
+    fetchGameModes()
+    fetchLobbyData()
+
+    const intervalId = setInterval(fetchLobbyData, 5000)
+
+    return () => clearInterval(intervalId)
+  }, [fetchGameModes, fetchLobbyData])
+
+  const handleJoinOrCreateLobby = async (lobbyIdToJoin = null) => {
+    try {
+      if (lobbyIdToJoin) {
+        await api.joinLobby(lobbyIdToJoin)
+      } else {
+        await api.createLobby()
+      }
+
+      // Wait for 10 seconds before getting the lobby ID
+      await new Promise((resolve) => setTimeout(resolve, 10000))
+
+      const { success, lobbyId: newLobbyId } = await api.getLobbyId()
+      if (success && newLobbyId) {
+        joinLobby(newLobbyId)
+        alert(lobbyIdToJoin ? "Joined lobby successfully" : `Created lobby with ID: ${newLobbyId}`)
+      } else {
+        throw new Error("Failed to get lobby ID")
+      }
+    } catch (error) {
+      alert(`Error: ${error.message}`)
+    }
+  }
+
+  const handleSettingsChange = async (newSettings) => {
+    if (isSimulated) {
+      updateSimulatedLobbyData({ settings: newSettings })
+    } else {
+      try {
+        await api.setSettings(newSettings)
+        setLobbyData((prevData) => ({ ...prevData, settings: newSettings }))
+      } catch (error) {
+        console.error("Error updating lobby settings:", error)
+        setError({
+          message: `Failed to update lobby settings: ${error.message}`,
+          details: error.response ? await error.response.text() : "No additional details available",
+        })
+      }
+    }
+  }
+
+  const handleTeamNameChange = async (teamId, newName) => {
+    if (isSimulated) {
+      updateSimulatedLobbyData({
+        players: {
+          ...simulatedLobbyData.players,
+          [teamId]: {
+            ...(simulatedLobbyData.players[teamId] || {}),
+            name: newName,
+          },
+        },
+      })
+    } else {
+      try {
+        await api.setTeamName(teamId, newName)
+        setLobbyData((prevData) => ({
+          ...prevData,
+          players: {
+            ...prevData.players,
+            [teamId]: {
+              ...(prevData.players[teamId] || {}),
+              name: newName,
+            },
+          },
+        }))
+      } catch (error) {
+        console.error("Error updating team name:", error)
+        setError({
+          message: `Failed to update team name: ${error.message}`,
+          details: error.response ? await error.response.text() : "No additional details available",
+        })
+      }
+    }
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Alert variant="destructive" className="max-w-lg">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            <p>{error.message}</p>
+            <details className="mt-2">
+              <summary className="cursor-pointer">View Details</summary>
+              <pre className="mt-2 whitespace-pre-wrap text-xs">{error.details}</pre>
+            </details>
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
 
   if (!isInLobby) {
     return (
@@ -71,96 +168,47 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
     )
   }
 
-  const handleSettingsChange = async (newSettings) => {
-    if (isSimulated) {
-      updateSimulatedLobbyData({ settings: newSettings })
-    } else {
-      try {
-        const response = await fetch("/api/set_settings", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newSettings),
-        })
-        if (response.ok) {
-          setLobbyData((prevData) => ({ ...prevData, settings: newSettings }))
-        } else {
-          console.error("Failed to update lobby settings")
-        }
-      } catch (error) {
-        console.error("Error updating lobby settings:", error)
-      }
-    }
-  }
+  const matchName = isSimulated ? simulatedLobbyData.settings?.matchName : lobbyData.settings?.matchName
+  const isDuoMode = matchName && matchName.toLowerCase().includes("duo")
+  const maxTeams = isDuoMode ? 30 : 20
 
-  const handleTeamNameChange = async (teamId, newName) => {
-    if (isSimulated) {
-      updateSimulatedLobbyData({
-        players: {
-          ...simulatedLobbyData.players,
-          [teamId]: {
-            ...simulatedLobbyData.players[teamId],
-            name: newName,
-          },
-        },
-      })
-    } else {
-      try {
-        const response = await fetch("/api/set_team", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ teamId, name: newName }),
-        })
-        if (response.ok) {
-          setLobbyData((prevData) => ({
-            ...prevData,
-            players: {
-              ...prevData.players,
-              [teamId]: {
-                ...prevData.players[teamId],
-                name: newName,
-              },
-            },
-          }))
-        } else {
-          console.error("Failed to update team name")
-        }
-      } catch (error) {
-        console.error("Error updating team name:", error)
-      }
-    }
-  }
-
-  const teams = Array.from({ length: 22 }, (_, index) => {
-    const teamId = index.toString()
-    let teamName
-    if (index === 0) {
-      teamName = "未割当"
-    } else if (index === 1) {
-      teamName = "オブザーバー"
-    } else {
-      teamName = `チーム ${index - 1}`
-    }
+  const teams = Array.from({ length: maxTeams }, (_, index) => {
+    const teamId = (index + 2).toString()
     const team = (isSimulated ? simulatedLobbyData.players : lobbyData.players || {})[teamId] || {
-      name: teamName,
+      name: `Team ${index + 1}`,
       players: [],
+      logoUrl: "",
+      spawnPoint: 0,
     }
     return {
       id: teamId,
       name: team.name,
       players: team.players || [],
+      logoUrl: team.logoUrl || `/team-logos/team-${teamId}.png`,
+      spawnPoint: team.spawnPoint,
     }
   })
 
+  const unassignedTeam = (isSimulated ? simulatedLobbyData.players : lobbyData.players || {})["0"] || {
+    name: "Unassigned",
+    players: [],
+    logoUrl: "",
+    spawnPoint: 0,
+  }
+  const observerTeam = (isSimulated ? simulatedLobbyData.players : lobbyData.players || {})["1"] || {
+    name: "Observers",
+    players: [],
+    logoUrl: "",
+    spawnPoint: 0,
+  }
+
   return (
-    <div className="grid grid-cols-3 gap-6">
+    <div className="grid grid-cols-4 gap-6">
       <div className="col-span-1 space-y-6">
         <LobbySettings
           settings={isSimulated ? simulatedLobbyData.settings : lobbyData.settings}
           onSettingsChange={handleSettingsChange}
+          lobbyOptions={lobbyOptions}
         />
         <Card>
           <CardHeader>
@@ -170,30 +218,25 @@ export default function LobbyManagement({ simulatedLobbyData, updateSimulatedLob
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="w-full">
                 <TabsTrigger value="unassigned" className="flex-1">
-                  未割当
+                  Unassigned
                 </TabsTrigger>
                 <TabsTrigger value="observer" className="flex-1">
-                  オブザーバー
+                  Observers
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="unassigned">
-                <PlayerTable players={teams.find((team) => team.id === "0")?.players || []} />
+                <PlayerTable players={unassignedTeam.players || []} />
               </TabsContent>
               <TabsContent value="observer">
-                <PlayerTable players={teams.find((team) => team.id === "1")?.players || []} />
+                <PlayerTable players={observerTeam.players || []} />
               </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
       </div>
-      <div className="col-span-2 grid grid-cols-4 gap-4">
-        {teams.slice(2).map((team, index) => (
-          <TeamCard
-            key={team.id}
-            team={team}
-            onTeamNameChange={handleTeamNameChange}
-            backgroundColor={teamColors[index % teamColors.length]}
-          />
+      <div className="col-span-3 grid grid-cols-5 gap-4">
+        {teams.map((team) => (
+          <TeamCard key={team.id} team={team} onTeamNameChange={handleTeamNameChange} logoUrl={team.logoUrl} />
         ))}
       </div>
     </div>

@@ -62,9 +62,10 @@ const { getServerList, wss } = require('../utils/common');
 /**
  * シリアライズされたリクエストをWebSocket経由でクライアントに送信
  * @param {Request} request - リクエストオブジェクト
+ * @param {boolean} ack - 確認応答を要求するかどうか
  */
-function serialized_request(request) {
-    request.setWithack(false);  // 確認応答を要求
+async function serialized_request(request, ack = true) {
+    request.setWithack(ack);  // 確認応答を要求
     const serialized = request.serializeBinary();
     getServerList().websocketServer.broadcastToAllClients(serialized);  // シリアライズされたデータをWebSocket経由で送信
 }
@@ -74,7 +75,7 @@ function serialized_request(request) {
  * @param {string} type - 'poi'または'name'を指定
  * @param {string} value - PlayerOfInterestのタイプまたはプレイヤー名
  */
-function change_camera(type, value) {
+async function change_camera(type, value) {
     const req = new Request();
     const changeCamera = new ChangeCamera();
 
@@ -86,13 +87,13 @@ function change_camera(type, value) {
     }
 
     req.setChangecam(changeCamera);
-    serialized_request(req);
+    serialized_request(req, false);
 }
 
 /**
  * ポーズの切り替え
  */
-function pause_toggle(preTimer) {
+async function pause_toggle(preTimer) {
     const req = new Request();
     const pauseToggle = new PauseToggle();
     pauseToggle.setPretimer(preTimer)
@@ -103,7 +104,7 @@ function pause_toggle(preTimer) {
 /**
  * カスタムマッチロビーを作成
  */
-function create_lobby() {
+async function create_lobby() {
     const req = new Request();
     const createLobby = new CustomMatch_CreateLobby();
     req.setCustommatchCreatelobby(createLobby);
@@ -114,7 +115,7 @@ function create_lobby() {
  * カスタムマッチロビーに参加
  * @param {string} token - ロビー参加のためのトークン
  */
-function join_lobby(token) {
+async function join_lobby(token) {
     const req = new Request();
     const joinLobby = new CustomMatch_JoinLobby();
     joinLobby.setRoletoken(token);
@@ -125,7 +126,7 @@ function join_lobby(token) {
 /**
  * カスタムマッチロビーから退出
  */
-function leave_lobby() {
+async function leave_lobby() {
     const req = new Request();
     const leaveLobby = new CustomMatch_LeaveLobby();
     req.setCustommatchLeavelobby(leaveLobby);
@@ -136,7 +137,7 @@ function leave_lobby() {
  * 試合の準備完了状態を設定
  * @param {boolean} ready - trueで準備完了、falseで準備未完了を設定
  */
-function set_ready(ready) {
+async function set_ready(ready) {
     const req = new Request();
     const setReady = new CustomMatch_SetReady();
     setReady.setIsready(ready); // Boolean型（trueまたはfalse）
@@ -148,7 +149,7 @@ function set_ready(ready) {
  * マッチメイキングの有効/無効を設定
  * @param {boolean} matchmaking - trueでマッチメイキング有効、falseで無効
  */
-function set_matchmaking(matchmaking) {
+async function set_matchmaking(matchmaking) {
     const req = new Request();
     const setMatchmaking = new CustomMatch_SetMatchmaking();
     setMatchmaking.setEnabled(matchmaking); // Boolean型（trueまたはfalse）
@@ -159,8 +160,10 @@ function set_matchmaking(matchmaking) {
 /**
  * チームを設定
  * @param {number} teamId - 設定するチームID
+ * @param {string} targetHardwareName - チームに追加するプレイヤーのハードウェア名
+ * @param {string} targetNucleushash - チームに追加するプレイヤーのハッシュID
  */
-function set_team(teamId, targetHardwareName, targetNucleushash) {
+async function set_team(teamId, targetHardwareName, targetNucleushash) {
     const req = new Request();
     const setTeam = new CustomMatch_SetTeam();
     setTeam.setTeamid(teamId);
@@ -174,7 +177,7 @@ function set_team(teamId, targetHardwareName, targetNucleushash) {
  * プレイヤーをキック
  * @param {number} playerId - キックするプレイヤーのID
  */
-function kick_player(targetHardwareName, targetNucleushash) {
+async function kick_player(targetHardwareName, targetNucleushash) {
     const req = new Request();
     const kickPlayer = new CustomMatch_KickPlayer();
     kickPlayer.setTargethardwarename(targetHardwareName);
@@ -185,22 +188,22 @@ function kick_player(targetHardwareName, targetNucleushash) {
 
 /**
  * 試合設定を適用
- * @param {String} matchName - 現在のマッチプレイリスト名を指定
+ * @param {String} matchName - 現在のマッチプレイリスト名(モード・マップ)を指定
  * @param {boolean} adminChat - チャットを管理者のみに制限
  * @param {boolean} teamRename - チーム名の変更をプレイヤーに許可する
  * @param {boolean} selfAssign - チーム変更をプレイヤーに許可する
  * @param {boolean} aimAssist - すべてのプレイヤーはPCエイムアシスト値を使用する
  * @param {boolean} anonMode - 他のプレイヤーに対し名前を非表示
  */
-function set_settings(matchName, adminChat, teamRename, selfAssign, aimAssist, anonMode) {
+async function set_settings(matchName, adminChat, teamRename, selfAssign, aimAssist, anonMode) {
     const req = new Request();
     const setSettings = new CustomMatch_SetSettings();
-    // setSettings.setPlaylistname(matchName);
+    setSettings.setPlaylistname(matchName);
     setSettings.setAdminchat(adminChat);
-    // setSettings.setTeamrename(teamRename);
-    // setSettings.setSelfassign(selfAssign);
-    // setSettings.setAimassist(aimAssist);
-    // setSettings.setAnonmode(anonMode);
+    setSettings.setTeamrename(teamRename);
+    setSettings.setSelfassign(selfAssign);
+    setSettings.setAimassist(aimAssist);
+    setSettings.setAnonmode(anonMode);
     req.setCustommatchSetsettings(setSettings);
     serialized_request(req);
 }
@@ -209,7 +212,7 @@ function set_settings(matchName, adminChat, teamRename, selfAssign, aimAssist, a
  * チャットメッセージを送信
  * @param {string} message - 送信するメッセージ
  */
-function send_chat(message) {
+async function send_chat(message) {
     const req = new Request();
     const sendChat = new CustomMatch_SendChat();
     sendChat.setText(message);
@@ -220,11 +223,11 @@ function send_chat(message) {
 /**
  * ロビープレイヤー情報を取得
  */
-function get_lobby_players() {
+async function get_lobby_players() {
     const req = new Request();
     const getLobbyPlayers = new CustomMatch_GetLobbyPlayers();
     req.setCustommatchGetlobbyplayers(getLobbyPlayers);
-    serialized_request(req);
+    serialized_request(req, false);
 }
 
 /**
@@ -232,7 +235,7 @@ function get_lobby_players() {
  * @param {number} teamId - チームID
  * @param {string} name - 設定するチーム名
  */
-function set_team_name(teamId, name) {
+async function set_team_name(teamId, name) {
     const req = new Request();
     const setTeamName = new CustomMatch_SetTeamName();
     setTeamName.setTeamid(teamId);
@@ -244,7 +247,7 @@ function set_team_name(teamId, name) {
 /**
  * 試合設定を取得
  */
-function get_match_settings() {
+async function get_match_settings() {
     const req = new Request();
     const getSettings = new CustomMatch_GetSettings();
     req.setCustommatchGetsettings(getSettings);
@@ -256,7 +259,7 @@ function get_match_settings() {
  * @param {number} teamId - チームID
  * @param {number} landmark - 設定するランドマークの番号
  */
-function set_spawn_point(teamId, landmark) {
+async function set_spawn_point(teamId, landmark) {
     const req = new Request();
     const setSpawnPoint = new CustomMatch_SetSpawnPoint();
     setSpawnPoint.setTeamid(teamId);
@@ -267,14 +270,12 @@ function set_spawn_point(teamId, landmark) {
 
 /**
  * スポーンポイントを設定
- * @param {number} ringId - リングIDを指定
  * @param {number} exclusion - 除外設定の有無を指定
  */
-function set_end_ring_exclusion(ringId, exclusion) {
+async function set_end_ring_exclusion(exclusion) {
     const req = new Request();
     const endRingExclusion = new CustomMatch_SetEndRingExclusion();
-    endRingExclusion.setRingId(ringId);
-    endRingExclusion.setExcluded(exclusion);
+    endRingExclusion.setSectiontoexclude(exclusion);
     req.setCustomMatchSetEndRingExclusion(endRingExclusion);
     serialized_request(req);
 }

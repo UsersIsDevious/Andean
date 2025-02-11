@@ -6,13 +6,18 @@ function saveConfig(body) {
     for (const key in body) {
         config[key] = body[key];
     }
-    common.saveConfig('./config.json', config);
+    common.saveConfig('../../config.json', config);
     return config;
 }
 
 
-function makeScore() {
-    return app.calcScore();
+async function makeScore() {
+    return await app.calcScore();
 }
 
-module.exports = { makeScore, saveConfig };
+
+function readCSV(csv) {
+    return app.readCSV(csv);
+}
+
+module.exports = { makeScore, saveConfig, readCSV };

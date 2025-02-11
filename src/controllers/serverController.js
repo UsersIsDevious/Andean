@@ -71,7 +71,7 @@ function resetConfig(req, res) {
  * @param {Request} req - クライアントのリクエストオブジェクト
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
-function getScore(req, res) {
+async function getScore(req, res) {
   const score = serverService.makeScore();
   console.log("[GET SCORE] result", score);
   if (score === false) {
@@ -82,5 +82,16 @@ function getScore(req, res) {
 }
 
 
+/**
+ * CSVファイルを読み込むエンドポイント
+ * @param {Request} req - クライアントのリクエストオブジェクト
+ * @param {Response} res - クライアントに対するレスポンスオブジェクト
+ */
+function readCSV(req, res) {
+  const result = serverService.readCSV(req.body.csvData);
+  res.status(200).send(result);
+}
 
-module.exports = { handleNotify, stopServer, startGame , saveConfig, loadConfig, resetConfig, getScore };
+
+
+module.exports = { handleNotify, stopServer, startGame , saveConfig, loadConfig, resetConfig, getScore, readCSV };

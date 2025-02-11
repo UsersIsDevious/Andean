@@ -162,32 +162,49 @@ function saveLog(message, logFileName = 'app.log') {
 
 /**
  * Configファイルに保存します。
- * 
  * @param {Object} _class - 新しく保存するデータオブジェクト
  */
-function saveConfig(configPath = "./config.json", _class) {
+function saveFile(filePath = "../../config.json", _class) {
   try {
     // データをファイルに書き込み
-    const result = fs.writeFileSync(configPath, JSON.stringify(_class, null, 2));
+    const absolutePath = path.resolve(__dirname, filePath);
+    const result = fs.writeFileSync(absolutePath, JSON.stringify(_class, null, 2));
     return result;
   } catch (error) {
-    console.error(`Config ファイルの保存エラー (パス: ${configPath}):`, error.message);
+    console.error(`Config ファイルの保存エラー (パス: ${filePath}):`, error.message);
     return null;
   }
 }
 
 /**
  * config.json を読み込む関数
- * @param {string} [configPath='../../config.json'] - 設定ファイルのパス（デフォルトパスを設定）
+ * @param {string} [filePath='../../config.json'] - 設定ファイルのパス（デフォルトパスを設定）
  * @returns {Object|null} - 読み込んだ設定内容（エラー時は null を返す）
  */
-function readConfig(configPath = '../../config.json') {
+function readFile(filePath = '../../config.json') {
   try {
-    const absolutePath = path.resolve(__dirname, configPath);
-    const configData = fs.readFileSync(absolutePath, 'utf8');
-    return JSON.parse(configData);
+    const absolutePath = path.resolve(__dirname, filePath);
+    const data = readText(absolutePath);
+    return JSON.parse(data);
   } catch (error) {
-    console.error(`Config ファイルの読み込みエラー (パス: ${configPath}):`, error.message);
+    console.error(`Config ファイルの読み込みエラー (パス: ${filePath}):`, error.message);
+    return null;
+  }
+}
+
+/**
+ * テキストを読み込む関数
+ * @param {string} - 設定ファイルのパス
+ * @returns {Object|null} - 読み込んだ設定内容（エラー時は null を返す）
+ */
+function readText(filePath) {
+  try {
+    const absolutePath = path.resolve(__dirname, filePath);
+    const data = fs.readFileSync(absolutePath, 'utf8');
+    return data;
+  }
+  catch (error) {
+    console.error(`ファイルの読み込みエラー (パス: ${filePath}):`, error.message);
     return null;
   }
 }
@@ -234,14 +251,15 @@ function runRegularCommand(command) {
 // モジュールとしてエクスポート
 module.exports = {
   startAllServers,
-  readConfig,
+  readFile,
+  readText,
   runCommand,
   runPowerShellCommand,
   runRegularCommand,
   saveLog,
   getServerList,
   registerOnServersStarted,
-  saveConfig,
+  saveFile,
   saveData,
   saveUpdate,
   logMessage,
