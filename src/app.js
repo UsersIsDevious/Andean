@@ -1697,7 +1697,7 @@ async function update() {
         getPlayerStatus(match);
         sendMapData.sendPlayerPositionUpdate(match, config.output);
     }
-    if (match && !["Resolution", "Postmatch"].includes(match.state)) {
+    if (match && match.startTimeStamp != 0 && !["Resolution", "Postmatch"].includes(match.state)) {
         if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 2) {
             if (packet.events.length == 0 && Number.isInteger(packet.t)) {
                 console.log("[UPDATE] Packet is skipped");
