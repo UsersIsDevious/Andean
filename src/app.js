@@ -1461,7 +1461,7 @@ function getAssociateWeaponId(name) {
         result = Object.keys(language.associate_weapons_label).find((key) => language.associate_weapons_label[key] === split[0]);
     }
     if (result === undefined) {
-        if (name.includes("Melee")) {
+        if (name.includes(" Melee")) {
             return "mp_weapon_melee_survival";
         }
         console.log(`[GET ASSOCIATE WEAPON ID] Weapon ID not found: ${name}`);
