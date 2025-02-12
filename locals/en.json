@@ -1,838 +1,838 @@
 {
-    "item": {
-      "level_label": "Level"
+  "item": {
+    "level_label": "Level"
+  },
+  "weapons_label": {
+    "mp_weapon_3030": "30-30 Repeater",
+    "mp_weapon_alternator_smg": "Alternator SMG",
+    "mp_weapon_bow": "Bocek Compound Bow",
+    "mp_weapon_car": "C.A.R. SMG",
+    "mp_weapon_defender": "Charge Rifle",
+    "mp_weapon_esaw": "Devotion LMG",
+    "mp_weapon_shotgun": "EVA-8 Auto",
+    "mp_weapon_g2": "G7 Scout",
+    "mp_weapon_energy_ar": "HAVOC Rifle",
+    "mp_weapon_hemlok": "Hemlok Burst AR",
+    "mp_weapon_sniper": "Kraber .50-Cal Sniper",
+    "mp_weapon_lstar": "L-STAR EMG",
+    "mp_weapon_dmr": "Longbow DMR",
+    "mp_weapon_lmg": "M600 Spitfire",
+    "mp_weapon_mastiff": "Mastiff Shotgun",
+    "mp_weapon_shotgun_pistol": "Mozambique Shotgun",
+    "mp_weapon_nemesis": "Nemesis Burst AR",
+    "mp_weapon_semipistol": "P2020",
+    "mp_weapon_energy_shotgun": "Peacekeeper",
+    "mp_weapon_pdw": "Prowler Burst PDW",
+    "mp_weapon_rspn101": "R-301 Carbine",
+    "mp_weapon_r97": "R-99 SMG",
+    "mp_weapon_autopistol": "RE-45 Auto",
+    "mp_weapon_dragon_lmg": "Rampage LMG",
+    "mp_weapon_sentinel": "Sentinel",
+    "mp_weapon_doubletake": "Triple Take",
+    "mp_weapon_vinson": "VK-47 Flatline",
+    "mp_weapon_volt_smg": "Volt SMG",
+    "mp_weapon_wingman": "Wingman"
+  },
+  "associate_weapons_label": {
+    "mp_weapon_3030": "30-30",
+    "mp_weapon_alternator_smg": "Alternator",
+    "mp_weapon_bow": "Bocek",
+    "mp_weapon_car": "C.A.R.",
+    "mp_weapon_defender": "Charge Rifle",
+    "mp_weapon_esaw": "Devotion LMG",
+    "mp_weapon_shotgun": "EVA-8",
+    "mp_weapon_g2": "G7 Scout",
+    "mp_weapon_energy_ar": "HAVOC Rifle",
+    "mp_weapon_hemlok": "Hemlok",
+    "mp_weapon_sniper": "Kraber .50-Cal Sniper",
+    "mp_weapon_lstar": "L-STAR",
+    "mp_weapon_dmr": "Longbow DMR",
+    "mp_weapon_lmg": "Spitfire",
+    "mp_weapon_mastiff": "Mastiff",
+    "mp_weapon_shotgun_pistol": "Mozambique",
+    "mp_weapon_nemesis": "Nemesis",
+    "mp_weapon_semipistol": "P2020",
+    "mp_weapon_energy_shotgun": "Peacekeeper",
+    "mp_weapon_pdw": "Prowler",
+    "mp_weapon_rspn101": "R-301",
+    "mp_weapon_r97": "R-99",
+    "mp_weapon_autopistol": "RE-45",
+    "mp_weapon_dragon_lmg": "Rampage LMG",
+    "mp_weapon_sentinel": "Sentinel",
+    "mp_weapon_doubletake": "Triple Take",
+    "mp_weapon_vinson": "Flatline",
+    "mp_weapon_volt_smg": "Volt SMG",
+    "mp_weapon_wingman": "Wingman",
+    "mp_weapon_melee_survival": "Melee",
+    "Buster Sword R5 Melee": "Buster Sword R5 Melee",
+    "Bleed Out": "Bleed Out",
+    "Fall": "Fall",
+    "The Ring": "The Ring",
+    "Toxin": "Toxin",
+    "mp_weapon_grenade_emp": "Arc Star",
+    "mp_weapon_thermite_grenade": "Thermite Grenade",
+    "mp_weapon_frag_grenade": "Frag Grenade",
+    "Knuckle Cluster": "Knuckle Cluster",
+    "The Motherlode": "The Motherlode"
+  },
+  "items_label": {
+    "mp_ability_void_ring": "Heat Shield",
+    "mp_ability_mobile_respawn_beacon": "Mobile Respawn Beacon",
+    "mp_ability_redeploy_balloon": "Evac Tower",
+    "mp_weapon_grenade_emp": "Arc Star",
+    "mp_weapon_thermite_grenade": "Thermite Grenade",
+    "mp_weapon_frag_grenade": "Frag Grenade",
+    "Knuckle Cluster": "Knuckle Cluster",
+    "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT": "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT",
+    "Rolling Thunder": "Rolling Thunder",
+    "Shield Cell": "Shield Cell",
+    "Shield Battery": "Shield Battery",
+    "Syringe": "Syringe",
+    "Med Kit": "Med Kit",
+    "Phoenix Kit": "Phoenix Kit",
+    "Ultimate Accelerant": "Ultimate Accelerant",
+    "Helmet": "Helmet",
+    "Body Shield": "Body Shield",
+    "Knockdown Shield": "Knockdown Shield",
+    "Backpack": "Backpack",
+    "bullet": "Heavy Rounds",
+    "highcal": "Light Rounds",
+    "shotgun": "Shotgun Shells",
+    "sniper": "Sniper Ammo",
+    "energy": "Energy Ammo",
+    "Shotgun Bolt": "Shotgun Bolt",
+    "Standard Stock": "Standard Stock",
+    "1x-2x VARIABLE HOLO": "1x-2x VARIABLE HOLO",
+    "2x HCOG 'BRUISER'": "2x HCOG 'BRUISER'"
+  },
+  "legends_label": {
+    "Bloodhound": {
+      "name": "Bloodhound",
+      "passive": "Tracker",
+      "tactical": "Eye of the Allfather",
+      "ultimate": "Beast of the Hunt",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Odin's Glare",
+            "description": "Double the duration of Tactical's full-body highlight."
+          },
+          "right": {
+            "name": "Raven's Blessing",
+            "description": "White Ravens charge Ultimate by 20% when activated."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Sighthound",
+            "description": "Reduce Tactical cooldown by 50% while Ultimate is active."
+          },
+          "right": {
+            "name": "Flock",
+            "description": "Remove enemy range requirement for White Raven spawns."
+          }
+        }
+      }
     },
-    "weapons_label": {
-      "mp_weapon_3030": "30-30 Repeater",
-      "mp_weapon_alternator_smg": "Alternator SMG",
-      "mp_weapon_bow": "Bocek Compound Bow",
-      "mp_weapon_car": "C.A.R. SMG",
-      "mp_weapon_defender": "Charge Rifle",
-      "mp_weapon_esaw": "Devotion LMG",
-      "mp_weapon_shotgun": "EVA-8 Auto",
-      "mp_weapon_g2": "G7 Scout",
-      "mp_weapon_energy_ar": "HAVOC Rifle",
-      "mp_weapon_hemlok": "Hemlok Burst AR",
-      "mp_weapon_sniper": "Kraber .50-Cal Sniper",
-      "mp_weapon_lstar": "L-STAR EMG",
-      "mp_weapon_dmr": "Longbow DMR",
-      "mp_weapon_lmg": "M600 Spitfire",
-      "mp_weapon_mastiff": "Mastiff Shotgun",
-      "mp_weapon_shotgun_pistol": "Mozambique Shotgun",
-      "mp_weapon_nemesis": "Nemesis Burst AR",
-      "mp_weapon_semipistol": "P2020",
-      "mp_weapon_energy_shotgun": "Peacekeeper",
-      "mp_weapon_pdw": "Prowler Burst PDW",
-      "mp_weapon_rspn101": "R-301 Carbine",
-      "mp_weapon_r97": "R-99 SMG",
-      "mp_weapon_autopistol": "RE-45 Auto",
-      "mp_weapon_dragon_lmg": "Rampage LMG",
-      "mp_weapon_sentinel": "Sentinel",
-      "mp_weapon_doubletake": "Triple Take",
-      "mp_weapon_vinson": "VK-47 Flatline",
-      "mp_weapon_volt_smg": "Volt SMG",
-      "mp_weapon_wingman": "Wingman"
+    "Gibraltar": {
+      "name": "Gibraltar",
+      "passive": "Gun Shield",
+      "tactical": "Dome of Protection",
+      "ultimate": "Defensive Bombardment",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Big Bruddah",
+            "description": "Increase Ult radius by 20%."
+          },
+          "right": {
+            "name": "Fast Shotties",
+            "description": "Move faster with Shotguns. Auto-Reload shotguns on knocks."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Baby Bubble",
+            "description": "Reduce Tactical size and cooldown by 25%."
+          },
+          "right": {
+            "name": "Bubble Bunker",
+            "description": "Increase Tactical lifetime by 4 seconds."
+          }
+        }
+      }
     },
-    "associate_weapons_label": {
-      "mp_weapon_3030": "30-30 Repeater",
-      "mp_weapon_alternator_smg": "Alternator",
-      "mp_weapon_bow": "Bocek Compound Bow",
-      "mp_weapon_car": "C.A.R.",
-      "mp_weapon_defender": "Charge Rifle",
-      "mp_weapon_esaw": "Devotion LMG",
-      "mp_weapon_shotgun": "EVA-8",
-      "mp_weapon_g2": "G7 Scout",
-      "mp_weapon_energy_ar": "HAVOC Rifle",
-      "mp_weapon_hemlok": "Hemlok Burst AR",
-      "mp_weapon_sniper": "Kraber .50-Cal Sniper",
-      "mp_weapon_lstar": "L-STAR",
-      "mp_weapon_dmr": "Longbow DMR",
-      "mp_weapon_lmg": "M600 Spitfire",
-      "mp_weapon_mastiff": "Mastiff",
-      "mp_weapon_shotgun_pistol": "Mozambique Shotgun",
-      "mp_weapon_nemesis": "Nemesis Burst AR",
-      "mp_weapon_semipistol": "P2020",
-      "mp_weapon_energy_shotgun": "Peacekeeper",
-      "mp_weapon_pdw": "Prowler",
-      "mp_weapon_rspn101": "R-301",
-      "mp_weapon_r97": "R-99",
-      "mp_weapon_autopistol": "RE-45 Auto",
-      "mp_weapon_dragon_lmg": "Rampage LMG",
-      "mp_weapon_sentinel": "Sentinel",
-      "mp_weapon_doubletake": "Triple Take",
-      "mp_weapon_vinson": "VK-47 Flatline",
-      "mp_weapon_volt_smg": "Volt SMG",
-      "mp_weapon_wingman": "Wingman",
-      "mp_weapon_melee_survival": "Melee",
-      "Buster Sword R5 Melee": "Buster Sword R5 Melee",
-      "Bleed Out": "Bleed Out",
-      "Fall": "Fall",
-      "The Ring": "The Ring",
-      "Toxin": "Toxin",
-      "mp_weapon_grenade_emp": "Arc Star",
-      "mp_weapon_thermite_grenade": "Thermite Grenade",
-      "mp_weapon_frag_grenade": "Frag Grenade",
-      "Knuckle Cluster": "Knuckle Cluster",
-      "The Motherlode": "The Motherlode"
+    "Lifeline": {
+      "name": "Lifeline",
+      "passive": "Combat Glide",
+      "tactical": "D.O.C. Heal Drone",
+      "ultimate": "Halo Shield",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Extended Flight",
+            "description": "Increase time before D.O.C. runs out of fuel by 1.5s."
+          },
+          "right": {
+            "name": "Battpack",
+            "description": "+1 Shield Battery stack limit. Shield Battery count shown on deathboxes."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Enhanced Radio",
+            "description": "Increased distance you can assign D.O.C. by 50%"
+          },
+          "right": {
+            "name": "Tactical Cooldown+",
+            "description": "Reduce Tactical cooldown by 10 seconds."
+          }
+        }
+      }
     },
-    "items_label": {
-      "mp_ability_void_ring": "Heat Shield",
-      "mp_ability_mobile_respawn_beacon": "Mobile Respawn Beacon",
-      "mp_ability_redeploy_balloon": "Evac Tower",
-      "mp_weapon_grenade_emp": "Arc Star",
-      "mp_weapon_thermite_grenade": "Thermite Grenade",
-      "mp_weapon_frag_grenade": "Frag Grenade",
-      "Knuckle Cluster": "Knuckle Cluster",
-      "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT": "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT",
-      "Rolling Thunder": "Rolling Thunder",
-      "Shield Cell": "Shield Cell",
-      "Shield Battery": "Shield Battery",
-      "Syringe": "Syringe",
-      "Med Kit": "Med Kit",
-      "Phoenix Kit": "Phoenix Kit",
-      "Ultimate Accelerant": "Ultimate Accelerant",
-      "Helmet": "Helmet",
-      "Body Shield": "Body Shield",
-      "Knockdown Shield": "Knockdown Shield",
-      "Backpack": "Backpack",
-      "bullet": "Heavy Rounds",
-      "highcal": "Light Rounds",
-      "shotgun": "Shotgun Shells",
-      "sniper": "Sniper Ammo",
-      "energy": "Energy Ammo",
-      "Shotgun Bolt": "Shotgun Bolt",
-      "Standard Stock": "Standard Stock",
-      "1x-2x VARIABLE HOLO": "1x-2x VARIABLE HOLO",
-      "2x HCOG 'BRUISER'": "2x HCOG 'BRUISER'"
+    "Pathfinder": {
+      "name": "Pathfinder",
+      "passive": "Insider Knowledge",
+      "tactical": "Grappling Hook",
+      "ultimate": "Zipline Gun",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Field Research",
+            "description": "Gain access to Survey Beacons."
+          },
+          "right": {
+            "name": "Ringmaster",
+            "description": "Gain access to Ring Consoles."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Down and Away",
+            "description": "Grapple cooldown reset on knock."
+          },
+          "right": {
+            "name": "Zipline Zen",
+            "description": "Take 25% less damage while riding energized Ziplines."
+          }
+        }
+      }
     },
-    "legends_label": {
-      "Bloodhound": {
-        "name": "Bloodhound",
-        "passive": "Tracker",
-        "tactical": "Eye of the Allfather",
-        "ultimate": "Beast of the Hunt",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Odin's Glare",
-              "description": "Double the duration of Tactical's full-body highlight."
-            },
-            "right": {
-              "name": "Raven's Blessing",
-              "description": "White Ravens charge Ultimate by 20% when activated."
-            }
+    "Wraith": {
+      "name": "Wraith",
+      "passive": "Voices from the Void",
+      "tactical": "Into the Void",
+      "ultimate": "Dimensional Rift",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Sixth Sense",
+            "description": "Passive warns when nearby squad count increases."
           },
-          "2": {
-            "left": {
-              "name": "Sighthound",
-              "description": "Reduce Tactical cooldown by 50% while Ultimate is active."
-            },
-            "right": {
-              "name": "Flock",
-              "description": "Remove enemy range requirement for White Raven spawns."
-            }
+          "right": {
+            "name": "Ultimate Cooldown+",
+            "description": "Reduce Ultimate cooldown by 60 seconds."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Fast Phase",
+            "description": "Reduce Tactical wind-up by 20%"
+          },
+          "right": {
+            "name": "Tactical Cooldown",
+            "description": "Reduce Tactical cooldown by 5 seconds."
           }
         }
-      },
-      "Gibraltar": {
-        "name": "Gibraltar",
-        "passive": "Gun Shield",
-        "tactical": "Dome of Protection",
-        "ultimate": "Defensive Bombardment",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Big Bruddah",
-              "description": "Increase Ult radius by 20%."
-            },
-            "right": {
-              "name": "Fast Shotties",
-              "description": "Move faster with Shotguns. Auto-Reload shotguns on knocks."
-            }
+      }
+    },
+    "Bangalore": {
+      "name": "Bangalore",
+      "passive": "Double Time",
+      "tactical": "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT",
+      "ultimate": "Rolling Thunder",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Ultimate Cooldown+",
+            "description": "Reduce Ultimate cooldown by 60 seconds."
           },
-          "2": {
-            "left": {
-              "name": "Baby Bubble",
-              "description": "Reduce Tactical size and cooldown by 25%."
-            },
-            "right": {
-              "name": "Bubble Bunker",
-              "description": "Increase Tactical lifetime by 4 seconds."
-            }
+          "right": {
+            "name": "Tactical Cooldown",
+            "description": "Reduce Tactical cooldown by 5 seconds."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Cover Me",
+            "description": "Auto-Ping enemies who trigger Double Time."
+          },
+          "right": {
+            "name": "Refuge",
+            "description": "Regenerate HP while inside Smoke."
           }
         }
-      },
-      "Lifeline": {
-        "name": "Lifeline",
-        "passive": "Combat Glide",
-        "tactical": "D.O.C. Heal Drone",
-        "ultimate": "Halo Shield",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Extended Flight",
-              "description": "Increase time before D.O.C. runs out of fuel by 1.5s."
-            },
-            "right": {
-              "name": "Battpack",
-              "description": "+1 Shield Battery stack limit. Shield Battery count shown on deathboxes."
-            }
+      }
+    },
+    "Caustic": {
+      "name": "Caustic",
+      "passive": "Nox Vision",
+      "tactical": "Nox Gas Trap",
+      "ultimate": "Nox Gas Grenade",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Parabolic Force",
+            "description": "Increase Tactical throw range by 75%."
           },
-          "2": {
-            "left": {
-              "name": "Enhanced Radio",
-              "description": "Increased distance you can assign D.O.C. by 50%"
-            },
-            "right": {
-              "name": "Tactical Cooldown+",
-              "description": "Reduce Tactical cooldown by 10 seconds."
-            }
+          "right": {
+            "name": "Residual Toxins",
+            "description": "Nox Vision persists for longer."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Particle Diffuser",
+            "description": "Increase Ultimate area of effect by 50%."
+          },
+          "right": {
+            "name": "Breathe It In",
+            "description": "Regenerate HP while enveloped in Nox Gas."
           }
         }
-      },
-      "Pathfinder": {
-        "name": "Pathfinder",
-        "passive": "Insider Knowledge",
-        "tactical": "Grappling Hook",
-        "ultimate": "Zipline Gun",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Field Research",
-              "description": "Gain access to Survey Beacons."
-            },
-            "right": {
-              "name": "Ringmaster",
-              "description": "Gain access to Ring Consoles."
-            }
+      }
+    },
+    "Mirage": {
+      "name": "Mirage",
+      "passive": "Now You See Me...",
+      "tactical": "Psyche Out",
+      "ultimate": "Life of the Party",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Renaissance Man",
+            "description": "Can now use Survey Beacons, Ring Consoles, Munition Boxes and scan Care Packages"
           },
-          "2": {
-            "left": {
-              "name": "Down and Away",
-              "description": "Grapple cooldown reset on knock."
-            },
-            "right": {
-              "name": "Zipline Zen",
-              "description": "Take 25% less damage while riding energized Ziplines."
-            }
+          "right": {
+            "name": "Boozle-Eye",
+            "description": "Successful Bamboozles also highlight enemies for a short time"
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Me Two",
+            "description": "Gain a Decoy charge (can have both active at once)."
+          },
+          "right": {
+            "name": "Bamboozle Bonus",
+            "description": "Refresh Tactical on successful Bamboozles."
           }
         }
-      },
-      "Wraith": {
-        "name": "Wraith",
-        "passive": "Voices from the Void",
-        "tactical": "Into the Void",
-        "ultimate": "Dimensional Rift",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Sixth Sense",
-              "description": "Passive warns when nearby squad count increases."
-            },
-            "right": {
-              "name": "Ultimate Cooldown+",
-              "description": "Reduce Ultimate cooldown by 60 seconds."
-            }
+      }
+    },
+    "Octane": {
+      "name": "Octane",
+      "passive": "Swift Mend",
+      "tactical": "Stim",
+      "ultimate": "Launch Pad",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Thick Skin",
+            "description": "Take 5 less Stim damage."
           },
-          "2": {
-            "left": {
-              "name": "Fast Phase",
-              "description": "Reduce Tactical wind-up by 20%"
-            },
-            "right": {
-              "name": "Tactical Cooldown",
-              "description": "Reduce Tactical cooldown by 5 seconds."
-            }
+          "right": {
+            "name": "Mad Hops",
+            "description": "Gain an extra Launch Pad charge."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Thick Skin",
+            "description": "Take 5 less Stim damage."
+          },
+          "right": {
+            "name": "Airborne Agility",
+            "description": "Change directions with the Launch Pad double-jump."
           }
         }
-      },
-      "Bangalore": {
-        "name": "Bangalore",
-        "passive": "Double Time",
-        "tactical": "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT",
-        "ultimate": "Rolling Thunder",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Ultimate Cooldown+",
-              "description": "Reduce Ultimate cooldown by 60 seconds."
-            },
-            "right": {
-              "name": "Tactical Cooldown",
-              "description": "Reduce Tactical cooldown by 5 seconds."
-            }
+      }
+    },
+    "Wattson": {
+      "name": "Wattson",
+      "passive": "Spark of Genius",
+      "tactical": "Perimeter Security",
+      "ultimate": "Interception Pylon",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Revive Expert",
+            "description": "Revive teammates faster and with health regen to full health."
           },
-          "2": {
-            "left": {
-              "name": "Cover Me",
-              "description": "Auto-Ping enemies who trigger Double Time."
-            },
-            "right": {
-              "name": "Refuge",
-              "description": "Regenerate HP while inside Smoke."
-            }
+          "right": {
+            "name": "Falling Stars",
+            "description": "Pylon interceptions spawn Arc Stars."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Power Pylon",
+            "description": "Double Ultimate's HP and placed Ultimates regain charge."
+          },
+          "right": {
+            "name": "Emergency Power",
+            "description": "Double Ultimate's max charge and shield recharge rate."
           }
         }
-      },
-      "Caustic": {
-        "name": "Caustic",
-        "passive": "Nox Vision",
-        "tactical": "Nox Gas Trap",
-        "ultimate": "Nox Gas Grenade",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Parabolic Force",
-              "description": "Increase Tactical throw range by 75%."
-            },
-            "right": {
-              "name": "Residual Toxins",
-              "description": "Nox Vision persists for longer."
-            }
+      }
+    },
+    "Crypto": {
+      "name": "Crypto",
+      "passive": "Neurolink",
+      "tactical": "Surveillance Drone",
+      "ultimate": "Drone EMP",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Network Expansion",
+            "description": "Increase Neurolink and EMP range by 25%."
           },
-          "2": {
-            "left": {
-              "name": "Particle Diffuser",
-              "description": "Increase Ultimate area of effect by 50%."
-            },
-            "right": {
-              "name": "Breathe It In",
-              "description": "Regenerate HP while enveloped in Nox Gas."
-            }
+          "right": {
+            "name": "Off The Grid",
+            "description": "Crypto gets cloaked when entering the drone."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Satellite Imagery",
+            "description": "Drone scan persists for 1.5 seconds. Short scan after ultimate hits target."
+          },
+          "right": {
+            "name": "Hackathon",
+            "description": "Speed up drone recharge rate and gain a speed boost when it explodes [EMP or destroyed]."
           }
         }
-      },
-      "Mirage": {
-        "name": "Mirage",
-        "passive": "Now You See Me...",
-        "tactical": "Psyche Out",
-        "ultimate": "Life of the Party",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Renaissance Man",
-              "description": "Can now use Survey Beacons, Ring Consoles, Munition Boxes and scan Care Packages"
-            },
-            "right": {
-              "name": "Boozle-Eye",
-              "description": "Successful Bamboozles also highlight enemies for a short time"
-            }
+      }
+    },
+    "Revenant": {
+      "name": "Revenant",
+      "passive": "Assassin's Instinct",
+      "tactical": "Shadow Pounce",
+      "ultimate": "Forged Shadows",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Ultimate Cooldown",
+            "description": "Reduce Ultimate cooldown by 30 seconds."
           },
-          "2": {
-            "left": {
-              "name": "Me Two",
-              "description": "Gain a Decoy charge (can have both active at once)."
-            },
-            "right": {
-              "name": "Bamboozle Bonus",
-              "description": "Refresh Tactical on successful Bamboozles."
-            }
+          "right": {
+            "name": "Murder Machine",
+            "description": "Call out number of squads within 150 meters after a squad wipe."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Tactical Cooldown",
+            "description": "Reduce Tactical cooldown by 5 seconds."
+          },
+          "right": {
+            "name": "Grim Leaper",
+            "description": "Shadow Pounce cooldown reset on knock."
           }
         }
-      },
-      "Octane": {
-        "name": "Octane",
-        "passive": "Swift Mend",
-        "tactical": "Stim",
-        "ultimate": "Launch Pad",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Thick Skin",
-              "description": "Take 5 less Stim damage."
-            },
-            "right": {
-              "name": "Mad Hops",
-              "description": "Gain an extra Launch Pad charge."
-            }
+      }
+    },
+    "Loba": {
+      "name": "Loba",
+      "passive": "Eye for Quality",
+      "tactical": "Burglar's Best Friend",
+      "ultimate": "Black Market Boutique",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Wolf's Claws",
+            "description": "Faster weapon draw and speed boost after translocating."
           },
-          "2": {
-            "left": {
-              "name": "Thick Skin",
-              "description": "Take 5 less Stim damage."
-            },
-            "right": {
-              "name": "Airborne Agility",
-              "description": "Change directions with the Launch Pad double-jump."
-            }
+          "right": {
+            "name": "Shopping Spree",
+            "description": "Squad can take an extra item from Black Market."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Escape Artist",
+            "description": "After translocating, regenerate 50 Shields."
+          },
+          "right": {
+            "name": "Brand New Bag",
+            "description": "Grants entire squad gold backpacks when upgrade selected."
           }
         }
-      },
-      "Wattson": {
-        "name": "Wattson",
-        "passive": "Spark of Genius",
-        "tactical": "Perimeter Security",
-        "ultimate": "Interception Pylon",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Revive Expert",
-              "description": "Revive teammates faster and with health regen to full health."
-            },
-            "right": {
-              "name": "Falling Stars",
-              "description": "Pylon interceptions spawn Arc Stars."
-            }
+      }
+    },
+    "Rampart": {
+      "name": "Rampart",
+      "passive": "Modded Loader",
+      "tactical": "Amped Cover",
+      "ultimate": "Emplaced Minigun 'Sheila'",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Ultimate Cooldown",
+            "description": "Reduce Ultimate cooldown by 30 seconds."
           },
-          "2": {
-            "left": {
-              "name": "Power Pylon",
-              "description": "Double Ultimate's HP and placed Ultimates regain charge."
-            },
-            "right": {
-              "name": "Emergency Power",
-              "description": "Double Ultimate's max charge and shield recharge rate."
-            }
+          "right": {
+            "name": "Bandolier",
+            "description": "Carry extra ammo per stack."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Ramped Up",
+            "description": "Improved Mobile Sheila handling and spin-up time by 20%."
+          },
+          "right": {
+            "name": "Amped Reloads",
+            "description": "Reload faster with Sheila or when behind Amped Cover."
           }
         }
-      },
-      "Crypto": {
-        "name": "Crypto",
-        "passive": "Neurolink",
-        "tactical": "Surveillance Drone",
-        "ultimate": "Drone EMP",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Network Expansion",
-              "description": "Increase Neurolink and EMP range by 25%."
-            },
-            "right": {
-              "name": "Off The Grid",
-              "description": "Crypto gets cloaked when entering the drone."
-            }
+      }
+    },
+    "Horizon": {
+      "name": "Horizon",
+      "passive": "Spacewalk",
+      "tactical": "Gravity Lift",
+      "ultimate": "Black Hole",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Battpack",
+            "description": "+1 Shield Battery stack limit. Shield Battery count shown on deathboxes."
           },
-          "2": {
-            "left": {
-              "name": "Satellite Imagery",
-              "description": "Drone scan persists for 1.5 seconds. Short scan after ultimate hits target."
-            },
-            "right": {
-              "name": "Hackathon",
-              "description": "Speed up drone recharge rate and gain a speed boost when it explodes [EMP or destroyed]."
-            }
+          "right": {
+            "name": "Big Bang",
+            "description": "See nearby ordnance through walls and in deathboxes."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Tactical Cooldown",
+            "description": "Reduce Tactical cooldown by 5 seconds."
+          },
+          "right": {
+            "name": "Ultimate Cooldown",
+            "description": "Reduce Ultimate cooldown by 30 seconds."
           }
         }
-      },
-      "Revenant": {
-        "name": "Revenant",
-        "passive": "Assassin's Instinct",
-        "tactical": "Shadow Pounce",
-        "ultimate": "Forged Shadows",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Ultimate Cooldown",
-              "description": "Reduce Ultimate cooldown by 30 seconds."
-            },
-            "right": {
-              "name": "Murder Machine",
-              "description": "Call out number of squads within 150 meters after a squad wipe."
-            }
+      }
+    },
+    "Fuse": {
+      "name": "Fuse",
+      "passive": "Grenadier",
+      "tactical": "Knuckle Cluster",
+      "ultimate": "The Motherlode",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Ringmaster",
+            "description": "Gain access to Ring Consoles."
           },
-          "2": {
-            "left": {
-              "name": "Tactical Cooldown",
-              "description": "Reduce Tactical cooldown by 5 seconds."
-            },
-            "right": {
-              "name": "Grim Leaper",
-              "description": "Shadow Pounce cooldown reset on knock."
-            }
+          "right": {
+            "name": "Scar Tissue",
+            "description": "Take significantly less damage and ignore slow effects from The Motherlode."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Knuckle Hustler",
+            "description": "Short speed boost on successful Knuckle Cluster hit."
+          },
+          "right": {
+            "name": "Wreckless",
+            "description": "Take 50% less explosive damage."
           }
         }
-      },
-      "Loba": {
-        "name": "Loba",
-        "passive": "Eye for Quality",
-        "tactical": "Burglar's Best Friend",
-        "ultimate": "Black Market Boutique",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Wolf's Claws",
-              "description": "Faster weapon draw and speed boost after translocating."
-            },
-            "right": {
-              "name": "Shopping Spree",
-              "description": "Squad can take an extra item from Black Market."
-            }
+      }
+    },
+    "Valkyrie": {
+      "name": "Valkyrie",
+      "passive": "VTOL Jets",
+      "tactical": "Missile Swarm",
+      "ultimate": "Skyward Dive",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Afterburners",
+            "description": "Launch 15% higher with Skyward Dive."
           },
-          "2": {
-            "left": {
-              "name": "Escape Artist",
-              "description": "After translocating, regenerate 50 Shields."
-            },
-            "right": {
-              "name": "Brand New Bag",
-              "description": "Grants entire squad gold backpacks when upgrade selected."
-            }
+          "right": {
+            "name": "Full Coverage",
+            "description": "-5s Tac cooldown; Modify Missile Swarm pattern from 4x3 to 3x5."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Full Tank",
+            "description": "Increase Jetpack fuel by 25% and significantly reduce refuel delay."
+          },
+          "right": {
+            "name": "Eyes in the Sky",
+            "description": "Enemies are revealed from farther away and through walls while skydiving."
           }
         }
-      },
-      "Rampart": {
-        "name": "Rampart",
-        "passive": "Modded Loader",
-        "tactical": "Amped Cover",
-        "ultimate": "Emplaced Minigun 'Sheila'",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Ultimate Cooldown",
-              "description": "Reduce Ultimate cooldown by 30 seconds."
-            },
-            "right": {
-              "name": "Bandolier",
-              "description": "Carry extra ammo per stack."
-            }
+      }
+    },
+    "Seer": {
+      "name": "Seer",
+      "passive": "Heart Seeker",
+      "tactical": "Focus of Attention",
+      "ultimate": "Exhibit",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Artist's Reach",
+            "description": "Increase throw range of Ultimate by 20 meters."
           },
-          "2": {
-            "left": {
-              "name": "Ramped Up",
-              "description": "Improved Mobile Sheila handling and spin-up time by 20%."
-            },
-            "right": {
-              "name": "Amped Reloads",
-              "description": "Reload faster with Sheila or when behind Amped Cover."
-            }
+          "right": {
+            "name": "Ultimate Cooldown",
+            "description": "Reduce Ultimate cooldown by 20%."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Long View",
+            "description": "Increase Passive and Tactical range to 75 meters."
+          },
+          "right": {
+            "name": "Split Focus",
+            "description": "Gain a Focus of Attention charge; Reduce silence duration by 50%"
           }
         }
-      },
-      "Horizon": {
-        "name": "Horizon",
-        "passive": "Spacewalk",
-        "tactical": "Gravity Lift",
-        "ultimate": "Black Hole",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Battpack",
-              "description": "+1 Shield Battery stack limit. Shield Battery count shown on deathboxes."
-            },
-            "right": {
-              "name": "Big Bang",
-              "description": "See nearby ordnance through walls and in deathboxes."
-            }
+      }
+    },
+    "Ash": {
+      "name": "Ash",
+      "passive": "Predator's Pursuit",
+      "tactical": "Arc Snare",
+      "ultimate": "Phase Breach",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Dual Breach",
+            "description": "Gain a Phase Breach charge."
           },
-          "2": {
-            "left": {
-              "name": "Tactical Cooldown",
-              "description": "Reduce Tactical cooldown by 5 seconds."
-            },
-            "right": {
-              "name": "Ultimate Cooldown",
-              "description": "Reduce Ultimate cooldown by 30 seconds."
-            }
+          "right": {
+            "name": "Greedy Snare",
+            "description": "Arc Snare duration in world is tripled and can catch multiple enemies."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Ghost in the Machine",
+            "description": "Gain a dash charge."
+          },
+          "right": {
+            "name": "Twin Snares",
+            "description": "Gain an Arc Snare charge."
           }
         }
-      },
-      "Fuse": {
-        "name": "Fuse",
-        "passive": "Grenadier",
-        "tactical": "Knuckle Cluster",
-        "ultimate": "The Motherlode",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Ringmaster",
-              "description": "Gain access to Ring Consoles."
-            },
-            "right": {
-              "name": "Scar Tissue",
-              "description": "Take significantly less damage and ignore slow effects from The Motherlode."
-            }
+      }
+    },
+    "Mad Maggie": {
+      "name": "Mad Maggie",
+      "passive": "Warlord's Ire",
+      "tactical": "Riot Drill",
+      "ultimate": "Wrecking Ball",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Shots Shots Shots",
+            "description": "Auto-Reload shotguns on knocks."
           },
-          "2": {
-            "left": {
-              "name": "Knuckle Hustler",
-              "description": "Short speed boost on successful Knuckle Cluster hit."
-            },
-            "right": {
-              "name": "Wreckless",
-              "description": "Take 50% less explosive damage."
-            }
+          "right": {
+            "name": "Fire Ball",
+            "description": "Wrecking Ball catches fire and explodes into thermite."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Drillslinger",
+            "description": "Gain a Riot Drill charge Reduce active duration by 25%."
+          },
+          "right": {
+            "name": "Big Drill",
+            "description": "Increase depth and width of Tactical by 50%."
           }
         }
-      },
-      "Valkyrie": {
-        "name": "Valkyrie",
-        "passive": "VTOL Jets",
-        "tactical": "Missile Swarm",
-        "ultimate": "Skyward Dive",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Afterburners",
-              "description": "Launch 15% higher with Skyward Dive."
-            },
-            "right": {
-              "name": "Full Coverage",
-              "description": "-5s Tac cooldown; Modify Missile Swarm pattern from 4x3 to 3x5."
-            }
+      }
+    },
+    "Newcastle": {
+      "name": "Newcastle",
+      "passive": "Retrieve the Wounded",
+      "tactical": "Mobile Shield",
+      "ultimate": "Castle Wall",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Hero's Hustle",
+            "description": "Increase Revive Move Speed"
           },
-          "2": {
-            "left": {
-              "name": "Full Tank",
-              "description": "Increase Jetpack fuel by 25% and significantly reduce refuel delay."
-            },
-            "right": {
-              "name": "Eyes in the Sky",
-              "description": "Enemies are revealed from farther away and through walls while skydiving."
-            }
+          "right": {
+            "name": "Swift Shield",
+            "description": "Increase Mobile Shield speed to weapon sprint speed and reduces cooldown by 8sec."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Ultimate Savior",
+            "description": "Castle Wall slam grants 15 sec of Shield Regen to each ally in the impact area."
+          },
+          "right": {
+            "name": "Stronghold",
+            "description": "+500 Castle Wall HP Extend energized barrier duration to 3 minutes."
           }
         }
-      },
-      "Seer": {
-        "name": "Seer",
-        "passive": "Heart Seeker",
-        "tactical": "Focus of Attention",
-        "ultimate": "Exhibit",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Artist's Reach",
-              "description": "Increase throw range of Ultimate by 20 meters."
-            },
-            "right": {
-              "name": "Ultimate Cooldown",
-              "description": "Reduce Ultimate cooldown by 20%."
-            }
+      }
+    },
+    "Vantage": {
+      "name": "Vantage",
+      "passive": "Spotter's Lens",
+      "tactical": "Echo Relocation",
+      "ultimate": "Sniper's Mark",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Ringmaster",
+            "description": "Gain access to Ring Consoles."
           },
-          "2": {
-            "left": {
-              "name": "Long View",
-              "description": "Increase Passive and Tactical range to 75 meters."
-            },
-            "right": {
-              "name": "Split Focus",
-              "description": "Gain a Focus of Attention charge; Reduce silence duration by 50%"
-            }
+          "right": {
+            "name": "Ultimate Reload",
+            "description": "Ultimate Accelerants grant +2 bullets and are twice as fast"
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Bat Bounce",
+            "description": "Improved Tactical's double-jump."
+          },
+          "right": {
+            "name": "Sharpshooter",
+            "description": "Refresh Tactical on hits with Ultimate."
           }
         }
-      },
-      "Ash": {
-        "name": "Ash",
-        "passive": "Marked for Death",
-        "tactical": "Arc Snare",
-        "ultimate": "Phase Breach",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Murder Machine",
-              "description": "Call out number of squads within 150 meters after a squad wipe."
-            },
-            "right": {
-              "name": "One Minute to Live",
-              "description": "Using Passive tracks enemy position on map for 60 seconds."
-            }
+      }
+    },
+    "Catalyst": {
+      "name": "Catalyst",
+      "passive": "Barricade",
+      "tactical": "Piercing Spikes",
+      "ultimate": "Dark Veil",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Sister Spikes",
+            "description": "Increase max number of active Spikes by one."
           },
-          "2": {
-            "left": {
-              "name": "Greedy Snare",
-              "description": "Arc Snare duration in world is tripled and can catch multiple enemies."
-            },
-            "right": {
-              "name": "Twin Snares",
-              "description": "Gain an Arc Snare charge."
-            }
+          "right": {
+            "name": "Long Veil",
+            "description": "Increase Ultimate length by 15 meters."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Ferro-Door",
+            "description": "Rebuild and Reinforce missing doors."
+          },
+          "right": {
+            "name": "Resilient Veil",
+            "description": "Increase Ultimate lifetime by 5 seconds."
           }
         }
-      },
-      "Mad Maggie": {
-        "name": "Mad Maggie",
-        "passive": "Warlord's Ire",
-        "tactical": "Riot Drill",
-        "ultimate": "Wrecking Ball",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Shots Shots Shots",
-              "description": "Auto-Reload shotguns on knocks."
-            },
-            "right": {
-              "name": "Fire Ball",
-              "description": "Wrecking Ball catches fire and explodes into thermite."
-            }
+      }
+    },
+    "Conduit": {
+      "name": "Conduit",
+      "passive": "Savior's Speed",
+      "tactical": "Radiant Transfer",
+      "ultimate": "Energy Barricade",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Battpack",
+            "description": "+1 Shield Battery stack limit. Shield Battery count shown on deathboxes."
           },
-          "2": {
-            "left": {
-              "name": "Drillslinger",
-              "description": "Gain a Riot Drill charge Reduce active duration by 25%."
-            },
-            "right": {
-              "name": "Big Drill",
-              "description": "Increase depth and width of Tactical by 50%."
-            }
+          "right": {
+            "name": "Bigger Jam",
+            "description": "Each Ultimate jammer's damage radius increased by 10%."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Split Charge",
+            "description": "Gain a Tactical charge but halve shield regen duration."
+          },
+          "right": {
+            "name": "Radiant Transfer",
+            "description": "Increase Tactical range by 10 meters."
           }
         }
-      },
-      "Newcastle": {
-        "name": "Newcastle",
-        "passive": "Retrieve the Wounded",
-        "tactical": "Mobile Shield",
-        "ultimate": "Castle Wall",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Hero's Hustle",
-              "description": "Increase Revive Move Speed"
-            },
-            "right": {
-              "name": "Swift Shield",
-              "description": "Increase Mobile Shield speed to weapon sprint speed and reduces cooldown by 8sec."
-            }
+      }
+    },
+    "Alter": {
+      "name": "Alter",
+      "passive": "Gift from the Rift",
+      "tactical": "Void Passage",
+      "ultimate": "Void Nexus",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Void Vision",
+            "description": "Extend highlights and see health bars after exiting Tactical."
           },
-          "2": {
-            "left": {
-              "name": "Ultimate Savior",
-              "description": "Castle Wall slam grants 15 sec of Shield Regen to each ally in the impact area."
-            },
-            "right": {
-              "name": "Stronghold",
-              "description": "+500 Castle Wall HP Extend energized barrier duration to 3 minutes."
-            }
+          "right": {
+            "name": "Ringmaster",
+            "description": "Gain access to Ring Consoles."
+          }
+        },
+        "2": {
+          "left": {
+            "name": "Tactical Cooldown+",
+            "description": "Reduce Tactical cooldown by 10 seconds."
+          },
+          "right": {
+            "name": "Multidimensional",
+            "description": "Gives a second ult charge, and allows two Void Nexuses to exist at the same time."
           }
         }
-      },
-      "Vantage": {
-        "name": "Vantage",
-        "passive": "Spotter's Lens",
-        "tactical": "Echo Relocation",
-        "ultimate": "Sniper's Mark",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Ringmaster",
-              "description": "Gain access to Ring Consoles."
-            },
-            "right": {
-              "name": "Ultimate Reload",
-              "description": "Ultimate Accelerants grant +2 bullets and are twice as fast"
-            }
+      }
+    },
+    "Ballistic": {
+      "name": "Ballistic",
+      "passive": "Sling",
+      "tactical": "Whistler",
+      "ultimate": "Tempest",
+      "upgrade": {
+        "1": {
+          "left": {
+            "name": "Lasting Bullet",
+            "description": "Whistler duration in world is tripled."
           },
-          "2": {
-            "left": {
-              "name": "Bat Bounce",
-              "description": "Improved Tactical's double-jump."
-            },
-            "right": {
-              "name": "Sharpshooter",
-              "description": "Refresh Tactical on hits with Ultimate."
-            }
+          "right": {
+            "name": "Killing Time",
+            "description": "Increase ult duration by 15 sec."
           }
-        }
-      },
-      "Catalyst": {
-        "name": "Catalyst",
-        "passive": "Barricade",
-        "tactical": "Piercing Spikes",
-        "ultimate": "Dark Veil",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Sister Spikes",
-              "description": "Increase max number of active Spikes by one."
-            },
-            "right": {
-              "name": "Long Veil",
-              "description": "Increase Ultimate length by 15 meters."
-            }
+        },
+        "2": {
+          "left": {
+            "name": "Extra Bullets",
+            "description": "Double the number of Whistler charges."
           },
-          "2": {
-            "left": {
-              "name": "Ferro-Door",
-              "description": "Rebuild and Reinforce missing doors."
-            },
-            "right": {
-              "name": "Resilient Veil",
-              "description": "Increase Ultimate lifetime by 5 seconds."
-            }
-          }
-        }
-      },
-      "Conduit": {
-        "name": "Conduit",
-        "passive": "Savior's Speed",
-        "tactical": "Radiant Transfer",
-        "ultimate": "Energy Barricade",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Battpack",
-              "description": "+1 Shield Battery stack limit. Shield Battery count shown on deathboxes."
-            },
-            "right": {
-              "name": "Bigger Jam",
-              "description": "Each Ultimate jammer's damage radius increased by 10%."
-            }
-          },
-          "2": {
-            "left": {
-              "name": "Split Charge",
-              "description": "Gain a Tactical charge but halve shield regen duration."
-            },
-            "right": {
-              "name": "Radiant Transfer",
-              "description": "Increase Tactical range by 10 meters."
-            }
-          }
-        }
-      },
-      "Alter": {
-        "name": "Alter",
-        "passive": "Dimensional Echo",
-        "tactical": "Void Passage",
-        "ultimate": "Void Nexus",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Tactical Cooldown+",
-              "description": "Reduce Tactical cooldown by 10 seconds."
-            },
-            "right": {
-              "name": "Ringmaster",
-              "description": "Gain access to Ring Consoles."
-            }
-          },
-          "2": {
-            "left": {
-              "name": "Void Vision",
-              "description": "Extend highlights and see health bars after exiting Tactical."
-            },
-            "right": {
-              "name": "Multidimensional",
-              "description": "Gives a second ult charge, and allows two Void Nexuses to exist at the same time."
-            }
-          }
-        }
-      },
-      "Ballistic": {
-        "name": "Ballistic",
-        "passive": "Sling",
-        "tactical": "Whistler",
-        "ultimate": "Tempest",
-        "upgrade": {
-          "1": {
-            "left": {
-              "name": "Lasting Bullet",
-              "description": "Whistler duration in world is tripled."
-            },
-            "right": {
-              "name": "Sling-Shot",
-              "description": "Sling weapon levels up with each upgrade selection."
-            }
-          },
-          "2": {
-            "left": {
-              "name": "Extra Bullets",
-              "description": "Double the number of Whistler charges."
-            },
-            "right": {
-              "name": "Speedy Whistler",
-              "description": "Short speed boost on successful Whistler hit."
-            }
+          "right": {
+            "name": "Quiet Time",
+            "description": "If the enemy hit by Whistler overheats they will be silenced for a short time."
           }
         }
       }
     }
   }
+}

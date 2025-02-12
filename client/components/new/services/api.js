@@ -232,7 +232,7 @@ export const api = {
 
   // 新しいAPIコール
   sendCSVData: async (csvData) => {
-    const response = await fetchWithTimeout("/send_csv_data", {
+    const response = await fetchWithTimeout("/readCSV", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ csvData }),

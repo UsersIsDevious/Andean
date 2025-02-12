@@ -10,7 +10,7 @@
   ],
   "output": "../../output",
   "language": "",
-  "log_dir": "../../logs",
+  "log_dir": "../../log",
   "data_fps": 60,
   "score_setting": {
     "kill_point": 0,

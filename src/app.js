@@ -224,9 +224,11 @@ function analyze_message(category, msg) {
             const year = date.getFullYear();
             const month = ('0' + (date.getMonth() + 1)).slice(-2); // 月は0～11のため+1し、2桁に整形
             const day = ('0' + date.getDate()).slice(-2);
+            const hours = ('0' + date.getHours()).slice(-2);
+            const minutes = ('0' + date.getMinutes()).slice(-2);
             const seconds = ('0' + date.getSeconds()).slice(-2);
             // YYYY-MM-DD-SS形式の文字列を生成
-            const formattedDate = `${year}-${month}-${day}-${seconds}`;
+            const formattedDate = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
             match = new CustomMatch(`${formattedDate}`);
             isPlaying = true;
             break;
@@ -1161,7 +1163,7 @@ function analyze_message(category, msg) {
         case "BlackMarketAction": {
             const player = processUpdatePlayer(msg, match);
             const item = msg.item;
-            const itemId = getItemId(item);
+            const itemId = getWeaponIdOrItemId(item);
             const data = processEventData(msg.player, match);
             if (itemId !== undefined) {
                 player.addBlackMarketUseCount(itemId);
@@ -1387,7 +1389,12 @@ function getPlayerStatus(match) {
  * @returns {string|null} 見つかった場合は配列、見つからなかった場合はnullを返す
  */
 function splitBracketParts(input) {
-    const split = input.match(/^(.*?)\s*[\(（](.*?)[\)）]$/);
+    let split;
+    try {
+        split = input.match(/^(.*?)\s*[\(（](.*?)[\)）]$/);
+    } catch (error) {
+        console.log(`[SPLIT BRACKET PARTS] Input: ${input} Error: ${error}`);
+    }
     if (split) {
         return [split[1].trim(), split[2].trim()];
     } else {
@@ -1454,6 +1461,9 @@ function getAssociateWeaponId(name) {
         result = Object.keys(language.associate_weapons_label).find((key) => language.associate_weapons_label[key] === split[0]);
     }
     if (result === undefined) {
+        if (name.includes("Melee")) {
+            return "mp_weapon_melee_survival";
+        }
         console.log(`[GET ASSOCIATE WEAPON ID] Weapon ID not found: ${name}`);
     }
     return result;
@@ -1469,6 +1479,9 @@ function getAbilityId(character, name) {
     const split = splitBracketParts(name);
     const result = language.legends_label[character][split[0].toLowerCase()];
     if (result != split[1]) {
+        if (split[1] === "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT") {
+            return "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT";
+        }
         console.log(`[GET ABILITY ID] Ability name is not match: ${name}`);
     }
     return result;
@@ -1633,7 +1646,6 @@ function applyCSVData(lobby, copyCSVData) {
         delete copyCSVData[teamId];
         isPlayerSet.success = false;
         isPlayerSet.index = 0;
-        apexCommon.get_lobby_players();
     } else {
         const playerName = copyCSVData[teamId].players[isPlayerSet.index];
         if (playerNames[playerName]) {
@@ -1685,7 +1697,7 @@ async function update() {
         getPlayerStatus(match);
         sendMapData.sendPlayerPositionUpdate(match, config.output);
     }
-    if (match && match.startTimeStamp != 0 && !["Resolution", "Postmatch"].includes(match.state)) {
+    if (match && !["Resolution", "Postmatch"].includes(match.state)) {
         if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 2) {
             if (packet.events.length == 0 && Number.isInteger(packet.t)) {
                 console.log("[UPDATE] Packet is skipped");
@@ -1701,7 +1713,7 @@ async function update() {
             apexCommon.get_match_settings();
             lastPollTime = now;
         }
-        if (copyCSVData && lobby && now - lastApplyTime >= 50) {
+        if (copyCSVData && lobby && now - lastApplyTime >= 160) {
             applyCSVData(lobby, copyCSVData);
             lastApplyTime = now;
         }
