@@ -1,7 +1,7 @@
 {
   "playlists": {
     "version": "stable",
-    "versionNum": "23108",
+    "versionNum": "24004",
     "Gamemodes": {
       "defaults": {
         "vars": {
@@ -13,18 +13,13 @@
           "items_with_playlist_availability": "character_dummie",
           "character_dummie": "hide",
           "disable_sonar_assist": "character_bloodhound",
-          "helmet_lv1": "0.8",
-          "helmet_lv2": "0.5",
-          "helmet_lv3": "0.35",
-          "helmet_lv4": "0.35",
           "fortify_v2": "1",
-          "survival_disabled_loot": "incapshield_pickup_lv4_selfrevive",
           "challenge_negative_value_check": "0",
-          "ranked_level_requirement_0_base": "19",
-          "ranked_playlist_lock_date_split1": "2024-12-17 09:30:00 -08:00",
-          "ranked_playlist_lock_date_split2": "2025-02-11 09:30:00 -08:00",
-          "ranked_season_end_date_split1": "2024-12-17 10:00:00 -08:00",
-          "ranked_season_end_date_split2": "2025-02-11 10:00:00 -08:00",
+          "ranked_level_requirement_0_base": "1",
+          "ranked_playlist_lock_date_split1": "2025-03-25 09:30:00 -07:00",
+          "ranked_playlist_lock_date_split2": "2025-05-06 09:30:00 -07:00",
+          "ranked_season_end_date_split1": "2025-03-25 10:00:00 -07:00",
+          "ranked_season_end_date_split2": "2025-05-06 10:00:00 -07:00",
           "playlist_ring_tuning_override": "survival_ring_small",
           "deathfield_damagePercent_0": "0.03",
           "deathfield_damagePercent_1": "0.03",
@@ -155,108 +150,85 @@
           "character_select_time_min": "7.0",
           "allow_prestige_badges": "0",
           "allow_legend_melee_tab": "1",
+          "skip_lobby_tutorial": "0",
           "damage_viewpunch_scale": "0",
           "custom_match_playlist_code_default_key": "custom_match_playlist_category_0_entry_0",
-          "custom_match_playlist_category_count": "10",
-          "custom_match_playlist_category_0_count": "6",
+          "custom_match_playlist_category_count": "7",
+          "custom_match_playlist_category_0_count": "5",
           "custom_match_playlist_category_0_name": "#CUSTOMMATCH_BR_TRIOS",
           "custom_match_playlist_category_0_logo": "BATTLE_ROYALE",
-          "custom_match_playlist_category_0_entry_0": "can_hu_cm",
-          "custom_match_playlist_category_0_entry_1": "des_hu_cm",
-          "custom_match_playlist_category_0_entry_2": "district_cm",
+          "custom_match_playlist_category_0_entry_0": "des_hu_cm",
+          "custom_match_playlist_category_0_entry_1": "tropic_mu2_cm",
+          "custom_match_playlist_category_0_entry_2": "oly_mu2_cm",
           "custom_match_playlist_category_0_entry_3": "moon_cm",
-          "custom_match_playlist_category_0_entry_4": "oly_mu2_cm",
-          "custom_match_playlist_category_0_entry_5": "tropic_mu2_cm",
-          "custom_match_playlist_category_1_count": "6",
+          "custom_match_playlist_category_0_entry_4": "can_hu_cm",
+          "custom_match_playlist_category_1_count": "5",
           "custom_match_playlist_category_1_name": "#CUSTOMMATCH_BR_DUOS",
           "custom_match_playlist_category_1_logo": "BATTLE_ROYALE",
-          "custom_match_playlist_category_1_entry_0": "duo_can_hu_cm",
-          "custom_match_playlist_category_1_entry_1": "duo_des_hu_cm",
-          "custom_match_playlist_category_1_entry_2": "duo_district_cm",
+          "custom_match_playlist_category_1_entry_0": "duo_des_hu_cm",
+          "custom_match_playlist_category_1_entry_1": "duo_tropic_mu2_cm",
+          "custom_match_playlist_category_1_entry_2": "duo_oly_mu2_cm",
           "custom_match_playlist_category_1_entry_3": "duo_moon_cm",
-          "custom_match_playlist_category_1_entry_4": "duo_oly_mu2_cm",
-          "custom_match_playlist_category_1_entry_5": "duo_tropic_mu2_cm",
-          "custom_match_playlist_category_2_count": "4",
+          "custom_match_playlist_category_1_entry_4": "duo_can_hu_cm",
+          "custom_match_playlist_category_2_count": "3",
           "custom_match_playlist_category_2_name": "#CUSTOMMATCH_ALGS",
           "custom_match_playlist_category_2_logo": "BATTLE_ROYALE",
           "custom_match_playlist_category_2_entry_0": "des_new_spawn_pm",
           "custom_match_playlist_category_2_entry_1": "tropic_new_spawn_pm",
-          "custom_match_playlist_category_2_entry_2": "district_new_spawn_pm",
-          "custom_match_playlist_category_2_entry_3": "moon_new_spawn_pm",
-          "custom_match_playlist_category_3_count": "6",
-          "custom_match_playlist_category_3_name": "#PL_DAYZERO",
-          "custom_match_playlist_category_3_logo": "DAYZERO",
-          "custom_match_playlist_category_3_entry_0": "dayzero_canyonlands_pm",
-          "custom_match_playlist_category_3_entry_1": "dayzero_desertlands_pm",
-          "custom_match_playlist_category_3_entry_2": "dayzero_olympus_pm",
-          "custom_match_playlist_category_3_entry_3": "dayzero_tropics_pm",
-          "custom_match_playlist_category_3_entry_4": "dayzero_moon_pm",
-          "custom_match_playlist_category_3_entry_5": "dayzero_district_pm",
-          "custom_match_playlist_category_4_count": "7",
-          "custom_match_playlist_category_4_name": "#TDM_NAME",
+          "custom_match_playlist_category_2_entry_2": "moon_new_spawn_pm",
+          "custom_match_playlist_category_3_count": "8",
+          "custom_match_playlist_category_3_name": "#TDM_NAME",
+          "custom_match_playlist_category_3_logo": "freedm",
+          "custom_match_playlist_category_3_entry_0": "tdm_fragment_s_pm",
+          "custom_match_playlist_category_3_entry_1": "tdm_thunderdome_s_pm",
+          "custom_match_playlist_category_3_entry_2": "tdm_skull_s_pm",
+          "custom_match_playlist_category_3_entry_3": "tdm_zeus_s_pm",
+          "custom_match_playlist_category_3_entry_4": "tdm_core_s_pm",
+          "custom_match_playlist_category_3_entry_5": "tdm_monument_s_pm",
+          "custom_match_playlist_category_3_entry_6": "tdm_estates_s_pm",
+          "custom_match_playlist_category_3_entry_7": "tdm_habitat_s_pm",
+          "custom_match_playlist_category_4_count": "8",
+          "custom_match_playlist_category_4_name": "#GAME_MODE_GUNGAME",
           "custom_match_playlist_category_4_logo": "freedm",
-          "custom_match_playlist_category_4_entry_0": "tdm_fragment_s_pm",
-          "custom_match_playlist_category_4_entry_1": "tdm_thunderdome_s_pm",
-          "custom_match_playlist_category_4_entry_2": "tdm_skull_s_pm",
-          "custom_match_playlist_category_4_entry_3": "tdm_zeus_s_pm",
-          "custom_match_playlist_category_4_entry_4": "tdm_core_s_pm",
-          "custom_match_playlist_category_4_entry_5": "tdm_monument_s_pm",
-          "custom_match_playlist_category_4_entry_6": "tdm_estates_s_pm",
-          "custom_match_playlist_category_5_count": "8",
-          "custom_match_playlist_category_5_name": "#GAME_MODE_GUNGAME",
-          "custom_match_playlist_category_5_logo": "freedm",
-          "custom_match_playlist_category_5_entry_0": "gg_fragment_s_pm",
-          "custom_match_playlist_category_5_entry_1": "gg_thunderdome_s_pm",
-          "custom_match_playlist_category_5_entry_2": "gg_skull_s_pm",
-          "custom_match_playlist_category_5_entry_3": "gg_pylon_s_pm",
-          "custom_match_playlist_category_5_entry_4": "gg_zeus_s_pm",
-          "custom_match_playlist_category_5_entry_5": "gg_core_s_pm",
-          "custom_match_playlist_category_5_entry_6": "gg_monument_s_pm",
-          "custom_match_playlist_category_5_entry_7": "gg_estates_s_pm",
-          "custom_match_playlist_category_6_count": "6",
-          "custom_match_playlist_category_6_name": "#CONTROL_NAME",
-          "custom_match_playlist_category_6_logo": "CONTROL",
-          "custom_match_playlist_category_6_entry_0": "control_barometer_s_pm",
-          "custom_match_playlist_category_6_entry_1": "control_siphon_s_pm",
-          "custom_match_playlist_category_6_entry_2": "control_thunderdome_s_pm",
-          "custom_match_playlist_category_6_entry_3": "control_production_s_pm",
-          "custom_match_playlist_category_6_entry_4": "control_labs_s_pm",
-          "custom_match_playlist_category_6_entry_5": "control_caustic_s_pm",
-          "custom_match_playlist_category_7_count": "7",
-          "custom_match_playlist_category_7_name": "#BTDM_NAME",
-          "custom_match_playlist_category_7_logo": "BIGTDM",
-          "custom_match_playlist_category_7_entry_0": "btdm_fragment_s_pm",
-          "custom_match_playlist_category_7_entry_1": "btdm_thunderdome_s_pm",
-          "custom_match_playlist_category_7_entry_2": "btdm_skull_s_pm",
-          "custom_match_playlist_category_7_entry_3": "btdm_zeus_s_pm",
-          "custom_match_playlist_category_7_entry_4": "btdm_core_s_pm",
-          "custom_match_playlist_category_7_entry_5": "btdm_monument_s_pm",
-          "custom_match_playlist_category_7_entry_6": "btdm_estates_s_pm",
-          "custom_match_playlist_category_8_count": "6",
-          "custom_match_playlist_category_8_name": "#FREEDM_LOCKDOWN_MODE",
-          "custom_match_playlist_category_8_logo": "FREEDM",
-          "custom_match_playlist_category_8_entry_0": "tr_hunt_the_core_s_pm",
-          "custom_match_playlist_category_8_entry_1": "tr_hunt_amps_s_pm",
-          "custom_match_playlist_category_8_entry_2": "tr_hunt_monument_s_pm",
-          "custom_match_playlist_category_8_entry_3": "tr_hunt_skull_s_pm",
-          "custom_match_playlist_category_8_entry_4": "tr_hunt_estates_s_pm",
-          "custom_match_playlist_category_8_entry_5": "tr_hunt_thunderdome_s_pm",
-          "custom_match_playlist_category_9_count": "6",
-          "custom_match_playlist_category_9_name": "#PL_DAYZERO",
-          "custom_match_playlist_category_9_logo": "DAYZERO",
-          "custom_match_playlist_category_9_entry_0": "sm_dayzero_canyonlands_pm",
-          "custom_match_playlist_category_9_entry_1": "sm_dayzero_district_pm",
-          "custom_match_playlist_category_9_entry_2": "sm_dayzero_moon_pm",
-          "custom_match_playlist_category_9_entry_3": "sm_dayzero_desertlands_pm",
-          "custom_match_playlist_category_9_entry_4": "sm_dayzero_tropics_pm",
-          "custom_match_playlist_category_9_entry_5": "sm_dayzero_olympus_pm",
+          "custom_match_playlist_category_4_entry_0": "gg_fragment_s_pm",
+          "custom_match_playlist_category_4_entry_1": "gg_thunderdome_s_pm",
+          "custom_match_playlist_category_4_entry_2": "gg_skull_s_pm",
+          "custom_match_playlist_category_4_entry_3": "gg_zeus_s_pm",
+          "custom_match_playlist_category_4_entry_4": "gg_pylon_s_pm",
+          "custom_match_playlist_category_4_entry_5": "gg_core_s_pm",
+          "custom_match_playlist_category_4_entry_6": "gg_monument_s_pm",
+          "custom_match_playlist_category_4_entry_7": "gg_estates_s_pm",
+          "custom_match_playlist_category_5_count": "5",
+          "custom_match_playlist_category_5_name": "#CONTROL_NAME",
+          "custom_match_playlist_category_5_logo": "CONTROL",
+          "custom_match_playlist_category_5_entry_0": "control_barometer_s_pm",
+          "custom_match_playlist_category_5_entry_1": "control_siphon_s_pm",
+          "custom_match_playlist_category_5_entry_2": "control_thunderdome_s_pm",
+          "custom_match_playlist_category_5_entry_3": "control_production_s_pm",
+          "custom_match_playlist_category_5_entry_4": "control_labs_s_pm",
+          "custom_match_playlist_category_6_count": "8",
+          "custom_match_playlist_category_6_name": "#BTDM_NAME",
+          "custom_match_playlist_category_6_logo": "BIGTDM",
+          "custom_match_playlist_category_6_entry_0": "btdm_fragment_s_pm",
+          "custom_match_playlist_category_6_entry_1": "btdm_thunderdome_s_pm",
+          "custom_match_playlist_category_6_entry_2": "btdm_skull_s_pm",
+          "custom_match_playlist_category_6_entry_3": "btdm_zeus_s_pm",
+          "custom_match_playlist_category_6_entry_4": "btdm_core_s_pm",
+          "custom_match_playlist_category_6_entry_5": "btdm_monument_s_pm",
+          "custom_match_playlist_category_6_entry_6": "btdm_estates_s_pm",
+          "custom_match_playlist_category_6_entry_7": "btdm_habitat_s_pm",
           "custom_match_scoreboard_test": "1",
-          "progboost_ver": "23100",
-          "progboost_numEvents": "1",
-          "progboost_typeId_0": "mythic_challenge_progress_1_5x",
-          "progboost_eventId_0": "mythicboost_23_1_ce01_1_5x",
-          "progboost_startDate_0": "2025-01-21 10:00:00 -08:00",
-          "progboost_endDate_0": "2025-02-04 10:00:00 -08:00"
+          "progboost_ver": "24000",
+          "progboost_numEvents": "2",
+          "progboost_typeId_0": "accxp_global_mult_2x",
+          "progboost_eventId_0": "accxp_s24me01_1_5x",
+          "progboost_effects_0": "ACCXP_GLOBAL:1.5",
+          "progboost_startDate_0": "2025-02-11 10:00:00 -08:00",
+          "progboost_endDate_0": "2025-02-25 10:00:00 -08:00",
+          "progboost_typeId_1": "bpstar_daily_mult_2x",
+          "progboost_eventId_1": "bpstar_daily_mult_2x_s24me01",
+          "progboost_startDate_1": "2025-02-11 10:00:00 -08:00",
+          "progboost_endDate_1": "2025-02-25 10:00:00 -08:00"
         },
         "maps": {}
       },
@@ -266,8 +238,7 @@
           "simplifiedringlethality_ringouttime": "330.0",
           "simplifiedringlethality_warningtime": "270.0",
           "placement_popup": "1",
-          "lootbin_reset_enabled": "1",
-          "ap_characters_allowed": "character_fuse character_bangalore character_bloodhound character_wraith character_octane character_seer character_vantage character_gibralter character_conduit character_lifeline"
+          "lootbin_reset_enabled": "1"
         }
       },
       "control": {
@@ -282,12 +253,13 @@
           "scorelimit": "1000",
           "control_min_held_zones_to_score": "0",
           "control_is_min_objectives_rule_winners_only": "1",
-          "death_screen_default_tab": "2",
+          "death_screen_default_tab": "1",
           "spectator_enabled": "0",
           "maps_use_preprocessed_data": "0",
           "loot_standard_survival_enabled": "0",
           "survival_loot_enabled": "0",
           "survival_block_lootbin_creation": "1",
+          "does_mode_require_map_setup_signal_wait": "1",
           "loot_hotzone_enabled": "0",
           "drop_loot_on_death": "0",
           "control_drop_loot_on_death": "1",
@@ -330,6 +302,9 @@
           "is_using_gamemode_enemy_highlights": "0",
           "is_using_gamemode_enemy_vehicle_highlights": "0",
           "is_using_gamemode_friendly_vehicle_highlights": "1",
+          "evo_xp_enabled": "0",
+          "passive_upgrade_use_personal_obituary_notifications": "0",
+          "passive_upgrade_core_enabled": "0",
           "survival_respawn_style": "CUSTOM_RESPAWN",
           "survey_beacons_enabled": "0",
           "max_alliances": "2",
@@ -394,6 +369,7 @@
           "character_reselect_enabled": "1",
           "bleedout_enabled": "0",
           "infinite_heal_items": "1",
+          "passive_upgrade_core_enabled": "0",
           "freedm_drop_loot_on_death": "1",
           "freedm_dropped_loot_persist_time": "60",
           "freedm_dropped_loot_cleanup_scan_period": "5",
@@ -413,12 +389,14 @@
           "valk_ult_up_distance": "1800",
           "trackingvision_cleanup_pois_ondeath": "1",
           "poi_lifetime": "30.0",
-          "victory_screen_default_tab": "2",
-          "death_screen_default_tab": "2",
+          "victory_screen_default_tab": "1",
+          "death_screen_default_tab": "1",
           "fullmap_enabled": "1",
           "disable_minimap_labels": "1",
           "compass_flat_enabled": "0",
           "killreplay_enabled": "1",
+          "evo_xp_enabled": "0",
+          "passive_upgrade_use_personal_obituary_notifications": "0",
           "survival_enable_gladiator_intros": "1",
           "character_select_time_max": "5",
           "character_select_time_min": "5",
@@ -562,7 +540,7 @@
           "loot_hotzone_plane_path_pool_size": "10",
           "killreplay_enabled": "1",
           "snapshot_diffs_enabled": "1",
-          "death_screen_default_tab": "1",
+          "death_screen_default_tab": "4",
           "is_elimination_based": "0",
           "survival_respawn_style": "spawn_group_skydive",
           "respawns": "1",
@@ -639,7 +617,9 @@
           "num_squads_in_staging": "10",
           "pin_match_type": "duo",
           "max_nofill_players": "6",
-          "allow_prestige_badges": "1"
+          "allow_prestige_badges": "1",
+          "use_prematch_overview": "1",
+          "use_dynamic_squadsummary_stats": "1"
         }
       },
       "trios_defaults": {
@@ -650,7 +630,9 @@
           "abbreviation": "#PL_TRIO",
           "pin_match_type": "survival",
           "max_nofill_players": "6",
-          "allow_prestige_badges": "1"
+          "allow_prestige_badges": "1",
+          "use_prematch_overview": "1",
+          "use_dynamic_squadsummary_stats": "1"
         }
       },
       "quads_defaults": {
@@ -674,7 +656,6 @@
           "loot_hotzone_dist_from_plane_path": "5000.0",
           "loot_hotzone_plane_path_frac": "0.5",
           "loot_hotzone_plane_path_pool_size": "10",
-          "loot_group_overrides": "\r\n                Weapon_Low:Weapon_Low_Quads\r\n                Weapon_Medium:Weapon_Medium_Quads\r\n                Weapon_High:Weapon_High_Quads",
           "explosive_hold_rack_loot_group": "blue_kitted_weapons_qm",
           "loot_rollers_num_loot_to_spawn": "4",
           "loot_distribution_override_Zone_Low": "Health_Large:5, Attachment_Low:17, blank:10",
@@ -721,9 +702,10 @@
           "allow_prestige_badges": "1",
           "enable_match_end_scoreboard": "0",
           "scoreboard_show_ranked_rank": "1",
-          "use_prematch_overview": "1",
           "show_skydive_announce_ranked_rumble": "1",
-          "announce_desc": "#SURVIVAL_RANKEDRUMBLE_SUBTEXT"
+          "announce_desc": "#SURVIVAL_RANKEDRUMBLE_SUBTEXT",
+          "use_prematch_overview": "1",
+          "max_nofill_players": "0"
         }
       },
       "mode_control_defaults": {
@@ -988,13 +970,14 @@
         "vars": {
           "map_name": "#MP_RR_ARENA_HABITAT",
           "image": "tdm_habitat",
+          "panel_image": "tdm_habitat",
           "map_location": "fdm_arena_habitat",
           "fullmapCustomZoomFactor": "1.25"
         },
         "gamemodes": {
           "freedm": {
             "maps": {
-              "mp_rr_arena_habitat": "1"
+              "mp_rr_arena_habitat_landscape": "1"
             }
           }
         }
@@ -1531,6 +1514,8 @@
           "wildlife_ai_enabled": "0",
           "bloodhound_tt_enabled": "0",
           "hover_vehicles_enabled": "0",
+          "tutorial_modals_enabled": "1",
+          "skywriting_round_number_fadeout": "2",
           "deathfield_start_positions": "use_cull_circle_replicated",
           "deathfield_final_spl_radius_var": "deathfield_radius_2",
           "playlist_ring_tuning_override": "survival_ring_bot_playground",
@@ -1567,8 +1552,7 @@
           "cm_public_min_players": "30",
           "origin_disconnect_on_error": "0",
           "matchmake_from_match": "0",
-          "match_jip": "0",
-          "visible": "1"
+          "match_jip": "0"
         }
       },
       "custom_matches_defaults_small": {
@@ -1584,8 +1568,7 @@
           "cm_public_min_players": "6",
           "origin_disconnect_on_error": "0",
           "matchmake_from_match": "0",
-          "match_jip": "0",
-          "visible": "1"
+          "match_jip": "0"
         }
       },
       "custom_matches_duo_defaults": {
@@ -1599,7 +1582,7 @@
       "tournament_matches_defaults": {
         "vars": {
           "holosprays_enabled": "0",
-          "survival_disabled_loot": "mp_ability_void_ring incapshield_pickup_lv4_selfrevive",
+          "survival_disabled_loot": "mp_ability_void_ring",
           "crafting_pickup_grace_period": "0",
           "disable_skydive_emotes_postdrop": "1",
           "survival_enable_gladiator_intros": "0",
@@ -1625,18 +1608,6 @@
           "requires_special_access": "1"
         }
       },
-      "showmatch_algs": {
-        "vars": {
-          "cm_hidden_playlist": "1",
-          "playlist_ring_tuning_override": "show_match_algs_japan",
-          "max_players": "24",
-          "max_teams": "24",
-          "deathfield_start_enabled": "1",
-          "sur_circle_start_paused": "1",
-          "dropship_bounds_clamp_to_ring": "1",
-          "deathfield_starts_after_ship_flyout": "0"
-        }
-      },
       "private_match_new_spawn_defaults": {
         "vars": {
           "private_match": "1",
@@ -1649,7 +1620,7 @@
           "cm_public_min_players": "30",
           "origin_disconnect_on_error": "0",
           "holosprays_enabled": "0",
-          "survival_disabled_loot": "mp_ability_void_ring incapshield_pickup_lv4_selfrevive",
+          "survival_disabled_loot": "mp_ability_void_ring",
           "crafting_pickup_grace_period": "0",
           "disable_skydive_emotes_postdrop": "1",
           "survival_enable_gladiator_intros": "0",
@@ -1657,7 +1628,6 @@
           "match_pause_enabled": "1",
           "matchmake_from_match": "0",
           "show_observer_hud_hints": "0",
-          "visible": "1",
           "loot_hotzone_plane_path_frac": "0",
           "jump_from_plane_enabled": "0",
           "forced_spawn_enabled": "1",
@@ -1667,17 +1637,6 @@
           "forced_spawn_show_enemy_start_pings": "1",
           "forced_spawn_enemy_ping_display_time": "15",
           "passive_upgrade_core_evo_harvester_activation_delay": "80"
-        }
-      },
-      "competitive_tuning_defaults": {
-        "vars": {
-          "passive_upgrade_core_prevent_revivefarming_exploits": "1",
-          "passive_upgrade_core_revive_farming_threshold": "5",
-          "passive_upgrade_core_revive_value_reduction": "25",
-          "passive_upgrade_core_revive_minimum_xp": "0",
-          "SAID01884230856": "hide",
-          "SAID00796159755": "hide",
-          "SAID00960673380": "hide"
         }
       },
       "battle_rush_defaults": {
@@ -1702,8 +1661,8 @@
           "show_skydive_announce": "1",
           "announce_desc": "#BATTLE_RUSH_DESC",
           "matchmake_from_match": "1",
-          "crafting_enabled": "1",
-          "crafting_dispensers_enabled": "1",
+          "crafting_enabled": "0",
+          "crafting_dispensers_enabled": "0",
           "passive_upgrade_core_enabled": "1",
           "passive_upgrade_core_xp_thresholds": "400 850 1400",
           "passive_upgrade_core_use_shortened_tree": "1",
@@ -1788,6 +1747,105 @@
           "heatshield_dmgTickPercent_ring5": "1.00"
         }
       },
+      "strikeout_defaults": {
+        "vars": {
+          "is_gamemode_strikeout": "1",
+          "strikeout_ammo_on_kill_enabled": "1",
+          "strikeout_ammo_on_kill_multiplier": "1.0",
+          "strikeout_ammo_on_kill_spawns": "4",
+          "strikeout_respawn_disable_deathstage_close": "5",
+          "strikeout_announcement_duration": "7.0",
+          "deathbox_duration": "60.0",
+          "invulnerable_bleedout_transparency_amount": "140",
+          "loot_hotzone_count": "4",
+          "allow_prestige_badges": "0",
+          "is_limited_mode": "1",
+          "show_ltm_about_button": "1",
+          "show_ltm_about_button_is_takeover": "0",
+          "pin_match_type": "threestrikes",
+          "stats_match_type": "threestrikes",
+          "should_tweak_dvs_for_gamemode": "1",
+          "emblem": "emblem_3strikes",
+          "ui_rules": "strikeout",
+          "image": "strikeout_olympus_mu2",
+          "max_nofill_players": "6",
+          "gamemode_logo": "LTM",
+          "name": "#STRIKEOUT_TITLE",
+          "description": "#STRIKEOUT_DESC",
+          "about_text": "#STRIKEOUT_DESC",
+          "show_skydive_announce": "1",
+          "announce_desc": "#SURVIVAL_STRIKEOUT_SUBTEXT",
+          "announce_emblem_left": "rui/hud/gametype_icons/ltm/threestrikes_ltm_logo",
+          "announce_emblem_right": "rui/hud/gametype_icons/ltm/threestrikes_ltm_logo",
+          "survival_disabled_loot": "incapshield_pickup_lv4_selfrevive",
+          "passive_upgrade_core_overrides": "character_lifeline:0:0:SAID02057969131:0",
+          "bleedout_death_prevention_enabled": "1",
+          "bleedout_downedplayers_invulnerable": "1",
+          "survival_respawn_style": "spawn_group_skydive",
+          "spawn_group_skydive_use_team_lives_pool": "1",
+          "respawn_cooldown": "9",
+          "respawns": "3",
+          "bleedout_can_force_bleedout_timeout": "1",
+          "bleedout_force_bleedout_time": "3.0",
+          "is_elimination_based": "0",
+          "should_give_character_loadout_on_survival_ship_skydive": "1",
+          "should_give_character_loadout_on_spawn_and_respawn": "0",
+          "reset_player_inventory_on_first_spawn": "0",
+          "reset_player_inventory_on_respawn": "0",
+          "freerespawns_feature_exists": "0",
+          "is_using_min_guaranteed_loadout": "1",
+          "min_guaranteed_loadout_replace_mythic_with_min": "1",
+          "min_guaranteed_weaponloadout_ring_0": "mp_weapon_semipistol_whiteset mp_weapon_shotgun_pistol_whiteset",
+          "min_guaranteed_weaponloadout_ring_1": "mp_weapon_alternator_smg_blueset mp_weapon_doubletake_blueset",
+          "min_guaranteed_weaponloadout_ring_2": "mp_weapon_volt_smg_blueset mp_weapon_g2_blueset",
+          "min_guaranteed_weaponloadout_ring_3": "mp_weapon_rspn101_purpleset mp_weapon_3030_purpleset",
+          "min_guaranteed_weaponloadout_ring_4": "mp_weapon_r97_purpleset mp_weapon_hemlok_purpleset",
+          "min_guaranteed_weaponloadout_ring_5": "mp_weapon_r97_gold mp_weapon_hemlok_gold",
+          "min_guaranteed_equipmentloadout_ring_0": "armor_pickup_lv1_evolving helmet_pickup_lv1 incapshield_pickup_lv1",
+          "min_guaranteed_equipmentloadout_ring_1": "armor_pickup_lv2_evolving helmet_pickup_lv2 incapshield_pickup_lv2 backpack_pickup_lv1",
+          "min_guaranteed_equipmentloadout_ring_2": "armor_pickup_lv2_evolving helmet_pickup_lv2 incapshield_pickup_lv2 backpack_pickup_lv2",
+          "min_guaranteed_equipmentloadout_ring_3": "armor_pickup_lv3_evolving helmet_pickup_lv3 incapshield_pickup_lv3 backpack_pickup_lv2 mp_ability_redeploy_balloon",
+          "min_guaranteed_equipmentloadout_ring_4": "armor_pickup_lv3_evolving helmet_pickup_lv3 incapshield_pickup_lv3 backpack_pickup_lv3 mp_ability_redeploy_balloon",
+          "min_guaranteed_equipmentloadout_ring_5": "armor_pickup_lv3_evolving helmet_pickup_lv3 incapshield_pickup_lv3 backpack_pickup_lv3 mp_ability_void_ring",
+          "min_guaranteed_consumableloadout_ring_0": "health_pickup_health_large:2 health_pickup_combo_large:2",
+          "min_guaranteed_consumableloadout_ring_1": "health_pickup_health_large:2 health_pickup_combo_large:2",
+          "min_guaranteed_consumableloadout_ring_2": "health_pickup_health_large:3 health_pickup_combo_large:3 mp_weapon_frag_grenade:1",
+          "min_guaranteed_consumableloadout_ring_3": "health_pickup_health_large:3 health_pickup_combo_large:3 health_pickup_combo_full:1 mp_weapon_frag_grenade:1",
+          "min_guaranteed_consumableloadout_ring_4": "health_pickup_health_large:4 health_pickup_combo_large:4 health_pickup_combo_full:1 mp_weapon_frag_grenade:1",
+          "min_guaranteed_consumableloadout_ring_5": "health_pickup_health_large:4 health_pickup_combo_large:4 health_pickup_combo_full:2 mp_weapon_frag_grenade:1",
+          "min_guaranteed_ammocount_ring_0": "2",
+          "min_guaranteed_ammocount_ring_1": "2",
+          "min_guaranteed_ammocount_ring_2": "3",
+          "min_guaranteed_ammocount_ring_3": "3",
+          "min_guaranteed_ammocount_ring_4": "3",
+          "min_guaranteed_ammocount_ring_5": "4",
+          "override_healing_values_on_revived": "1",
+          "override_healing_allows_health_loss": "0",
+          "percent_to_set_health_to_on_revived": "1.0",
+          "percent_to_set_shields_to_on_revived": "0.0",
+          "revive_time_override": "2.0",
+          "loot_distribution_override_POI_Ultra": "Backpack_3:15 Backpack_2:9 incapshield_pickup_lv4_selfrevive:0 Weapon_High:31 Health_High:20",
+          "loot_distribution_override_POI_OctaneTT": "backpack_pickup_lv3:1 backpack_pickup_lv2:2 armor_pickup_lv3_evolving:0 incapshield_pickup_lv4_selfrevive:0",
+          "loot_distribution_override_POI_HotZone_Item": "armor_pickup_lv3_evolving:5 helmet_pickup_lv3:5 backpack_pickup_lv3:5 incapshield_pickup_lv3:15 armor_pickup_lv4_all_fast:20 helmet_pickup_lv4_abilities:30 backpack_pickup_lv4_revive_boost:14 incapshield_pickup_lv4_selfrevive:0",
+          "loot_distribution_override_crate_jackpot_items": "armor_pickup_lv3_evolving:7 armor_pickup_lv4_all_fast:5 helmet_pickup_lv4_abilities:0 backpack_pickup_lv4_revive_boost:21 incapshield_pickup_lv4_selfrevive:0",
+          "loot_distribution_override_gold_items": "armor_pickup_lv4_all_fast:10 helmet_pickup_lv4_abilities:47 backpack_pickup_lv4_revive_boost:39 incapshield_pickup_lv4_selfrevive:0",
+          "loot_distribution_override_Incapshield_3": "incapshield_pickup_lv3:100 incapshield_pickup_lv4_selfrevive:0",
+          "loot_distribution_override_Vault_QM": "gold_kitted_weapons_qm:10 helmet_pickup_lv4_abilities:6 backpack_pickup_lv4_revive_boost:6 incapshield_pickup_lv4_selfrevive:0  mp_pickup_xp_cache_dynamic:2 incapshield_pickup_lv3:6",
+          "loot_distribution_override_gold_equipment_qm": "helmet_pickup_lv4_abilities:33 backpack_pickup_lv4_revive_boost:33 incapshield_pickup_lv4_selfrevive:0 incapshield_pickup_lv3:34",
+          "loot_distribution_override_Tick_Epic_Items": "Hopup_Gold:2 armor_pickup_lv3_evolving:8 armor_pickup_lv4_all_fast:1 helmet_pickup_lv3:8 helmet_pickup_lv4_abilities:1 backpack_pickup_lv3:8 backpack_pickup_lv4_revive_boost:1 incapshield_pickup_lv3:9 incapshield_pickup_lv4_selfrevive:0 health_pickup_combo_full:9 shotgun_bolt_l3:9 highcal_mag_l3:9 energy_mag_l3:9 sniper_mag_l3:6 stock_sniper_l3:9 stock_tactical_l3:9 barrel_stabilizer_l3:9 laser_sight_l3:9",
+          "loot_distribution_override_phaselockbox_contents_epic": "armor_pickup_lv3_evolving:6.5 armor_pickup_lv4_all_fast:1.5 helmet_pickup_lv3:6.5 helmet_pickup_lv4_abilities:2.25 backpack_pickup_lv3:.5 backpack_pickup_lv4_revive_boost:1.5 incapshield_pickup_lv3:9 incapshield_pickup_lv4_selfrevive:0 shotgun_bolt_l3:8.25 highcal_mag_l3:8.25 energy_mag_l3:8.25 sniper_mag_l3:8.25 stock_sniper_l3:8.25 stock_tactical_l3:8.25 laser_sight_l3:8.25 barrel_stabilizer_l3:8.25 gold_weapons:0.25",
+          "loot_distribution_override_phaselockbox_contents_legendary": "armor_pickup_lv4_all_fast:8 helmet_pickup_lv4_abilities:20 backpack_pickup_lv4_revive_boost:18 incapshield_pickup_lv4_selfrevive:0 optic_cq_threat:16 Hopup_Gold:16 bullets_mag_l4:8 highcal_mag_l4:8 energy_mag_l4:8 sniper_mag_l4:8 gold_weapons:4",
+          "loot_distribution_override_flyer_deathbox_all_gold": "gold_weapons:37.5 helmet_pickup_lv4_abilities:15 armor_pickup_lv4_all_fast:5 incapshield_pickup_lv4_selfrevive:0 backpack_pickup_lv4_revive_boost:10 optic_cq_threat:2.5 optic_sniper_threat:2.5 bullets_mag_l4:1.5 highcal_mag_l4:1.5 energy_mag_l4:1.5 sniper_mag_l4:1.5 Hopup_Gold:5",
+          "loot_distribution_override_data_knife_vault": "Hopup_Gold:5 armor_pickup_lv3_evolving:2 armor_pickup_lv4_all_fast:2 helmet_pickup_lv3:4 helmet_pickup_lv4_abilities:3 backpack_pickup_lv3:5 backpack_pickup_lv4_revive_boost:5 incapshield_pickup_lv3:6 incapshield_pickup_lv4_selfrevive:0 health_pickup_combo_full:3 shotgun_bolt_l3:3 bullets_mag_l3:3 highcal_mag_l3:3 sniper_mag_l3:3 stock_sniper_l3:3 stock_tactical_l3:4 laser_sight_l3:4 barrel_stabilizer_l3:4 mp_pickup_xp_cache_dynamic:2",
+          "loot_distribution_override_loot_roller_contents_epic": "armor_pickup_lv3_evolving:7 armor_pickup_lv4_all_fast:0.5 helmet_pickup_lv3:7 helmet_pickup_lv4_abilities:0.5 backpack_pickup_lv3:7.5 backpack_pickup_lv4_revive_boost:0.5 incapshield_pickup_lv3:7 incapshield_pickup_lv4_selfrevive:0 shotgun_bolt_l3:8 bullets_mag_l3:8 highcal_mag_l3:8 energy_mag_l3:8 sniper_mag_l3:6 stock_sniper_l3:5 stock_tactical_l3:9 laser_sight_l3:9 barrel_stabilizer_l3:9",
+          "loot_distribution_override_loot_roller_contents_legendary": "armor_pickup_lv4_all_fast:9 helmet_pickup_lv4_abilities:11 backpack_pickup_lv4_revive_boost:11 incapshield_pickup_lv4_selfrevive:0 optic_cq_threat:8 Hopup_Gold:8 bullets_mag_l4:9 highcal_mag_l4:9 energy_mag_l4:9 shotgun_bolt_l4:9 sniper_mag_l4:4 gold_weapons:2",
+          "loot_distribution_override_pathtt_loot_roller_contents_legendary": "incapshield_pickup_lv4_selfrevive:0 backpack_pickup_lv4_revive_boost:25 optic_sniper_threat:4 optic_cq_threat:8 bullets_mag_l4:5 highcal_mag_l4:5 energy_mag_l4:4 sniper_mag_l4:2 Hopup_Gold:15 helmet_pickup_lv4_abilities:20",
+          "loot_distribution_override_caustictt_loot": "gold_weapons:1 armor_pickup_lv3_evolving:4 armor_pickup_lv4_all_fast:1 helmet_pickup_lv3:4 helmet_pickup_lv4_abilities:1 backpack_pickup_lv3:4 backpack_pickup_lv4_revive_boost:1 incapshield_pickup_lv3:4 incapshield_pickup_lv4_selfrevive:0",
+          "loot_distribution_override_telephaser_loot_roller_contents_epic": "armor_pickup_lv3_evolving:6.5 armor_pickup_lv4_all_fast:0.75 helmet_pickup_lv3:6.5 helmet_pickup_lv4_abilities:2.25 backpack_pickup_lv3:6.5 backpack_pickup_lv4_revive_boost:1.5 incapshield_pickup_lv3:6.5 incapshield_pickup_lv4_selfrevive:0 Hopup_Purple:0 shotgun_bolt_l3:8.25 highcal_mag_l3:8.25 energy_mag_l3:8.25 sniper_mag_l3:6.5 stock_sniper_l3:8.25 stock_tactical_l3:8.25 laser_sight_l3:8.25 barrel_stabilizer_l3:8.25 mp_ability_void_ring:0.5 mp_ability_redeploy_balloon:0.5 gold_weapons:0.25",
+          "loot_distribution_override_telephaser_loot_roller_contents_legendary": "armor_pickup_lv4_all_fast:6 helmet_pickup_lv4_abilities:15 backpack_pickup_lv4_revive_boost:13 incapshield_pickup_lv4_selfrevive:0 optic_cq_threat:16 Hopup_Gold:16 bullets_mag_l4:10 highcal_mag_l4:10 energy_mag_l4:8 sniper_mag_l4:4 gold_weapons:1",
+          "loot_distribution_override_lifeline_upgrade_carepackage_item_1_door_1": "incapshield_pickup_lv4_selfrevive:0 helmet_pickup_lv4_abilities:1"
+        }
+      },
       "freespawns_defaults": {
         "vars": {
           "name": "#PL_FREERESPAWNS",
@@ -1827,252 +1885,199 @@
           "loot_distribution_override_Bloodhound_Jackpot_Items": "mp_pickup_xp_cache_dynamic:30"
         }
       },
-      "day_zero_defaults": {
+      "mythic_s24_event_default": {
         "vars": {
-          "variant": "day_zero",
-          "day_zero_weapons_enabled": "1",
           "show_ltm_about_button": "1",
-          "ui_rules": "survival_dayzero",
-          "panel_image": "survival_dayzero_canyonlands",
-          "emblem": "emblem_dayzero",
-          "gamemode_logo": "DAYZERO",
+          "show_ltm_about_button_is_takeover": "0",
+          "emblem": "generic",
+          "gamemode_logo": "LTM",
+          "ui_rules": "survival_mythic_s24",
+          "airdrop_mythic_s24_enabled": "1",
+          "airdrop_mythic_s24_map_feature": "1",
+          "mythic_s24_buff_crits_enabled": "1",
+          "mythic_s24_buff_ability_enabled": "1",
+          "mythic_s24_buff_thermite_enabled": "1",
+          "mythic_s24_buff_vampire_enabled": "1",
+          "mythic_s24_buff_healburst_enabled": "1",
+          "mythic_s24_remove_on_death": "0",
+          "airdrop_mythicS24_data_round_0": "3:15:1:mp_weapon_rspn101_mythicset_red:mp_weapon_rspn101_mythicset_yellow:mp_weapon_rspn101_mythicset_green 5:255:1:mp_weapon_rspn101_mythicset_red:mp_weapon_rspn101_mythicset_yellow:mp_weapon_rspn101_mythicset_green",
+          "airdrop_mythicS24_data_round_2": "1:10:1:mp_weapon_rspn101_mythicset_red:mp_weapon_rspn101_mythicset_yellow:mp_weapon_rspn101_mythicset_green"
+        }
+      },
+      "mystery_legends_base": {
+        "vars": {
+          "is_mystery_legends": "1",
+          "character_select_portraits_enabled": "0",
+          "character_select_assignment_enabled": "1",
+          "allow_duplicate_character_picks_in_team": "1",
+          "forced_select_gets_most_played": "0",
+          "random_character_on_spawn_enabled": "1",
+          "random_character_on_respawn_enabled": "1",
+          "give_player_upgrades_enabled": "1",
+          "name": "#GAMEMODE_MYSTERY_LEGENDS_THREE_STRIKES_TITLE",
+          "description": "#GAMEMODE_MYSTERY_LEGENDS_DESC",
+          "about_text": "#GAMEMODE_MYSTERY_LEGENDS_DESC",
+          "emblem": "emblem_mysterylegends",
+          "announce_desc": "#GAMEMODE_MYSTERY_LEGENDS_ANNOUNCE",
+          "announce_emblem_left": "rui/menu/gamemode_emblem/emblem_mysterylegends",
+          "announce_emblem_right": "rui/menu/gamemode_emblem/emblem_mysterylegends",
+          "pin_match_type": "threestrikes_mystery"
+        }
+      },
+      "kitted_weapons_defaults": {
+        "vars": {
+          "ui_slot": "ltm",
+          "show_ltm_about_button": "1",
+          "show_ltm_about_button_is_takeover": "0",
+          "emblem": "generic",
+          "gamemode_logo": "LTM",
+          "description": "#GAMEMODE_KITTED_WEAPONS_DESC",
+          "about_text": "#GAMEMODE_KITTED_WEAPONS_DESC",
+          "modeDescriptionString": "#GAMEMODE_KITTED_WEAPONS_DESC",
           "show_skydive_announce": "1",
-          "announce_emblem_left": "rui/hud/gametype_icons/ltm/dayzero/dayzero_ltm_logo",
-          "announce_emblem_right": "rui/hud/gametype_icons/ltm/dayzero/dayzero_ltm_logo",
-          "announce_desc": "#DAYZERO_DESC",
-          "name": "#PL_DAYZERO",
-          "description": "#DAYZERO_DESC",
-          "abbreviation": "#PL_DAYZERO",
-          "about_text": "#DAYZERO_ABOUT",
-          "pin_match_type": "survival_dayzero",
-          "stats_match_type": "survival",
-          "playlist_ring_tuning_override": "survival_ring_dayzero",
-          "has_br_respawn_witharmor": "0",
-          "has_br_respawn_withweapons": "0",
-          "br_respawn_consumables": "",
-          "br_respawn_equipment": "",
-          "upgrade_core_survival_disabled_loot": "",
-          "passive_upgrade_armor_tied_to_upgrades": "0",
-          "evo_harvesters_enabled": "0",
-          "passive_upgrade_core_enabled": "0",
-          "lobby_characters_upgrade_tree_enabled": "0",
-          "helmet_lv1": "0.7",
-          "helmet_lv2": "0.6",
-          "helmet_lv3": "0.5",
-          "helmet_lv4": "0.5",
-          "freerespawns_feature_exists": "0",
-          "crafting_enabled": "0",
-          "crafting_dispensers_enabled": "0",
-          "character_damage_scale_override": "1.0",
-          "perk_enemy_beacon_use_new_model": "0",
-          "use_seperate_controller_perk_beacon_scan_prop": "0",
-          "disable_perk_beacon_scan_enemy": "1",
-          "disable_perk_beacon_scan": "1",
-          "bangalore_ult_explosion_delay": "8.0",
-          "lifeline_res_slow_disabled": "0",
-          "heal_drone_deathfield_max_ticks": "-1",
-          "phase_tunnel_deathfield_max_ticks": "-1",
-          "gamemovement_skip_speed_retain_override": "260",
-          "caustic_enemies_can_pre_destroy_traps": "0",
-          "enable_caustic_trap_health": "0",
-          "starter_kit_enabled": "0",
-          "should_give_lvl0_evo_armor": "0",
-          "default_loadout_weapons": "",
-          "default_loadout_equipment": "",
-          "loot_group_overrides": "\r\n                Incapshield_Low:Incapshield_Low_DZ\r\n                Incapshield_Medium:Incapshield_Medium_DZ\r\n                Incapshield_High:Incapshield_High_DZ\r\n                Incapshield_High_nogold:Incapshield_High_nogold_DZ\r\n                Armor_Low:Armor_NoEvo_Low\r\n                Armor_Medium:Armor_NoEvo_Medium\r\n                Armor_High:Armor_NoEvo_High\r\n                Armor_High_nogold:Armor_NoEvo_High_nogold\r\n                Helmet_Low:Helmet_Low_DZ\r\n                Helmet_Medium:Helmet_Medium_DZ\r\n                Helmet_High:Helmet_High_DZ\r\n                Helmet_High_nogold:Helmet_High_nogold_DZ\r\n                armor_pickup_lv1_evolving:armor_pickup_lv1\r\n                armor_pickup_lv2_evolving:armor_pickup_lv2\r\n                armor_pickup_lv3_evolving:armor_pickup_lv3\r\n                incapshield_pickup_lv4_selfrevive:incapshield_pickup_lv4_selfrevive_dayzero\r\n                backpack_pickup_lv4_revive_boost:backpack_pickup_lv4_revive_boost_dayzero\r\n                armor_pickup_lv4_all_fast:armor_pickup_lv4_all_fast_dayzero\r\n                gold_weapons:gold_weapons_DZ\r\n                gold_items:gold_items_DZ\r\n                Weapon_UltraLow:Weapon_Low_DZ\r\n                Weapon_Low:Weapon_Low_DZ\r\n                Weapon_Medium:Weapon_Medium_DZ\r\n                Weapon_High:Weapon_High_DZ\r\n                Attachment_Low:Attachment_Low_DZ\r\n                Attachment_Medium:Attachment_Medium_DZ\r\n                Attachment_High:Attachment_High_DZ\r\n                ammo:ammo_DZ\r\n                crate_weapons_earlygame:crate_weapons_DZ\r\n                crate_weapons_midgame:crate_weapons_DZ\r\n                crate_weapons_lategame:crate_weapons_DZ\r\n                Hopup_Gold:Hopup_Gold_DZ\r\n                POI_sniper:POI_sniper_DZ\r\n                sniper_rifles:sniper_rifles_DZ\r\n                sniper_attachments:sniper_attachments_DZ",
-          "lootbin_reset_enabled": "0",
-          "loot_distribution_override_Zone_Low": "blank:10 Armor_Low:7 Incapshield_Low:4 Helmet_Low:6 Ammo:10 Weapon_Low:18 Health_Small:0 Health_Large:0 Health_Low:13",
-          "loot_distribution_override_Zone_Medium": "blank:10 Armor_Medium:7 Incapshield_Medium:4 Helmet_Medium:6 Ammo:10 Weapon_Medium:18 Health_Small:0 Health_Large:0 Health_Medium:13",
-          "loot_distribution_override_Zone_High": "blank:10 Armor_High:13 Incapshield_High:4 Helmet_High:6 Ammo:10 Weapon_High:18 Health_Small:0 Health_Large:0 Health_High:13",
-          "loot_distribution_override_Zone_HotZone": "blank:10 Armor_High:7 Incapshield_High:4 Helmet_High:6 Ammo:7 Weapon_Medium:27 Health_High:13 ordnance:6 Attachment_High:16",
-          "loot_distribution_override_Zone_Hovertank_Random": "ammo:5 Health_High:20 ordnance:20 Attachment_High:20 Armor_High:5 Helmet_High:10 Backpack_High:10 Incapshield_High:10",
-          "loot_distribution_override_ordnance": "health_pickup_ultimate:10",
-          "loot_distribution_override_loottick_static_01": "Survival_Items:0 Tick_Epic_Items:0 health_pickup_combo_large:30 health_pickup_health_large:30 Zone_Medium:40",
-          "loot_distribution_override_loottick_static_02": "Tick_Epic_Items:97.5 gold_weapons:2.5",
-          "loot_distribution_override_loottick_static_03": "Tick_Legendary_Items:0 Tick_Epic_Items:10 Zone_High:90",
-          "loot_distribution_override_Tick_Epic_Items": "Hopup_Gold:8 armor_pickup_lv3_evolving:8 armor_pickup_lv4_all_fast:1 helmet_pickup_lv4_abilities:1 backpack_pickup_lv4_revive_boost:1 incapshield_pickup_lv4_selfrevive:1 health_pickup_combo_full:9",
-          "loot_distribution_override_Bldg_Hovertank": "gold_weapons_DZ:1 gold_items_DZ:1 barrel_stabilizer_l4_flash_hider:1",
-          "loot_distribution_override_top_tier_inventory": "optic_cq_threat:10 barrel_stabilizer_l4_flash_hider:1",
-          "survival_disabled_loot": "mp_ability_void_ring mp_ability_mobile_respawn_beacon mp_ability_redeploy_balloon bullets_mag_l4 highcal_mag_l4 energy_mag_l1 energy_mag_l2 energy_mag_l3 energy_mag_l4 shotgun_bolt_l4 sniper_mag_l4 sniper_mag_l3 sniper_mag_l2 sniper_mag_l1 laser_sight_l1 laser_sight_l2 laser_sight_l3",
-          "lootbin_weapon_assist_delay": "-1",
-          "smoke_blocks_threat_vision": "0",
-          "bangalore_smoke_highlight": "0",
-          "loot_distribution_override_care_package_1_C": "gold_weapons:0 crate_weapons_earlygame:0 crate_weapons_DZ:100",
-          "loot_distribution_override_care_package_2_C": "gold_weapons:0 crate_weapons_midgame:0 crate_weapons_DZ:100",
-          "loot_distribution_override_care_package_3_C": "gold_weapons:0 crate_weapons_lategame:0 crate_weapons_DZ:100",
-          "loot_distribution_override_care_package_1_L": "mp_pickup_xp_cache_dynamic:0 top_tier_health:100",
-          "loot_distribution_override_care_package_2_L": "mp_pickup_xp_cache_dynamic:0",
-          "loot_distribution_override_care_package_3_L": "mp_pickup_xp_cache_dynamic:0",
-          "loot_distribution_override_lifeline_tt_medbay_loot": "armor_pickup_lv3_evolving:0 armor_pickup_lv3:1",
-          "loot_distribution_override_lifeline_upgrade_carepackage_door_2": "mp_pickup_xp_cache_dynamic:0 health_pickup_health_large:100",
-          "loot_distribution_override_lifeline_upgrade_carepackage_item_2_door_1": "mp_ability_mobile_respawn_beacon:0 shield_battery:100",
-          "lifeline_spawns_evolving_armor": "0",
-          "lifeline_shield_revive_enabled": "1",
-          "passive_medic_handsfree_revive": "0",
-          "lifeline_rework_enabled": "0",
-          "boost_ordnance_stack_size": "1",
-          "bullet_dt_override_inventorySlotCount": "80",
-          "bullet_dt_override_countPerDrop": "20",
-          "highcal_dt_override_inventorySlotCount": "80",
-          "highcal_dt_override_countPerDrop": "20",
-          "special_dt_override_inventorySlotCount": "60",
-          "special_dt_override_countPerDrop": "20",
-          "shotgun_dt_override_inventorySlotCount": "64",
-          "shotgun_dt_override_countPerDrop": "8",
-          "health_pickup_combo_full_dt_override_inventorySlotCount": "1",
-          "health_pickup_combo_large_dt_override_inventorySlotCount": "3",
-          "health_pickup_combo_small_dt_override_inventorySlotCount": "6",
-          "health_pickup_health_large_dt_override_inventorySlotCount": "3",
-          "health_pickup_health_small_dt_override_inventorySlotCount": "6",
-          "survival_finisher_recover_shield": "0",
-          "inventory_update_consolidated_slot_enabled": "0",
-          "inventory_update_autoloot_ammo_enabled": "0",
-          "inventory_update_autoloot_health_enabled": "0",
-          "inventory_update_autoloot_ult_accel_enabled": "0",
-          "perks_s22_update_enabled": "0",
-          "perks_s23_update_enabled": "0",
-          "perk_mrb_deathbox_is_enabled": "0",
-          "hide_class_perks_ui": "1",
-          "legend_select_all_one_group": "1",
-          "perk_extra_firepower_additional_ammo_bullet": "0",
-          "perk_extra_firepower_additional_ammo_highcal": "0",
-          "perk_extra_firepower_additional_ammo_special": "0",
-          "perk_extra_firepower_additional_ammo_shotgun": "0",
-          "disable_perk_banner_crafting": "1",
-          "perk_expired_banner_recovery_enabled": "0",
-          "teammates_can_craft_support_banners_enabled": "0",
-          "support_can_craft_non_expired_banners": "0",
-          "perks_all_classes_can_craft_banners": "0",
-          "disable_perk_care_package_insight": "1",
-          "use_discrete_support_bins": "0",
-          "disable_perk_munitions_box": "1",
-          "randomize_perk_bins_from_existing_bins": "0",
-          "enable_perk_bins": "0",
-          "ult_accel_move_speed_reduction": "0.4",
-          "wraith_portal_lifeline": "60",
-          "wraith_portal_max_distance": "4098",
-          "wraith_portal_min_travel_time": "0.3",
-          "wraith_portal_max_travel_time": "2.0",
-          "wraith_void_vision_enabled": "0",
-          "phase_tunnel_incremental_speedboost": "0",
-          "mirage_passive_revive_cloak_speed_boost": "0",
-          "mirage_passive_cloak_on_heal": "0",
-          "character_gibraltar": "force_unlock_for_special_event",
-          "character_lifeline": "force_unlock_for_special_event",
-          "character_caustic": "force_unlock_for_special_event",
-          "character_bangalore": "force_unlock_for_special_event",
-          "character_pathfinder": "force_unlock_for_special_event",
-          "character_wraith": "force_unlock_for_special_event",
-          "character_mirage": "force_unlock_for_special_event",
-          "character_wattson": "force_unlock_for_special_event",
-          "character_octane": "force_unlock_for_special_event",
-          "character_bloodhound": "force_unlock_for_special_event",
-          "character_alter": "hide",
-          "character_ash": "hide",
-          "character_ballistic": "hide",
-          "character_catalyst": "hide",
-          "character_conduit": "hide",
-          "character_fuse": "hide",
-          "character_horizon": "hide",
-          "character_loba": "hide",
-          "character_madmaggie": "hide",
-          "character_newcastle": "hide",
-          "character_rampart": "hide",
-          "character_seer": "hide",
-          "character_valkyrie": "hide",
-          "character_vantage": "hide",
-          "character_revenant": "hide",
-          "character_crypto": "hide",
-          "all_characters_unlocked": "1",
-          "simplifiedringlethality_enabled": "0",
-          "deathfield_enforced_ring_lethality_enabled": "0",
-          "carepackage_allow_dead_teammate_mrb": "0",
-          "passive_always_on_highlight_enabled": "1",
-          "passive_always_on_highlight_low_intensity": "2.3",
-          "passive_always_on_highlight_mid_intensity": "3.0",
-          "passive_always_on_highlight_off_intensity": "1.0",
-          "hud_hide_enemyHPBar": "1",
-          "zipline_cooldown_enabled": "0",
-          "wattson_ult_accel_extra": "0",
-          "tesla_trap_damage_override": "10",
-          "tesla_trap_range_override": "198",
-          "tesla_trap_damage_interval": "0.5",
-          "tesla_trap_emp_duration": "1.5",
-          "tesla_trap_reactivate_delay": "1.0",
-          "wattson_trophy_max_count": "3",
-          "wattson_trophy_shieldPoolAmount": "999999",
-          "wattson_trophy_shieldRegenTick": "0.5",
-          "wattson_trophy_shieldRegenDelayOnDamage": "0",
-          "octane_health_cost": "10",
-          "stim_severity": "0.2",
-          "jumppad_vert_override_ducked_scalar": "1",
-          "octane_jump_pad_give_double_jump": "0",
-          "octane_health_regen_amount": "0.5"
+          "announce_desc": "#GAMEMODE_KITTED_WEAPONS_ANNOUNCE",
+          "ui_rules": "kitted_weapons_s24",
+          "loot_group_overrides": "\r\n                gold_weapons:Weapon_Power_High\r\n                Weapon_UltraLow:Weapon_Power_Loot\r\n                Weapon_Low:Weapon_Power_Loot\r\n                Weapon_Medium:Weapon_Power_Loot\r\n                Weapon_High:Weapon_Power_Loot\r\n                POI_HotZone_Weapon:Weapon_Power_High\r\n                crate_weapons_earlygame:Weapon_Power_High\r\n                crate_weapons_midgame:Weapon_Power_High\r\n                crate_weapons_lategame:Weapon_Power_High\r\n                sniper_rifles:Weapon_Power_Loot\r\n                POI_HotZone_Attachments:POI_HotZone_Attachments_Kitted\r\n                Attachment_Low:Attachment_QM\r\n                Attachment_Medium:Attachment_QM\r\n                Attachment_High:Attachment_QM\r\n                Attachment_Ultra_High:Attachment_QM\r\n                Attachment_L1:Attachment_L1_Kitted\r\n                Attachment_L2:Attachment_L2_Kitted\r\n                Attachment_L3:Attachment_L3_Kitted\r\n                Attachment_L4:Attachment_L4_Kitted\r\n                Hopup_Gold:Attachment_QM\r\n                secret_bin_attachments:Attachment_QM\r\n                top_tier_inventory:top_tier_inventory_Kitted\r\n                loot_roller_contents_common:Health_High\r\n                loot_roller_contents_rare:Weapon_Power\r\n                loot_roller_contents_epic:Weapon_Power_High\r\n                loot_roller_contents_legendary:Weapon_Power_High\r\n                marvin_contents_epic:Weapon_Power_High\r\n                telephaser_loot_roller_contents_common:Health_High\r\n                telephaser_loot_roller_contents_rare:Weapon_Power\r\n                telephaser_loot_roller_contents_epic:Weapon_Power_High\r\n                telephaser_loot_roller_contents_legendary:Weapon_Power_High\r\n                pathtt_loot_roller_contents_common:Health_High\r\n                pathtt_loot_roller_contents_rare:Weapon_Power\r\n                pathtt_loot_roller_contents_epic:Weapon_Power_High\r\n                pathtt_loot_roller_contents_legendary:Weapon_Power_High\r\n                loottick_static_01:loottick_static_01_qm\r\n                loottick_static_02:loottick_static_02_qm\r\n                loottick_static_03:loottick_static_03_qm\r\n                data_knife_vault:Vault_QM\r\n                blue_kitted_weapons_qm:Weapon_Power\r\n                purple_kitted_weapons_qm:Weapon_Power_Loot\r\n                ",
+          "explosive_hold_rack_loot_group": "Weapon_Power_High",
+          "explosive_hold_floor_loot_group": "Weapon_Power_High",
+          "maybe_add_weapon_to_loot_bin_on_open": "Weapon_Power",
+          "loot_distribution_override_lifeline_tt_medbay_loot": "Weapon_Power_High:5",
+          "loot_distribution_override_Bloodhound_Jackpot_Items": "mp_pickup_xp_cache_dynamic:30",
+          "loot_distribution_override_flyer_deathbox_all_gold": "gold_weapons:0 Weapon_Power:37.5",
+          "loot_distribution_override_ammo": "special:0",
+          "restore_kitted_weapons": "1",
+          "respawn_with_mythic_weapons": "1",
+          "cosmic_box_remove_cosmic_weapon_on_respawn": "0",
+          "has_br_respawn_withweapons": "1",
+          "has_br_respawn_withattachments": "1",
+          "passive_upgrade_core_care_package_reveal_xp": "25",
+          "airdrop_start_during_shrink": "0",
+          "airdrop_data_round_0": "5:90:Weapon_Power_High:care_package_1_R:Weapon_Power_High",
+          "airdrop_data_round_1": "4:90:Weapon_Power_High:care_package_1_R:Weapon_Power_High",
+          "airdrop_data_round_2": "3:90:Weapon_Power_High:care_package_2_R:Weapon_Power_High",
+          "airdrop_data_round_3": "2:90:Weapon_Power_High:care_package_3_R:Weapon_Power_High",
+          "airdrop_data_round_4": "1:90:Weapon_Power_High:care_package_3_R:Weapon_Power_High",
+          "airdrop_data_round_5": "1:90:Weapon_Power_High:care_package_3_R:Weapon_Power_High",
+          "airdrop_data_round_6": "1:90:Weapon_Power_High:care_package_3_R:Weapon_Power_High",
+          "arsenals_enabled": "0",
+          "arsenals_remove_ammo_from_crafter": "0",
+          "loot_hotzone_count": "2",
+          "loot_hotzone_check_safe_zone_spawn": "3000.0",
+          "loot_hotzone_min_distance_threshold": "20000.0",
+          "loot_hotzone_dist_from_plane_path": "5000.0",
+          "loot_hotzone_plane_path_frac": "0.5",
+          "loot_hotzone_plane_path_pool_size": "10",
+          "epg_spawn_in_deathbox": "1",
+          "epg_loot_beam": "0",
+          "munitions_box_use_locked_set_rewards": "1",
+          "munitions_box_spawns_smart_loot": "0",
+          "munitions_box_num_smart_loot_attachments_opener": "0",
+          "munitions_box_num_smart_loot_attachments_other": "0",
+          "munitions_box_max_smart_loot": "0",
+          "munitions_box_num_smart_loot_attachments": "0"
         }
       },
-      "day_zero_remix_defaults": {
+      "second_chance_defaults": {
         "vars": {
-          "ui_rules": "survival_dayzero_remix",
-          "lootbin_weapon_assist_delay": "8.0",
-          "disable_perk_banner_crafting": "0",
-          "support_can_craft_non_expired_banners": "1",
-          "perks_all_classes_can_craft_banners": "1",
-          "crafting_enabled": "1",
-          "crafting_dispensers_enabled": "1"
-        }
-      },
-      "cosmic_box_defaults": {
-        "vars": {
-          "gamemode_survival_cosmic_boxes_active": "1",
           "show_ltm_about_button": "1",
-          "stats_match_type": "survival",
-          "about_text": "#COSMIC_BOX_ABOUT",
-          "ui_rules": "survival_cosmic_boxes",
-          "emblem": "emblem_survival_cosmic_boxes",
+          "show_ltm_about_button_is_takeover": "0",
+          "emblem": "generic",
+          "gamemode_logo": "LTM",
+          "ui_rules": "survival_secondchancetoken",
+          "second_chance_token_enabled": "1",
+          "second_chance_token_cooldown": "90.0",
+          "second_chance_token_allow_deathfield_drop": "0",
+          "second_chance_token_airdrop_count": "-1",
+          "second_chance_token_lootbox_token_per_teammate": "0",
+          "respawn_beacons_enabled": "1",
+          "spawngroupskydive_respawn_beacons_enabled": "1",
+          "respawns": "0",
+          "respawn_cooldown": "9",
+          "respawn_token_enabled": "1",
+          "respawn_token_type": "individual",
+          "respawn_token_respawn_disable_deathstage_close": "4",
+          "respawn_token_xp_for_respawn_token": "1000",
+          "respawn_token_ammo_on_kill_enabled": "0",
+          "respawn_token_ammo_on_kill_spawns": "0",
+          "respawn_token_armor_on_kill_enabled": "0",
+          "respawn_token_ping_death_location": "1",
+          "respawn_token_cooldown_after_kill_replay": "1",
+          "is_elimination_based": "0",
+          "survival_respawn_style": "spawn_group_skydive",
+          "reset_player_inventory_on_first_spawn": "0",
+          "reset_player_inventory_on_respawn": "0",
+          "restore_kitted_weapons": "1",
           "allow_prestige_badges": "0"
-        }
-      },
-      "cosmic_box_tuning": {
-        "vars": {
-          "cosmic_box_enabled": "1",
-          "cosmic_box_loot_to_spawn_per_box": "2",
-          "cosmic_box_avoid_loot_duplicates": "1",
-          "pilot_time_rewind_is_enabled": "1",
-          "squad_heal_enabled": "1",
-          "npc_summon_enabled": "1",
-          "battle_sense_enabled": "1",
-          "battle_sense_distance": "3937"
-        }
-      },
-      "cosmic_box_golden_horse": {
-        "vars": {
-          "cosmic_box_rare_items_list": "mp_weapon_epg:5 hopup_golden_horse_red:30 mp_weapon_titan_sword:9",
-          "cosmic_box_give_ghorse_hopup_amount": "4",
-          "cosmic_box_spawn_titan_sword_final_ring": "1",
-          "is_golden_horse_rides_again": "1",
-          "golden_horse_enabled_yellow": "0",
-          "golden_horse_red_cooldown_sec": "25",
-          "golden_horse_red_enemy_dist": "3937.01",
-          "hopup_ultimate_accelerator_baked_in_enabled": "0",
-          "mp_weapon_car_dt_override_baseMods": "",
-          "mp_weapon_car_whiteset_dt_override_baseMods": "optic_cq_hcog_classic highcal_mag_l1 stock_tactical_l1",
-          "mp_weapon_car_blueset_dt_override_baseMods": "optic_cq_hcog_classic highcal_mag_l2 stock_tactical_l2",
-          "mp_weapon_car_purpleset_dt_override_baseMods": "optic_cq_hcog_classic highcal_mag_l3 stock_tactical_l3",
-          "mp_weapon_car_gold_dt_override_baseMods": "optic_cq_hcog_classic highcal_mag_l4 stock_tactical_l3",
-          "mp_weapon_nemesis_dt_override_baseMods": "",
-          "mp_weapon_nemesis_whiteset_dt_override_baseMods": "optic_cq_hcog_classic energy_mag_l1 barrel_stabilizer_l1 stock_tactical_l1",
-          "mp_weapon_nemesis_blueset_dt_override_baseMods": "optic_cq_hcog_bruiser energy_mag_l2 barrel_stabilizer_l2 stock_tactical_l2",
-          "mp_weapon_nemesis_purpleset_dt_override_baseMods": "optic_cq_hcog_bruiser energy_mag_l3 barrel_stabilizer_l3 stock_tactical_l3",
-          "mp_weapon_nemesis_gold_dt_override_baseMods": "optic_cq_hcog_bruiser energy_mag_l4 barrel_stabilizer_l3 stock_tactical_l3",
-          "mp_weapon_g2_dt_override_baseMods": "",
-          "mp_weapon_g2_whiteset_dt_override_baseMods": "optic_cq_hcog_classic bullets_mag_l1 barrel_stabilizer_l1 stock_sniper_l1",
-          "mp_weapon_g2_blueset_dt_override_baseMods": "optic_cq_hcog_bruiser bullets_mag_l2 barrel_stabilizer_l2 stock_sniper_l2",
-          "mp_weapon_g2_purpleset_dt_override_baseMods": "optic_ranged_aog_variable bullets_mag_l3 barrel_stabilizer_l3 stock_sniper_l3",
-          "mp_weapon_g2_gold_dt_override_baseMods": "optic_ranged_aog_variable bullets_mag_l4 barrel_stabilizer_l3 stock_sniper_l3"
         }
       }
     },
     "Playlists": {
+      "survival_ring_small": {
+        "vars": {
+          "deathfield_preShrinkDuration_0": "75",
+          "deathfield_preShrinkDuration_1": "120",
+          "deathfield_preShrinkDuration_2": "90",
+          "deathfield_preShrinkDuration_3": "90",
+          "deathfield_preShrinkDuration_4": "75",
+          "deathfield_preShrinkDuration_5": "60",
+          "deathfield_preShrinkDuration_6": "20",
+          "survival_death_field_start_radius": "63000",
+          "deathfield_radius_0": "22000",
+          "deathfield_radius_1": "13000",
+          "deathfield_radius_2": "8000",
+          "deathfield_radius_3": "4000",
+          "deathfield_radius_4": "2000",
+          "deathfield_radius_5": "1",
+          "deathfield_radius_6": "-1",
+          "deathfield_shrinkSpeed_0": "160",
+          "deathfield_shrinkSpeed_1": "140",
+          "deathfield_shrinkSpeed_2": "120",
+          "deathfield_shrinkSpeed_3": "85",
+          "deathfield_shrinkSpeed_4": "40",
+          "deathfield_shrinkSpeed_5": "16.7",
+          "deathfield_shrinkSpeed_6": "10",
+          "deathfield_damagePercent_0": "0.03",
+          "deathfield_damagePercent_1": "0.04",
+          "deathfield_damagePercent_2": "0.10",
+          "deathfield_damagePercent_3": "0.15",
+          "deathfield_damagePercent_4": "0.20",
+          "deathfield_damagePercent_5": "0.25",
+          "deathfield_damagePercent_6": "0.25"
+        }
+      },
+      "survival_ring_large": {
+        "vars": {
+          "deathfield_preShrinkDuration_0": "75",
+          "deathfield_preShrinkDuration_1": "120",
+          "deathfield_preShrinkDuration_2": "90",
+          "deathfield_preShrinkDuration_3": "90",
+          "deathfield_preShrinkDuration_4": "75",
+          "deathfield_preShrinkDuration_5": "60",
+          "deathfield_preShrinkDuration_6": "20",
+          "survival_death_field_start_radius": "73000",
+          "deathfield_radius_0": "28500",
+          "deathfield_radius_1": "13000",
+          "deathfield_radius_2": "8000",
+          "deathfield_radius_3": "4000",
+          "deathfield_radius_4": "2000",
+          "deathfield_radius_5": "1",
+          "deathfield_radius_6": "-1",
+          "deathfield_shrinkSpeed_0": "167",
+          "deathfield_shrinkSpeed_1": "140",
+          "deathfield_shrinkSpeed_2": "120",
+          "deathfield_shrinkSpeed_3": "85",
+          "deathfield_shrinkSpeed_4": "40",
+          "deathfield_shrinkSpeed_5": "16.7",
+          "deathfield_shrinkSpeed_6": "10",
+          "deathfield_damagePercent_0": "0.03",
+          "deathfield_damagePercent_1": "0.04",
+          "deathfield_damagePercent_2": "0.10",
+          "deathfield_damagePercent_3": "0.15",
+          "deathfield_damagePercent_4": "0.20",
+          "deathfield_damagePercent_5": "0.25",
+          "deathfield_damagePercent_6": "0.25"
+        }
+      },
       "survival_ring_battle_rush": {
         "vars": {
           "deathfield_preShrinkDuration_0": "120",
@@ -2111,297 +2116,42 @@
           "deathfield_circleDeviation_4": "0"
         }
       },
-      "show_match_algs_japan": {
+      "survival_ring_battle_rush_large": {
         "vars": {
           "deathfield_preShrinkDuration_0": "120",
           "deathfield_preShrinkDuration_1": "60",
-          "deathfield_preShrinkDuration_2": "120",
+          "deathfield_preShrinkDuration_2": "80",
           "deathfield_preShrinkDuration_3": "60",
           "deathfield_preShrinkDuration_4": "30",
           "deathfield_preShrinkDuration_5": "30",
           "deathfield_preShrinkDuration_6": "30",
-          "survival_death_field_start_radius": "28500",
-          "deathfield_radius_0": "15000",
-          "deathfield_radius_1": "10000",
-          "deathfield_radius_2": "4000",
+          "survival_death_field_start_radius": "40000",
+          "deathfield_radius_0": "34000",
+          "deathfield_radius_1": "22000",
+          "deathfield_radius_2": "8000",
           "deathfield_radius_3": "1",
           "deathfield_radius_4": "-1",
           "deathfield_radius_5": "-1",
           "deathfield_radius_6": "-1",
-          "deathfield_shrinkSpeed_0": "100",
+          "deathfield_shrinkSpeed_0": "185",
           "deathfield_shrinkSpeed_1": "100",
-          "deathfield_shrinkSpeed_2": "80",
-          "deathfield_shrinkSpeed_3": "60",
+          "deathfield_shrinkSpeed_2": "100",
+          "deathfield_shrinkSpeed_3": "70",
           "deathfield_shrinkSpeed_4": "16.7",
           "deathfield_shrinkSpeed_5": "-1",
           "deathfield_shrinkSpeed_6": "-1",
-          "deathfield_damagePercent_0": "0.01",
-          "deathfield_damagePercent_1": "0.02",
-          "deathfield_damagePercent_2": "0.05",
-          "deathfield_damagePercent_3": "0.05",
-          "deathfield_damagePercent_4": "0.10",
-          "deathfield_damagePercent_5": "0.10",
-          "deathfield_damagePercent_6": "0.10",
-          "deathfield_damagePercent_7": "0.10",
+          "deathfield_damagePercent_0": "0.03",
+          "deathfield_damagePercent_1": "0.04",
+          "deathfield_damagePercent_2": "0.10",
+          "deathfield_damagePercent_3": "0.15",
+          "deathfield_damagePercent_4": "0.25",
+          "deathfield_damagePercent_5": "0.25",
+          "deathfield_damagePercent_6": "0.25",
           "deathfield_circleDeviation_0": "1.0",
           "deathfield_circleDeviation_1": "1.0",
           "deathfield_circleDeviation_2": "0.2",
           "deathfield_circleDeviation_3": "0",
           "deathfield_circleDeviation_4": "0"
-        }
-      },
-      "survival_ring_solo": {
-        "vars": {
-          "deathfield_preShrinkDuration_0": "60",
-          "deathfield_preShrinkDuration_1": "60",
-          "deathfield_preShrinkDuration_2": "60",
-          "deathfield_preShrinkDuration_3": "45",
-          "deathfield_preShrinkDuration_4": "30",
-          "deathfield_preShrinkDuration_5": "60",
-          "deathfield_preShrinkDuration_6": "20",
-          "survival_death_field_start_radius": "47000",
-          "deathfield_radius_0": "22000",
-          "deathfield_radius_1": "10500",
-          "deathfield_radius_2": "6600",
-          "deathfield_radius_3": "3500",
-          "deathfield_radius_4": "1750",
-          "deathfield_radius_5": "1",
-          "deathfield_radius_6": "-1",
-          "deathfield_shrinkSpeed_0": "140",
-          "deathfield_shrinkSpeed_1": "120",
-          "deathfield_shrinkSpeed_2": "100",
-          "deathfield_shrinkSpeed_3": "85",
-          "deathfield_shrinkSpeed_4": "40",
-          "deathfield_shrinkSpeed_5": "16.7",
-          "deathfield_shrinkSpeed_6": "-1",
-          "deathfield_damagePercent_0": "0.03",
-          "deathfield_damagePercent_1": "0.04",
-          "deathfield_damagePercent_2": "0.10",
-          "deathfield_damagePercent_3": "0.15",
-          "deathfield_damagePercent_4": "0.20",
-          "deathfield_damagePercent_5": "0.25",
-          "deathfield_damagePercent_6": "0.25",
-          "deathfield_circleDeviation_0": "0.7",
-          "deathfield_circleDeviation_1": "0.7",
-          "deathfield_circleDeviation_2": "1.0",
-          "deathfield_circleDeviation_3": "1.0",
-          "deathfield_circleDeviation_4": "1.0",
-          "deathfield_circleDeviation_5": "0.0",
-          "deathfield_circleDeviation_6": "0.0"
-        }
-      },
-      "survival_ring_small": {
-        "vars": {
-          "deathfield_preShrinkDuration_0": "75",
-          "deathfield_preShrinkDuration_1": "120",
-          "deathfield_preShrinkDuration_2": "90",
-          "deathfield_preShrinkDuration_3": "90",
-          "deathfield_preShrinkDuration_4": "75",
-          "deathfield_preShrinkDuration_5": "60",
-          "deathfield_preShrinkDuration_6": "20",
-          "survival_death_field_start_radius": "63000",
-          "deathfield_radius_0": "22000",
-          "deathfield_radius_1": "13000",
-          "deathfield_radius_2": "8000",
-          "deathfield_radius_3": "4000",
-          "deathfield_radius_4": "2000",
-          "deathfield_radius_5": "1",
-          "deathfield_radius_6": "-1",
-          "deathfield_shrinkSpeed_0": "160",
-          "deathfield_shrinkSpeed_1": "140",
-          "deathfield_shrinkSpeed_2": "120",
-          "deathfield_shrinkSpeed_3": "85",
-          "deathfield_shrinkSpeed_4": "40",
-          "deathfield_shrinkSpeed_5": "16.7",
-          "deathfield_shrinkSpeed_6": "10",
-          "deathfield_damagePercent_0": "0.03",
-          "deathfield_damagePercent_1": "0.04",
-          "deathfield_damagePercent_2": "0.10",
-          "deathfield_damagePercent_3": "0.15",
-          "deathfield_damagePercent_4": "0.20",
-          "deathfield_damagePercent_5": "0.25",
-          "deathfield_damagePercent_6": "0.25"
-        }
-      },
-      "survival_ring_dayzero": {
-        "vars": {
-          "deathfield_preShrinkDuration_0": "240",
-          "deathfield_preShrinkDuration_1": "210",
-          "deathfield_preShrinkDuration_2": "180",
-          "deathfield_preShrinkDuration_3": "135",
-          "deathfield_preShrinkDuration_4": "120",
-          "deathfield_preShrinkDuration_5": "90",
-          "deathfield_preShrinkDuration_6": "120",
-          "deathfield_preShrinkDuration_7": "20",
-          "survival_death_field_start_radius": "63000",
-          "deathfield_radius_0": "22000",
-          "deathfield_radius_1": "13000",
-          "deathfield_radius_2": "8000",
-          "deathfield_radius_3": "4000",
-          "deathfield_radius_4": "1500",
-          "deathfield_radius_5": "750",
-          "deathfield_radius_6": "100",
-          "deathfield_radius_7": "1",
-          "deathfield_shrinkSpeed_0": "120",
-          "deathfield_shrinkSpeed_1": "-1",
-          "deathfield_shrinkSpeed_2": "-1",
-          "deathfield_shrinkSpeed_3": "-1",
-          "deathfield_shrinkSpeed_4": "-1",
-          "deathfield_shrinkSpeed_5": "-1",
-          "deathfield_shrinkSpeed_6": "100",
-          "deathfield_shrinkSpeed_7": "100",
-          "deathfield_damagePercent_0": "0.01",
-          "deathfield_damagePercent_1": "0.02",
-          "deathfield_damagePercent_2": "0.05",
-          "deathfield_damagePercent_3": "0.05",
-          "deathfield_damagePercent_4": "0.10",
-          "deathfield_damagePercent_5": "0.10",
-          "deathfield_damagePercent_6": "0.10",
-          "deathfield_damagePercent_7": "0.10"
-        }
-      },
-      "survival_ring_dayzero_small": {
-        "vars": {
-          "deathfield_preShrinkDuration_0": "75",
-          "deathfield_preShrinkDuration_1": "120",
-          "deathfield_preShrinkDuration_2": "90",
-          "deathfield_preShrinkDuration_3": "90",
-          "deathfield_preShrinkDuration_4": "75",
-          "deathfield_preShrinkDuration_5": "60",
-          "deathfield_preShrinkDuration_6": "20",
-          "deathfield_preShrinkDuration_7": "20",
-          "survival_death_field_start_radius": "63000",
-          "deathfield_radius_0": "22000",
-          "deathfield_radius_1": "13000",
-          "deathfield_radius_2": "8000",
-          "deathfield_radius_3": "4000",
-          "deathfield_radius_4": "1500",
-          "deathfield_radius_5": "750",
-          "deathfield_radius_6": "100",
-          "deathfield_radius_7": "1",
-          "deathfield_shrinkSpeed_0": "160",
-          "deathfield_shrinkSpeed_1": "140",
-          "deathfield_shrinkSpeed_2": "120",
-          "deathfield_shrinkSpeed_3": "85",
-          "deathfield_shrinkSpeed_4": "40",
-          "deathfield_shrinkSpeed_5": "16.7",
-          "deathfield_shrinkSpeed_6": "10",
-          "deathfield_shrinkSpeed_7": "10",
-          "deathfield_damagePercent_0": "0.01",
-          "deathfield_damagePercent_1": "0.02",
-          "deathfield_damagePercent_2": "0.05",
-          "deathfield_damagePercent_3": "0.05",
-          "deathfield_damagePercent_4": "0.10",
-          "deathfield_damagePercent_5": "0.10",
-          "deathfield_damagePercent_6": "0.10",
-          "deathfield_damagePercent_7": "0.10"
-        }
-      },
-      "survival_ring_dayzero_medium": {
-        "vars": {
-          "deathfield_preShrinkDuration_0": "75",
-          "deathfield_preShrinkDuration_1": "120",
-          "deathfield_preShrinkDuration_2": "90",
-          "deathfield_preShrinkDuration_3": "90",
-          "deathfield_preShrinkDuration_4": "90",
-          "deathfield_preShrinkDuration_5": "90",
-          "deathfield_preShrinkDuration_6": "120",
-          "deathfield_preShrinkDuration_7": "20",
-          "survival_death_field_start_radius": "68000",
-          "deathfield_radius_0": "26500",
-          "deathfield_radius_1": "13000",
-          "deathfield_radius_2": "8000",
-          "deathfield_radius_3": "4000",
-          "deathfield_radius_4": "1500",
-          "deathfield_radius_5": "750",
-          "deathfield_radius_6": "100",
-          "deathfield_radius_7": "1",
-          "deathfield_shrinkSpeed_0": "160",
-          "deathfield_shrinkSpeed_1": "140",
-          "deathfield_shrinkSpeed_2": "120",
-          "deathfield_shrinkSpeed_3": "85",
-          "deathfield_shrinkSpeed_4": "40",
-          "deathfield_shrinkSpeed_5": "16.7",
-          "deathfield_shrinkSpeed_6": "10",
-          "deathfield_shrinkSpeed_7": "10",
-          "deathfield_damagePercent_0": "0.01",
-          "deathfield_damagePercent_1": "0.02",
-          "deathfield_damagePercent_2": "0.05",
-          "deathfield_damagePercent_3": "0.05",
-          "deathfield_damagePercent_4": "0.10",
-          "deathfield_damagePercent_5": "0.10",
-          "deathfield_damagePercent_6": "0.10",
-          "deathfield_damagePercent_7": "0.10"
-        }
-      },
-      "survival_ring_dayzero_large": {
-        "vars": {
-          "deathfield_preShrinkDuration_0": "240",
-          "deathfield_preShrinkDuration_1": "210",
-          "deathfield_preShrinkDuration_2": "180",
-          "deathfield_preShrinkDuration_3": "135",
-          "deathfield_preShrinkDuration_4": "120",
-          "deathfield_preShrinkDuration_5": "90",
-          "deathfield_preShrinkDuration_6": "120",
-          "deathfield_preShrinkDuration_7": "20",
-          "survival_death_field_start_radius": "73000",
-          "deathfield_radius_0": "28500",
-          "deathfield_radius_1": "13000",
-          "deathfield_radius_2": "8000",
-          "deathfield_radius_3": "4000",
-          "deathfield_radius_4": "1500",
-          "deathfield_radius_5": "750",
-          "deathfield_radius_6": "100",
-          "deathfield_radius_7": "1",
-          "deathfield_shrinkSpeed_0": "120",
-          "deathfield_shrinkSpeed_1": "-1",
-          "deathfield_shrinkSpeed_2": "-1",
-          "deathfield_shrinkSpeed_3": "-1",
-          "deathfield_shrinkSpeed_4": "-1",
-          "deathfield_shrinkSpeed_5": "-1",
-          "deathfield_shrinkSpeed_6": "100",
-          "deathfield_shrinkSpeed_7": "100",
-          "deathfield_damagePercent_0": "0.01",
-          "deathfield_damagePercent_1": "0.02",
-          "deathfield_damagePercent_2": "0.05",
-          "deathfield_damagePercent_3": "0.05",
-          "deathfield_damagePercent_4": "0.10",
-          "deathfield_damagePercent_5": "0.10",
-          "deathfield_damagePercent_6": "0.10",
-          "deathfield_damagePercent_7": "0.10"
-        }
-      },
-      "survival_ring_tropics": {
-        "vars": {
-          "deathfield_preShrinkDuration_0": "75",
-          "deathfield_preShrinkDuration_1": "120",
-          "deathfield_preShrinkDuration_2": "90",
-          "deathfield_preShrinkDuration_3": "90",
-          "deathfield_preShrinkDuration_4": "75",
-          "deathfield_preShrinkDuration_5": "60",
-          "deathfield_preShrinkDuration_6": "20",
-          "survival_death_field_start_radius": "75000",
-          "deathfield_radius_0": "30500",
-          "deathfield_radius_1": "15000",
-          "deathfield_radius_2": "8000",
-          "deathfield_radius_3": "4000",
-          "deathfield_radius_4": "2000",
-          "deathfield_radius_5": "1",
-          "deathfield_radius_6": "-1",
-          "deathfield_shrinkSpeed_0": "170",
-          "deathfield_shrinkSpeed_1": "140",
-          "deathfield_shrinkSpeed_2": "120",
-          "deathfield_shrinkSpeed_3": "85",
-          "deathfield_shrinkSpeed_4": "40",
-          "deathfield_shrinkSpeed_5": "16.7",
-          "deathfield_shrinkSpeed_6": "10",
-          "deathfield_damagePercent_0": "0.03",
-          "deathfield_damagePercent_1": "0.04",
-          "deathfield_damagePercent_2": "0.10",
-          "deathfield_damagePercent_3": "0.15",
-          "deathfield_damagePercent_4": "0.20",
-          "deathfield_damagePercent_5": "0.25",
-          "deathfield_damagePercent_6": "0.25"
         }
       },
       "survival_ring_desertlands": {
@@ -2470,6 +2220,39 @@
           "deathfield_damagePercent_6": "0.25"
         }
       },
+      "survival_ring_tropics": {
+        "vars": {
+          "deathfield_preShrinkDuration_0": "75",
+          "deathfield_preShrinkDuration_1": "120",
+          "deathfield_preShrinkDuration_2": "90",
+          "deathfield_preShrinkDuration_3": "90",
+          "deathfield_preShrinkDuration_4": "75",
+          "deathfield_preShrinkDuration_5": "60",
+          "deathfield_preShrinkDuration_6": "20",
+          "survival_death_field_start_radius": "75000",
+          "deathfield_radius_0": "30500",
+          "deathfield_radius_1": "15000",
+          "deathfield_radius_2": "8000",
+          "deathfield_radius_3": "4000",
+          "deathfield_radius_4": "2000",
+          "deathfield_radius_5": "1",
+          "deathfield_radius_6": "-1",
+          "deathfield_shrinkSpeed_0": "170",
+          "deathfield_shrinkSpeed_1": "140",
+          "deathfield_shrinkSpeed_2": "120",
+          "deathfield_shrinkSpeed_3": "85",
+          "deathfield_shrinkSpeed_4": "40",
+          "deathfield_shrinkSpeed_5": "16.7",
+          "deathfield_shrinkSpeed_6": "10",
+          "deathfield_damagePercent_0": "0.03",
+          "deathfield_damagePercent_1": "0.04",
+          "deathfield_damagePercent_2": "0.10",
+          "deathfield_damagePercent_3": "0.15",
+          "deathfield_damagePercent_4": "0.20",
+          "deathfield_damagePercent_5": "0.25",
+          "deathfield_damagePercent_6": "0.25"
+        }
+      },
       "survival_ring_moon": {
         "vars": {
           "deathfield_preShrinkDuration_0": "75",
@@ -2503,7 +2286,80 @@
           "deathfield_damagePercent_6": "0.25"
         }
       },
-      "survival_ring_large": {
+      "survival_ring_solo": {
+        "vars": {
+          "deathfield_preShrinkDuration_0": "75",
+          "deathfield_preShrinkDuration_1": "60",
+          "deathfield_preShrinkDuration_2": "60",
+          "deathfield_preShrinkDuration_3": "45",
+          "deathfield_preShrinkDuration_4": "30",
+          "deathfield_preShrinkDuration_5": "45",
+          "deathfield_preShrinkDuration_6": "20",
+          "survival_death_field_start_radius": "44000",
+          "deathfield_radius_0": "22000",
+          "deathfield_radius_1": "10500",
+          "deathfield_radius_2": "6600",
+          "deathfield_radius_3": "3500",
+          "deathfield_radius_4": "1750",
+          "deathfield_radius_5": "1",
+          "deathfield_radius_6": "-1",
+          "deathfield_shrinkSpeed_0": "140",
+          "deathfield_shrinkSpeed_1": "120",
+          "deathfield_shrinkSpeed_2": "100",
+          "deathfield_shrinkSpeed_3": "85",
+          "deathfield_shrinkSpeed_4": "40",
+          "deathfield_shrinkSpeed_5": "16.7",
+          "deathfield_shrinkSpeed_6": "-1",
+          "deathfield_damagePercent_0": "0.03",
+          "deathfield_damagePercent_1": "0.04",
+          "deathfield_damagePercent_2": "0.10",
+          "deathfield_damagePercent_3": "0.15",
+          "deathfield_damagePercent_4": "0.20",
+          "deathfield_damagePercent_5": "0.25",
+          "deathfield_damagePercent_6": "0.25",
+          "deathfield_circleDeviation_0": "0.7",
+          "deathfield_circleDeviation_1": "0.7",
+          "deathfield_circleDeviation_2": "1.0",
+          "deathfield_circleDeviation_3": "1.0",
+          "deathfield_circleDeviation_4": "1.0",
+          "deathfield_circleDeviation_5": "0.0",
+          "deathfield_circleDeviation_6": "0.0"
+        }
+      },
+      "survival_ring_tropics_strikeout": {
+        "vars": {
+          "deathfield_preShrinkDuration_0": "75",
+          "deathfield_preShrinkDuration_1": "120",
+          "deathfield_preShrinkDuration_2": "90",
+          "deathfield_preShrinkDuration_3": "90",
+          "deathfield_preShrinkDuration_4": "75",
+          "deathfield_preShrinkDuration_5": "60",
+          "deathfield_preShrinkDuration_6": "20",
+          "survival_death_field_start_radius": "75000",
+          "deathfield_radius_0": "30500",
+          "deathfield_radius_1": "15000",
+          "deathfield_radius_2": "8000",
+          "deathfield_radius_3": "4000",
+          "deathfield_radius_4": "2000",
+          "deathfield_radius_5": "1",
+          "deathfield_radius_6": "-1",
+          "deathfield_shrinkSpeed_0": "170",
+          "deathfield_shrinkSpeed_1": "140",
+          "deathfield_shrinkSpeed_2": "120",
+          "deathfield_shrinkSpeed_3": "85",
+          "deathfield_shrinkSpeed_4": "40",
+          "deathfield_shrinkSpeed_5": "16.7",
+          "deathfield_shrinkSpeed_6": "10",
+          "deathfield_damagePercent_0": "0.04",
+          "deathfield_damagePercent_1": "0.10",
+          "deathfield_damagePercent_2": "0.15",
+          "deathfield_damagePercent_3": "0.20",
+          "deathfield_damagePercent_4": "0.25",
+          "deathfield_damagePercent_5": "0.35",
+          "deathfield_damagePercent_6": "0.35"
+        }
+      },
+      "survival_ring_moon_strikeout": {
         "vars": {
           "deathfield_preShrinkDuration_0": "75",
           "deathfield_preShrinkDuration_1": "120",
@@ -2527,13 +2383,46 @@
           "deathfield_shrinkSpeed_4": "40",
           "deathfield_shrinkSpeed_5": "16.7",
           "deathfield_shrinkSpeed_6": "10",
-          "deathfield_damagePercent_0": "0.03",
-          "deathfield_damagePercent_1": "0.04",
-          "deathfield_damagePercent_2": "0.10",
-          "deathfield_damagePercent_3": "0.15",
-          "deathfield_damagePercent_4": "0.20",
-          "deathfield_damagePercent_5": "0.25",
-          "deathfield_damagePercent_6": "0.25"
+          "deathfield_damagePercent_0": "0.04",
+          "deathfield_damagePercent_1": "0.10",
+          "deathfield_damagePercent_2": "0.15",
+          "deathfield_damagePercent_3": "0.20",
+          "deathfield_damagePercent_4": "0.25",
+          "deathfield_damagePercent_5": "0.35",
+          "deathfield_damagePercent_6": "0.35"
+        }
+      },
+      "survival_ring_olymp_strikeout": {
+        "vars": {
+          "deathfield_preShrinkDuration_0": "75",
+          "deathfield_preShrinkDuration_1": "120",
+          "deathfield_preShrinkDuration_2": "90",
+          "deathfield_preShrinkDuration_3": "90",
+          "deathfield_preShrinkDuration_4": "75",
+          "deathfield_preShrinkDuration_5": "60",
+          "deathfield_preShrinkDuration_6": "20",
+          "survival_death_field_start_radius": "63000",
+          "deathfield_radius_0": "22000",
+          "deathfield_radius_1": "13000",
+          "deathfield_radius_2": "8000",
+          "deathfield_radius_3": "4000",
+          "deathfield_radius_4": "2000",
+          "deathfield_radius_5": "1",
+          "deathfield_radius_6": "-1",
+          "deathfield_shrinkSpeed_0": "160",
+          "deathfield_shrinkSpeed_1": "140",
+          "deathfield_shrinkSpeed_2": "120",
+          "deathfield_shrinkSpeed_3": "85",
+          "deathfield_shrinkSpeed_4": "40",
+          "deathfield_shrinkSpeed_5": "16.7",
+          "deathfield_shrinkSpeed_6": "10",
+          "deathfield_damagePercent_0": "0.04",
+          "deathfield_damagePercent_1": "0.10",
+          "deathfield_damagePercent_2": "0.15",
+          "deathfield_damagePercent_3": "0.20",
+          "deathfield_damagePercent_4": "0.25",
+          "deathfield_damagePercent_5": "0.35",
+          "deathfield_damagePercent_6": "0.35"
         }
       },
       "survival_ring_bot_playground": {
@@ -2567,6 +2456,77 @@
           "deathfield_damagePercent_4": "0.25",
           "deathfield_damagePercent_5": "0.25",
           "deathfield_damagePercent_6": "0.25"
+        }
+      },
+      "defaults": {
+        "vars": {
+          "name": "#PL_default_name",
+          "lobbytitle": "#PL_default_lobbytitle",
+          "description": "#PL_default_description",
+          "image": "default"
+        }
+      },
+      "survival": {
+        "inherit": "defaults",
+        "vars": {
+          "name": "#EMPTY_STRING",
+          "description": "#PL_survival_squads_desc",
+          "image": "fw",
+          "max_teams": "20",
+          "max_players": "60",
+          "min_players": "60",
+          "matchmake_from_match": "1"
+        },
+        "gamemodes": {
+          "survival": {
+            "maps": {
+              "mp_rr_desertlands_hu": "1"
+            }
+          }
+        }
+      },
+      "survival_dev": {
+        "inherit": "survival",
+        "vars": {
+          "waiting_for_players_spawning_enabled": "1",
+          "waiting_for_players_countdown_seconds": "0",
+          "waiting_for_players_timeout_seconds": "1",
+          "character_select_time_max": "0.0",
+          "character_select_time_min": "0.0",
+          "survival_enable_gladiator_intros": "0",
+          "jump_from_plane_enabled": "0",
+          "matchmake_from_match": "0",
+          "sur_circle_start_paused": "1",
+          "dev_loadout_bypass_match_state": "1",
+          "dev_loadout_changeable_at_any_time": "1",
+          "sur_dev_unrestricted_character_changes": "1",
+          "sur_bots_spawn_with_random_weapons": "1"
+        },
+        "gamemodes": {
+          "survival": {
+            "maps": {
+              "mp_rr_box": "1"
+            }
+          }
+        }
+      },
+      "dev_default": {
+        "inherit": "survival_dev",
+        "vars": {
+          "cmdlineMapLoad": "1",
+          "reconnect_disabled": "1",
+          "matchmake_from_match": "0",
+          "lobby_stage_b_start": "2025-02-25 10:00:00 -08:00",
+          "lobby_stage_b_end": "2025-03-11 10:00:00 -07:00",
+          "lobby_stage_c_start": "2025-03-11 10:00:00 -07:00",
+          "lobby_stage_c_end": "2025-03-25 10:00:00 -07:00"
+        },
+        "gamemodes": {
+          "survival": {
+            "maps": {
+              "mp_lobby": "1"
+            }
+          }
         }
       },
       "survival_staging_baseline": {
@@ -2625,8 +2585,7 @@
           "perk_revive_expert_is_enabled": "0",
           "bots_use_default_appearance": "1",
           "bleedout_death_prevention_enabled": "1",
-          "respawn_dropship_heightmod": "-2200.0",
-          "survival_disabled_loot": "mp_weapon_sentinel"
+          "respawn_dropship_heightmod": "-2200.0"
         }
       },
       "survival_firingrange_base": {
@@ -2658,8 +2617,8 @@
           "settings_display_defaulton": "1",
           "fr_nodeath_characterchange": "1",
           "match_jip": "1",
-          "fr_default_armor_loadout": "helmet_pickup_lv1 armor_pickup_lv1 incapshield_pickup_lv1",
-          "fr_default_consumables_loadout": "health_pickup_health_small:2 health_pickup_combo_small:2",
+          "fr_default_armor_loadout": "armor_pickup_lv1 incapshield_pickup_lv1",
+          "fr_default_consumables_loadout": "health_pickup_health_small:4 health_pickup_combo_small:4",
           "require_new_player_orientation": "0",
           "ui_rules": "combatrange",
           "show_ltm_about_button": "1",
@@ -2676,37 +2635,13 @@
       },
       "survival_firingrange": {
         "inherit": "survival_firingrange_base",
-        "vars": {
-          "force_hide_schedule_block_countdown": "1"
-        },
+        "vars": {},
         "gamemodes": {
           "survival": {
             "maps": {
               "mp_rr_canyonlands_staging_mu1": "1"
             }
           }
-        }
-      },
-      "survival_firingrange_epg": {
-        "inherit": "survival_firingrange",
-        "vars": {
-          "loot_distribution_override_firing_range_all_weapons": "mp_weapon_epg:1",
-          "epg_spawn_in_deathbox": "1",
-          "epg_loot_beam": "0"
-        }
-      },
-      "survival_firingrange_titan_sword": {
-        "inherit": "survival_firingrange",
-        "vars": {
-          "loot_distribution_override_firing_range_all_weapons": "mp_weapon_titan_sword:1"
-        }
-      },
-      "survival_firingrange_titan_sword_epg": {
-        "inherit": "survival_firingrange",
-        "vars": {
-          "loot_distribution_override_firing_range_all_weapons": "mp_weapon_titan_sword:1, mp_weapon_epg:1",
-          "epg_spawn_in_deathbox": "1",
-          "epg_loot_beam": "0"
         }
       },
       "can_hu_base": {
@@ -2979,210 +2914,6 @@
           "description": "#PL_tropic_ranked_desc"
         }
       },
-      "survival_dayzero_can": {
-        "inherit": "survival",
-        "include": {
-          "map_canyonland_vars": "1",
-          "day_zero_defaults": "1",
-          "day_zero_remix_defaults": "1"
-        },
-        "vars": {
-          "playlist_ring_tuning_override": "survival_ring_dayzero_small"
-        }
-      },
-      "survival_dayzero_desertlands": {
-        "inherit": "survival",
-        "include": {
-          "map_desertland_vars": "1",
-          "day_zero_defaults": "1",
-          "day_zero_remix_defaults": "1"
-        },
-        "vars": {
-          "playlist_ring_tuning_override": "survival_ring_dayzero_medium"
-        }
-      },
-      "survival_dayzero_district": {
-        "inherit": "survival",
-        "include": {
-          "map_district_vars": "1",
-          "day_zero_defaults": "1",
-          "day_zero_remix_defaults": "1"
-        },
-        "vars": {
-          "playlist_ring_tuning_override": "survival_ring_dayzero_medium"
-        }
-      },
-      "survival_dayzero_moon": {
-        "inherit": "survival",
-        "include": {
-          "map_moon_vars": "1",
-          "day_zero_defaults": "1",
-          "day_zero_remix_defaults": "1"
-        },
-        "vars": {
-          "playlist_ring_tuning_override": "survival_ring_dayzero_large"
-        }
-      },
-      "survival_dayzero_olympus": {
-        "inherit": "survival",
-        "include": {
-          "map_olympus_vars": "1",
-          "day_zero_defaults": "1",
-          "day_zero_remix_defaults": "1"
-        },
-        "vars": {
-          "playlist_ring_tuning_override": "survival_ring_dayzero_small"
-        }
-      },
-      "survival_dayzero_tropic": {
-        "inherit": "survival",
-        "include": {
-          "map_tropics_vars": "1",
-          "day_zero_defaults": "1",
-          "day_zero_remix_defaults": "1"
-        },
-        "vars": {
-          "playlist_ring_tuning_override": "survival_ring_dayzero_large"
-        }
-      },
-      "trio_cb_des_hu": {
-        "inherit": "des_hu_trio",
-        "include": {
-          "cosmic_box_defaults": "1",
-          "cosmic_box_tuning": "1"
-        },
-        "vars": {}
-      },
-      "trio_cb_district": {
-        "inherit": "district_trio",
-        "include": {
-          "cosmic_box_defaults": "1",
-          "cosmic_box_tuning": "1"
-        },
-        "vars": {}
-      },
-      "trio_cb_olympus": {
-        "inherit": "olympus_mu2_trio",
-        "include": {
-          "cosmic_box_defaults": "1",
-          "cosmic_box_tuning": "1"
-        },
-        "vars": {}
-      },
-      "duo_cb_des_hu": {
-        "inherit": "des_hu_duo",
-        "include": {
-          "cosmic_box_defaults": "1",
-          "cosmic_box_tuning": "1"
-        },
-        "vars": {}
-      },
-      "duo_cb_district": {
-        "inherit": "district_duo",
-        "include": {
-          "cosmic_box_defaults": "1",
-          "cosmic_box_tuning": "1"
-        },
-        "vars": {}
-      },
-      "duo_cb_olympus": {
-        "inherit": "olympus_duo",
-        "include": {
-          "cosmic_box_defaults": "1",
-          "cosmic_box_tuning": "1"
-        },
-        "vars": {}
-      },
-      "trio_cb_ghorse_des_hu": {
-        "inherit": "trio_cb_des_hu",
-        "include": {
-          "cosmic_box_golden_horse": "1"
-        },
-        "vars": {}
-      },
-      "trio_cb_ghorse_district": {
-        "inherit": "trio_cb_district",
-        "include": {
-          "cosmic_box_golden_horse": "1"
-        },
-        "vars": {}
-      },
-      "trio_cb_ghorse_olympus": {
-        "inherit": "trio_cb_olympus",
-        "include": {
-          "cosmic_box_golden_horse": "1"
-        },
-        "vars": {}
-      },
-      "duo_cb_ghorse_des_hu": {
-        "inherit": "duo_cb_des_hu",
-        "include": {
-          "cosmic_box_golden_horse": "1"
-        },
-        "vars": {}
-      },
-      "duo_cb_ghorse_district": {
-        "inherit": "duo_cb_district",
-        "include": {
-          "cosmic_box_golden_horse": "1"
-        },
-        "vars": {}
-      },
-      "duo_cb_ghorse_olympus": {
-        "inherit": "duo_cb_olympus",
-        "include": {
-          "cosmic_box_golden_horse": "1"
-        },
-        "vars": {}
-      },
-      "battle_rush_can_hu": {
-        "inherit": "survival",
-        "include": {
-          "map_canyonland_vars": "1",
-          "battle_rush_defaults": "1"
-        },
-        "vars": {}
-      },
-      "battle_rush_des_hu": {
-        "inherit": "survival",
-        "include": {
-          "map_desertland_vars": "1",
-          "battle_rush_defaults": "1"
-        },
-        "vars": {}
-      },
-      "battle_rush_district": {
-        "inherit": "survival",
-        "include": {
-          "map_district_vars": "1",
-          "battle_rush_defaults": "1"
-        },
-        "vars": {}
-      },
-      "battle_rush_moon": {
-        "inherit": "survival",
-        "include": {
-          "map_moon_vars": "1",
-          "battle_rush_defaults": "1"
-        },
-        "vars": {}
-      },
-      "battle_rush_olympus": {
-        "inherit": "survival",
-        "include": {
-          "map_olympus_vars": "1",
-          "battle_rush_defaults": "1"
-        },
-        "vars": {}
-      },
-      "battle_rush_tropic": {
-        "inherit": "survival",
-        "include": {
-          "map_tropics_vars": "1",
-          "battle_rush_defaults": "1"
-        },
-        "vars": {}
-      },
       "can_hu_freespawns_trio": {
         "inherit": "survival",
         "include": {
@@ -3231,17 +2962,354 @@
         },
         "vars": {}
       },
+      "survival_strikeout_can_hu": {
+        "inherit": "survival",
+        "include": {
+          "map_canyonland_vars": "1",
+          "strikeout_defaults": "1"
+        },
+        "vars": {}
+      },
+      "survival_strikeout_olymp": {
+        "inherit": "survival",
+        "include": {
+          "map_olympus_vars": "1",
+          "strikeout_defaults": "1"
+        },
+        "vars": {
+          "image": "strikeout_olympus_mu2",
+          "playlist_ring_tuning_override": "survival_ring_olymp_strikeout"
+        }
+      },
+      "survival_strikeout_storm_point": {
+        "inherit": "survival",
+        "include": {
+          "map_tropics_vars": "1",
+          "strikeout_defaults": "1"
+        },
+        "vars": {
+          "image": "strikeout_storm_point_mu2",
+          "playlist_ring_tuning_override": "survival_ring_tropics_strikeout"
+        }
+      },
+      "strikeout_mystery_can_hu": {
+        "inherit": "survival",
+        "include": {
+          "map_canyonland_vars": "1",
+          "strikeout_defaults": "1",
+          "mystery_legends_base": "1"
+        },
+        "vars": {}
+      },
+      "strikeout_mystery_moon_mu1": {
+        "inherit": "survival",
+        "include": {
+          "map_moon_vars": "1",
+          "strikeout_defaults": "1",
+          "mystery_legends_base": "1"
+        },
+        "vars": {
+          "playlist_ring_tuning_override": "survival_ring_moon_strikeout"
+        }
+      },
+      "strikeout_mystery_oly_mu2": {
+        "inherit": "survival",
+        "include": {
+          "map_olympus_vars": "1",
+          "strikeout_defaults": "1",
+          "mystery_legends_base": "1"
+        },
+        "vars": {
+          "playlist_ring_tuning_override": "survival_ring_olymp_strikeout"
+        }
+      },
+      "battle_rush_can_hu": {
+        "inherit": "survival",
+        "include": {
+          "map_canyonland_vars": "1",
+          "battle_rush_defaults": "1"
+        },
+        "vars": {}
+      },
+      "battle_rush_des_hu": {
+        "inherit": "survival",
+        "include": {
+          "map_desertland_vars": "1",
+          "battle_rush_defaults": "1"
+        },
+        "vars": {}
+      },
+      "battle_rush_district": {
+        "inherit": "survival",
+        "include": {
+          "map_district_vars": "1",
+          "battle_rush_defaults": "1"
+        },
+        "vars": {}
+      },
+      "battle_rush_moon": {
+        "inherit": "survival",
+        "include": {
+          "map_moon_vars": "1",
+          "battle_rush_defaults": "1"
+        },
+        "vars": {}
+      },
+      "battle_rush_olympus": {
+        "inherit": "survival",
+        "include": {
+          "map_olympus_vars": "1",
+          "battle_rush_defaults": "1"
+        },
+        "vars": {}
+      },
+      "battle_rush_tropics": {
+        "inherit": "survival",
+        "include": {
+          "map_tropics_vars": "1",
+          "battle_rush_defaults": "1"
+        },
+        "vars": {}
+      },
+      "kitted_weapons_s24_can": {
+        "inherit": "can_hu_base",
+        "include": {
+          "kitted_weapons_defaults": "1"
+        },
+        "vars": {}
+      },
+      "kitted_weapons_s24_oly": {
+        "inherit": "olympus_mu2_base",
+        "include": {
+          "kitted_weapons_defaults": "1"
+        },
+        "vars": {}
+      },
+      "kitted_weapons_s24_moon": {
+        "inherit": "moon_mu1_base",
+        "include": {
+          "kitted_weapons_defaults": "1"
+        },
+        "vars": {}
+      },
+      "kitted_weapons_s24_can_duos": {
+        "inherit": "can_hu_base",
+        "include": {
+          "duo_defaults": "1",
+          "kitted_weapons_defaults": "1"
+        },
+        "vars": {}
+      },
+      "kitted_weapons_s24_oly_duos": {
+        "inherit": "olympus_mu2_base",
+        "include": {
+          "duo_defaults": "1",
+          "kitted_weapons_defaults": "1"
+        },
+        "vars": {}
+      },
+      "kitted_weapons_s24_moon_duos": {
+        "inherit": "moon_mu1_base",
+        "include": {
+          "duo_defaults": "1",
+          "kitted_weapons_defaults": "1"
+        },
+        "vars": {}
+      },
+      "mythic_s24_can_hu_trio": {
+        "inherit": "can_hu_base",
+        "include": {
+          "mythic_s24_event_default": "1"
+        },
+        "vars": {}
+      },
+      "mythic_s24_olympus_trio": {
+        "inherit": "olympus_mu2_base",
+        "include": {
+          "mythic_s24_event_default": "1"
+        },
+        "vars": {}
+      },
+      "mythic_s24_moon_trio": {
+        "inherit": "moon_mu1_base",
+        "include": {
+          "mythic_s24_event_default": "1"
+        },
+        "vars": {}
+      },
+      "mythic_s24_can_hu_duo": {
+        "inherit": "can_hu_base",
+        "include": {
+          "duo_defaults": "1",
+          "mythic_s24_event_default": "1"
+        },
+        "vars": {}
+      },
+      "mythic_s24_olympus_duo": {
+        "inherit": "olympus_mu2_base",
+        "include": {
+          "duo_defaults": "1",
+          "mythic_s24_event_default": "1"
+        },
+        "vars": {}
+      },
+      "mythic_s24_moon_duo": {
+        "inherit": "moon_mu1_base",
+        "include": {
+          "duo_defaults": "1",
+          "mythic_s24_event_default": "1"
+        },
+        "vars": {}
+      },
+      "mythic_sct_can_hu_trio": {
+        "inherit": "mythic_s24_can_hu_trio",
+        "include": {
+          "second_chance_defaults": "1"
+        },
+        "vars": {}
+      },
+      "mythic_sct_olympus_trio": {
+        "inherit": "mythic_s24_olympus_trio",
+        "include": {
+          "second_chance_defaults": "1"
+        },
+        "vars": {}
+      },
+      "mythic_sct_moon_trio": {
+        "inherit": "mythic_s24_moon_trio",
+        "include": {
+          "second_chance_defaults": "1"
+        },
+        "vars": {}
+      },
+      "mythic_sct_can_hu_duo": {
+        "inherit": "mythic_s24_can_hu_duo",
+        "include": {
+          "second_chance_defaults": "1"
+        },
+        "vars": {}
+      },
+      "mythic_sct_olympus_duo": {
+        "inherit": "mythic_s24_olympus_duo",
+        "include": {
+          "second_chance_defaults": "1"
+        },
+        "vars": {}
+      },
+      "mythic_sct_moon_duo": {
+        "inherit": "mythic_s24_moon_duo",
+        "include": {
+          "second_chance_defaults": "1"
+        },
+        "vars": {}
+      },
+      "survival_bots_vs_humanteams": {
+        "inherit": "survival",
+        "include": {
+          "map_desertland_vars": "1"
+        },
+        "vars": {
+          "image": "trios",
+          "name": "#PL_TRIO",
+          "description": "#PL_survival_squads_desc",
+          "abbreviation": "#PL_TRIO",
+          "matchmake_from_match": "0",
+          "max_teams": "20",
+          "max_players": "60",
+          "min_players": "60",
+          "max_botonly_teams": "16",
+          "max_nofill_players": "0",
+          "survival_takeover_name": "#PL_ORIENTATION_MATCH",
+          "require_new_player_orientation": "0"
+        }
+      },
+      "survival_bot_playground_canyonlands": {
+        "inherit": "survival",
+        "include": {
+          "map_canyonland_vars": "1",
+          "killreplay_br_disable": "1",
+          "bot_playground_defaults": "1"
+        },
+        "vars": {
+          "cull_entity_spawn_circle": "<12000 -6000 0>, <12000 6000 0>, <-4000 6000 0>, <-4000 -6000 0>, 28500",
+          "loot_drones_spawn_count": "2",
+          "blimp_drones_spawn_count": "0"
+        }
+      },
+      "survival_bot_playground_desertlands": {
+        "inherit": "survival",
+        "include": {
+          "map_desertland_vars": "1",
+          "killreplay_br_disable": "1",
+          "bot_playground_defaults": "1"
+        },
+        "vars": {
+          "preview_map_rotation": "1",
+          "cull_entity_spawn_circle": "<0 0 0>, <-7000 10000 0>, <11000 11000 0>, <-8000 -11000 0>, <8000 -17000 0>, 28500",
+          "loot_drones_spawn_count": "9",
+          "blimp_drones_spawn_count": "0",
+          "loot_drones_vault_key_count": "6"
+        }
+      },
+      "survival_bot_playground_district": {
+        "inherit": "survival",
+        "include": {
+          "map_district_vars": "1",
+          "killreplay_br_disable": "1",
+          "bot_playground_defaults": "1"
+        },
+        "vars": {
+          "preview_map_rotation": "1",
+          "cull_entity_spawn_circle": "<0 0 0>, <5000 -9000 0>, <4000 7000 0>, <-8000 7000 0>, <5000 9000 0>, 28500"
+        }
+      },
+      "survival_bot_playground_olympus": {
+        "inherit": "survival",
+        "include": {
+          "map_olympus_vars": "1",
+          "killreplay_br_disable": "1",
+          "bot_playground_defaults": "1"
+        },
+        "vars": {
+          "preview_map_rotation": "1",
+          "cull_entity_spawn_circle": "<0 0 0>, <-14000 11000 0>, <1000 7000 0>, <0 -14000 0>, 28500"
+        }
+      },
+      "survival_bot_playground_tropic": {
+        "inherit": "survival",
+        "include": {
+          "map_tropics_vars": "1",
+          "killreplay_br_disable": "1",
+          "bot_playground_defaults": "1"
+        },
+        "vars": {
+          "preview_map_rotation": "1",
+          "cull_entity_spawn_circle": "<0 0 0>, <10000 23000 0>, <14000 -11000 0>, <20000 20000 0>, <-15000 11000 0>, <-18000 -12000 0>, 28500"
+        }
+      },
+      "survival_bot_playground_brokenmoon": {
+        "inherit": "survival",
+        "include": {
+          "map_moon_vars": "1",
+          "killreplay_br_disable": "1",
+          "bot_playground_defaults": "1"
+        },
+        "vars": {
+          "cull_entity_spawn_circle": "<12000 -11000 0>, <0 0 0>, <11000 13000 0>, <-15000 9000 0>, <-15000 -14000 0>, 28500"
+        }
+      },
       "mixtape_rotation": {
         "inherit": "freedm_tdm",
         "vars": {
           "name": "#EMPTY_STRING",
           "description": "#EMPTY_STRING",
-          "map_location": "skulltown"
+          "map_location": "fdm_amps",
+          "cull_entity_spawn_circle": "<27440 40984 10398> 9000"
         },
         "gamemodes": {
           "freedm": {
             "maps": {
-              "mp_rr_freedm_skulltown": "1"
+              "mp_rr_tropic_island_mu2": "1"
             }
           }
         }
@@ -3254,11 +3322,11 @@
         },
         "vars": {}
       },
-      "mix_s_control_caustic": {
+      "mix_s_control_wattson": {
         "inherit": "defaults",
         "include": {
           "mode_control_defaults": "1",
-          "map_caustic_control_defaults": "1"
+          "map_wattson_control_defaults": "1"
         },
         "vars": {}
       },
@@ -3270,11 +3338,11 @@
         },
         "vars": {}
       },
-      "mix_s_control_production": {
+      "mix_s_control_caustic": {
         "inherit": "defaults",
         "include": {
           "mode_control_defaults": "1",
-          "map_production_control_defaults": "1"
+          "map_caustic_control_defaults": "1"
         },
         "vars": {}
       },
@@ -3286,6 +3354,14 @@
         },
         "vars": {}
       },
+      "mix_s_control_production": {
+        "inherit": "defaults",
+        "include": {
+          "mode_control_defaults": "1",
+          "map_production_control_defaults": "1"
+        },
+        "vars": {}
+      },
       "mix_s_control_thunderdome": {
         "inherit": "defaults",
         "include": {
@@ -3294,19 +3370,8 @@
         },
         "vars": {}
       },
-      "mix_s_control_wattson": {
-        "inherit": "defaults",
-        "include": {
-          "mode_control_defaults": "1",
-          "map_wattson_control_defaults": "1"
-        },
-        "vars": {}
-      },
       "freedm_base": {
         "inherit": "defaults",
-        "include": {
-          "roundwinningkillreplay_freedm": "1"
-        },
         "vars": {
           "name": "",
           "description": "",
@@ -3362,7 +3427,9 @@
       },
       "freedm_tdm": {
         "inherit": "freedm_base",
-        "include": {},
+        "include": {
+          "roundwinningkillreplay_freedm": "1"
+        },
         "vars": {
           "name": "#TDM_NAME",
           "description": "#TDM_DESC",
@@ -3471,6 +3538,13 @@
         },
         "vars": {}
       },
+      "mix_s_tdm_the_core": {
+        "inherit": "freedm_tdm",
+        "include": {
+          "map_the_core_defaults": "1"
+        },
+        "vars": {}
+      },
       "mix_s_btdm_amps": {
         "inherit": "freedm_tdm",
         "include": {
@@ -3551,6 +3625,16 @@
           "map_location": "bfdm_thunderdome"
         }
       },
+      "mix_s_btdm_monument": {
+        "inherit": "freedm_tdm",
+        "include": {
+          "mode_btdm_defaults": "1",
+          "map_monument_defaults": "1"
+        },
+        "vars": {
+          "map_location": "bfdm_monument"
+        }
+      },
       "freedm_gungame": {
         "inherit": "freedm_base",
         "include": {
@@ -3561,6 +3645,7 @@
           "description": "#GUNGAME_DESCRIPTION",
           "show_ltm_about_button": "1",
           "show_ltm_about_button_is_takeover": "0",
+          "ui_rules": "gungame",
           "max_teams": "4",
           "min_players": "12",
           "max_players": "12",
@@ -3607,14 +3692,18 @@
         "include": {
           "map_amps_defaults": "1"
         },
-        "vars": {}
+        "vars": {
+          "map_location": "fdm_gg_amps"
+        }
       },
       "mix_s_gungame_estates": {
         "inherit": "freedm_gungame",
         "include": {
           "map_estates_defaults": "1"
         },
-        "vars": {}
+        "vars": {
+          "map_location": "gg_estates"
+        }
       },
       "mix_s_gungame_fragment": {
         "inherit": "freedm_gungame",
@@ -3816,8 +3905,7 @@
       "can_hu_pm": {
         "inherit": "can_hu_cm",
         "include": {
-          "tournament_matches_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "tournament_matches_defaults": "1"
         },
         "vars": {
           "name": "#PL_TOURNAMENT_CANYONLANDS_HU"
@@ -3846,8 +3934,7 @@
       "des_hu_pm": {
         "inherit": "des_hu_cm",
         "include": {
-          "tournament_matches_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "tournament_matches_defaults": "1"
         },
         "vars": {
           "name": "#PL_TOURNAMENT_DESERTLANDS_HU"
@@ -3876,8 +3963,7 @@
       "district_pm": {
         "inherit": "district_cm",
         "include": {
-          "tournament_matches_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "tournament_matches_defaults": "1"
         },
         "vars": {
           "name": "#PL_TOURNAMENT_DISTRICT"
@@ -3906,8 +3992,7 @@
       "moon_pm": {
         "inherit": "moon_cm",
         "include": {
-          "tournament_matches_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "tournament_matches_defaults": "1"
         },
         "vars": {
           "name": "#PL_TOURNAMENT_MOON_MU1"
@@ -3936,8 +4021,7 @@
       "oly_mu2_pm": {
         "inherit": "oly_mu2_cm",
         "include": {
-          "tournament_matches_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "tournament_matches_defaults": "1"
         },
         "vars": {
           "name": "#PL_TOURNAMENT_OLYMPUS_MU2"
@@ -3966,8 +4050,7 @@
       "tropic_mu2_pm": {
         "inherit": "tropic_mu2_cm",
         "include": {
-          "tournament_matches_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "tournament_matches_defaults": "1"
         },
         "vars": {
           "name": "#PL_TOURNAMENT_TROPIC_MU2"
@@ -4112,7 +4195,6 @@
           "require_new_player_orientation": "0",
           "mixtape_match_abandon_penalty": "0",
           "match_time_limit": "1800",
-          "visible": "1",
           "matchmake_from_match": "0"
         }
       },
@@ -4165,6 +4247,13 @@
         "inherit": "tdm_s_cm",
         "include": {
           "map_estates_defaults": "1"
+        },
+        "vars": {}
+      },
+      "tdm_habitat_s_pm": {
+        "inherit": "tdm_s_cm",
+        "include": {
+          "map_habitat_defaults": "1"
         },
         "vars": {}
       },
@@ -4381,168 +4470,19 @@
           "map_location": "bfdm_estates"
         }
       },
-      "tr_hunt_s_cm": {
-        "inherit": "freedm_tr_hunt_base",
+      "btdm_habitat_s_pm": {
+        "inherit": "btdm_s_cm",
         "include": {
-          "custom_matches_defaults_small": "1"
+          "map_habitat_defaults": "1"
         },
         "vars": {
-          "gamemode_logo": "FREEDM"
+          "map_location": "bfdm_arena_habitat"
         }
-      },
-      "tr_hunt_the_core_s_pm": {
-        "inherit": "tr_hunt_s_cm",
-        "include": {
-          "map_the_core_defaults": "1"
-        },
-        "vars": {
-          "map_location": "th_the_core"
-        }
-      },
-      "tr_hunt_amps_s_pm": {
-        "inherit": "tr_hunt_s_cm",
-        "include": {
-          "map_amps_defaults": "1"
-        },
-        "vars": {
-          "panel_image": "mixtape_treasurehunt_storm_point_mu2",
-          "map_location": "fdm_th_amps"
-        }
-      },
-      "tr_hunt_monument_s_pm": {
-        "inherit": "tr_hunt_s_cm",
-        "include": {
-          "map_desertland_vars": "1"
-        },
-        "vars": {
-          "map_location": "treasure_hunt_monument"
-        }
-      },
-      "tr_hunt_estates_s_pm": {
-        "inherit": "tr_hunt_s_cm",
-        "include": {
-          "map_estates_defaults": "1"
-        },
-        "vars": {
-          "map_location": "th_estates"
-        }
-      },
-      "tr_hunt_skull_s_pm": {
-        "inherit": "tr_hunt_s_cm",
-        "include": {
-          "map_skulltown_defaults": "1"
-        },
-        "vars": {
-          "map_location": "treaure_hunt_skulltown"
-        }
-      },
-      "tr_hunt_thunderdome_s_pm": {
-        "inherit": "tr_hunt_s_cm",
-        "include": {
-          "map_thunderdome_defaults": "1"
-        },
-        "vars": {
-          "map_location": "th_thunderdome"
-        }
-      },
-      "dayzero_cm": {
-        "inherit": "survival",
-        "include": {
-          "custom_matches_defaults": "1",
-          "day_zero_defaults": "1",
-          "day_zero_remix_defaults": "1"
-        },
-        "vars": {}
-      },
-      "dayzero_canyonlands_pm": {
-        "inherit": "dayzero_cm",
-        "include": {
-          "map_canyonland_vars": "1"
-        },
-        "vars": {}
-      },
-      "sm_dayzero_canyonlands_pm": {
-        "inherit": "dayzero_canyonlands_pm",
-        "include": {
-          "showmatch_algs": "1"
-        },
-        "vars": {}
-      },
-      "dayzero_district_pm": {
-        "inherit": "dayzero_cm",
-        "include": {
-          "map_district_vars": "1"
-        },
-        "vars": {}
-      },
-      "sm_dayzero_district_pm": {
-        "inherit": "dayzero_district_pm",
-        "include": {
-          "showmatch_algs": "1"
-        },
-        "vars": {}
-      },
-      "dayzero_moon_pm": {
-        "inherit": "dayzero_cm",
-        "include": {
-          "map_moon_vars": "1"
-        },
-        "vars": {}
-      },
-      "sm_dayzero_moon_pm": {
-        "inherit": "dayzero_moon_pm",
-        "include": {
-          "showmatch_algs": "1"
-        },
-        "vars": {}
-      },
-      "dayzero_desertlands_pm": {
-        "inherit": "dayzero_cm",
-        "include": {
-          "map_desertland_vars": "1"
-        },
-        "vars": {}
-      },
-      "sm_dayzero_desertlands_pm": {
-        "inherit": "dayzero_desertlands_pm",
-        "include": {
-          "showmatch_algs": "1"
-        },
-        "vars": {}
-      },
-      "dayzero_tropics_pm": {
-        "inherit": "dayzero_cm",
-        "include": {
-          "map_tropics_vars": "1"
-        },
-        "vars": {}
-      },
-      "sm_dayzero_tropics_pm": {
-        "inherit": "dayzero_tropics_pm",
-        "include": {
-          "showmatch_algs": "1"
-        },
-        "vars": {}
-      },
-      "dayzero_olympus_pm": {
-        "inherit": "dayzero_cm",
-        "include": {
-          "map_olympus_vars": "1"
-        },
-        "vars": {}
-      },
-      "sm_dayzero_olympus_pm": {
-        "inherit": "dayzero_olympus_pm",
-        "include": {
-          "showmatch_algs": "1"
-        },
-        "vars": {}
       },
       "des_new_spawn_pm": {
         "inherit": "des_hu_base",
         "include": {
-          "private_match_new_spawn_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "private_match_new_spawn_defaults": "1"
         },
         "vars": {
           "name": "#PL_ALGS_DESERTLANDS",
@@ -4561,8 +4501,7 @@
       "tropic_new_spawn_pm": {
         "inherit": "tropic_base",
         "include": {
-          "private_match_new_spawn_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "private_match_new_spawn_defaults": "1"
         },
         "vars": {
           "name": "#PL_ALGS_TROPIC",
@@ -4581,8 +4520,7 @@
       "district_new_spawn_pm": {
         "inherit": "district_base",
         "include": {
-          "private_match_new_spawn_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "private_match_new_spawn_defaults": "1"
         },
         "vars": {
           "name": "#PL_ALGS_DISTRICT",
@@ -4601,8 +4539,7 @@
       "moon_new_spawn_pm": {
         "inherit": "moon_mu1_base",
         "include": {
-          "private_match_new_spawn_defaults": "1",
-          "competitive_tuning_defaults": "1"
+          "private_match_new_spawn_defaults": "1"
         },
         "vars": {
           "name": "#PL_ALGS_MOON",
@@ -4617,317 +4554,105 @@
         "vars": {
           "name": "#PL_TOURNAMENT_MOON_NORING"
         }
-      },
-      "defaults": {
-        "vars": {
-          "name": "#PL_default_name",
-          "lobbytitle": "#PL_default_lobbytitle",
-          "description": "#PL_default_description",
-          "image": "default"
-        }
-      },
-      "survival": {
-        "inherit": "defaults",
-        "vars": {
-          "name": "#EMPTY_STRING",
-          "description": "#PL_survival_squads_desc",
-          "image": "fw",
-          "max_teams": "20",
-          "max_players": "60",
-          "min_players": "60",
-          "matchmake_from_match": "1"
-        },
-        "gamemodes": {
-          "survival": {
-            "maps": {
-              "mp_rr_desertlands_hu": "1"
-            }
-          }
-        }
-      },
-      "survival_dev": {
-        "inherit": "survival",
-        "vars": {
-          "waiting_for_players_spawning_enabled": "1",
-          "waiting_for_players_countdown_seconds": "0",
-          "waiting_for_players_timeout_seconds": "1",
-          "character_select_time_max": "0.0",
-          "character_select_time_min": "0.0",
-          "survival_enable_gladiator_intros": "0",
-          "jump_from_plane_enabled": "0",
-          "matchmake_from_match": "0",
-          "sur_circle_start_paused": "1",
-          "dev_loadout_bypass_match_state": "1",
-          "dev_loadout_changeable_at_any_time": "1",
-          "sur_dev_unrestricted_character_changes": "1",
-          "sur_bots_spawn_with_random_weapons": "1"
-        },
-        "gamemodes": {
-          "survival": {
-            "maps": {
-              "mp_rr_box": "1"
-            }
-          }
-        }
-      },
-      "dev_default": {
-        "inherit": "survival_dev",
-        "vars": {
-          "cmdlineMapLoad": "1",
-          "reconnect_disabled": "1",
-          "matchmake_from_match": "0",
-          "MTX_Event_2": "settings/itemflav/calevent/s23me04/milestone.rpak"
-        },
-        "gamemodes": {
-          "survival": {
-            "maps": {
-              "mp_lobby": "1"
-            }
-          }
-        }
-      },
-      "survival_bot_playground_district": {
-        "inherit": "survival",
-        "include": {
-          "map_district_vars": "1",
-          "killreplay_br_disable": "1",
-          "bot_playground_defaults": "1"
-        },
-        "vars": {
-          "preview_map_rotation": "1",
-          "cull_entity_spawn_circle": "<0 0 0>, <5000 -9000 0>, <4000 7000 0>, <-8000 7000 0>, <5000 9000 0>, 28500"
-        }
-      },
-      "survival_bot_playground_olympus": {
-        "inherit": "survival",
-        "include": {
-          "map_olympus_vars": "1",
-          "killreplay_br_disable": "1",
-          "bot_playground_defaults": "1"
-        },
-        "vars": {
-          "preview_map_rotation": "1",
-          "cull_entity_spawn_circle": "<0 0 0>, <-14000 11000 0>, <1000 7000 0>, <0 -14000 0>, 28500"
-        }
-      },
-      "survival_bot_playground_desertlands": {
-        "inherit": "survival",
-        "include": {
-          "map_desertland_vars": "1",
-          "killreplay_br_disable": "1",
-          "bot_playground_defaults": "1"
-        },
-        "vars": {
-          "preview_map_rotation": "1",
-          "cull_entity_spawn_circle": "<0 0 0>, <-7000 10000 0>, <11000 11000 0>, <-8000 -11000 0>, <8000 -17000 0>, 28500",
-          "loot_drones_spawn_count": "9",
-          "blimp_drones_spawn_count": "0",
-          "loot_drones_vault_key_count": "6"
-        }
-      },
-      "survival_bots_vs_humanteams": {
-        "inherit": "survival",
-        "include": {
-          "map_desertland_vars": "1"
-        },
-        "vars": {
-          "image": "trios",
-          "name": "#PL_TRIO",
-          "description": "#PL_survival_squads_desc",
-          "abbreviation": "#PL_TRIO",
-          "matchmake_from_match": "0",
-          "max_teams": "20",
-          "max_players": "60",
-          "min_players": "60",
-          "max_botonly_teams": "16",
-          "max_nofill_players": "0",
-          "survival_takeover_name": "#PL_ORIENTATION_MATCH",
-          "require_new_player_orientation": "0"
-        }
       }
     },
-    "PlaylistRotation": "survival_dayzero_ltm",
+    "PlaylistRotation": "kitted_duo",
     "trios": {
       "rotation": {
-        "district_trio": "90",
+        "can_hu_trio": "90",
         "olympus_mu2_trio": "90",
-        "des_hu_trio": "90"
-      }
-    },
-    "trios_cb": {
-      "rotation": {
-        "trio_cb_district": "90",
-        "trio_cb_olympus": "90",
-        "trio_cb_des_hu": "90"
-      }
-    },
-    "trios_cb_ghorse": {
-      "rotation": {
-        "trio_cb_ghorse_district": "90",
-        "trio_cb_ghorse_olympus": "90",
-        "trio_cb_ghorse_des_hu": "90"
+        "moon_mu1_trio": "90"
       }
     },
     "duos": {
       "rotation": {
-        "district_duo": "90",
+        "can_hu_duo": "90",
         "olympus_duo": "90",
-        "des_hu_duo": "90"
+        "moon_mu1_duo": "90"
       }
-    },
-    "duos_cb": {
-      "rotation": {
-        "duo_cb_district": "90",
-        "duo_cb_olympus": "90",
-        "duo_cb_des_hu": "90"
-      }
-    },
-    "duos_cb_ghorse": {
-      "rotation": {
-        "duo_cb_ghorse_district": "90",
-        "duo_cb_ghorse_olympus": "90",
-        "duo_cb_ghorse_des_hu": "90"
-      }
-    },
-    "ranked_split2": {
-      "rotation": {
-        "district_ranked": "1440",
-        "olympus_ranked": "1440",
-        "des_hu_ranked": "1440"
-      }
-    },
-    "bot_playground": {
-      "bot_playground": "2025-01-07 10:00:00 -08:00"
-    },
-    "mixtape": {
-      "mixtape": "2025-01-07 10:00:00 -08:00",
-      "mixtape_2": "2025-01-21 10:00:00 -08:00"
-    },
-    "mixtape_2": {
-      "rotation": {
-        "mix_s_btdm_thunderdome": "15",
-        "mix_s_control_production": "15",
-        "mix_s_gungame_skulltown": "15",
-        "mix_s_tr_hunt_amps": "15",
-        "mix_s_btdm_skulltown": "15",
-        "mix_s_control_siphon": "15",
-        "mix_s_gungame_fragment": "15",
-        "mix_s_tr_hunt_the_core": "15"
-      }
-    },
-    "survival_dayzero_ltm": {
-      "rotation": {
-        "survival_dayzero_can": "30",
-        "survival_dayzero_desertlands": "30",
-        "survival_dayzero_olympus": "30",
-        "survival_dayzero_tropic": "30",
-        "survival_dayzero_moon": "30",
-        "survival_dayzero_district": "30"
-      }
-    },
-    "PlaylistSchedule": "ltm",
-    "regular_1": {
-      "trios_cb": "2025-01-14 10:00:00 -08:00",
-      "2025-01-07 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_10"
-        }
-      },
-      "2025-01-14 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_11"
-        }
-      },
-      "trios_cb_ghorse": "2025-02-04 10:00:00 -08:00",
-      "2025-01-21 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_12"
-        }
-      },
-      "2025-01-28 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_13"
-        }
-      },
-      "2025-02-04 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_14"
-        }
-      }
-    },
-    "regular_2": {
-      "duos_cb": "2025-01-14 10:00:00 -08:00",
-      "2025-01-07 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_10"
-        }
-      },
-      "2025-01-14 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_11"
-        }
-      },
-      "duos_cb_ghorse": "2025-02-04 10:00:00 -08:00",
-      "2025-01-21 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_12"
-        }
-      },
-      "2025-01-28 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_13"
-        }
-      },
-      "2025-02-04 10:00:00 -08:00": {
-        "vars": {
-          "cosmic_box_weekly_loot_group": "cosmic_box_loot_week_14"
-        }
-      }
-    },
-    "training": {
-      "survival_training": "2025-01-07 10:00:00 -08:00"
-    },
-    "firing_range": {
-      "survival_firingrange": "2025-01-07 10:00:00 -08:00",
-      "survival_firingrange_epg": "2025-01-14 10:00:00 -08:00",
-      "survival_firingrange_titan_sword_epg": "2025-01-21 10:00:00 -08:00"
     },
     "ranked": {
-      "ranked_split2": "2024-12-17 10:00:00 -08:00"
+      "ranked": "2025-02-11 10:00:00 -08:00"
     },
+    "mixtape": {
+      "mixtape": "2025-02-11 10:00:00 -08:00"
+    },
+    "bot_playground": {
+      "bot_playground": "2025-02-11 10:00:00 -08:00"
+    },
+    "mystery_legends": {
+      "rotation": {
+        "strikeout_mystery_can_hu": "90",
+        "strikeout_mystery_moon_mu1": "90",
+        "strikeout_mystery_oly_mu2": "90"
+      }
+    },
+    "mythic_trio": {
+      "rotation": {
+        "mythic_s24_can_hu_trio": "90",
+        "mythic_s24_olympus_trio": "90",
+        "mythic_s24_moon_trio": "90"
+      }
+    },
+    "mythic_duo": {
+      "rotation": {
+        "mythic_s24_can_hu_duo": "90",
+        "mythic_s24_olympus_duo": "90",
+        "mythic_s24_moon_duo": "90"
+      }
+    },
+    "second_chance_trio": {
+      "rotation": {
+        "mythic_sct_can_hu_trio": "90",
+        "mythic_sct_olympus_trio": "90",
+        "mythic_sct_moon_trio": "90"
+      }
+    },
+    "second_chance_duo": {
+      "rotation": {
+        "mythic_sct_can_hu_duo": "90",
+        "mythic_sct_olympus_duo": "90",
+        "mythic_sct_moon_duo": "90"
+      }
+    },
+    "kitted_trio": {
+      "rotation": {
+        "kitted_weapons_s24_can": "90",
+        "kitted_weapons_s24_oly": "90",
+        "kitted_weapons_s24_moon": "90"
+      }
+    },
+    "kitted_duo": {
+      "rotation": {
+        "kitted_weapons_s24_can_duos": "90",
+        "kitted_weapons_s24_oly_duos": "90",
+        "kitted_weapons_s24_moon_duos": "90"
+      }
+    },
+    "PlaylistSchedule": "bot_playground",
+    "regular_0": {},
+    "regular_1": {
+      "mythic_trio": "2025-02-11 10:00:00 -08:00",
+      "second_chance_trio": "2025-02-25 10:00:00 -08:00",
+      "kitted_trio": "2025-03-04 10:00:00 -08:00",
+      "trios": "2025-03-11 10:00:00 -07:00"
+    },
+    "regular_2": {
+      "mythic_duo": "2025-02-11 10:00:00 -08:00",
+      "second_chance_duo": "2025-02-25 10:00:00 -08:00",
+      "kitted_duo": "2025-03-04 10:00:00 -08:00",
+      "duos": "2025-03-11 10:00:00 -07:00"
+    },
+    "regular_3": {},
     "ltm": {
-      "survival_dayzero_ltm": "2025-01-07 10:00:00 -08:00",
-      "no_active_playlist": "2025-01-21 10:00:00 -08:00"
+      "no_active_playlist": "2025-02-11 10:00:00 -08:00",
+      "mystery_legends": "2025-03-11 10:00:00 -07:00"
     },
-    "LocalizedStrings": {
-      "lang": {
-        "Language": "arabic",
-        "Tokens": {
-          "NESSIE_TITLE": "وحش البحيرة",
-          "BABY_NESSIE_TITLE": "وحش البحيرة الصغير"
-        }
-      }
+    "training": {
+      "survival_training": "2025-02-11 10:00:00 -08:00"
     },
-    "KVFileOverrides": {
-      "scripts/weapons/mp_ability_boost_kit_nessie_summon.txt": {
-        "WeaponData": {
-          "nessie_summon_count": "1"
-        }
-      },
-      "scripts/weapons/mp_weapon_defender.txt": {
-        "WeaponData": {
-          "Mods": {
-            "altfire_selectfire": {
-              "damage_near_value": "*0.75",
-              "damage_far_value": "*0.75",
-              "damage_very_far_value": "*0.75",
-              "damage_near_value_titanarmor": "*0.75",
-              "damage_far_value_titanarmor": "*0.75",
-              "damage_very_far_value_titanarmor": "*0.75"
-            }
-          }
-        }
-      }
+    "firing_range": {
+      "survival_firingrange": "2025-02-11 10:00:00 -08:00"
     }
   }
 }

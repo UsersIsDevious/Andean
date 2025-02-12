@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+const config = require('../../config.json');
 let servers = {}; // サーバーリストを保持するオブジェクト
 
 // コールバックリストを保持
@@ -51,7 +52,7 @@ function ensureFolderExists(folder) {
  * @param {string} newData.class - クラス名
  */
 function saveData(filename,_class) {
-  let filePath = path.join(__dirname, '../../output/', filename + ".json");
+  let filePath = path.join(__dirname, config.output, filename + ".json");
   let existingData = [];
 
   // 既存データの読み込み
@@ -75,7 +76,7 @@ function saveData(filename,_class) {
  * @param {Object} _class - 新しく保存するPacketデータオブジェクト
  */
 function saveUpdate(filename, outputPath, _class) {
-  let filePath = path.join(__dirname, `${outputPath}`, filename + ".json");
+  let filePath = path.join(__dirname, outputPath, filename + ".json");
 
   try {
     // データをファイルに書き込み
@@ -147,7 +148,7 @@ function startAllServers(httpServer, websocketServer, websocketServer_web) {
  */
 function saveLog(message, logFileName = 'app.log') {
   const timestamp = new Date().toISOString();
-  const logFilePath = path.join(__dirname, '../../log/', logFileName);
+  const logFilePath = path.join(__dirname, config.log_dir, logFileName);
   // const logMessage = `[${timestamp}] ${message}\n`;
   const logMessage = `${message},\n`;
 
@@ -199,8 +200,7 @@ function readFile(filePath = '../../config.json') {
  */
 function readText(filePath) {
   try {
-    const absolutePath = path.resolve(__dirname, filePath);
-    const data = fs.readFileSync(absolutePath, 'utf8');
+    const data = fs.readFileSync(filePath, 'utf8');
     return data;
   }
   catch (error) {

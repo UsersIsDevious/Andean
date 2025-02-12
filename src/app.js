@@ -15,10 +15,10 @@ if (!config) {
 } else if (!config.language || config.language === '') {
     console.error('言語設定が見つからないため、デフォルトの言語設定(English)を使用します。');
 } else {
-    language = common.readConfig(`../../locals/${config.language}.json`);
+    language = common.readFile(`../../locals/${config.language}.json`);
     if (language === null) {
         console.error('言語設定が見つからないため、デフォルトの言語設定(English)を使用します。');
-        language = common.readConfig('../../locals/en.default.json');
+        language = common.readFile('../../locals/en.default.json');
     }
 }
 
