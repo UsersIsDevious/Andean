@@ -1,8 +1,12 @@
+const path = require('path');
+const { createRequire } = require("module");
+const externalRequire = createRequire(__filename);
+
 const { 
     Request, ChangeCamera, PauseToggle, CustomMatch_CreateLobby, CustomMatch_JoinLobby, CustomMatch_LeaveLobby, CustomMatch_SetReady, CustomMatch_SetMatchmaking,
     CustomMatch_SetTeam, CustomMatch_KickPlayer, CustomMatch_SetSettings, CustomMatch_SendChat, CustomMatch_GetLobbyPlayers, CustomMatch_SetTeamName, CustomMatch_GetSettings,
     PlayerOfInterest, CustomMatch_SetSpawnPoint, CustomMatch_SetEndRingExclusion
-} = require('../../bin/events_pb'); // events_pb.jsからRequest関連の機能をインポート
+} = externalRequire(path.resolve(__dirname, 'bin/events_pb.js')); // events_pb.jsからRequest関連の機能をインポート
 const { getServerList, wss } = require('../utils/common');
 
 

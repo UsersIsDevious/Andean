@@ -1,24 +1,24 @@
+const path = require('path');
 const common = require('./utils/common');
 const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event, Packet } = require('./utils/andeanClass');
-let config = common.readFile('../../config.json');
-let language = common.readFile('../../locals/en.default.json');
-const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセージ型をインポート
+let config = common.readFile('config');
+let language = common.readFile('locals/en.default.json');
+const { LiveAPIEvent } = require('events_pb');
 const messageTypes = require('./utils/messageTypes');
-const sendMapData = require('./services/sendMapData')
+const sendMapData = require('./services/sendMapData');
 const apexCommon = require('./services/apexCommon');
 const vdf = require('vdf');
 
 
 if (!config) {
     console.error('設定ファイルが見つかりません。');
-    return false;
 } else if (!config.language || config.language === '') {
     console.error('言語設定が見つからないため、デフォルトの言語設定(English)を使用します。');
 } else {
-    language = common.readConfig(`../../locals/${config.language}.json`);
+    language = common.readFile(`locals/${config.language}.json`);
     if (language === null) {
         console.error('言語設定が見つからないため、デフォルトの言語設定(English)を使用します。');
-        language = common.readConfig('../../locals/en.default.json');
+        language = common.readFile('locals/en.default.json');
     }
 }
 
@@ -54,19 +54,15 @@ function startApexLegends() {
     if (config) {
         if (!config.apexlegends.path) {
             console.error('Apex Legendsのパスが指定されていません。');
-            return false;
         }
         if (!config.apexlegends.option) {
             console.error('Apex Legendsの起動オプションが指定されていません。');
-            return false;
         }
         if (!config.apexlegends.api_option) {
             console.error('Apex LegendsのAPI起動オプションが指定されていません。');
-            return false;
         }
         if (!config.apexlegends.api_port) {
             console.error('Apex LegendsのAPIポートが指定されていません。');
-            return false;
         }
     } else {
         config = common.readFile();
@@ -100,9 +96,9 @@ const data = common.readText(`${config.apexlegends.path}\\r2\\playlists_r5.txt`)
 try {
     // vdf.parse() を利用して KeyValue 形式を JSON オブジェクトに変換する
     playlists_r5 = vdf.parse(data);
-    const load = common.readFile('../../playlists_r5.json', playlists_r5);
+    const load = common.readFile('playlists_r5.json');
     if (playlists_r5.playlists.versionNum !== load.playlists.versionNum) {
-        common.saveFile('../../playlists_r5.json', playlists_r5);
+        common.saveFile('playlists_r5.json', playlists_r5);
     }
 } catch (parseErr) {
     console.error('パースに失敗しました:', parseErr);

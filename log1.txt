@@ -1,0 +1,1161 @@
+
+> andean@1.0.0 dev
+> webpack --mode development
+
+asset [1m[32mandean.js[39m[22m 36.8 MiB [1m[32m[emitted][39m[22m (name: main)
+runtime modules 1.04 KiB 5 modules
+cacheable modules 32.7 MiB
+  javascript modules 31.5 MiB
+    modules by path [1m./node_modules/[39m[22m 31.3 MiB 2914 modules
+    modules by path [1m./src/[39m[22m 181 KiB 19 modules
+  json modules 1.19 MiB 59 modules
+modules by path [1m./node_modules/next/dist/build/swc/ sync ^.*//[39m[22m 320 bytes
+  [1m./node_modules/next/dist/build/swc/ sync ^.*\/next\-swc\..*\.node$[39m[22m 160 bytes [1m[33m[optional][39m[22m [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
+  [1m./node_modules/next/dist/build/swc/ sync ^.*\/package\.json$[39m[22m 160 bytes [1m[33m[optional][39m[22m [1m[33m[built][39m[22m [1m[33m[code generated][39m[22m
++ 80 modules
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/browserslist/node.js[39m[22m [1m[32m231:18-76[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/browserslist/index.js 8:10-27
+ @ ./node_modules/webpack/lib/config/browserslistTargetHandler.js 8:21-44
+ @ ./node_modules/webpack/lib/config/target.js 11:1-39
+ @ ./node_modules/webpack/lib/config/defaults.js 31:4-23
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/browserslist/node.js[39m[22m [1m[32m231:26-33[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/browserslist/index.js 8:10-27
+ @ ./node_modules/webpack/lib/config/browserslistTargetHandler.js 8:21-44
+ @ ./node_modules/webpack/lib/config/target.js 11:1-39
+ @ ./node_modules/webpack/lib/config/defaults.js 31:4-23
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/browserslist/node.js[39m[22m [1m[32m252:16-255:6[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/browserslist/index.js 8:10-27
+ @ ./node_modules/webpack/lib/config/browserslistTargetHandler.js 8:21-44
+ @ ./node_modules/webpack/lib/config/target.js 11:1-39
+ @ ./node_modules/webpack/lib/config/defaults.js 31:4-23
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/browserslist/node.js[39m[22m [1m[32m252:24-31[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/browserslist/index.js 8:10-27
+ @ ./node_modules/webpack/lib/config/browserslistTargetHandler.js 8:21-44
+ @ ./node_modules/webpack/lib/config/target.js 11:1-39
+ @ ./node_modules/webpack/lib/config/defaults.js 31:4-23
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/express/lib/view.js[39m[22m [1m[32m81:13-25[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/express/lib/application.js 22:11-28
+ @ ./node_modules/express/lib/express.js 18:12-36
+ @ ./node_modules/express/index.js 11:0-41
+ @ ./src/server/httpServer.js 1:16-34
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/jest-worker/build/base/BaseWorkerPool.js[39m[22m [1m[32m111:19-46[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/jest-worker/build/WorkerPool.js 8:45-77
+ @ ./node_modules/jest-worker/build/index.js 38:41-64
+ @ ./node_modules/terser-webpack-plugin/dist/index.js 359:12-34
+ @ ./node_modules/webpack/lib/config/defaults.js 1473:25-57
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/jest-worker/build/index.js[39m[22m [1m[32m68:19-38[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/terser-webpack-plugin/dist/index.js 359:12-34
+ @ ./node_modules/webpack/lib/config/defaults.js 1473:25-57
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/jest-worker/build/workers/processChild.js[39m[22m [1m[32m89:15-28[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/jest-worker/build/workers/ChildProcessWorker.js 134:6-39
+ @ ./node_modules/jest-worker/build/WorkerPool.js 41:15-62
+ @ ./node_modules/jest-worker/build/index.js 38:41-64
+ @ ./node_modules/terser-webpack-plugin/dist/index.js 359:12-34
+ @ ./node_modules/webpack/lib/config/defaults.js 1473:25-57
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/jest-worker/build/workers/processChild.js[39m[22m [1m[32m105:15-28[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/jest-worker/build/workers/ChildProcessWorker.js 134:6-39
+ @ ./node_modules/jest-worker/build/WorkerPool.js 41:15-62
+ @ ./node_modules/jest-worker/build/index.js 38:41-64
+ @ ./node_modules/terser-webpack-plugin/dist/index.js 359:12-34
+ @ ./node_modules/webpack/lib/config/defaults.js 1473:25-57
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/loader-runner/lib/loadLoader.js[39m[22m [1m[32m19:16-36[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/loader-runner/lib/LoaderRunner.js 7:17-40
+ @ ./node_modules/webpack/lib/NormalModule.js 9:35-59
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 17:20-55
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/babel/loader/get-config.js[39m[22m [1m[32m154:15-38[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/babel/loader/transform.js 19:58-81
+ @ ./node_modules/next/dist/build/babel/loader/index.js 11:58-80
+ @ ./node_modules/next/dist/build/webpack-config.js 353:20-59
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/entries.js[39m[22m [1m[32m181:11-44[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 42:17-50
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/load-jsconfig.js[39m[22m [1m[32m111:41-64[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/swc/index.js[39m[22m [1m[32m691:33-84[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/config.js 774:37-67
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/swc/index.js[39m[22m [1m[32m758:68-113[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/config.js 774:37-67
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/swc/index.js[39m[22m [1m[32m772:27-94[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve '@next/swc/native' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\build\swc'[39m[22m
+ @ ./node_modules/next/dist/server/config.js 774:37-67
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/swc/index.js[39m[22m [1m[32m782:27-39[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/config.js 774:37-67
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/swc/options.js[39m[22m [1m[32m69:12-33[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/swc/index.js 80:17-37
+ @ ./node_modules/next/dist/server/config.js 774:37-67
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/utils.js[39m[22m [1m[32m955:65-145[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/dev/next-dev-server.js 31:16-44
+ @ ./node_modules/next/dist/server/next.js 171:35-75
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/webpack-config.js[39m[22m [1m[32m197:31-70[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/webpack-config.js[39m[22m [1m[32m293:8-37[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve '@opentelemetry/api' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\build'[39m[22m
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/webpack-config.js[39m[22m [1m[32m448:8-47[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/webpack-config.js[39m[22m [1m[32m598:36-43[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/webpack-config.js[39m[22m [1m[32m612:33-57[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js[39m[22m [1m[32m49:23-30[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js[39m[22m [1m[32m57:43-62[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js[39m[22m [1m[32m60:47-66[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js[39m[22m [1m[32m62:43-62[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/@ampproject/toolbox-optimizer/index.js[39m[22m [1m[32m1:21249-21267[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/compiled/next-server/pages.runtime.dev.js 6:19954-20013
+ @ ./node_modules/next/dist/server/future/route-modules/pages/module.compiled.js 6:8-87
+ @ ./node_modules/next/dist/server/future/route-modules/pages/module.render.js 15:23-64
+ @ ./node_modules/next/dist/server/next-server.js 57:23-76
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/@mswjs/interceptors/ClientRequest/index.js[39m[22m [1m[32m1:14354-14361[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/experimental/testmode/httpget.js 11:23-86
+ @ ./node_modules/next/dist/experimental/testmode/server.js 29:17-37
+ @ ./node_modules/next/dist/server/next-server.js 428:42-91 788:47-96
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/@mswjs/interceptors/ClientRequest/index.js[39m[22m [1m[32m1:14393-14400[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/experimental/testmode/httpget.js 11:23-86
+ @ ./node_modules/next/dist/experimental/testmode/server.js 29:17-37
+ @ ./node_modules/next/dist/server/next-server.js 428:42-91 788:47-96
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/@next/font/dist/google/fetch-css-from-google-fonts.js[39m[22m [1m[32m23:25-79[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/compiled/@next/font/dist/google/loader.js 34:38-78
+ @ ./node_modules/next/dist/compiled/@next/font/google/loader.js 1:0-49
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 175:25-87
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/@vercel/nft/index.js[39m[22m [1m[32m1:10017-10064[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/plugins/next-trace-entrypoints-plugin.js 30:13-54
+ @ ./node_modules/next/dist/build/webpack-config.js 1442:68-151
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/@vercel/nft/index.js[39m[22m [1m[32m1:26377-26387[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/plugins/next-trace-entrypoints-plugin.js 30:13-54
+ @ ./node_modules/next/dist/build/webpack-config.js 1442:68-151
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel-packages/packages-bundle.js[39m[22m [1m[32m1:10450-10457[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/bundle.js 1:70940-70984
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel-packages/packages-bundle.js[39m[22m [1m[32m8:61803-61813[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/bundle.js 1:70940-70984
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel-packages/packages-bundle.js[39m[22m [1m[32m17:51247-51295[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'regenerate-unicode-properties' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\compiled\babel-packages'[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/bundle.js 1:70940-70984
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel-packages/packages-bundle.js[39m[22m [1m[32m377:3077-3084[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/bundle.js 1:70940-70984
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel-packages/packages-bundle.js[39m[22m [1m[32m377:3534-3552[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/bundle.js 1:70940-70984
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:100191-100198[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:105360-105378[39m[22m
+[1mrequire.extensions is [1m[31mnot supported[39m[22m[1m by webpack. [1m[33mUse a loader instead[39m[22m[1m.[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:105387-105405[39m[22m
+[1mrequire.extensions is [1m[31mnot supported[39m[22m[1m by webpack. [1m[33mUse a loader instead[39m[22m[1m.[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:105415-105433[39m[22m
+[1mrequire.extensions is [1m[31mnot supported[39m[22m[1m by webpack. [1m[33mUse a loader instead[39m[22m[1m.[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:106019-106037[39m[22m
+[1mrequire.extensions is [1m[31mnot supported[39m[22m[1m by webpack. [1m[33mUse a loader instead[39m[22m[1m.[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:106051-106069[39m[22m
+[1mrequire.extensions is [1m[31mnot supported[39m[22m[1m by webpack. [1m[33mUse a loader instead[39m[22m[1m.[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:106112-106119[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:106183-106201[39m[22m
+[1mrequire.extensions is [1m[31mnot supported[39m[22m[1m by webpack. [1m[33mUse a loader instead[39m[22m[1m.[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:106216-106234[39m[22m
+[1mrequire.extensions is [1m[31mnot supported[39m[22m[1m by webpack. [1m[33mUse a loader instead[39m[22m[1m.[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:106312-106319[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:110963-110970[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/babel/bundle.js[39m[22m [1m[32m1:111199-111217[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/compiled/babel/code-frame.js 1:17-46
+ @ ./node_modules/next/dist/build/load-jsconfig.js 75:37-83
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 36:61-100
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/jest-worker/index.js[39m[22m [1m[32m1:7879-7897[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/dev/next-dev-server.js 12:20-61
+ @ ./node_modules/next/dist/server/next.js 171:35-75
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/jest-worker/index.js[39m[22m [1m[32m1:22166-22176[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/dev/next-dev-server.js 12:20-61
+ @ ./node_modules/next/dist/server/next.js 171:35-75
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/loader-runner/LoaderRunner.js[39m[22m [1m[32m1:715-735[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/compiled/webpack/bundle5.js 28:1874875-1874918
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 24:27-47
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/sass-loader/cjs.js[39m[22m [1m[32m1:4514-4524[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 140:20-69
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/sass-loader/cjs.js[39m[22m [1m[32m1:5469-5494[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'fibers' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\compiled\sass-loader'
+[1m[32mDid you mean './fibers'?[39m[22m[1m
+Requests that should resolve in the current directory need to start with './'.
+Requests that start with a name are treated as module requests and resolve within module directories (node_modules).
+If changing the source code is not an option there is also a resolve options called 'preferRelative' which tries to resolve these kind of requests in the current directory too.[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 140:20-69
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/sass-loader/cjs.js[39m[22m [1m[32m1:5519-5529[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 140:20-69
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/webpack/bundle5.js[39m[22m [1m[32m28:1226194-1226204[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 24:27-47
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/lib/find-config.js[39m[22m [1m[32m77:19-67[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js 12:20-61
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/lib/find-config.js[39m[22m [1m[32m79:19-31[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js 12:20-61
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/lib/find-config.js[39m[22m [1m[32m87:23-40[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js 12:20-61
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/lib/find-config.js[39m[22m [1m[32m92:19-36[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js 12:20-61
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/lib/verify-partytown-setup.js[39m[22m [1m[32m78:51-134[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 44:30-76
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/lib/verify-typescript-setup.js[39m[22m [1m[32m116:41-56[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 43:31-78
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/app-render/app-render.js[39m[22m [1m[32m857:36-68[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Package path ./server.edge is not exported from package C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom (see exports field in C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom\package.json)[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 31:19-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/config-utils.js[39m[22m [1m[32m185:12-40[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/config.js[39m[22m [1m[32m709:35-48[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/config.js[39m[22m [1m[32m711:41-83[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/dev/next-dev-server.js[39m[22m [1m[32m436:50-140[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/next.js 171:35-75
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/future/helpers/module-loader/node-module-loader.js[39m[22m [1m[32m15:83-94[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/future/helpers/module-loader/route-module-loader.js 11:26-57
+ @ ./node_modules/next/dist/server/next-server.js 54:27-88
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/future/route-matcher-providers/helpers/manifest-loaders/node-manifest-loader.js[39m[22m [1m[32m24:19-30[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/dev/next-dev-server.js 38:28-118
+ @ ./node_modules/next/dist/server/next.js 171:35-75
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/image-optimizer.js[39m[22m [1m[32m145:12-59[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/next-server.js 157:48-76 162:62-90 642:79-107
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/next-server.js[39m[22m [1m[32m121:142-152[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/next-server.js[39m[22m [1m[32m123:76-83[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/next-server.js[39m[22m [1m[32m938:25-61[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/require-hook.js[39m[22m [1m[32m35:75-82[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/next/dist/server/next.js 25:0-25
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/server/require.js[39m[22m [1m[32m109:83-100[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/server/next-server.js 27:17-37
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/telemetry/events/plugins.js[39m[22m [1m[32m26:60-84[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/telemetry/events/index.js 8:13-33
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 38:16-52
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/terser-webpack-plugin/dist/minify.js[39m[22m [1m[32m42:118-125[39m[22m
+[1mCritical dependency: require function is used in a way in which dependencies cannot be statically extracted[39m[22m
+ @ ./node_modules/terser-webpack-plugin/dist/index.js 19:4-23 362:19-46
+ @ ./node_modules/webpack/lib/config/defaults.js 1473:25-57
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/terser-webpack-plugin/dist/utils.js[39m[22m [1m[32m528:18-51[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve '@swc/core/package.json' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\terser-webpack-plugin\dist'[39m[22m
+ @ ./node_modules/terser-webpack-plugin/dist/index.js 15:4-22
+ @ ./node_modules/webpack/lib/config/defaults.js 1473:25-57
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/terser-webpack-plugin/dist/utils.js[39m[22m [1m[32m601:18-49[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'esbuild/package.json' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\terser-webpack-plugin\dist'[39m[22m
+ @ ./node_modules/terser-webpack-plugin/dist/index.js 15:4-22
+ @ ./node_modules/webpack/lib/config/defaults.js 1473:25-57
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/webpack/lib/serialization/ObjectMiddleware.js[39m[22m [1m[32m684:9-25[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/webpack/lib/util/serialization.js 21:1-45
+ @ ./node_modules/webpack/lib/index.js 612:10-41
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/ws/lib/buffer-util.js[39m[22m [1m[32m117:23-44[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'bufferutil' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\ws\lib'[39m[22m
+ @ ./node_modules/ws/lib/websocket.js 33:21-45
+ @ ./node_modules/ws/index.js 3:18-44
+ @ ./src/server/websocketServer.js 1:18-31
+ @ ./src/index.js 7:24-59
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/ws/lib/validation.js[39m[22m [1m[32m144:24-49[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'utf-8-validate' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\ws\lib'[39m[22m
+ @ ./node_modules/ws/lib/websocket.js 17:19-42
+ @ ./node_modules/ws/index.js 3:18-44
+ @ ./src/server/websocketServer.js 1:18-31
+ @ ./src/index.js 7:24-59
+
+[1m[33mWARNING[39m[22m in [1m./src/services/sendComponent.js[39m[22m [1m[32m10:16-58[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve '@/app/app/view' in 'C:\Users\conecone\Desktop\work\test\Andean\src\services'[39m[22m
+ @ ./src/controllers/apiController.js 3:22-58
+ @ ./src/routes/apiRoutes.js 2:22-61
+ @ ./src/server/httpServer.js 4:18-48
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/postcss-preset-env/index.cjs[39m[22m [1m[32m10:16486-16496[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js 69:12-68
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[33mWARNING[39m[22m in [1m./node_modules/next/dist/compiled/postcss-preset-env/index.cjs[39m[22m [1m[32m10:24368-24401[39m[22m
+[1mCritical dependency: the request of a dependency is an expression[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/plugins.js 69:12-68
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 33:17-37
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+76 warnings have detailed information that is not shown.
+Use 'stats.errorDetails: true' resp. '--stats-error-details' to show it.
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/compiled/@vercel/nft/LICENSE[39m[22m [1m[32m1:10[39m[22m
+[1mModule parse [1m[31mfailed[39m[22m[1m: [1m[31mUnexpected[39m[22m[1m token (1:10)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+> Copyright 2019 Vercel, Inc.
+| 
+| Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:[39m[22m
+ @ ./node_modules/next/dist/compiled/@vercel/nft/ sync ^\.\/.*$ ./LICENSE
+ @ ./node_modules/next/dist/compiled/@vercel/nft/index.js 1:833-848 1:3005-3020
+ @ ./node_modules/next/dist/build/webpack/plugins/next-trace-entrypoints-plugin.js 30:13-54
+ @ ./node_modules/next/dist/build/webpack-config.js 1442:68-151
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/compiled/next-server/pages.runtime.dev.js[39m[22m [1m[32m6:19855-19874[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'critters' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\compiled\next-server'[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/pages/module.compiled.js 6:8-87
+ @ ./node_modules/next/dist/server/future/route-modules/pages/module.render.js 15:23-64
+ @ ./node_modules/next/dist/server/next-server.js 57:23-76
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/compiled/sass-loader/cjs.js[39m[22m [1m[32m1:11295-11310[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'sass' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\compiled\sass-loader'[39m[22m
+ @ ./node_modules/next/dist/build/webpack/config/blocks/css/index.js 140:20-69
+ @ ./node_modules/next/dist/build/webpack-config.js 85:13-51
+ @ ./node_modules/next/dist/server/dev/hot-reloader-webpack.js 38:63-100
+ @ ./node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js 34:67-108
+ @ ./node_modules/next/dist/server/lib/router-server.js 77:36-79
+ @ ./node_modules/next/dist/server/lib/start-server.js 36:22-48
+ @ ./node_modules/next/dist/server/next.js 240:39-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/app-render/make-get-server-inserted-html.js[39m[22m [1m[32m15:20-52[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Package path ./server.edge is not exported from package C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom (see exports field in C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom\package.json)[39m[22m
+ @ ./node_modules/next/dist/server/app-render/app-render.js 41:35-77
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 31:19-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/app-render/react-server.node.js[39m[22m [1m[32m33:20-67[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'react-server-dom-webpack/server.node' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\app-render'[39m[22m
+ @ ./node_modules/next/dist/server/app-render/action-handler.js 386:94-124
+ @ ./node_modules/next/dist/server/app-render/app-render.js 34:23-50
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 31:19-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/app-render/static/static-renderer.js[39m[22m [1m[32m46:65-107[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Package path ./static.edge is not exported from package C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom (see exports field in C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom\package.json)[39m[22m
+ @ ./node_modules/next/dist/server/app-render/app-render.js 46:24-59
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 31:19-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/app-render/static/static-renderer.js[39m[22m [1m[32m60:22-61[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Package path ./server.edge is not exported from package C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom (see exports field in C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom\package.json)[39m[22m
+ @ ./node_modules/next/dist/server/app-render/app-render.js 46:24-59
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 31:19-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/app-render/use-flight-response.js[39m[22m [1m[32m44:8-82[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'react-server-dom-turbopack/client.edge' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\app-render'[39m[22m
+ @ ./node_modules/next/dist/server/app-render/app-render.js 48:27-59
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 31:19-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/app-render/use-flight-response.js[39m[22m [1m[32m47:8-80[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'react-server-dom-webpack/client.edge' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\app-render'[39m[22m
+ @ ./node_modules/next/dist/server/app-render/app-render.js 48:27-59
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 31:19-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/future/route-modules/app-page/vendored/rsc/entrypoints.js[39m[22m [1m[32m107:40-89[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'react-server-dom-turbopack/server.edge' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\future\route-modules\app-page\vendored\rsc'[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 79:23-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/future/route-modules/app-page/vendored/rsc/entrypoints.js[39m[22m [1m[32m112:40-89[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'react-server-dom-turbopack/server.node' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\future\route-modules\app-page\vendored\rsc'[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 79:23-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/future/route-modules/app-page/vendored/rsc/entrypoints.js[39m[22m [1m[32m118:38-85[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'react-server-dom-webpack/server.edge' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\future\route-modules\app-page\vendored\rsc'[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 79:23-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/future/route-modules/app-page/vendored/rsc/entrypoints.js[39m[22m [1m[32m123:38-85[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'react-server-dom-webpack/server.node' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\future\route-modules\app-page\vendored\rsc'[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 79:23-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/future/route-modules/app-page/vendored/ssr/entrypoints.js[39m[22m [1m[32m44:69-111[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Package path ./server-rendering-stub is not exported from package C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom (see exports field in C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom\package.json)[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 80:23-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/future/route-modules/app-page/vendored/ssr/entrypoints.js[39m[22m [1m[32m47:60-92[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Package path ./server.edge is not exported from package C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom (see exports field in C:\Users\conecone\Desktop\work\test\Andean\node_modules\react-dom\package.json)[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 80:23-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/future/route-modules/app-page/vendored/ssr/entrypoints.js[39m[22m [1m[32m103:40-89[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'react-server-dom-turbopack/client.edge' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\future\route-modules\app-page\vendored\ssr'[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 80:23-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/future/route-modules/app-page/vendored/ssr/entrypoints.js[39m[22m [1m[32m109:38-85[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'react-server-dom-webpack/client.edge' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\future\route-modules\app-page\vendored\ssr'[39m[22m
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.js 80:23-60
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.compiled.js 3:4-88
+ @ ./node_modules/next/dist/server/future/route-modules/app-page/module.render.js 15:23-72
+ @ ./node_modules/next/dist/server/next-server.js 56:22-78
+ @ ./node_modules/next/dist/server/next.js 85:44-68
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/lib/trace/tracer.js[39m[22m [1m[32m37:10-39[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve '@opentelemetry/api' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server\lib\trace'[39m[22m
+ @ ./node_modules/next/dist/server/next.js 32:16-45
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/next/dist/server/post-process.js[39m[22m [1m[32m147:29-48[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'critters' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\next\dist\server'[39m[22m
+ @ ./node_modules/next/dist/server/render.js 76:22-63
+ @ ./node_modules/next/dist/server/future/route-modules/pages/module.js 32:16-42
+ @ ./node_modules/next/dist/server/future/route-modules/pages/builtin/_error.js 15:55-75
+ @ ./node_modules/next/dist/server/load-default-error-components.js 23:25-79
+ @ ./node_modules/next/dist/server/dev/next-dev-server.js 27:36-79
+ @ ./node_modules/next/dist/server/next.js 171:35-75
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/terser-webpack-plugin/dist/utils.js[39m[22m [1m[32m485:14-34[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve '@swc/core' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\terser-webpack-plugin\dist'[39m[22m
+ @ ./node_modules/terser-webpack-plugin/dist/index.js 15:4-22
+ @ ./node_modules/webpack/lib/config/defaults.js 1473:25-57
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./node_modules/terser-webpack-plugin/dist/utils.js[39m[22m [1m[32m568:18-36[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'esbuild' in 'C:\Users\conecone\Desktop\work\test\Andean\node_modules\terser-webpack-plugin\dist'[39m[22m
+ @ ./node_modules/terser-webpack-plugin/dist/index.js 15:4-22
+ @ ./node_modules/webpack/lib/config/defaults.js 1473:25-57
+ @ ./node_modules/webpack/lib/index.js 368:10-66
+ @ ./node_modules/next/dist/compiled/webpack/webpack.js 19:15-41 21:15-33
+ @ ./node_modules/next/dist/server/config-utils.js 13:34-79
+ @ ./node_modules/next/dist/server/config.js 42:21-46
+ @ ./node_modules/next/dist/server/next.js 28:55-74
+ @ ./src/server/httpServer.js 8:13-28
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./src/app.js[39m[22m [1m[32m6:25-45[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'events_pb' in 'C:\Users\conecone\Desktop\work\test\Andean\src'[39m[22m
+ @ ./src/controllers/serverController.js 3:12-29
+ @ ./src/routes/serverRoutes.js 2:25-67
+ @ ./src/server/httpServer.js 5:21-54
+ @ ./src/index.js 2:19-49
+
+[1m[31mERROR[39m[22m in [1m./src/utils/messageTypes.js[39m[22m [1m[32m9:6-26[39m[22m
+[1mModule [1m[31mnot found[39m[22m[1m: [1m[31mError[39m[22m[1m: Can't resolve 'events_pb' in 'C:\Users\conecone\Desktop\work\test\Andean\src\utils'[39m[22m
+ @ ./src/app.js 7:21-52
+ @ ./src/controllers/serverController.js 3:12-29
+ @ ./src/routes/serverRoutes.js 2:25-67
+ @ ./src/server/httpServer.js 5:21-54
+ @ ./src/index.js 2:19-49
+
+[1m[33m17 errors have detailed information that is not shown.
+Use 'stats.errorDetails: true' resp. '--stats-error-details' to show it.[39m[22m
+
+webpack 5.97.1 compiled with [1m[31m23 errors[39m[22m and [1m[33m87 warnings[39m[22m in 7340 ms
