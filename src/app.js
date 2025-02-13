@@ -413,7 +413,7 @@ function analyze_message(category, msg) {
             data["character"] = msg_player.character;
             const event = new Event(msg.timestamp, msg.category, data);
             match.addEventElement(event);
-            packet.addEvent(event);
+            // packet.addEvent(event);
             break;
         }
         case "MatchStateEnd": {
