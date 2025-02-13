@@ -13,8 +13,8 @@
     "log_dir": "../../log",
     "data_fps": 60,
     "score_setting": {
-        "kill_point": 0,
-        "max_kill": 0,
+        "kill_point": 1,
+        "max_kill": 10,
         "rank_points": [
             12,
             9,

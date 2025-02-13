@@ -390,14 +390,6 @@ function analyze_message(category, msg) {
         case "GameStateChanged": {
             try {
                 match.setState(msg.state);
-                if (msg.state === "PickLoadout") {
-                    for (const nucleusHash in match.players) {
-                        const player = match.getPlayer(nucleusHash);
-                        const pos = [player.pos.x, player.pos.y, player.pos.z];
-                        const data = { id: nucleusHash, pos: convertLeefletPOS(match.mapOffset, pos), ang: player.angles, hp: [player.currentHealth, player.maxHealth, player.shieldHealth, player.shieldMaxHealth] };
-                        playerData[nucleusHash] = data;
-                    }
-                }
                 if (msg.state === "Prematch") {
                     matchBase = JSON.parse(JSON.stringify(match));
                     ringEvents = [];
@@ -433,9 +425,15 @@ function analyze_message(category, msg) {
                             }
                         }
                     }
+                    for (const teamId in match.teams) {
+                        const id = Number(teamId);
+                        if (!ranks.includes(id) && ![0, 1].includes(id)) {
+                            ranks.push(id);
+                        }
+                    }
                     for (let i = 0; i < ranks.length; i++) {
                         const team = match.getTeam(ranks[i]);
-                        team.setRank(ranks.length - i + 1);
+                        team.setRank(ranks.length - i);
                     }
                     common.saveUpdate(`Packet Log - ${match.matchName}`, config.output, matchBase);
                     isPlaying = false;
@@ -1158,7 +1156,7 @@ function analyze_message(category, msg) {
                 }
             }
             if (select === undefined) {
-                console.log(`[LegendUpgradeSelected] Error: ${upgradeName} is not found in ${characterName} upgrade\nPlease update localization file`);
+                console.log(`[LegendUpgradeSelected] Error: ${upgradeName} is not found in ${characterName} upgrade\nLEVEL: ${level}\nNAME: ${upgradeName}\nDESCRIPTION: ${upgradeDesc}\nPlease update localization file`);
                 break;
             }
             levelObj.selected = select;
@@ -1578,11 +1576,10 @@ async function calcScore() {
         let teamScore = 0;
         let team = match.getTeam(i);
         // Teamが存在し、かつプレイヤーがいる場合
-        if (team != null && team.players.length > 0) {
+        if (team && team.players.length > 0) {
             let rankPoint = score_setting.rank_points[team.rank - 1];
             for (const playerId of team.players) {
                 let kill = match.getPlayer(playerId).kills.total;
-                console.log(playerId, teamScore, rankPoint, kill, maxKill, killPoint, typeof kill, typeof maxKill, typeof killPoint);
                 if (kill > maxKill) {
                     teamScore += maxKill * killPoint;
                 } else {
@@ -1764,6 +1761,8 @@ async function update() {
             for (const playerId in playerData) {
                 if (!includeedPlayers.includes(playerId)) {
                     packet.addData(playerData[playerId]);
+                } else {
+                    playerData[playerId] = packet.data.find((player) => player.id === playerId);
                 }
             }
         }

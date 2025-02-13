@@ -316,7 +316,7 @@ export default function MatchManagement({ config, updateConfig }) {
             <RequestButton
               onClick={async () => {
                 try {
-                  await api.togglePause({ preTimer: pauseTime })
+                  await api.togglePause(pauseTime)
                   alert(`Game paused/unpaused with ${pauseTime} seconds pre-timer`)
                 } catch (error) {
                   alert(`Failed to toggle pause: ${error.message}`)

@@ -92,7 +92,7 @@
     "Weapon Overheat": "Weapon Overheat",
     "Smoke Launcher": "Smoke Launcher",
     "Prowler Attack": "Prowler Attack",
-    "Spider Attack": "Spider Attack",
+    "Spider Attack": "Spider Spit Attack",
     "Cargo Bot Explosion": "Cargo Bot Explosion"
   },
   "items_label": {
@@ -259,7 +259,7 @@
         "2": {
           "left": {
             "name": "Fast Phase",
-            "description": "Reduce Tactical wind-up by 20%"
+            "description": "Reduce Tactical wind-up by 20%%."
           },
           "right": {
             "name": "Tactical Cooldown",
@@ -417,7 +417,7 @@
         "1": {
           "left": {
             "name": "Network Expansion",
-            "description": "Increase Neurolink and EMP range by 25%."
+            "description": "Increase Neurolink and EMP range by 25%%."
           },
           "right": {
             "name": "Off The Grid",
@@ -431,7 +431,7 @@
           },
           "right": {
             "name": "Hackathon",
-            "description": "Speed up drone recharge rate and gain a speed boost when it explodes [EMP or destroyed]."
+            "description": "Speed up drone recharge rate and gain a speed boost when it explodes (EMP or destroyed)."
           }
         }
       }
