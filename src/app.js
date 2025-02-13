@@ -421,7 +421,7 @@ function analyze_message(category, msg) {
                              */
                             const endRing = ringEvents[i + 1][1];
                             if (startRing.category == "ringStartClosing" && endRing.category == "ringFinishedClosing" && startRing.data.stage === endRing.data.stage) {
-                                matchBase.packetLists[startRing_t].events.find((event) => event.category === "ringStartClosing").center = [...endRing.data.center];
+                                matchBase.packetLists[startRing_t].events.find((event) => event.category === "ringStartClosing")["endCenter"] = [...endRing.data.center];
                             }
                         }
                     }
@@ -483,7 +483,7 @@ function analyze_message(category, msg) {
             rings[rings.length - 1].updateRing(msg.timestamp, msg.category, msg.currentRadius, msg.shrinkduration, msg.endradius, match.mapOffset);
 
             // AndeanのEventクラスに追加する
-            const event = new Event(msg.timestamp, msg.category, { stage: msg.stage, center: convertLeefletPOS(match.mapOffset, msg.center), currentradius: msg.currentradius / match.mapOffset[2], endradius: msg.endradius / match.mapOffset[2], shrinkduration: msg.shrinkduration });
+            const event = new Event(msg.timestamp, msg.category, { stage: msg.stage, startCenter: convertLeefletPOS(match.mapOffset, msg.center), currentradius: msg.currentradius / match.mapOffset[2], endradius: msg.endradius / match.mapOffset[2], shrinkduration: msg.shrinkduration });
             match.addEventElement(event);
             // AndeanのPacketクラスに追加する
             packet.addEvent(event);
