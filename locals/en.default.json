@@ -165,7 +165,7 @@
         "1": {
           "left": {
             "name": "Big Bruddah",
-            "description": "Increase Ult radius by 20%."
+            "description": "Increase Ult radius by 20%%."
           },
           "right": {
             "name": "Fast Shotties",
@@ -175,7 +175,7 @@
         "2": {
           "left": {
             "name": "Baby Bubble",
-            "description": "Reduce Tactical size and cooldown by 25%."
+            "description": "Reduce Tactical size and cooldown by 25%%."
           },
           "right": {
             "name": "Bubble Bunker",
@@ -203,7 +203,7 @@
         "2": {
           "left": {
             "name": "Enhanced Radio",
-            "description": "Increased distance you can assign D.O.C. by 50%"
+            "description": "Increased distance you can assign D.O.C. by 50%%."
           },
           "right": {
             "name": "Tactical Cooldown+",
@@ -305,7 +305,7 @@
         "1": {
           "left": {
             "name": "Parabolic Force",
-            "description": "Increase Tactical throw range by 75%."
+            "description": "Increase Tactical throw range by 75%%."
           },
           "right": {
             "name": "Residual Toxins",
@@ -315,7 +315,7 @@
         "2": {
           "left": {
             "name": "Particle Diffuser",
-            "description": "Increase Ultimate area of effect by 50%."
+            "description": "Increase Ultimate area of effect by 50%%."
           },
           "right": {
             "name": "Breathe It In",
@@ -511,7 +511,7 @@
         "2": {
           "left": {
             "name": "Ramped Up",
-            "description": "Improved Mobile Sheila handling and spin-up time by 20%."
+            "description": "Improved Mobile Sheila handling and spin-up time by 20%%."
           },
           "right": {
             "name": "Amped Reloads",
@@ -617,7 +617,7 @@
           },
           "right": {
             "name": "Ultimate Cooldown",
-            "description": "Reduce Ultimate cooldown by 20%."
+            "description": "Reduce Ultimate cooldown by 20%%."
           }
         },
         "2": {
@@ -627,7 +627,7 @@
           },
           "right": {
             "name": "Split Focus",
-            "description": "Gain a Focus of Attention charge; Reduce silence duration by 50%"
+            "description": "Gain a Focus of Attention charge; Reduce silence duration by 50%%."
           }
         }
       }
@@ -679,11 +679,11 @@
         "2": {
           "left": {
             "name": "Drillslinger",
-            "description": "Gain a Riot Drill charge Reduce active duration by 25%."
+            "description": "Gain a Riot Drill charge Reduce active duration by 25%%."
           },
           "right": {
             "name": "Big Drill",
-            "description": "Increase depth and width of Tactical by 50%."
+            "description": "Increase depth and width of Tactical by 50%%."
           }
         }
       }
@@ -785,7 +785,7 @@
           },
           "right": {
             "name": "Bigger Jam",
-            "description": "Each Ultimate jammer's damage radius increased by 10%."
+            "description": "Each Ultimate jammer's damage radius increased by 10%%."
           }
         },
         "2": {
