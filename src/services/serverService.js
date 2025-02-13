@@ -11,6 +11,19 @@ function saveConfig(body) {
 }
 
 
+function resetConfig() {
+    try {
+        const config = common.readFile('../../default.config.json');
+        app.config = config;
+        common.saveFile('../../config.json', config);
+    } catch (err) {
+        console.error("[RESET CONFIG]" + err);
+        return false;
+    }
+    return true;
+}
+
+
 async function makeScore() {
     return await app.calcScore();
 }
@@ -20,4 +33,4 @@ function readCSV(csv) {
     return app.readCSV(csv);
 }
 
-module.exports = { makeScore, saveConfig, readCSV };
+module.exports = { makeScore, saveConfig, resetConfig, readCSV };

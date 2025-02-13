@@ -62,7 +62,9 @@ function loadConfig(req, res) {
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
 function resetConfig(req, res) {
-  res.sendStatus(200);
+  const result = serverService.resetConfig();
+  res.status(200).send({ success: result });
+  return;
 }
 
 

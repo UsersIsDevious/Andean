@@ -1222,6 +1222,11 @@ class CustomMatch {
      */
     this.matchName = matchName;
     /**
+     * ゲームバージョン
+     * @type {String}
+     */
+    this.gameVersion = "";
+    /**
      * スタートタイムスタンプ
      * @type {number}
      */
@@ -1382,12 +1387,12 @@ class CustomMatch {
 
   /**
    * packetListsの末尾に新しい要素を追加します。
-   * @param {Packet} packetWeb - 追加する要素
+   * @param {Packet} packet - 追加する要素
    * @memberof CustomMatch
    */
-  addPacketElement(time, packetWeb) {
+  addPacketElement(time, packet) {
     // 新しい要素を末尾に追加
-    this.packetLists[time] = packetWeb;
+    this.packetLists[time] = packet;
   }
 
   /**
@@ -1436,6 +1441,15 @@ class CustomMatch {
    */
   setMatchName(matchName) {
     this.matchName = matchName;
+  }
+
+  /**
+   * ゲームバージョンを設定するメソッド
+   * @param {string} gameVersion ゲームバージョン
+   * @memberof CustomMatch
+   */
+  setGameVersion(gameVersion) {
+    this.gameVersion = gameVersion;
   }
 
   /**
@@ -1733,6 +1747,7 @@ class Packet {
       t: this.t,
       data: this.data,
       events: this.events.map((event) => ({
+        timestamp: event.timestamp,
         category: event.category,
         ...event.data,
       })),
@@ -1750,12 +1765,12 @@ class Packet {
 
   /**
    * データを更新する
-   * @param {number} index 更新するデータのインデックス
+   * @param {number} nucleusHash 更新するデータのインデックス
    * @param {Object} entityData 更新するエンティティ情報
    * @memberof Packet
    */
-  updateData(index, entityData) {
-    this.data[index] = entityData;
+  updateData(nucleusHash, entityData) {
+    this.data[nucleusHash] = entityData;
   }
 
   /**

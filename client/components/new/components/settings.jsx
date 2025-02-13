@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label"
 import { Globe, Network, Folder, Save, RefreshCw, Bug } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { api } from "../services/api"
 
 export default function Settings({ config: initialConfig, updateConfig }) {
   const [localConfig, setLocalConfig] = useState(initialConfig)
@@ -34,7 +35,7 @@ export default function Settings({ config: initialConfig, updateConfig }) {
 
   const handleSaveSettings = async () => {
     try {
-      // await api.saveConfig(localConfig)  //This line is removed as per instructions, but the function remains for potential future use.  Consider removing entirely if not needed.
+      await api.saveConfig(localConfig)  //This line is removed as per instructions, but the function remains for potential future use.  Consider removing entirely if not needed.
       alert("Settings saved successfully")
     } catch (error) {
       alert(`Error saving settings: ${error.message}`)
@@ -155,13 +156,13 @@ export default function Settings({ config: initialConfig, updateConfig }) {
               <span>Save Settings</span>
             </Button>
             <RequestButton
-              //onClick={api.resetConfig}  //This line is commented out as per instructions, but the component remains for potential future use. Consider removing entirely if not needed.
+              onClick={() => api.resetConfig()}
               onSuccess={() => {
                 if (confirm("Are you sure you want to reset all settings to default? This action cannot be undone.")) {
                   alert("Settings reset to default")
                 }
               }}
-              //onError={(error) => alert(`Failed to reset settings: ${error}`)} //This line is commented out as per instructions, but the component remains for potential future use. Consider removing entirely if not needed.
+              onError={(error) => alert(`Failed to reset settings: ${error}`)}
               variant="destructive"
               className="flex items-center space-x-2 w-full justify-center"
             >

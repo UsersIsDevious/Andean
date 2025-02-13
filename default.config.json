@@ -1,0 +1,41 @@
+{
+    "apexlegends": {
+        "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Apex Legends",
+        "api_port": "7777",
+        "api_option": "+cl_liveapi_enabled 1",
+        "option": "+miles_language english +cl_liveapi_ws_retry_count 20 +cl_liveapi_ws_retry_time 3 +cl_liveapi_ws_timeout 600"
+    },
+    "penetrator": [
+        "Caustic Gas"
+    ],
+    "output": "../../output",
+    "language": "",
+    "log_dir": "../../log",
+    "data_fps": 60,
+    "score_setting": {
+        "kill_point": 0,
+        "max_kill": 0,
+        "rank_points": [
+            12,
+            9,
+            7,
+            5,
+            4,
+            3,
+            3,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

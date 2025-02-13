@@ -230,6 +230,7 @@ function analyze_message(category, msg) {
             // YYYY-MM-DD-SS形式の文字列を生成
             const formattedDate = `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
             match = new CustomMatch(`${formattedDate}`);
+            match.setGameVersion(msg.gameversion);
             isPlaying = true;
             break;
         }
@@ -358,6 +359,14 @@ function analyze_message(category, msg) {
         case "GameStateChanged": {
             try {
                 match.setState(msg.state);
+                if (msg.state === "PickLoadout") {
+                    for (const nucleusHash in match.players) {
+                        const player = match.getPlayer(nucleusHash);
+                        const pos = [player.pos.x, player.pos.y, player.pos.z];
+                        const data = { id: nucleusHash, pos: convertLeefletPOS(match.mapOffset, pos), ang: player.angles, hp: [player.currentHealth, player.maxHealth, player.shieldHealth, player.shieldMaxHealth] };
+                        playerData[nucleusHash] = data;
+                    }
+                }
                 if (msg.state === "Prematch") {
                     matchBase = JSON.parse(JSON.stringify(match));
                     ringEvents = [];
@@ -1691,20 +1700,40 @@ function readLobbyMessage(messageType) {
 let lastApplyTime = 0;
 
 /**
+ * Packetのdataを格納する変数
+ * @type {Object}
+ * @global
+ * @link update|Packet
+ */
+let playerData = {};
+
+/**
  * メインスレッド
  */
 async function update() {
-    const now = Date.now();
+    let now = Date.now();
     if (match && match.startTimeStamp != 0 && match.endTimeStamp === 0) {
         getPlayerStatus(match);
         sendMapData.sendPlayerPositionUpdate(match, config.output);
     }
     if (match && match.startTimeStamp != 0 && !["Resolution", "Postmatch"].includes(match.state)) {
         if (packet && (packet.data.length + packet.events.length) != 0 && packet.t > 2) {
-            if (packet.events.length == 0 && Number.isInteger(packet.t)) {
-                console.log("[UPDATE] Packet is skipped");
+            if (Number.isInteger(packet.t)) {
+                if (packet.events.length != 0) {
+                    packet.t = packet.events[0].timestamp - match.startTimeStamp;
+                    match.addPacketElement(packet.t, packet.toJSON());
+                } else {
+                    console.log("[UPDATE] Packet is skipped");
+                }
             } else {
                 match.addPacketElement(packet.t, packet.toJSON());
+            }
+
+            const includeedPlayers = packet.data.map((player) => player.id);
+            for (const playerId in playerData) {
+                if (!includeedPlayers.includes(playerId)) {
+                    packet.addData(playerData[playerId]);
+                }
             }
         }
         packet = new Packet((now / 1000) - match.startTimeStamp);
