@@ -44,7 +44,7 @@
     "mp_weapon_g2": "G7 Scout",
     "mp_weapon_energy_ar": "HAVOC",
     "mp_weapon_hemlok": "Hemlok",
-    "mp_weapon_sniper": "Kraber .50-Cal Sniper",
+    "mp_weapon_sniper": "Kraber",
     "mp_weapon_lstar": "L-STAR",
     "mp_weapon_dmr": "Longbow",
     "mp_weapon_lmg": "Spitfire",
@@ -89,7 +89,10 @@
     "Drone EMP": "Drone EMP",
     "Arc Snare": "Arc Snare",
     "Whistler": "Whistler",
-    "Weapon Overheat": "Weapon Overheat"
+    "Weapon Overheat": "Weapon Overheat",
+    "Smoke Launcher": "Smoke Launcher",
+    "Prowler Attack": "Prowler Attack",
+    "Spider Attack": "Spider Attack"
   },
   "items_label": {
     "mp_ability_void_ring": "Heat Shield",

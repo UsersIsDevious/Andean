@@ -1391,6 +1391,7 @@ function getPlayerStatus(match) {
 function splitBracketParts(input) {
     let split;
     try {
+        if (!input || input == "") return null;
         split = input.match(/^(.*?)\s*[\(（](.*?)[\)）]$/);
     } catch (error) {
         console.log(`[SPLIT BRACKET PARTS] Input: ${input} Error: ${error}`);
@@ -1453,6 +1454,7 @@ function getWeaponId(name) {
  * @returns {String|undefined}
  */
 function getAssociateWeaponId(name) {
+    if (name) return undefined
     const split = splitBracketParts(name);
     let result = "";
     if (split == null) {
