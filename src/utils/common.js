@@ -212,11 +212,12 @@ function readText(filePath) {
 /**
  * 任意のコマンドを実行する関数
  * @param {string} command - 実行したいコマンド
+ * @param {object} options - exec関数のオプション（例: env）
  * @returns {Promise<string>} - コマンドの出力を返すPromise
  */
-function runCommand(command) {
+function runCommand(command, options = {}) {
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
+    exec(command, options, (error, stdout, stderr) => {
       if (error) {
         reject(`エラー: ${error.message}`);
         return;

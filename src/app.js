@@ -1,4 +1,5 @@
 const common = require('./utils/common');
+const path = require('path');
 const { Player, CustomMatch, Datacenter, Item, Weapon, Ring, Event, Packet } = require('./utils/andeanClass');
 let config = common.readFile('../../config.json');
 let language = common.readFile('../../locals/en.default.json');
@@ -71,6 +72,7 @@ function startApexLegends() {
     } else {
         config = common.readFile();
     }
+    const apexPath = config.apexlegends.path;
     const option = `${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`;
     const command = `"${config.apexlegends.path}\\r5apex.exe" + ${option}`;  // パスが空でない場合に起動コマンドを構築
     common.runRegularCommand(command)
@@ -82,6 +84,19 @@ function startApexLegends() {
             console.error('Apex Legendsの起動中にエラーが発生しました:', err);
             return false;
         });
+
+    // 実行するCMDファイルのパスを取得
+    const cmdFilePath = path.resolve(__dirname, '../bin/compile.cmd');
+
+    // CMD ファイルを実行するために、cmd.exe /c を利用してシェル経由で実行
+    // options の env プロパティで APEX_PATH を指定しています
+    common.runCommand(`cmd.exe /c "${cmdFilePath}"`, { env: { ...process.env, APEX_PATH: apexPath } })
+    .then(output => {
+        console.log('コマンドの出力:', output);
+    })
+    .catch(error => {
+        console.error('Events_pb.jsのコンパイル実行時にエラーが発生:', error);
+    });
 }
 
 
@@ -89,64 +104,77 @@ function startApexLegends() {
  * playlists_r5.txtを変換したJSONオブジェクト
  * @global
  * @type {Object}
+ * @link readPlaylists_r5
  */
 let playlists_r5 = {}
-
-/**
- * playlists_r5.txt を読み込み、VDF を JSON に変換する
- * @return {Object}
- */
-const data = common.readText(`${config.apexlegends.path}\\r2\\playlists_r5.txt`)
-try {
-    // vdf.parse() を利用して KeyValue 形式を JSON オブジェクトに変換する
-    playlists_r5 = vdf.parse(data);
-    const load = common.readFile('../../playlists_r5.json', playlists_r5);
-    if (playlists_r5.playlists.versionNum !== load.playlists.versionNum) {
-        common.saveFile('../../playlists_r5.json', playlists_r5);
-    }
-} catch (parseErr) {
-    console.error('パースに失敗しました:', parseErr);
-}
 
 /**
  * ゲームモードの一覧を格納するオブジェクト
  * @global
  * @type {Object}
+ * @link readPlaylists_r5
  */
 let gamemodes = {};
 
 /**
- * ゲームモードの一覧を取得する
+ * ゲームモードの変数を格納するオブジェクト
+ * @global
+ * @type {Object}
+ * @link readPlaylists_r5
  */
-const gamemodeVars = playlists_r5.playlists.Gamemodes.defaults.vars;
-const modeNum = gamemodeVars.custom_match_playlist_category_count;
-const playlists = playlists_r5.playlists.Playlists;
-for (let i = 0; i < modeNum; i++) {
-    const entryNum = gamemodeVars[`custom_match_playlist_category_${i}_count`];
-    let name = gamemodeVars[`custom_match_playlist_category_${i}_name`];
-    const data = {};
-    for (let j = 0; j < entryNum; j++) {
-        const entryName = `custom_match_playlist_category_${i}_entry_${j}`;
-        const entry = gamemodeVars[entryName];
-        const playlist = playlists[entry];
-        let playlistName = `${entry}`;
-        for (const key in playlist.vars) {
-            if (["name", "description", "map_name"].includes(key)) {
-                playlistName = playlist.vars[key];
+let gamemodeVars = {};
+
+/**
+ * playlists_r5.txt を読み込み、VDF を JSON に変換する
+ * @return {Object}
+ */
+function readPlaylists_r5() {
+    const data = common.readText(`${config.apexlegends.path}\\r2\\playlists_r5.txt`)
+    try {
+        // vdf.parse() を利用して KeyValue 形式を JSON オブジェクトに変換する
+        playlists_r5 = vdf.parse(data);
+        const load = common.readFile('../../playlists_r5.json', playlists_r5);
+        if (!load || playlists_r5.playlists.versionNum !== load.playlists.versionNum) {
+            common.saveFile('../../playlists_r5.json', playlists_r5);
+            console.log('playlists_r5.json を保存しました。');
+        }
+    } catch (parseErr) {
+        console.error('パースに失敗しました:', parseErr);
+    }
+
+    /**
+     * ゲームモードの一覧を取得する
+     */
+    gamemodeVars = playlists_r5.playlists.Gamemodes.defaults.vars;
+    const modeNum = gamemodeVars.custom_match_playlist_category_count;
+    const playlists = playlists_r5.playlists.Playlists;
+    for (let i = 0; i < modeNum; i++) {
+        const entryNum = gamemodeVars[`custom_match_playlist_category_${i}_count`];
+        let name = gamemodeVars[`custom_match_playlist_category_${i}_name`];
+        const data = {};
+        for (let j = 0; j < entryNum; j++) {
+            const entryName = `custom_match_playlist_category_${i}_entry_${j}`;
+            const entry = gamemodeVars[entryName];
+            const playlist = playlists[entry];
+            let playlistName = `${entry}`;
+            for (const key in playlist.vars) {
+                if (["name", "description", "map_name"].includes(key)) {
+                    playlistName = playlist.vars[key];
+                }
             }
+            if (entry === "can_hu_cm") {
+                playlistName = "#MP_RR_CANYONLANDS_HU";
+            }
+            if (playlistName.includes("#")) {
+                playlistName = playlistName.replace("#", "");
+            }
+            data[entry] = playlistName;
         }
-        if (entry === "can_hu_cm") {
-            playlistName = "#MP_RR_CANYONLANDS_HU";
+        if (name.includes("#")) {
+            name = name.replace("#", "");
         }
-        if (playlistName.includes("#")) {
-            playlistName = playlistName.replace("#", "");
-        }
-        data[entry] = playlistName;
+        gamemodes[name] = data;
     }
-    if (name.includes("#")) {
-        name = name.replace("#", "");
-    }
-    gamemodes[name] = data;
 }
 
 
@@ -215,7 +243,10 @@ function analyze_message(category, msg) {
     // common.logMessage("メッセージタイプ" + category)
     switch (category.toString()) {
         case "Init": {
-            if (msg.platform != "") { break; }
+            if (msg.platform != "") {
+                readPlaylists_r5();
+                break;
+            }
             // 変換したいUnixTime（ミリ秒単位）
             const unixTime = Number(msg.timestamp) * 1000;
             // Dateクラスのインスタンスを生成（ローカルタイムが使用される）
