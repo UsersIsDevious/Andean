@@ -91,12 +91,12 @@ function startApexLegends() {
     // CMD ファイルを実行するために、cmd.exe /c を利用してシェル経由で実行
     // options の env プロパティで APEX_PATH を指定しています
     common.runCommand(`cmd.exe /c "${cmdFilePath}"`, { env: { ...process.env, APEX_PATH: apexPath } })
-    .then(output => {
-        console.log('コマンドの出力:', output);
-    })
-    .catch(error => {
-        console.error('Events_pb.jsのコンパイル実行時にエラーが発生:', error);
-    });
+        .then(output => {
+            console.log('コマンドの出力:', output);
+        })
+        .catch(error => {
+            console.error('Events_pb.jsのコンパイル実行時にエラーが発生:', error);
+        });
 }
 
 
@@ -1719,6 +1719,29 @@ function readLobbyMessage(messageType) {
     }
 }
 
+
+/**
+ * Packetのデータに含まれていないプレイヤーをチェックする
+ * @param {Packet} packet - Packetクラスのインスタンス
+ * @param {Object} playerData - プレイヤーデータ
+ */
+function checkPacketData(packet, playerData) {
+    try {
+        const includeedPlayers = packet.data.map((player) => player.id);
+        for (const playerId in playerData) {
+            if (!includeedPlayers.includes(playerId)) {
+                packet.addData(playerData[playerId]);
+            } else {
+                playerData[playerId] = packet.data.find((player) => player.id === playerId);
+            }
+        }
+        return true;
+    } catch (error) {
+        console.error("[CHECK PACKET DATA] Error:", error);
+        return false;
+    }
+}
+
 /**
  * Apply CSV Dataの最終適用時間
  * @type {number}
@@ -1749,21 +1772,14 @@ async function update() {
             if (Number.isInteger(packet.t)) {
                 if (packet.events.length != 0) {
                     packet.t = packet.events[0].timestamp - match.startTimeStamp;
+                    checkPacketData(packet, playerData);
                     match.addPacketElement(packet.t, packet.toJSON());
                 } else {
                     console.log("[UPDATE] Packet is skipped");
                 }
             } else {
+                checkPacketData(packet, playerData);
                 match.addPacketElement(packet.t, packet.toJSON());
-            }
-
-            const includeedPlayers = packet.data.map((player) => player.id);
-            for (const playerId in playerData) {
-                if (!includeedPlayers.includes(playerId)) {
-                    packet.addData(playerData[playerId]);
-                } else {
-                    playerData[playerId] = packet.data.find((player) => player.id === playerId);
-                }
             }
         }
         packet = new Packet((now / 1000) - match.startTimeStamp);
