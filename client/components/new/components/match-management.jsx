@@ -223,7 +223,10 @@ export default function MatchManagement({ config, updateConfig }) {
           <RequestButton
             onClick={async () => {
               try {
-                const response = await fetch("/getScore")
+                const response = await fetch("/getScore", {
+                  method: "POST",
+                  timeout: 10000,
+                })
                 const data = await response.json()
                 const scoreString = `${data.score}`
                 await navigator.clipboard.writeText(scoreString)

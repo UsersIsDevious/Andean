@@ -72,7 +72,7 @@ function resetConfig(req, res) {
  * @param {Response} res - クライアントに対するレスポンスオブジェクト
  */
 async function getScore(req, res) {
-  const score = serverService.makeScore();
+  const score = await serverService.makeScore();
   console.log("[GET SCORE] result", score);
   if (score === false) {
       res.status(400).send({success: false});

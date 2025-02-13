@@ -6,7 +6,7 @@ function saveConfig(body) {
     for (const key in body) {
         config[key] = body[key];
     }
-    common.saveConfig('../../config.json', config);
+    common.saveFile('../../config.json', config);
     return config;
 }
 

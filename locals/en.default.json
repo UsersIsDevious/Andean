@@ -92,7 +92,8 @@
     "Weapon Overheat": "Weapon Overheat",
     "Smoke Launcher": "Smoke Launcher",
     "Prowler Attack": "Prowler Attack",
-    "Spider Attack": "Spider Attack"
+    "Spider Attack": "Spider Attack",
+    "Cargo Bot Explosion": "Cargo Bot Explosion"
   },
   "items_label": {
     "mp_ability_void_ring": "Heat Shield",

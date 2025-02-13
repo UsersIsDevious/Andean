@@ -395,7 +395,7 @@ function analyze_message(category, msg) {
                     }
                     for (let i = 0; i < ranks.length; i++) {
                         const team = match.getTeam(ranks[i]);
-                        team.setRank(ranks.length - i);
+                        team.setRank(ranks.length - i + 1);
                     }
                     common.saveUpdate(`Packet Log - ${match.matchName}`, config.output, matchBase);
                     isPlaying = false;
@@ -1454,7 +1454,7 @@ function getWeaponId(name) {
  * @returns {String|undefined}
  */
 function getAssociateWeaponId(name) {
-    if (name) return undefined
+    if (!name) return undefined
     const split = splitBracketParts(name);
     let result = "";
     if (split == null) {
