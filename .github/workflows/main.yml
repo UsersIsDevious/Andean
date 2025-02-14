@@ -1,0 +1,106 @@
+name: Build & Release Zip
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # リポジトリのチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # batファイルのLF問題対策：改行コード変換を行う
+      - name: Disable line ending conversion
+        run: git config --local core.autocrlf true
+
+      # .git関連ファイルを除いて全ファイルをzip化
+      - name: Create zip archive
+        run: |
+          zip -r release.zip . -x "*.git*"
+
+      # 最新リリースタグを取得（存在しない場合は v0.0.0 を使用）
+      - name: Get latest release version
+        id: get_latest
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              const latestRelease = await github.rest.repos.getLatestRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+              core.info("Latest release: " + latestRelease.data.tag_name);
+              return latestRelease.data.tag_name;
+            } catch (error) {
+              core.info("No latest release found. Defaulting to v0.0.0");
+              return "v0.0.0";
+            }
+
+      # 最新リリースのパッチ番号をインクリメントして新しいバージョンを生成
+      - name: Increment version
+        id: increment_version
+        run: |
+          latest_version="${{ steps.get_latest.outputs.result }}"
+          echo "Latest version: $latest_version"
+          # 先頭の "v" を除去
+          version="${latest_version#v}"
+          # "-pre"が付いている場合、ベースと接尾辞に分ける
+          if [[ "$version" == *"-pre" ]]; then
+            base="${version%-pre}"
+            suffix="-pre"
+          else
+            base="$version"
+            suffix=""
+          fi
+          # major, minor, patch を分割し、patchをインクリメント
+          IFS='.' read -r major minor patch <<< "$base"
+          patch=$((patch + 1))
+          new_version="v${major}.${minor}.${patch}${suffix}"
+          echo "New version: $new_version"
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+        shell: bash
+
+      # 新バージョンで GitHub Release を作成（bodyにテンプレートを含む）
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.increment_version.outputs.new_version }}
+          release_name: Release ${{ steps.increment_version.outputs.new_version }}
+          body: |
+            ### Notice
+
+            - このリリースは自動更新で作成されたものです。
+            - Leave Lobbyボタンは使用しないでください。クラッシュします。
+            - Stop Serverを押しても終了しない場合があります。その場合はタブを閉じ、コンソールをバツで終了させてください。
+
+            ### Installation
+
+            1. zipファイルをダウンロードし、解凍してください。
+
+            2. 解凍したらstart.batをダブルクリックし、Andeanを起動します。
+
+            4. Andeanが起動したらSettingsタブへ移動し、Game Installation Directoryを自身がApexをインストールしているパスに設定します。
+
+            5. Systemタブに移動し、Start Gameを押したらApexが起動します。
+
+            それではAndeanをお楽しみください！
+          draft: false
+          prerelease: false
+
+      # 生成したzipファイルをリリースにアップロード
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release.zip
+          asset_name: release.zip
+          asset_content_type: application/zip
