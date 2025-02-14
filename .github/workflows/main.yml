@@ -1,0 +1,135 @@
+name: Build & Release Zip
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+    branches:
+      - develop
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # リポジトリのチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # batファイルのLF問題対策：改行コード変換を行う
+      - name: Disable line ending conversion
+        run: git config --local core.autocrlf true
+
+      # .git関連ファイルを除いて全ファイルをzip化
+      - name: Create zip archive
+        run: zip -r release.zip . -x "*.git*"
+
+      # 最新リリースのバージョンを取得（存在しない場合は v0.0.0 を使用）
+      - name: Get latest release version
+        id: get_latest
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              const latestRelease = await github.rest.repos.getLatestRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+              core.info("Latest release: " + latestRelease.data.tag_name);
+              return latestRelease.data.tag_name;
+            } catch (error) {
+              core.info("No latest release found. Defaulting to v0.0.0");
+              return "v0.0.0";
+            }
+
+      # 現在のブランチに応じてリリースバージョンを更新
+      - name: Increment version
+        id: increment_version
+        run: |
+          latest_version="${{ steps.get_latest.outputs.result }}"
+          echo "Latest version: $latest_version"
+          # 先頭の "v" を除去
+          version="${latest_version#v}"
+          # イベントタイプに応じてブランチ名を取得
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            # pull_requestイベントの場合、baseブランチ名を取得（例：develop または master）
+            branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
+          else
+            branch=${GITHUB_REF##*/}
+          fi
+          echo "Current branch: $branch"
+
+          if [[ "$branch" == "develop" ]]; then
+            # developの場合: 常にpatchをインクリメントし、-preを付加する
+            if [[ "$version" == *"-pre" ]]; then
+              base="${version%-pre}"
+            else
+              base="$version"
+            fi
+            IFS='.' read -r major minor patch <<< "$base"
+            patch=$((patch + 1))
+            new_version="v${major}.${minor}.${patch}-pre"
+            echo "new_version=$new_version" >> $GITHUB_OUTPUT
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          elif [[ "$branch" == "master" ]]; then
+            # masterの場合:
+            #  - 最新が-preなら正式版へ変換（例：v1.0.0-pre → v1.0.0、v2.3.1-pre → v2.3.1）
+            #  - それ以外ならpatchをインクリメント（例：v1.2.1 → v1.2.2、v2.0.0 → v2.0.1）
+            if [[ "$version" == *"-pre" ]]; then
+              new_version="v${version%-pre}"
+            else
+              IFS='.' read -r major minor patch <<< "$version"
+              patch=$((patch + 1))
+              new_version="v${major}.${minor}.${patch}"
+            fi
+            echo "new_version=$new_version" >> $GITHUB_OUTPUT
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          else
+            echo "Branch is neither develop nor master. Exiting."
+            exit 1
+          fi
+          echo "New version: $new_version"
+        shell: bash
+
+      # 新バージョンでGitHub Releaseを作成（リリース本文にテンプレートを含む）
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.increment_version.outputs.new_version }}
+          release_name: Release ${{ steps.increment_version.outputs.new_version }}
+          body: |
+            ### Notice
+
+            - このリリースは自動更新で作成されたものです。
+            - Leave Lobbyボタンは使用しないでください。クラッシュします。
+            - Stop Serverを押しても終了しない場合があります。その場合はタブを閉じ、コンソールをバツで終了させてください。
+
+            ### Installation
+
+            1. zipファイルをダウンロードし、解凍してください。
+
+            2. 解凍したらstart.batをダブルクリックし、Andeanを起動します。
+
+            4. Andeanが起動したらSettingsタブへ移動し、Game Installation Directoryを自身がApexをインストールしているパスに設定します。
+
+            5. Systemタブに移動し、Start Gameを押したらApexが起動します。
+
+            それではAndeanをお楽しみください！
+          draft: false
+          prerelease: ${{ steps.increment_version.outputs.prerelease }}
+
+      # 作成したzipファイルをリリースにアップロード
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release.zip
+          asset_name: release.zip
+          asset_content_type: application/zip
