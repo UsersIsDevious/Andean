@@ -5,6 +5,10 @@ on:
     branches:
       - develop
       - master
+  pull_request:
+    branches:
+      - develop
+      - master
 
 jobs:
   release:
@@ -48,11 +52,17 @@ jobs:
           echo "Latest version: $latest_version"
           # 先頭の "v" を除去
           version="${latest_version#v}"
-          # 現在のブランチ名を抽出（例：refs/heads/develop → develop）
-          branch=${GITHUB_REF##*/}
+          # イベントタイプに応じてブランチ名を取得
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            # pull_requestイベントの場合、baseブランチ名を取得（例：develop または master）
+            branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
+          else
+            branch=${GITHUB_REF##*/}
+          fi
           echo "Current branch: $branch"
+
           if [[ "$branch" == "develop" ]]; then
-            # develop: 常にpatchをインクリメントし、-preを付加する
+            # developの場合: 常にpatchをインクリメントし、-preを付加する
             if [[ "$version" == *"-pre" ]]; then
               base="${version%-pre}"
             else
@@ -64,7 +74,9 @@ jobs:
             echo "new_version=$new_version" >> $GITHUB_OUTPUT
             echo "prerelease=true" >> $GITHUB_OUTPUT
           elif [[ "$branch" == "master" ]]; then
-            # master: -preがあれば除去、なければpatchをインクリメントする
+            # masterの場合:
+            #  - 最新が-preなら正式版へ変換（例：v1.0.0-pre → v1.0.0、v2.3.1-pre → v2.3.1）
+            #  - それ以外ならpatchをインクリメント（例：v1.2.1 → v1.2.2、v2.0.0 → v2.0.1）
             if [[ "$version" == *"-pre" ]]; then
               new_version="v${version%-pre}"
             else
