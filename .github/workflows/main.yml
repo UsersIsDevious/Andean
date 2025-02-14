@@ -22,6 +22,14 @@ jobs:
       - name: Disable line ending conversion
         run: git config --local core.autocrlf false
 
+      # bat および cmd ファイルを CRLF 形式に変換する
+      - name: Convert line endings for bat and cmd files
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dos2unix
+          # unix2dos コマンドで改行コードを変換
+          find . -type f \( -iname "*.bat" -o -iname "*.cmd" \) -exec unix2dos {} \;
+
       # .git関連ファイルを除いて全ファイルをzip化
       - name: Create zip archive
         run: zip -r release.zip . -x "*.git*"
@@ -56,13 +64,11 @@ jobs:
           version="${latest_version#v}"
           # イベントタイプに応じてブランチ名を取得
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            # pull_requestの場合、baseブランチ名を取得
             branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
           else
             branch=${GITHUB_REF##*/}
           fi
           echo "Current branch: $branch"
-
           if [[ "$branch" == "develop" ]]; then
             # developの場合: 常にpatchをインクリメントし、-preを付加する
             if [[ "$version" == *"-pre" ]]; then
