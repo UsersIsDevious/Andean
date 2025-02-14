@@ -18,9 +18,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # batファイルのLF問題対策：改行コード変換を行う
+      # batファイルのLF問題対策：改行コード変換を防止
       - name: Disable line ending conversion
-        run: git config --local core.autocrlf true
+        run: git config --local core.autocrlf false
 
       # .git関連ファイルを除いて全ファイルをzip化
       - name: Create zip archive
