@@ -3,7 +3,8 @@ name: Build & Release Zip
 on:
   push:
     branches:
-      - main
+      - develop
+      - master
 
 jobs:
   release:
@@ -19,10 +20,9 @@ jobs:
 
       # .git関連ファイルを除いて全ファイルをzip化
       - name: Create zip archive
-        run: |
-          zip -r release.zip . -x "*.git*"
+        run: zip -r release.zip . -x "*.git*"
 
-      # 最新リリースタグを取得（存在しない場合は v0.0.0 を使用）
+      # 最新リリースのバージョンを取得（存在しない場合は v0.0.0 を使用）
       - name: Get latest release version
         id: get_latest
         uses: actions/github-script@v6
@@ -40,7 +40,7 @@ jobs:
               return "v0.0.0";
             }
 
-      # 最新リリースのパッチ番号をインクリメントして新しいバージョンを生成
+      # 現在のブランチに応じてリリースバージョンを更新
       - name: Increment version
         id: increment_version
         run: |
@@ -48,23 +48,40 @@ jobs:
           echo "Latest version: $latest_version"
           # 先頭の "v" を除去
           version="${latest_version#v}"
-          # "-pre"が付いている場合、ベースと接尾辞に分ける
-          if [[ "$version" == *"-pre" ]]; then
-            base="${version%-pre}"
-            suffix="-pre"
+          # 現在のブランチ名を抽出（例：refs/heads/develop → develop）
+          branch=${GITHUB_REF##*/}
+          echo "Current branch: $branch"
+          if [[ "$branch" == "develop" ]]; then
+            # develop: 常にpatchをインクリメントし、-preを付加する
+            if [[ "$version" == *"-pre" ]]; then
+              base="${version%-pre}"
+            else
+              base="$version"
+            fi
+            IFS='.' read -r major minor patch <<< "$base"
+            patch=$((patch + 1))
+            new_version="v${major}.${minor}.${patch}-pre"
+            echo "new_version=$new_version" >> $GITHUB_OUTPUT
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          elif [[ "$branch" == "master" ]]; then
+            # master: -preがあれば除去、なければpatchをインクリメントする
+            if [[ "$version" == *"-pre" ]]; then
+              new_version="v${version%-pre}"
+            else
+              IFS='.' read -r major minor patch <<< "$version"
+              patch=$((patch + 1))
+              new_version="v${major}.${minor}.${patch}"
+            fi
+            echo "new_version=$new_version" >> $GITHUB_OUTPUT
+            echo "prerelease=false" >> $GITHUB_OUTPUT
           else
-            base="$version"
-            suffix=""
+            echo "Branch is neither develop nor master. Exiting."
+            exit 1
           fi
-          # major, minor, patch を分割し、patchをインクリメント
-          IFS='.' read -r major minor patch <<< "$base"
-          patch=$((patch + 1))
-          new_version="v${major}.${minor}.${patch}${suffix}"
           echo "New version: $new_version"
-          echo "new_version=$new_version" >> $GITHUB_OUTPUT
         shell: bash
 
-      # 新バージョンで GitHub Release を作成（bodyにテンプレートを含む）
+      # 新バージョンでGitHub Releaseを作成（リリース本文にテンプレートを含む）
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -92,9 +109,9 @@ jobs:
 
             それではAndeanをお楽しみください！
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.increment_version.outputs.prerelease }}
 
-      # 生成したzipファイルをリリースにアップロード
+      # 作成したzipファイルをリリースにアップロード
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
