@@ -26,21 +26,23 @@ jobs:
       - name: Create zip archive
         run: zip -r release.zip . -x "*.git*"
 
-      # 最新リリースのバージョンを取得（存在しない場合は v0.0.0 を使用）
+      # 最新リリース（stable, pre-release両方）の取得
       - name: Get latest release version
         id: get_latest
         uses: actions/github-script@v6
         with:
           script: |
-            try {
-              const latestRelease = await github.rest.repos.getLatestRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-              });
-              core.info("Latest release: " + latestRelease.data.tag_name);
-              return latestRelease.data.tag_name;
-            } catch (error) {
-              core.info("No latest release found. Defaulting to v0.0.0");
+            const releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 1
+            });
+            if (releases.data.length > 0) {
+              const latest = releases.data[0].tag_name;
+              core.info("Latest release: " + latest);
+              return latest;
+            } else {
+              core.info("No releases found. Defaulting to v0.0.0");
               return "v0.0.0";
             }
 
@@ -54,7 +56,7 @@ jobs:
           version="${latest_version#v}"
           # イベントタイプに応じてブランチ名を取得
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            # pull_requestイベントの場合、baseブランチ名を取得（例：develop または master）
+            # pull_requestの場合、baseブランチ名を取得
             branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
           else
             branch=${GITHUB_REF##*/}
