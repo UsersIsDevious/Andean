@@ -7,6 +7,7 @@ const { LiveAPIEvent } = require('../bin/events_pb'); // 必要なメッセー�
 const messageTypes = require('./utils/messageTypes');
 const sendMapData = require('./services/sendMapData')
 const apexCommon = require('./services/apexCommon');
+const makeResultImg = require('./services/makeResultImg');
 const vdf = require('vdf');
 
 
@@ -379,6 +380,7 @@ function analyze_message(category, msg) {
             match.setMatchSetup(msg.map, msg.playlistname, msg.playlistdesc, msg.aimassiston, msg.anonymousmode, msg.serverid);
             match.datacenter.update(msg.datacenter.timestamp, msg.datacenter.category, msg.datacenter.name);
             match.setMatchName(`${match.matchName}-${msg.map}`);
+            common.ensureFolderExists(path.join(config.output, match.matchName));
             const playlistName = splitBracketParts(msg.playlistname);
             if (playlistName === null) {
                 match.setMaxPlayersAndTeams(msg.playlistname);
@@ -435,7 +437,7 @@ function analyze_message(category, msg) {
                         const team = match.getTeam(ranks[i]);
                         team.setRank(ranks.length - i);
                     }
-                    common.saveUpdate(`Packet Log - ${match.matchName}`, config.output, matchBase);
+                    common.saveUpdate(`Packet Log - ${match.matchName}`, config.output, match.matchName, matchBase);
                     isPlaying = false;
                 }
             } catch (error) {
@@ -1574,23 +1576,33 @@ async function calcScore() {
     const maxKill = score_setting.max_kill;
     for (let i = 2; i < match.maxTeams + 2; i++) {
         let teamScore = 0;
-        let team = match.getTeam(i);
+        const team = match.getTeam(i);
         // Teamが存在し、かつプレイヤーがいる場合
         if (team && team.players.length > 0) {
-            let rankPoint = score_setting.rank_points[team.rank - 1];
+            const rankPoint = score_setting.rank_points[team.rank - 1];
             for (const playerId of team.players) {
-                let kill = match.getPlayer(playerId).kills.total;
+                let playerKillScore = 0;
+                const player = match.getPlayer(playerId);
+                const kill = player.kills.total;
                 if (kill > maxKill) {
-                    teamScore += maxKill * killPoint;
+                    playerKillScore += maxKill * killPoint;
                 } else {
-                    teamScore += kill * killPoint;
+                    playerKillScore += kill * killPoint;
                 }
+                player.updateScore(playerKillScore, rankPoint);
+                teamScore += playerKillScore;
             }
             team.score = teamScore + rankPoint;
         }
         scoreBoard += `${team.rank}\t${team.totalKills}\t${team.score}\n`;
     }
     console.log("[GET SCORE] scoreBoard", scoreBoard);
+
+
+    for (const playerId in match.players) {
+        const player = match.getPlayer(playerId);
+        makeResultImg.makeResultImg(match, config, player);
+    }
     return scoreBoard;
 }
 

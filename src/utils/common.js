@@ -75,8 +75,8 @@ function saveData(filename,_class) {
  * @param {string} outputPath - ファイルの保存先のパス
  * @param {Object} _class - 新しく保存するPacketデータオブジェクト
  */
-function saveUpdate(filename, outputPath, _class) {
-  let filePath = path.join(__dirname, outputPath, filename + ".json");
+function saveUpdate(filename, outputPath, matchName, _class) {
+  let filePath = path.resolve(__dirname, outputPath, matchName, filename + ".json");
 
   try {
     // データをファイルに書き込み

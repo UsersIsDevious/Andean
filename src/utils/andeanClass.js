@@ -601,6 +601,16 @@ class Player {
     this.damageReceived = new Statistics();
 
     /**
+     * プレイヤーのスコア
+     * @type {object}
+     */
+    this.score = {
+      total: 0,
+      rankPoint: 0,
+      killPoint: 0
+    };
+
+    /**
      * プレイヤーの状態
      * @type {string}
      */
@@ -790,6 +800,17 @@ class Player {
    */
   setSquadIndex(index) {
     this.squadIndex = index;
+  }
+
+  /**
+   * プレイヤーのスコアを更新する関数
+   * @param {number} newScore 新しいスコア
+   * @memberof Player
+   */
+  updateScore(killPoint, rankPoint) {
+    this.score.killPoint = killPoint;
+    this.score.rankPoint = rankPoint;
+    this.score.total = killPoint + rankPoint;
   }
 
   /**

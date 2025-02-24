@@ -75,7 +75,7 @@ function sendRingUpdate(match) {
  * @param {CustomMatch} match 
  */
 async function send(match, outputPath){
-  common.saveUpdate(match.matchName, outputPath, match)
+  common.saveUpdate(match.matchName, outputPath, match.matchName, match)
   //await common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(message));
   await common.getServerList().websocketServer_web.broadcastToAllClients(JSON.stringify(match));
 }
