@@ -172,6 +172,11 @@ namespace Andean.Models.AndeanClass
             LastDeath = nucleusHash;
         }
 
+        public void SetSpawnPoint(int spawnPoint)
+        {
+            SpawnPoint = spawnPoint;
+        }
+
         /// <summary>
         /// チームの画像URL を設定するメソッド
         /// </summary>
