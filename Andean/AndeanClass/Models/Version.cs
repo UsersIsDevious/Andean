@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Andean.Models.AndeanClass
+namespace Andean.AndeanClass
 {
     /// <summary>
     /// バージョン情報を表すクラス

@@ -1,4 +1,4 @@
-﻿namespace Andean.Models.AndeanClass
+﻿namespace Andean.AndeanClass
 {
     /// <summary>
     /// データセンターを表すクラス

@@ -1,4 +1,4 @@
-﻿namespace Andean.Models.AndeanClass
+﻿namespace Andean.AndeanClass
 {
     /// <summary>
     /// 武器に関するクラス

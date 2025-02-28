@@ -10,10 +10,10 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Andean.Hubs;
 using Rtech.Liveapi; // protoc により生成された型群
-using Andean.Services.Message;
-using Andean.Services.Processing;
+using Andean.ApexLiveAPI.Message;
+using Andean.WebsocketServer.Controllers;
 
-namespace Andean.Services
+namespace Andean.WebsocketServer
 {
     public class WebSocketServer
     {
@@ -178,7 +178,7 @@ namespace Andean.Services
                         }
 
                         // 通常のイベントとして処理
-                        var parsedMessage = MessageTypeRegistry.ParseMessage(incomingEvent.GameMessage);
+                        var parsedMessage = Message.ParseMessage(incomingEvent.GameMessage);
                         if (parsedMessage != null)
                         {
                             _logger.LogInformation("🎯 Decoded Message from authorized client {ClientId}: {Message}", clientId, parsedMessage);

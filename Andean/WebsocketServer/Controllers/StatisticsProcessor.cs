@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Rtech.Liveapi;
-using Andean.Models.AndeanClass;
-using System.Runtime.CompilerServices;  // CustomMatch クラスが定義されている
+using System.Runtime.CompilerServices;
+using Andean.AndeanClass;
 
-namespace Andean.Services.Processing
+namespace Andean.WebsocketServer.Controllers
 {
     public class StatisticsProcessor
     {
@@ -162,9 +162,9 @@ namespace Andean.Services.Processing
                             string name = playerMsg.Name;
                             int teamId = (int)playerMsg.TeamId;
                             string nucleusHash = playerMsg.NucleusHash;
-                            
+
                             // プレイヤーインスタンスを生成
-                            Models.AndeanClass.Player player = new Models.AndeanClass.Player(name, teamId, nucleusHash, playerMsg.HardwareName);
+                            AndeanClass.Player player = new AndeanClass.Player(name, teamId, nucleusHash, playerMsg.HardwareName);
 
                             // プレイヤー名が重複している場合は、後から入ってきたプレイヤーを削除する
                             // また、重複したプレイヤー名は duplicate フラグを true に設定
