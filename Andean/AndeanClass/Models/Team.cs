@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Andean.Models.AndeanClass
+namespace Andean.AndeanClass
 {
 
     /// <summary>

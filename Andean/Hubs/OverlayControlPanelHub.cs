@@ -1,4 +1,4 @@
-﻿using Andean.Services.Processing;
+﻿using Andean.WebsocketServer.Controllers;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Threading.Tasks;

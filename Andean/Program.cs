@@ -1,13 +1,14 @@
 ﻿using Andean.Hubs;
 using Andean.Services;
-using Andean.Services.Processing;
-using Andean.Services.LiveAPIRequest;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MyAspNetCoreApp.Models;
+using Andean.ApexLiveAPI.Request;
+using Andean.WebsocketServer;
+using Andean.WebsocketServer.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +40,7 @@ builder.Services.AddSingleton<WebSocketServer>();
 builder.Services.AddSingleton<StatisticsProcessor>();
 
 // 🚀 LobbyRequestService をシングルトンで登録
-builder.Services.AddSingleton<ApexLegendsLiveAPIRequestService>();
+builder.Services.AddSingleton<Request>();
 
 
 

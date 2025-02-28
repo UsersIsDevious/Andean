@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using Andean.Services;
-using Andean.Services.LiveAPIRequest;
+using Andean.ApexLiveAPI.Request;
 
 namespace Andean.Hubs
 {
     public class LobbyHub : Hub
     {
-        private readonly ApexLegendsLiveAPIRequestService _lobbyRequestService;
+        private readonly Request _lobbyRequestService;
 
-        public LobbyHub(ApexLegendsLiveAPIRequestService lobbyRequestService)
+        public LobbyHub(Request lobbyRequestService)
         {
             _lobbyRequestService = lobbyRequestService;
         }

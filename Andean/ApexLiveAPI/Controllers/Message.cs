@@ -5,9 +5,9 @@ using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Rtech.Liveapi; // protoc により生成された名前空間
 
-namespace Andean.Services.Message
+namespace Andean.ApexLiveAPI.Message
 {
-    public static class MessageTypeRegistry
+    public static class Message
     {
         // 各メッセージ型に対して、空のインスタンスを生成する関数を登録
         private static readonly Dictionary<string, object> _messageParsers = new()

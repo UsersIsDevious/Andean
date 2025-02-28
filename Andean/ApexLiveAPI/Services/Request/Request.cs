@@ -4,15 +4,16 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Rtech.Liveapi; // Request, CustomMatch_CreateLobby, CustomMatch_JoinLobby, etc.
 using Microsoft.Extensions.Logging;
+using Andean.WebsocketServer;
 
-namespace Andean.Services.LiveAPIRequest
+namespace Andean.ApexLiveAPI.Request
 {
-    public class ApexLegendsLiveAPIRequestService
+    public class Request
     {
         private readonly WebSocketServer _wsServer;
-        private readonly ILogger<ApexLegendsLiveAPIRequestService> _logger;
+        private readonly ILogger<Request> _logger;
 
-        public ApexLegendsLiveAPIRequestService(WebSocketServer wsServer, ILogger<ApexLegendsLiveAPIRequestService> logger)
+        public Request(WebSocketServer wsServer, ILogger<Request> logger)
         {
             _wsServer = wsServer;
             _logger = logger;
@@ -21,7 +22,7 @@ namespace Andean.Services.LiveAPIRequest
         /// <summary>
         /// 共通のリクエスト送信処理
         /// </summary>
-        private async Task<Response?> SendRequestAsync(Request req, CancellationToken cancellationToken)
+        private async Task<Response?> SendRequestAsync(Rtech.Liveapi.Request req, CancellationToken cancellationToken)
         {
             req.WithAck = true;
             byte[] requestBytes = req.ToByteArray();
@@ -46,7 +47,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> ChangeCameraAsync(string type, string value, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var changeCamera = new ChangeCamera();
 
             if (type.Equals("poi", StringComparison.OrdinalIgnoreCase))
@@ -77,7 +78,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> PauseToggleAsync(double preTimer, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var pauseToggle = new PauseToggle
             {
                 PreTimer = (float)preTimer
@@ -91,7 +92,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> CreateLobbyAsync(CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var createLobby = new CustomMatch_CreateLobby();
             req.CustomMatchCreateLobby = createLobby;
             return await SendRequestAsync(req, cancellationToken);
@@ -103,7 +104,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> JoinLobbyAsync(string token, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var joinLobby = new CustomMatch_JoinLobby();
             joinLobby.RoleToken = token;
             req.CustomMatchJoinLobby = joinLobby;
@@ -115,7 +116,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> LeaveLobbyAsync(CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var leaveLobby = new CustomMatch_LeaveLobby();
             req.CustomMatchLeaveLobby = leaveLobby;
             return await SendRequestAsync(req, cancellationToken);
@@ -125,7 +126,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> SetReadyAsync(bool ready, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var setReady = new CustomMatch_SetReady
             {
                 IsReady = ready // 自動生成コードのプロパティに合わせる
@@ -139,7 +140,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> SetMatchmakingAsync(bool matchmaking, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var setMatchmaking = new CustomMatch_SetMatchmaking
             {
                 Enabled = matchmaking
@@ -153,7 +154,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> SetTeamAsync(int teamId, string targetHardwareName, string targetNucleushash, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var setTeam = new CustomMatch_SetTeam
             {
                 TeamId = teamId,
@@ -169,7 +170,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> KickPlayerAsync(string targetHardwareName, string targetNucleushash, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var kickPlayer = new CustomMatch_KickPlayer
             {
                 TargetHardwareName = targetHardwareName,
@@ -184,7 +185,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> SetSettingsAsync(string matchName, bool adminChat, bool teamRename, bool selfAssign, bool aimAssist, bool anonMode, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var setSettings = new CustomMatch_SetSettings
             {
                 PlaylistName = matchName,
@@ -203,7 +204,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> SendChatAsync(string message, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var sendChat = new CustomMatch_SendChat
             {
                 Text = message
@@ -217,7 +218,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> GetLobbyPlayersAsync(CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var getLobbyPlayers = new CustomMatch_GetLobbyPlayers();
             req.CustomMatchGetLobbyPlayers = getLobbyPlayers;
             return await SendRequestAsync(req, cancellationToken);
@@ -228,7 +229,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> SetTeamNameAsync(int teamId, string teamName, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var setTeamName = new CustomMatch_SetTeamName
             {
                 TeamId = teamId,
@@ -243,7 +244,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> GetMatchSettingsAsync(CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var getSettings = new CustomMatch_GetSettings();
             req.CustomMatchGetSettings = getSettings;
             return await SendRequestAsync(req, cancellationToken);
@@ -254,7 +255,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> SetSpawnPointAsync(int teamId, int spawnPoint, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var setSpawnPoint = new CustomMatch_SetSpawnPoint
             {
                 TeamId = teamId,
@@ -269,7 +270,7 @@ namespace Andean.Services.LiveAPIRequest
         /// </summary>
         public async Task<Response?> SetEndRingExclusionAsync(int exclusion, CancellationToken cancellationToken)
         {
-            var req = new Request();
+            var req = new Rtech.Liveapi.Request();
             var endRingExclusion = new CustomMatch_SetEndRingExclusion
             {
                 SectionToExclude = (MapRegion)exclusion

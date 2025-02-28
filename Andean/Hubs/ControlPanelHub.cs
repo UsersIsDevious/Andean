@@ -1,19 +1,19 @@
-﻿using Andean.Services.Processing;
-using Andean.Services.LiveAPIRequest;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Andean.ApexLiveAPI.Request;
+using Andean.WebsocketServer.Controllers;
 
 namespace Andean.Hubs
 {
     public class ControlPanelHub : Hub
     {
         private readonly StatisticsProcessor _statisticsProcessor;
-        private readonly ApexLegendsLiveAPIRequestService _lobbyRequestService;
+        private readonly Request _lobbyRequestService;
         private static string sharedData = "Initial Data";
         private static List<string> selectedDataKeys = new List<string>();
 
-        public ControlPanelHub(StatisticsProcessor statisticsProcessor, ApexLegendsLiveAPIRequestService lobbyRequestService)
+        public ControlPanelHub(StatisticsProcessor statisticsProcessor, Request lobbyRequestService)
         {
             _statisticsProcessor = statisticsProcessor;
             _lobbyRequestService = lobbyRequestService;
