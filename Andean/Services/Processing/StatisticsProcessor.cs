@@ -3,7 +3,8 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Rtech.Liveapi;
-using Andean.Models.AndeanClass;  // CustomMatch クラスが定義されている
+using Andean.Models.AndeanClass;
+using System.Runtime.CompilerServices;  // CustomMatch クラスが定義されている
 
 namespace Andean.Services.Processing
 {
@@ -14,6 +15,9 @@ namespace Andean.Services.Processing
 
         // 現在のマッチ情報（Init イベント時に生成）
         private CustomMatch? _currentMatch;
+
+        // ロビー情報（Init イベント時に生成）
+        private readonly CustomMatch _lobby = new CustomMatch("lobby");
 
         // 認定済みクライアント ID（外部から設定される）
         public string? AuthorizedClientId { get; private set; } = null;
@@ -68,7 +72,7 @@ namespace Andean.Services.Processing
         private void ProcessMessage(IMessage message)
         {
             // 認定済みクライアントが設定されていない場合は、Init メッセージ以外は無視
-            if (AuthorizedClientId == null && !(message is Init))
+            if (AuthorizedClientId == null && message is not Init)
             {
                 Console.WriteLine("未認定のクライアントからのメッセージは無視します。");
                 return;
@@ -81,7 +85,7 @@ namespace Andean.Services.Processing
                         // 例: platform が空の場合は Init イベントと判断
                         if (!string.IsNullOrEmpty(initMsg.Platform))
                         {
-                            Console.WriteLine("Platform 指定あり：readPlaylists_r5() を実行します。");
+                            Console.WriteLine("Platform 指定あり: readPlaylists_r5() を実行します。");
                             break;
                         }
 
@@ -132,19 +136,63 @@ namespace Andean.Services.Processing
                         // 現状何も処理しない
                         break;
                     }
-                case CustomMatch_LobbyPlayers Msg:
+                case CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg:
+                    {
+                        _lobby.SetLobbyId(customMatch_LobbyPlayersMsg.PlayerToken);
+                        _lobby.ClearPlayers();
+                        _lobby.ClearTeams();
+
+                        // チームリストの情報を反映
+                        foreach (var teamMsg in customMatch_LobbyPlayersMsg.Teams)
+                        {
+                            string teamName = teamMsg.Name;
+                            
+                            Team team = new Team(teamName);
+                            team.SetSpawnPoint(teamMsg.SpawnPoint);
+                            _lobby.AddTeam((int)teamMsg.Id, teamName);
+                        }
+
+                        // プレイヤー名と nucleusHash の対応を保持する辞書型配列。ただし、最初に同じ名前のプレイヤーがいた場合は、後から入ってきたプレイヤーを削除する。
+                        // よって、プレイヤー名が重複することはないが、重複したプレイヤー名は残る。
+                        Dictionary<string, Dictionary<string, object>> playerNames = new Dictionary<string, Dictionary<string, object>>();
+
+                        // プレイヤーリストの情報を反映
+                        foreach (var playerMsg in customMatch_LobbyPlayersMsg.Players)
+                        {
+                            string name = playerMsg.Name;
+                            int teamId = (int)playerMsg.TeamId;
+                            string nucleusHash = playerMsg.NucleusHash;
+                            
+                            // プレイヤーインスタンスを生成
+                            Models.AndeanClass.Player player = new Models.AndeanClass.Player(name, teamId, nucleusHash, playerMsg.HardwareName);
+
+                            // プレイヤー名が重複している場合は、後から入ってきたプレイヤーを削除する
+                            // また、重複したプレイヤー名は duplicate フラグを true に設定
+                            if (playerNames.TryGetValue(name, out Dictionary<string, object>? value))
+                            {
+                                _lobby.RemovePlayer((string)value["nucleusHash"]);
+                                playerNames[name]["duplicate"] = true;
+                            }
+
+                            // 重複していない場合は、プレイヤーを追加
+                            else
+                            {
+                                _lobby.AddPlayer(player);
+                                var dict = new Dictionary<string, object> { { "nucleusHash", nucleusHash }, { "duplicate", false } };
+                                playerNames.Add(name, dict);
+                            }
+                        }
+                        break;
+                    }
+                case RequestStatus RequestStatusMsg:
                     {
                         break;
                     }
-                case RequestStatus Msg:
+                case Response ResponseMsg:
                     {
                         break;
                     }
-                case Response Msg:
-                    {
-                        break;
-                    }
-                case MatchSetup Msg:
+                case MatchSetup MatchSetupMsg:
                     {
                         break;
                     }

@@ -253,6 +253,16 @@ namespace Andean.Models.AndeanClass
             return Teams[teamId];
         }
 
+        public void ClearPlayers()
+        {
+            Players.Clear();
+        }
+
+        public void ClearTeams()
+        {
+            Teams.Clear();
+        }
+
         /// <summary>
         /// マッチ名を設定する
         /// </summary>
@@ -260,6 +270,11 @@ namespace Andean.Models.AndeanClass
         public void SetMatchName(string matchName)
         {
             MatchName = matchName;
+        }
+
+        public void SetLobbyId(string lobbyId)
+        {
+            LobbyId = lobbyId;
         }
 
         /// <summary>
@@ -407,6 +422,7 @@ namespace Andean.Models.AndeanClass
             {
                 Player removedPlayer = Players[nucleusHash];
                 Players.Remove(nucleusHash);
+                Teams[removedPlayer.TeamId].Players.Remove(nucleusHash);
                 return $"{removedPlayer.Name} has been removed from the match.";
             }
             else
