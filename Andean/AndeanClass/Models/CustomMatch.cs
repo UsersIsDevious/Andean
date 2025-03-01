@@ -82,7 +82,7 @@ namespace Andean.AndeanClass
         /// <summary>
         /// エイムアシスト設定
         /// </summary>
-        public bool Aimassiston { get; set; }
+        public bool Aimassist { get; set; }
 
         /// <summary>
         /// 匿名モード設定
@@ -144,7 +144,7 @@ namespace Andean.AndeanClass
             PlaylistName = "";
             PlaylistDesc = "";
             Datacenter = new Datacenter();
-            Aimassiston = true;
+            Aimassist = true;
             AnonymousMode = false;
             ServerId = "";
             StartingLoadout = new Inventory();
@@ -368,15 +368,15 @@ namespace Andean.AndeanClass
         /// <param name="mapName">マップ名</param>
         /// <param name="playlistName">プレイリスト名</param>
         /// <param name="playlistDesc">プレイリストの説明</param>
-        /// <param name="aimassiston">エイムアシスト設定</param>
+        /// <param name="aimassist">エイムアシスト設定</param>
         /// <param name="anonymousMode">匿名モード設定</param>
         /// <param name="serverId">サーバーID</param>
-        public void SetMatchSetup(string mapName, string playlistName, string playlistDesc, bool aimassiston, bool anonymousMode, string serverId)
+        public void SetMatchSetup(string mapName, string playlistName, string playlistDesc, bool aimassist, bool anonymousMode, string serverId)
         {
             MapName = mapName;
             PlaylistName = playlistName;
             PlaylistDesc = playlistDesc;
-            Aimassiston = aimassiston;
+            Aimassist = aimassist;
             AnonymousMode = anonymousMode;
             ServerId = serverId;
 
@@ -491,7 +491,7 @@ namespace Andean.AndeanClass
                 playlistName = PlaylistName,
                 playlistDesc = PlaylistDesc,
                 datacenter = Datacenter.GetStatus(),
-                aimassiston = Aimassiston,
+                aimassist = Aimassist,
                 anonymousMode = AnonymousMode,
                 serverId = ServerId,
                 startingLoadout = StartingLoadout,
