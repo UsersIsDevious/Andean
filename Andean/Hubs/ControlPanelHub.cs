@@ -83,8 +83,7 @@ namespace Andean.Hubs
                 // DI で注入された設定から現在の値を取得
                 var config = _configOptions.CurrentValue;
                 // コマンドを生成：例）"D:\ea\Apex +cl_liveapi_enabled 1"
-                //string command = $"{config.ApexLegends.Path}\\r5apex.exe {config.ApexLegends.Api_Option}";
-                string command = $"{config.ApexLegends.Path}\\r5apex.exe";
+                string command = $"{config.ApexLegends.Path}\\r5apex.exe {config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.ApexLegends.Api_Option}\"";
                 Console.WriteLine(command);
                 string result = await _commandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
                 await Clients.Caller.SendAsync("CommandResponse", result);
