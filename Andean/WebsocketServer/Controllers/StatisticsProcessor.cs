@@ -5,6 +5,7 @@ using Google.Protobuf;
 using Rtech.Liveapi;
 using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
+using Andean.AndeanClass.Services.Utilities;
 
 namespace Andean.WebsocketServer.Controllers
 {
@@ -32,15 +33,26 @@ namespace Andean.WebsocketServer.Controllers
         private readonly IMatchService _matchService;
         private readonly ILobbyService _lobbyService;
         private readonly ClientManagementService _clientManagement;
+        private readonly FileOutputService _fileOutputService;
+
+        // ログ出力用ファイル名（サーバー起動時のタイムスタンプで固定）
+        private readonly string _logFileName;
 
         public StatisticsProcessor(
             IMatchService matchService,
             ILobbyService lobbyService,
-            ClientManagementService clientManagement)
+            ClientManagementService clientManagement,
+            FileOutputService fileOutputService)
         {
             _matchService = matchService;
             _lobbyService = lobbyService;
             _clientManagement = clientManagement;
+
+            _fileOutputService = fileOutputService;
+
+            // サーバー起動時のタイムスタンプでログファイル名を決定（例: 20250222_132800_log.txt）
+            _logFileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_log.txt";
+
             // 別スレッドでキュー処理を開始
             Task.Factory.StartNew(ProcessQueue, TaskCreationOptions.LongRunning);
         }
@@ -51,6 +63,12 @@ namespace Andean.WebsocketServer.Controllers
         public void EnqueueMessage(string clientId, IMessage message)
         {
             _queue.Add(new MessageWrapper(clientId, message));
+
+            // ログ出力用の文字列を作成
+            string logContent = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Client: {clientId}, MessageType: {message.GetType().Name}, Content: {message}{Environment.NewLine}";
+
+            // 非同期にファイルへ追記（ファイルは ./output フォルダ配下に作成）
+            Task.Run(() => _fileOutputService.WriteToFile("./output", _logFileName, logContent, FileWriteMode.Append));
         }
 
         /// <summary>
