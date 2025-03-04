@@ -12,6 +12,7 @@ using Andean.WebsocketServer.Controllers;
 using Andean.AndeanClass.Controllers;
 using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
+using Andean.AndeanClass.Services.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,8 @@ builder.Services.AddSingleton<IMatchService, MatchService>();
 // 🚀 ILobbyService をシングルトンで登録
 builder.Services.AddSingleton<ILobbyService, LobbyService>();
 
+// 🚀 FileOutputService をシングルトンで登録
+builder.Services.AddSingleton<FileOutputService>();
 
 
 
