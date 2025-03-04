@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Andean.ApexLiveAPI.Request;
 using Andean.WebsocketServer.Controllers;
+using Andean.AndeanClass.Services.Utilities;  // CommandExecutionService, CommandMode
 
 namespace Andean.Hubs
 {
@@ -10,13 +12,18 @@ namespace Andean.Hubs
     {
         private readonly StatisticsProcessor _statisticsProcessor;
         private readonly Request _lobbyRequestService;
+        private readonly CommandExecutionService _commandExecutionService;
         private static string sharedData = "Initial Data";
         private static List<string> selectedDataKeys = new List<string>();
 
-        public ControlPanelHub(StatisticsProcessor statisticsProcessor, Request lobbyRequestService)
+        public ControlPanelHub(
+            StatisticsProcessor statisticsProcessor,
+            Request lobbyRequestService,
+            CommandExecutionService commandExecutionService)
         {
             _statisticsProcessor = statisticsProcessor;
             _lobbyRequestService = lobbyRequestService;
+            _commandExecutionService = commandExecutionService;
         }
 
         public override async Task OnConnectedAsync()
@@ -42,8 +49,6 @@ namespace Andean.Hubs
         {
             selectedDataKeys = newSelectedKeys;
             await Clients.All.SendAsync("ReceiveSelectedData", selectedDataKeys);
-            //var filteredData = _statisticsProcessor.GetFilteredData(selectedDataKeys);
-            //await Clients.All.SendAsync("SendOverlayData", filteredData);
         }
 
         public async Task CreateLobby()
@@ -57,6 +62,26 @@ namespace Andean.Hubs
             else
             {
                 await Clients.Caller.SendAsync("LobbyResponse", "Error or timeout in creating lobby.");
+            }
+        }
+
+        /// <summary>
+        /// ユーザーから StartApex メッセージを受け取ったら、固定のコマンド("ok")をコマンドプロンプトで実行します。
+        /// </summary>
+        public async Task StartApex()
+        {
+            // 固定のコマンド "ok" をコマンドプロンプトで実行（CommandMode.CommandPrompt を選択）
+            try
+            {
+                Console.WriteLine("StartApex");
+                string command = "hostname";
+                string result = await _commandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
+                Console.WriteLine(result);
+                await Clients.Caller.SendAsync("CommandResponse", result);
+            }
+            catch (System.Exception ex)
+            {
+                await Clients.Caller.SendAsync("CommandResponse", $"Error: {ex.Message}");
             }
         }
     }

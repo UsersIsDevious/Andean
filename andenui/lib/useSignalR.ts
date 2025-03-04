@@ -9,7 +9,9 @@ export function useSignalR() {
   const dispatch = useDispatch();
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
   const [lobbyResponse, setLobbyResponse] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [apexResponse, setApexResponse] = useState<string | null>(null);
+  const [isLobbyLoading, setIsLobbyLoading] = useState(false);
+  const [isApexLoading, setIsApexLoading] = useState(false);
 
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
@@ -24,26 +26,22 @@ export function useSignalR() {
       .then(() => console.log("✅ SignalR Connected"))
       .catch(err => console.error("❌ SignalR Connection Error:", err));
 
-    // 古いリスナーを削除
-    newConnection.off("ReceiveMessage");
-    newConnection.off("ReceiveTimestamp");
+    // イベントリスナーをクリア
     newConnection.off("LobbyResponse");
+    newConnection.off("ApexResponse");
 
-    // メッセージ受信
-    newConnection.on("ReceiveMessage", (message) => {
-      console.log("📩 Received Message:", message);
-      dispatch(updateData(message));
-    });
-
-    newConnection.on("ReceiveTimestamp", (timestamp) => {
-      console.log("📩 Received Timestamp:", timestamp);
-      dispatch(updateData(timestamp));
-    });
-
+    // LobbyResponse を受信
     newConnection.on("LobbyResponse", (response) => {
       console.log("📩 Received Lobby Response:", response);
       setLobbyResponse(response);
-      setIsLoading(false);
+      setIsLobbyLoading(false);
+    });
+
+    // ApexResponse を受信
+    newConnection.on("ApexResponse", (response) => {
+      console.log("📩 Received Apex Response:", response);
+      setApexResponse(response);
+      setIsApexLoading(false);
     });
 
     setConnection(newConnection);
@@ -51,20 +49,39 @@ export function useSignalR() {
     return () => {
       newConnection.stop();
     };
-  }, [dispatch]); // 依存配列に余計な値を入れない
+  }, [dispatch]);
 
+  // 🛠️ CreateLobby を呼び出す関数
   const createLobby = async () => {
     if (connection) {
       try {
         console.log("🛠️ Sending CreateLobby request...");
-        setIsLoading(true);
+        setIsLobbyLoading(true);
         await connection.invoke("CreateLobby");
       } catch (error) {
         console.error("❌ CreateLobby Error:", error);
-        setIsLoading(false);
+        setIsLobbyLoading(false);
       }
     }
   };
 
-  return { createLobby, lobbyResponse, isLoading };
+  // 🏆 StartApex を呼び出す関数
+  const startApex = async () => {
+    if (connection) {
+      try {
+        console.log("🏆 Sending StartApex request to server...");
+        setIsApexLoading(true);
+        await connection.invoke("StartApex");
+        console.log("✅ StartApex request successfully sent.");
+      } catch (error) {
+        console.error("❌ StartApex Error (client side):", error);
+        setIsApexLoading(false);
+      }
+    } else {
+      console.error("❌ SignalR connection is not established.");
+    }
+  };
+  
+
+  return { createLobby, startApex, lobbyResponse, apexResponse, isLobbyLoading, isApexLoading };
 }
