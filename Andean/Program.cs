@@ -61,6 +61,8 @@ builder.Services.AddSingleton<ILobbyService, LobbyService>();
 // 🚀 FileOutputService をシングルトンで登録
 builder.Services.AddSingleton<FileOutputService>();
 
+// 🚀 CommandExecutionService をシングルトンで登録
+builder.Services.AddSingleton<CommandExecutionService>();
 
 
 // 🚀 CORS 設定: localhost:3000 からのリクエストを許可
