@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MyAspNetCoreApp.Models;
 using Andean.ApexLiveAPI.Request;
 using Andean.WebsocketServer;
 using Andean.WebsocketServer.Controllers;
@@ -13,6 +12,8 @@ using Andean.AndeanClass.Controllers;
 using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
 using Andean.AndeanClass.Services.Utilities;
+using Andean.AndeanClass.Config;
+using Andean.AndeanClass.Services.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("config/config.json", optional: true, reloadOnChange: true);
 
 // ✅ DI (依存性注入) に `CustomSettings` を登録
-builder.Services.Configure<CustomSettings>(builder.Configuration);
+builder.Services.Configure<AppConfig>(builder.Configuration);
 
 
 // 🚀 ログ設定: コンソール & デバッグログを有効化

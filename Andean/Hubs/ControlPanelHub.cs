@@ -4,7 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Andean.ApexLiveAPI.Request;
 using Andean.WebsocketServer.Controllers;
-using Andean.AndeanClass.Services.Utilities;  // CommandExecutionService, CommandMode
+using Andean.AndeanClass.Services.Utilities;
+using Andean.AndeanClass.Services.Configuration;
+using Andean.AndeanClass.Config;
+using Microsoft.Extensions.Options;
 
 namespace Andean.Hubs
 {
@@ -15,15 +18,18 @@ namespace Andean.Hubs
         private readonly CommandExecutionService _commandExecutionService;
         private static string sharedData = "Initial Data";
         private static List<string> selectedDataKeys = new List<string>();
+        private readonly IOptionsMonitor<AppConfig> _configOptions;
 
         public ControlPanelHub(
             StatisticsProcessor statisticsProcessor,
             Request lobbyRequestService,
-            CommandExecutionService commandExecutionService)
+            CommandExecutionService commandExecutionService,
+            IOptionsMonitor<AppConfig> configOptions)
         {
             _statisticsProcessor = statisticsProcessor;
             _lobbyRequestService = lobbyRequestService;
             _commandExecutionService = commandExecutionService;
+            _configOptions = configOptions;
         }
 
         public override async Task OnConnectedAsync()
@@ -66,17 +72,21 @@ namespace Andean.Hubs
         }
 
         /// <summary>
-        /// ユーザーから StartApex メッセージを受け取ったら、固定のコマンド("ok")をコマンドプロンプトで実行します。
+        /// ユーザーから StartApex メッセージを受け取ったら、
+        /// config.json の apexlegends.path と api_option を結合した固定コマンドを
+        /// コマンドプロンプトで実行します。
         /// </summary>
         public async Task StartApex()
         {
-            // 固定のコマンド "ok" をコマンドプロンプトで実行（CommandMode.CommandPrompt を選択）
             try
             {
-                Console.WriteLine("StartApex");
-                string command = "hostname";
+                // DI で注入された設定から現在の値を取得
+                var config = _configOptions.CurrentValue;
+                // コマンドを生成：例）"D:\ea\Apex +cl_liveapi_enabled 1"
+                //string command = $"{config.ApexLegends.Path}\\r5apex.exe {config.ApexLegends.Api_Option}";
+                string command = $"{config.ApexLegends.Path}\\r5apex.exe";
+                Console.WriteLine(command);
                 string result = await _commandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
-                Console.WriteLine(result);
                 await Clients.Caller.SendAsync("CommandResponse", result);
             }
             catch (System.Exception ex)
