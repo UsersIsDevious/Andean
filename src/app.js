@@ -82,7 +82,7 @@ async function getSteamPath() {
  *
  * @return {*} 
  */
-function startApexLegends() {
+async function startApexLegends() {
     if (config) {
         if (!config.apexlegends.path) {
             console.error('Apex Legendsのパスが指定されていません。');
@@ -106,9 +106,9 @@ function startApexLegends() {
     const apexPath = config.apexlegends.path;
     const option = `${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`;
     var execPath = `"${apexPath}\\r5apex.exe"`;
-    var steamPath = getSteamPath();
+    var steamPath = await getSteamPath();
     if (apexPath.includes('steamapps\\common\\Apex Legends') && steamPath) {
-        steamPath.replace('/', '\\');
+        steamPath.replace(/\//g, '\\\\');
         execPath = `"${steamPath}\\Steam.exe" -applaunch 1172470`;
     }
     const command = `${execPath} ${option}`;  // パスが空でない場合に起動コマンドを構築
