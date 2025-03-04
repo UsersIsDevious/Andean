@@ -44,6 +44,37 @@ function exit() {
 */
 
 /**
+ * Steamのインストール先パスを取得する関数
+ * @returns {Promise<string|null>} - Steamパスが取得できた場合はその文字列、取得できなかった場合はnull
+ */
+async function getSteamPath() {
+    try {
+        // レジストリからSteamPathを取得するコマンド
+        const command = 'reg query "HKCU\\Software\\Valve\\Steam" /v SteamPath';
+        const output = await common.runCommand(command);
+
+        // 出力例:
+        // HKEY_CURRENT_USER\Software\Valve\Steam
+        //    SteamPath    REG_SZ    C:\Program Files (x86)\Steam
+        const lines = output.split('\n');
+        for (let line of lines) {
+            if (line.includes("SteamPath")) {
+                // 連続する空白で区切られているため、splitでパーツに分割
+                const parts = line.trim().split(/\s{2,}/);
+                if (parts.length >= 3) {
+                    return parts[2];  // Steamのインストール先パスを返す
+                }
+            }
+        }
+        return null;
+    } catch (error) {
+        console.error("Steamパスの取得に失敗しました:", error);
+        return null;
+    }
+}
+
+
+/**
  * Apex Legendsを起動する関数
  */
 /**
@@ -74,7 +105,13 @@ function startApexLegends() {
     }
     const apexPath = config.apexlegends.path;
     const option = `${config.apexlegends.api_option} ${config.apexlegends.option} +cl_liveapi_ws_servers \"ws://127.0.0.1:${config.apexlegends.api_port}\"`;
-    const command = `"${config.apexlegends.path}\\r5apex.exe" + ${option}`;  // パスが空でない場合に起動コマンドを構築
+    var execPath = `"${apexPath}\\r5apex.exe"`;
+    var steamPath = getSteamPath();
+    if (apexPath.includes('steamapps\\common\\Apex Legends') && steamPath) {
+        steamPath.replace('/', '\\');
+        execPath = `"${steamPath}\\Steam.exe" -applaunch 1172470`;
+    }
+    const command = `${execPath} ${option}`;  // パスが空でない場合に起動コマンドを構築
     common.runRegularCommand(command)
         .then(output => {
             common.logMessage('Apex Legendsが起動しました:', output);
