@@ -182,7 +182,7 @@ namespace Andean.WebsocketServer
                         if (parsedMessage != null)
                         {
                             _logger.LogInformation("🎯 Decoded Message from authorized client {ClientId}: {Message}", clientId, parsedMessage);
-                            _statisticsProcessor.EnqueueMessage(parsedMessage);
+                            _statisticsProcessor.EnqueueMessage(clientId,parsedMessage);
 
                             var jsonMessage = new
                             {

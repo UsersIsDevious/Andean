@@ -9,6 +9,9 @@ using MyAspNetCoreApp.Models;
 using Andean.ApexLiveAPI.Request;
 using Andean.WebsocketServer;
 using Andean.WebsocketServer.Controllers;
+using Andean.AndeanClass.Controllers;
+using Andean.AndeanClass.Services;
+using Andean.WebsocketServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,8 +42,20 @@ builder.Services.AddSingleton<WebSocketServer>();
 // 🚀 StatisticsProcessor サーバーをシングルトンとして登録
 builder.Services.AddSingleton<StatisticsProcessor>();
 
+//🚀  ClientManagementService をシングルトンとして登録
+builder.Services.AddSingleton<ClientManagementService>();
+
 // 🚀 LobbyRequestService をシングルトンで登録
 builder.Services.AddSingleton<Request>();
+
+// 🚀 AndeanClassController をシングルトンで登録
+builder.Services.AddSingleton<AndeanClassController>();
+
+// 🚀 IMatchService をシングルトンで登録
+builder.Services.AddSingleton<IMatchService, MatchService>();
+
+// 🚀 ILobbyService をシングルトンで登録
+builder.Services.AddSingleton<ILobbyService, LobbyService>();
 
 
 

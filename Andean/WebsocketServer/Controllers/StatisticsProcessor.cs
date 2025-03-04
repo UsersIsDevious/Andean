@@ -3,56 +3,54 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Rtech.Liveapi;
-using System.Runtime.CompilerServices;
-using Andean.AndeanClass;
+using Andean.AndeanClass.Services;
+using Andean.WebsocketServer.Services;
 
 namespace Andean.WebsocketServer.Controllers
 {
+    /// <summary>
+    /// IMessage と送信元のクライアント ID をまとめるラッパークラス
+    /// </summary>
+    public class MessageWrapper
+    {
+        public string ClientId { get; }
+        public IMessage Message { get; }
+
+        public MessageWrapper(string clientId, IMessage message)
+        {
+            ClientId = clientId;
+            Message = message;
+        }
+    }
+
     public class StatisticsProcessor
     {
-        // IMessage を保持するスレッドセーフなキュー
-        private readonly BlockingCollection<IMessage> _queue = new BlockingCollection<IMessage>();
+        // クライアントIDと IMessage の組み合わせを保持するスレッドセーフなキュー
+        private readonly BlockingCollection<MessageWrapper> _queue = new BlockingCollection<MessageWrapper>();
 
-        // 現在のマッチ情報（Init イベント時に生成）
-        private CustomMatch? _currentMatch;
+        // 各サービスへの参照（DI により注入）
+        private readonly IMatchService _matchService;
+        private readonly ILobbyService _lobbyService;
+        private readonly ClientManagementService _clientManagement;
 
-        // ロビー情報（Init イベント時に生成）
-        private readonly CustomMatch _lobby = new CustomMatch("lobby");
-
-        // 認定済みクライアント ID（外部から設定される）
-        public string? AuthorizedClientId { get; private set; } = null;
-
-        public StatisticsProcessor()
+        public StatisticsProcessor(
+            IMatchService matchService,
+            ILobbyService lobbyService,
+            ClientManagementService clientManagement)
         {
+            _matchService = matchService;
+            _lobbyService = lobbyService;
+            _clientManagement = clientManagement;
             // 別スレッドでキュー処理を開始
             Task.Factory.StartNew(ProcessQueue, TaskCreationOptions.LongRunning);
         }
 
         /// <summary>
-        /// 認定済みクライアントを設定します。WebSocketServer などから呼び出してください。
+        /// 受信した IMessage とその送信元クライアント ID をキューに追加します。
         /// </summary>
-        public void SetAuthorizedClient(string clientId)
+        public void EnqueueMessage(string clientId, IMessage message)
         {
-            AuthorizedClientId = clientId;
-            Console.WriteLine($"Authorized client set: {clientId}");
-        }
-
-        /// <summary>
-        /// 認定済みクライアントの設定を解除します。
-        /// </summary>
-        public void ClearAuthorizedClient()
-        {
-            AuthorizedClientId = null;
-            _currentMatch = null;
-            Console.WriteLine("Authorized client cleared.");
-        }
-
-        /// <summary>
-        /// 受信した IMessage をキューに追加します。
-        /// </summary>
-        public void EnqueueMessage(IMessage message)
-        {
-            _queue.Add(message);
+            _queue.Add(new MessageWrapper(clientId, message));
         }
 
         /// <summary>
@@ -60,45 +58,27 @@ namespace Andean.WebsocketServer.Controllers
         /// </summary>
         private void ProcessQueue()
         {
-            foreach (var message in _queue.GetConsumingEnumerable())
+            foreach (var wrapper in _queue.GetConsumingEnumerable())
             {
-                ProcessMessage(message);
+                ProcessMessage(wrapper.ClientId, wrapper.Message);
             }
         }
 
         /// <summary>
         /// 受信メッセージの型に応じた処理を行います。
         /// </summary>
-        private void ProcessMessage(IMessage message)
+        private void ProcessMessage(string clientId, IMessage message)
         {
-            // 認定済みクライアントが設定されていない場合は、Init メッセージ以外は無視
-            if (AuthorizedClientId == null && message is not Init)
-            {
-                Console.WriteLine("未認定のクライアントからのメッセージは無視します。");
-                return;
-            }
 
             switch (message)
             {
                 case Init initMsg:
                     {
-                        // 例: platform が空の場合は Init イベントと判断
-                        if (!string.IsNullOrEmpty(initMsg.Platform))
-                        {
-                            Console.WriteLine("Platform 指定あり: readPlaylists_r5() を実行します。");
-                            break;
-                        }
+                        // Init メッセージの場合、クライアントを認定済みに設定
+                        _clientManagement.SetAuthorizedClient(clientId);
 
-                        // Init メッセージの Timestamp (秒単位) をミリ秒に変換して日時を整形
-                        long unixTimeSeconds = (long)initMsg.Timestamp;
-                        long unixTimeMillis = unixTimeSeconds * 1000;
-                        DateTime date = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeMillis).LocalDateTime;
-                        string formattedDate = date.ToString("yyyy-MM-dd-HH-mm-ss");
-
-                        // CustomMatch の初期化
-                        _currentMatch = new CustomMatch(formattedDate);
-                        _currentMatch.SetGameVersion(initMsg.GameVersion);
-                        Console.WriteLine($"CustomMatch 初期化完了：{formattedDate}");
+                        // マッチ初期化の処理はマッチサービスへ委譲
+                        _matchService.HandleInitMessage(initMsg);
                         break;
                     }
                 case Rtech.Liveapi.Vector3 vector3Msg:
@@ -138,50 +118,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg:
                     {
-                        _lobby.SetLobbyId(customMatch_LobbyPlayersMsg.PlayerToken);
-                        _lobby.ClearPlayers();
-                        _lobby.ClearTeams();
-
-                        // チームリストの情報を反映
-                        foreach (var teamMsg in customMatch_LobbyPlayersMsg.Teams)
-                        {
-                            string teamName = teamMsg.Name;
-                            
-                            Team team = new Team(teamName);
-                            team.SetSpawnPoint(teamMsg.SpawnPoint);
-                            _lobby.AddTeam((int)teamMsg.Id, teamName);
-                        }
-
-                        // プレイヤー名と nucleusHash の対応を保持する辞書型配列。ただし、最初に同じ名前のプレイヤーがいた場合は、後から入ってきたプレイヤーを削除する。
-                        // よって、プレイヤー名が重複することはないが、重複したプレイヤー名は残る。
-                        Dictionary<string, Dictionary<string, object>> playerNames = new Dictionary<string, Dictionary<string, object>>();
-
-                        // プレイヤーリストの情報を反映
-                        foreach (var playerMsg in customMatch_LobbyPlayersMsg.Players)
-                        {
-                            string name = playerMsg.Name;
-                            int teamId = (int)playerMsg.TeamId;
-                            string nucleusHash = playerMsg.NucleusHash;
-
-                            // プレイヤーインスタンスを生成
-                            AndeanClass.Player player = new AndeanClass.Player(name, teamId, nucleusHash, playerMsg.HardwareName);
-
-                            // プレイヤー名が重複している場合は、後から入ってきたプレイヤーを削除する
-                            // また、重複したプレイヤー名は duplicate フラグを true に設定
-                            if (playerNames.TryGetValue(name, out Dictionary<string, object>? value))
-                            {
-                                _lobby.RemovePlayer((string)value["nucleusHash"]);
-                                playerNames[name]["duplicate"] = true;
-                            }
-
-                            // 重複していない場合は、プレイヤーを追加
-                            else
-                            {
-                                _lobby.AddPlayer(player);
-                                var dict = new Dictionary<string, object> { { "nucleusHash", nucleusHash }, { "duplicate", false } };
-                                playerNames.Add(name, dict);
-                            }
-                        }
+                        _lobbyService.HandleLobbyPlayers(customMatch_LobbyPlayersMsg);
                         break;
                     }
                 case RequestStatus RequestStatusMsg:
