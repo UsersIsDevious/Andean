@@ -4,7 +4,7 @@ import * as signalR from "@microsoft/signalr";
 export function useSignalR(hubUrl: string) {
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
   const [messages, setMessages] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  //const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!hubUrl) return;
@@ -38,5 +38,5 @@ export function useSignalR(hubUrl: string) {
     };
   }, [hubUrl]); // `hubUrl` を変更すると再接続
 
-  return { connection, messages, isLoading };
+  return { connection, messages };
 }

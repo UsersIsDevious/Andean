@@ -13,6 +13,7 @@ using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
 using Andean.Utilities;
 using Andean.Config;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,7 +89,11 @@ var app = builder.Build();
 // 🚀 ロガーを取得
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
-app.MapGet("/", () => "Custom settings are loaded!");
+//app.MapGet("/", () => "Custom settings are loaded!");
+
+// 静的ファイルの配信ミドルウェアを有効化
+app.UseDefaultFiles();  // wwwroot/index.html などの既定ファイルを有効化
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -124,6 +129,18 @@ catch (Exception ex)
 {
     logger.LogError(ex, "❌ WebSocket Server failed to start.");
 }
+
+
+// アプリケーション起動後、ブラウザで指定URLを自動的に開く
+Task.Run(async () =>
+{
+    // サーバーが起動するまで数秒待機（必要に応じて調整）
+    await Task.Delay(1000);
+    // 開きたいURLを指定（）
+    var url = "https://localhost:7109/";
+    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+});
+
 
 logger.LogInformation("🚀 Application started successfully.");
 
