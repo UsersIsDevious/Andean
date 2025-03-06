@@ -1,21 +1,16 @@
 import { useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
-import { useDispatch } from "react-redux";
-import { updateData } from "@/redux/slices/dataSlice";
 
-const SIGNALR_URL = "https://localhost:7109/ControlPanelHub";
-
-export function useSignalR() {
-  const dispatch = useDispatch();
+export function useSignalR(hubUrl: string) {
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
-  const [lobbyResponse, setLobbyResponse] = useState<string | null>(null);
-  const [apexResponse, setApexResponse] = useState<string | null>(null);
-  const [isLobbyLoading, setIsLobbyLoading] = useState(false);
-  const [isApexLoading, setIsApexLoading] = useState(false);
+  const [messages, setMessages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (!hubUrl) return;
+
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(SIGNALR_URL, {
+      .withUrl(hubUrl, {
         withCredentials: false,
         transport: signalR.HttpTransportType.WebSockets
       })
@@ -23,25 +18,15 @@ export function useSignalR() {
       .build();
 
     newConnection.start()
-      .then(() => console.log("✅ SignalR Connected"))
-      .catch(err => console.error("❌ SignalR Connection Error:", err));
+      .then(() => console.log(`✅ Connected to ${hubUrl}`))
+      .catch(err => console.error(`❌ SignalR Connection Error (${hubUrl}):`, err));
 
-    // イベントリスナーをクリア
-    newConnection.off("LobbyResponse");
-    newConnection.off("ApexResponse");
+    // 既存のリスナーを削除
+    newConnection.off("ReceiveMessage");
 
-    // LobbyResponse を受信
-    newConnection.on("LobbyResponse", (response) => {
-      console.log("📩 Received Lobby Response:", response);
-      setLobbyResponse(response);
-      setIsLobbyLoading(false);
-    });
-
-    // ApexResponse を受信
-    newConnection.on("ApexResponse", (response) => {
-      console.log("📩 Received Apex Response:", response);
-      setApexResponse(response);
-      setIsApexLoading(false);
+    newConnection.on("ReceiveMessage", (message) => {
+      console.log(`📩 Received Message from ${hubUrl}:`, message);
+      setMessages(prev => [...prev, message]);
     });
 
     setConnection(newConnection);
@@ -49,39 +34,7 @@ export function useSignalR() {
     return () => {
       newConnection.stop();
     };
-  }, [dispatch]);
+  }, [hubUrl]); // `hubUrl` を変更すると再接続
 
-  // 🛠️ CreateLobby を呼び出す関数
-  const createLobby = async () => {
-    if (connection) {
-      try {
-        console.log("🛠️ Sending CreateLobby request...");
-        setIsLobbyLoading(true);
-        await connection.invoke("CreateLobby");
-      } catch (error) {
-        console.error("❌ CreateLobby Error:", error);
-        setIsLobbyLoading(false);
-      }
-    }
-  };
-
-  // 🏆 StartApex を呼び出す関数
-  const startApex = async () => {
-    if (connection) {
-      try {
-        console.log("🏆 Sending StartApex request to server...");
-        setIsApexLoading(true);
-        await connection.invoke("StartApex");
-        console.log("✅ StartApex request successfully sent.");
-      } catch (error) {
-        console.error("❌ StartApex Error (client side):", error);
-        setIsApexLoading(false);
-      }
-    } else {
-      console.error("❌ SignalR connection is not established.");
-    }
-  };
-  
-
-  return { createLobby, startApex, lobbyResponse, apexResponse, isLobbyLoading, isApexLoading };
+  return { connection, messages, isLoading };
 }

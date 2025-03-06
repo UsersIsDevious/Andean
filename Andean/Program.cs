@@ -98,7 +98,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<TimestampHub>("/timestampHub"); // SignalR のエンドポイント
 // 🚀 SignalR のエンドポイントを4つに分割
 app.MapHub<ControlPanelHub>("/controlPanelHub");       // コントロールパネル用
 app.MapHub<OverlayHub>("/overlayHub");                 // オーバーレイ用

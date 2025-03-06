@@ -1,39 +1,35 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { useSignalR } from "@/lib/useSignalR";
-import CreateLobbyButton from "@/components/CreateLobbyButton";
-import StartApexButton from "@/components/StartApexButton";
+import Link from "next/link";
 
 export default function HomePage() {
-  const { createLobby, startApex, lobbyResponse, apexResponse, isLobbyLoading, isApexLoading } = useSignalR();
-  const data = useSelector((state: RootState) => state.data.value);
-
   return (
-    <main className="p-4 flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-4">Control Panel</h1>
-      
-      <CreateLobbyButton 
-        createLobby={createLobby} 
-        lobbyResponse={lobbyResponse} 
-        isLoading={isLobbyLoading} 
-      />
+    <main className="p-6 flex flex-col items-center space-y-4">
+      <h1 className="text-3xl font-bold">SignalR Control Panel</h1>
+      <p className="text-gray-600">各ページへ移動して SignalR を確認してください。</p>
 
-      <StartApexButton 
-        startApex={startApex} 
-        apexResponse={apexResponse} 
-        isApexLoading={isApexLoading} 
-      />
-
-      <h1 className="text-2xl font-bold mt-6">リアルタイムデータ</h1>
-      <ul className="mt-4 space-y-2">
-        {data.map((item, index) => (
-          <li key={index} className="border p-2 rounded-lg">
-            {JSON.stringify(item)}
-          </li>
-        ))}
-      </ul>
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <Link href="/control-panel">
+          <div className="p-4 border rounded-lg bg-blue-500 text-white text-center hover:bg-blue-600 cursor-pointer">
+            Control Panel
+          </div>
+        </Link>
+        <Link href="/live-view">
+          <div className="p-4 border rounded-lg bg-green-500 text-white text-center hover:bg-green-600 cursor-pointer">
+            Live View
+          </div>
+        </Link>
+        <Link href="/overlay">
+          <div className="p-4 border rounded-lg bg-purple-500 text-white text-center hover:bg-purple-600 cursor-pointer">
+            Overlay
+          </div>
+        </Link>
+        <Link href="/overlay-control">
+          <div className="p-4 border rounded-lg bg-red-500 text-white text-center hover:bg-red-600 cursor-pointer">
+            Overlay Control Panel
+          </div>
+        </Link>
+      </div>
     </main>
   );
 }
