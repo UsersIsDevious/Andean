@@ -11,9 +11,8 @@ using Andean.WebsocketServer.Controllers;
 using Andean.AndeanClass.Controllers;
 using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
-using Andean.AndeanClass.Services.Utilities;
-using Andean.AndeanClass.Config;
-using Andean.AndeanClass.Services.Configuration;
+using Andean.Utilities;
+using Andean.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +63,12 @@ builder.Services.AddSingleton<FileOutputService>();
 
 // 🚀 CommandExecutionService をシングルトンで登録
 builder.Services.AddSingleton<CommandExecutionService>();
+
+// 🚀 FileReadService をシングルトンで登録
+builder.Services.AddSingleton<FileReadService>();
+
+// 🚀 FileOutputService をシングルトンで登録
+builder.Services.AddSingleton<FileOutputService>();
 
 
 // 🚀 CORS 設定: localhost:3000 からのリクエストを許可

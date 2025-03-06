@@ -17,7 +17,6 @@ namespace Andean.WebsocketServer
 {
     public class WebSocketServer
     {
-        private readonly IHubContext<TimestampHub> _hubContext;
         private readonly ILogger<WebSocketServer> _logger;
         private readonly HttpListener _httpListener;
         private readonly StatisticsProcessor _statisticsProcessor;
@@ -33,11 +32,9 @@ namespace Andean.WebsocketServer
         private readonly object _requestLock = new object();
 
         public WebSocketServer(
-            IHubContext<TimestampHub> hubContext,
             ILogger<WebSocketServer> logger,
             StatisticsProcessor statisticsProcessor)
         {
-            _hubContext = hubContext;
             _logger = logger;
             _statisticsProcessor = statisticsProcessor;
             _httpListener = new HttpListener();
@@ -190,7 +187,7 @@ namespace Andean.WebsocketServer
                                 Data = parsedMessage.ToString()
                             };
 
-                            await _hubContext.Clients.All.SendAsync("ReceiveMessage", jsonMessage);
+                            //await _hubContext.Clients.All.SendAsync("ReceiveMessage", jsonMessage);
                         }
                         else
                         {

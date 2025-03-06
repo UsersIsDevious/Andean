@@ -4,9 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Andean.ApexLiveAPI.Request;
 using Andean.WebsocketServer.Controllers;
-using Andean.AndeanClass.Services.Utilities;
-using Andean.AndeanClass.Services.Configuration;
-using Andean.AndeanClass.Config;
+using Andean.Utilities;
+using Andean.Config;
 using Microsoft.Extensions.Options;
 
 namespace Andean.Hubs

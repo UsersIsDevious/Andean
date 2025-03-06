@@ -2,9 +2,9 @@
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Andean.AndeanClass.Config;
+using Andean;
 
-namespace Andean.AndeanClass.Services.Configuration
+namespace Andean.Config
 {
     /// <summary>
     /// Config/config.json の内容を取得・更新するサービス

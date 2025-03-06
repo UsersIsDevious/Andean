@@ -5,7 +5,7 @@ using Google.Protobuf;
 using Rtech.Liveapi;
 using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
-using Andean.AndeanClass.Services.Utilities;
+using Andean.Utilities;
 
 namespace Andean.WebsocketServer.Controllers
 {
@@ -68,7 +68,7 @@ namespace Andean.WebsocketServer.Controllers
             string logContent = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Client: {clientId}, MessageType: {message.GetType().Name}, Content: {message}{Environment.NewLine}";
 
             // 非同期にファイルへ追記（ファイルは ./output フォルダ配下に作成）
-            Task.Run(() => _fileOutputService.WriteToFile("./output", _logFileName, logContent, FileWriteMode.Append));
+            Task.Run(() => _fileOutputService.WriteToFileAsync("./output", _logFileName, logContent, FileWriteMode.Append));
         }
 
         /// <summary>

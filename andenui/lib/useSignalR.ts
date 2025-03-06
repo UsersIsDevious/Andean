@@ -11,10 +11,12 @@ export function useSignalR(hubUrl: string) {
 
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
-        withCredentials: false,
-        transport: signalR.HttpTransportType.WebSockets
+        withCredentials: false, // 認証が不要な場合
+        skipNegotiation: true, // WebSocket を直接使用
+        transport: signalR.HttpTransportType.WebSockets,
       })
       .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Information)
       .build();
 
     newConnection.start()

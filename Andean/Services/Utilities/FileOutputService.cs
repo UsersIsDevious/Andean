@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;  // JSON 操作用（Newtonsoft.Json を使用）
 using System.Text.Json;      // 例として、System.Text.Json を使う場合もあり
 // 名前空間はプロジェクトに合わせて設定してください
-namespace Andean.Services.Utilities
+namespace Andean.Utilities
 {
     public enum FileWriteMode
     {

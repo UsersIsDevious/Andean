@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Andean.AndeanClass.Services.Utilities
+namespace Andean.Utilities
 {
     /// <summary>
     /// コマンド実行モードの種類

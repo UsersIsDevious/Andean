@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Andean.Services.Utilities
+namespace Andean.Utilities
 {
     public class FileReadService
     {
