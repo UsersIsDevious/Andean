@@ -38,7 +38,7 @@ namespace Andean.Utilities
                 default:
                     shell = "cmd.exe";
                     // /c オプションでコマンド実行後に終了
-                    shellArgs = $"/c {command}";
+                    shellArgs = $"/c \"{command}\"";
                     break;
             }
 

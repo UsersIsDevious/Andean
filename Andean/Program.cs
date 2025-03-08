@@ -70,6 +70,9 @@ builder.Services.AddSingleton<FileOutputService>();
 // 🚀 CommandExecutionService をシングルトンで登録
 builder.Services.AddSingleton<CommandExecutionService>();
 
+// 🚀 GetSteamPath をシングルトンで登録
+builder.Services.AddSingleton<GetSteamPath>();
+
 // 🚀 FileReadService をシングルトンで登録
 builder.Services.AddSingleton<FileReadService>();
 
