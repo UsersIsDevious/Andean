@@ -8,6 +8,7 @@ namespace Andean.Config
     public class ApexLegendsConfig
     {
         public string Path { get; set; }
+        public string Game_Lancher { get; set; }
         public string Api_Port { get; set; }
         public string Api_Option { get; set; }
         public string Option { get; set; }

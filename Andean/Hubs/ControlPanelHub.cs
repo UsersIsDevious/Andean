@@ -15,6 +15,7 @@ namespace Andean.Hubs
         private readonly StatisticsProcessor _statisticsProcessor;
         private readonly Request _lobbyRequestService;
         private readonly CommandExecutionService _commandExecutionService;
+        private readonly GetSteamPath _getSteamPath;
         private readonly IOptionsMonitor<AppConfig> _configOptions;
         private readonly ConfigService _configService;
 
@@ -28,6 +29,7 @@ namespace Andean.Hubs
             StatisticsProcessor statisticsProcessor,
             Request lobbyRequestService,
             CommandExecutionService commandExecutionService,
+            GetSteamPath getSteamPath,
             IOptionsMonitor<AppConfig> configOptions,
             ConfigService configService
             )
@@ -35,6 +37,7 @@ namespace Andean.Hubs
             _statisticsProcessor = statisticsProcessor;
             _lobbyRequestService = lobbyRequestService;
             _commandExecutionService = commandExecutionService;
+            _getSteamPath = getSteamPath;
             _configOptions = configOptions;
             _configService = configService;
         }
@@ -104,7 +107,27 @@ namespace Andean.Hubs
             try
             {
                 var config = _configOptions.CurrentValue;
-                string command = $"{config.ApexLegends.Path}\\r5apex.exe {config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";
+                string command = "";
+                string option = $"{config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";
+                if (config.ApexLegends.Game_Lancher == "EA")
+                {
+                    command = $"{config.ApexLegends.Path}\\r5apex.exe {option}";
+                }
+                else if (config.ApexLegends.Game_Lancher == "Steam")
+                {
+                    string? steamPath = await _getSteamPath.GetSteamPathAsync();
+                    if (steamPath == null)
+                    {
+                        lastApexResponse = "Error: Steam path not found or Steam not installed.";
+                        await BroadcastStatus();
+                        return;
+                    }
+                    else
+                    {
+                        //steamPath = steamPath.Replace("/", "\\");  // パスの区切り文字を統一
+                        command = "\"" + steamPath + "\\Steam.exe \" -applaunch 1172470" + option;
+                    }
+                }
                 Console.WriteLine(command);
                 string result = await _commandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
                 lastApexResponse = result;
@@ -112,6 +135,7 @@ namespace Andean.Hubs
             catch (System.Exception ex)
             {
                 lastApexResponse = $"Error: {ex.Message}";
+                Console.WriteLine(lastApexResponse);
             }
             await BroadcastStatus();
         }
