@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Andean.AndeanClass;
+using Andean.Utilities;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -7,45 +9,106 @@ namespace Andean.Models
 {
     public class LocalizationService
     {
-        private readonly IConfiguration _configuration;
-        private Dictionary<string, object> _translations;
+        private static LocalizationService _instance;
+        private static readonly object _lock = new object();
 
-        public LocalizationService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-            LoadLanguage("en"); // 初期値は英語
-        }
+        /// <summary>
+        /// 前処理済みのローカライズデータ
+        /// </summary>
+        public LocalizedDataModel LocalizedData { get; private set; }
 
-        /// 言語ファイルをロードする
-        public void LoadLanguage(string langCode)
+        // プライベートコンストラクタ
+        private LocalizationService(IConfiguration configuration, FileReadService fileReadService)
         {
+            // 設定から言語コードを取得（存在しなければ "en" をデフォルトとする）
+            string langCode = configuration["Localization:Language"] ?? "en";
             string filePath = $"config/languages/{langCode}.json";
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException($"Language file not found: {filePath}");
 
-            string jsonContent = File.ReadAllText(filePath);
-            _translations = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonContent) ?? new();
+            // JSONファイルを前処理してデータモデルを作成
+            // FileReadService を DI で受け取り、LocalizationDataProcessor を作成
+            var processor = new LocalizationDataProcessor(filePath, fileReadService);
+            // 非同期メソッドを同期的に待機（ブロッキング）
+            LocalizedData = processor.ProcessAsync().GetAwaiter().GetResult();
         }
 
-        /// 指定したキーの翻訳を取得
-        public string Translate(string key)
+        /// <summary>
+        /// シングルトンインスタンスを取得（初回呼び出し時に初期化）
+        /// </summary>
+        /// <param name="configuration">設定情報。初回のみ使用されます。</param>
+        /// <returns>LocalizationManager のインスタンス</returns>
+        public static LocalizationService GetInstance(IConfiguration configuration, FileReadService fileReadService)
         {
-            var keys = key.Split('.'); // "weapons_label.mp_weapon_3030" のようなネスト対応
-            object current = _translations;
-
-            foreach (var k in keys)
+            if (_instance == null)
             {
-                if (current is Dictionary<string, object> dict && dict.TryGetValue(k, out var next))
+                lock (_lock)
                 {
-                    current = next;
-                }
-                else
-                {
-                    return key; // 翻訳が見つからない場合はキーを返す
+                    if (_instance == null)
+                    {
+                        _instance = new LocalizationService(configuration, fileReadService);
+                    }
                 }
             }
+            return _instance;
+        }
 
-            return current.ToString();
+        /// <summary>
+        /// 指定した type（"weapons_label", "associate_weapons_label", "items_label"）と value を元に、
+        /// 前処理済みの入れ替えデータから元のキーを取得して返却します。
+        /// </summary>
+        /// <param name="type">対象のデータタイプ</param>
+        /// <param name="value">逆転済みデータ内の値</param>
+        /// <returns>対応する元のキー</returns>
+        /// <exception cref="ArgumentException">未対応の type が指定された場合</exception>
+        /// <exception cref="KeyNotFoundException">指定の value が見つからなかった場合</exception>
+        /// <exception cref="Exception">その他のエラー発生時</exception>
+        public string GetOriginalKey(string type, string value)
+        {
+            try
+            {
+                switch (type)
+                {
+                    case "weapons_label":
+                        if (LocalizedData.WeaponsLabelSwapped != null &&
+                            LocalizedData.WeaponsLabelSwapped.TryGetValue(value, out var originalKey1))
+                        {
+                            return originalKey1;
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException($"value '{value}' が weapons_label に存在しません。");
+                        }
+
+                    case "associate_weapons_label":
+                        if (LocalizedData.AssociateWeaponsLabelSwapped != null &&
+                            LocalizedData.AssociateWeaponsLabelSwapped.TryGetValue(value, out var originalKey2))
+                        {
+                            return originalKey2;
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException($"value '{value}' が associate_weapons_label に存在しません。");
+                        }
+
+                    case "items_label":
+                        if (LocalizedData.ItemsLabelSwapped != null &&
+                            LocalizedData.ItemsLabelSwapped.TryGetValue(value, out var originalKey3))
+                        {
+                            return originalKey3;
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException($"value '{value}' が items_label に存在しません。");
+                        }
+
+                    default:
+                        throw new ArgumentException($"未対応の type: {type}");
+                }
+            }
+            catch (Exception ex)
+            {
+                // 必要に応じてエラーログの出力などを実施
+                throw new Exception($"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}", ex);
+            }
         }
     }
 }
