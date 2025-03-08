@@ -139,171 +139,173 @@ namespace Andean.WebsocketServer.Controllers
                         _lobbyService.HandleLobbyPlayers(customMatch_LobbyPlayersMsg);
                         break;
                     }
-                case RequestStatus RequestStatusMsg:
+                case RequestStatus requestStatusMsg:
+                    {
+                        // 今のところ何もイベント発生しない
+                        break;
+                    }
+                case Response responseMsg:
+                    {
+                        // 今のところ何もイベント発生しない
+                        break;
+                    }
+                case MatchSetup matchSetupMsg:
                     {
                         break;
                     }
-                case Response ResponseMsg:
+                case GameStateChanged gameStateChangedMsg:
                     {
                         break;
                     }
-                case MatchSetup MatchSetupMsg:
+                case CharacterSelected characterSelectedMsg:
                     {
                         break;
                     }
-                case GameStateChanged Msg:
+                case MatchStateEnd matchStateEndMsg:
                     {
                         break;
                     }
-                case CharacterSelected Msg:
+                case RingStartClosing ringStartClosingMsg:
                     {
                         break;
                     }
-                case MatchStateEnd Msg:
+                case RingFinishedClosing ringFinishedClosingMsg:
                     {
                         break;
                     }
-                case RingStartClosing Msg:
+                case PlayerConnected playerConnectedMsg:
                     {
                         break;
                     }
-                case RingFinishedClosing Msg:
+                case PlayerDisconnected playerDisconnectedMsg:
                     {
                         break;
                     }
-                case PlayerConnected Msg:
+                case PlayerStatChanged playerStatChangedMsg:
                     {
                         break;
                     }
-                case PlayerDisconnected Msg:
+                case PlayerUltimateCharged playerUltimateChargedMsg:
                     {
                         break;
                     }
-                case PlayerStatChanged Msg:
+                case PlayerUpgradeTierChanged playerUpgradeTierChangedMsg:
                     {
                         break;
                     }
-                case PlayerUltimateCharged Msg:
+                case PlayerDamaged playerDamagedMsg:
                     {
                         break;
                     }
-                case PlayerUpgradeTierChanged Msg:
+                case PlayerKilled playerKilledMsg:
                     {
                         break;
                     }
-                case PlayerDamaged Msg:
+                case PlayerDowned playerDownedMsg:
                     {
                         break;
                     }
-                case PlayerKilled Msg:
+                case PlayerAssist playerAssistMsg:
                     {
                         break;
                     }
-                case PlayerDowned Msg:
+                case SquadEliminated squadEliminatedMsg:
                     {
                         break;
                     }
-                case PlayerAssist Msg:
+                case GibraltarShieldAbsorbed gibraltarShieldAbsorbedMsg
                     {
                         break;
                     }
-                case SquadEliminated Msg:
+                case RevenantForgedShadowDamaged revenantForgedShadowDamagedMsg:
                     {
                         break;
                     }
-                case GibraltarShieldAbsorbed Msg:
+                case ChangeCamera changeCameraMsg:
                     {
                         break;
                     }
-                case RevenantForgedShadowDamaged Msg:
+                case PauseToggle pauseToggleMsg:
                     {
                         break;
                     }
-                case ChangeCamera Msg:
+                case CustomMatch_SetSettings customMatch_SetSettingsMsg:
                     {
                         break;
                     }
-                case PauseToggle Msg:
+                case PlayerRespawnTeam playerRespawnTeamMsg:
                     {
                         break;
                     }
-                case CustomMatch_SetSettings Msg:
+                case PlayerRevive playerReviveMsg:
                     {
                         break;
                     }
-                case PlayerRespawnTeam Msg:
+                case ArenasItemSelected arenasItemSelectedMsg:
                     {
                         break;
                     }
-                case PlayerRevive Msg:
+                case ArenasItemDeselected arenasItemDeselectedMsg:
                     {
                         break;
                     }
-                case ArenasItemSelected Msg:
+                case InventoryPickUp inventoryPickUpMsg:
                     {
                         break;
                     }
-                case ArenasItemDeselected Msg:
+                case InventoryDrop inventoryDropMsg:
                     {
                         break;
                     }
-                case InventoryPickUp Msg:
+                case InventoryUse inventoryUseMsg:
                     {
                         break;
                     }
-                case InventoryDrop Msg:
+                case BannerCollected bannerCollectedMsg:
                     {
                         break;
                     }
-                case InventoryUse Msg:
+                case PlayerAbilityUsed playerAbilityUsedMsg:
                     {
                         break;
                     }
-                case BannerCollected Msg:
+                case LegendUpgradeSelected legendUpgradeSelectedMsg:
                     {
                         break;
                     }
-                case PlayerAbilityUsed Msg:
+                case ZiplineUsed ziplineUsedMsg:
                     {
                         break;
                     }
-                case LegendUpgradeSelected Msg:
+                case GrenadeThrown grenadeThrownMsg:
                     {
                         break;
                     }
-                case ZiplineUsed Msg:
+                case BlackMarketAction blackMarketActionMsg:
                     {
                         break;
                     }
-                case GrenadeThrown Msg:
+                case WraithPortal wraithPortalMsg:
                     {
                         break;
                     }
-                case BlackMarketAction Msg:
+                case WarpGateUsed warpGateUsedMsg:
                     {
                         break;
                     }
-                case WraithPortal Msg:
+                case AmmoUsed ammoUsedMsg:
                     {
                         break;
                     }
-                case WarpGateUsed Msg:
+                case WeaponSwitched weaponSwitchedMsg:
                     {
                         break;
                     }
-                case AmmoUsed Msg:
+                case ObserverSwitched observerSwitchedMsg:
                     {
                         break;
                     }
-                case WeaponSwitched Msg:
-                    {
-                        break;
-                    }
-                case ObserverSwitched Msg:
-                    {
-                        break;
-                    }
-                case ObserverAnnotation Msg:
+                case ObserverAnnotation observerAnnotationMsg:
                     {
                         break;
                     }
