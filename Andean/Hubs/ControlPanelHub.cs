@@ -125,7 +125,7 @@ namespace Andean.Hubs
                     else
                     {
                         //steamPath = steamPath.Replace("/", "\\");  // パスの区切り文字を統一
-                        command = "\"" + steamPath + "\\Steam.exe \" -applaunch 1172470" + option;
+                        command = "\"" + steamPath + "\\Steam.exe\" -applaunch 1172470 " + option;
                     }
                 }
                 Console.WriteLine(command);
