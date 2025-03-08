@@ -1,17 +1,19 @@
 "use client";
 
-import { useSignalR } from "@/lib/useSignalR";
+import { useOverlaySignalR } from "@/lib/hooks/useOverlaySignalR";
 
 export default function OverlayPage() {
-  const { messages } = useSignalR("https://localhost:7109/OverlayHub");
+  const { overlayData } = useOverlaySignalR();
 
   return (
-    <main className="p-4">
-      <h1 className="text-2xl font-bold">Overlay Page</h1>
+    <main className="p-4 flex flex-col items-center">
+      <h1 className="text-2xl font-bold mb-4">Overlay</h1>
+
+      <h1 className="text-2xl font-bold mt-6">リアルタイムデータ</h1>
       <ul className="mt-4 space-y-2">
-        {messages.map((msg, index) => (
+        {overlayData.map((data, index) => (
           <li key={index} className="border p-2 rounded-lg">
-            {msg}
+            {typeof data === "object" ? JSON.stringify(data, null, 2) : data}
           </li>
         ))}
       </ul>

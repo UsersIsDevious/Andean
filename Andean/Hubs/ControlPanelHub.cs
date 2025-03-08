@@ -15,82 +15,173 @@ namespace Andean.Hubs
         private readonly StatisticsProcessor _statisticsProcessor;
         private readonly Request _lobbyRequestService;
         private readonly CommandExecutionService _commandExecutionService;
+        private readonly IOptionsMonitor<AppConfig> _configOptions;
+        private readonly ConfigService _configService;
+
+        // サーバー側で全てのステータスを保持する（各クライアントで状態が異なることを防ぐ）
         private static string sharedData = "Initial Data";
         private static List<string> selectedDataKeys = new List<string>();
-        private readonly IOptionsMonitor<AppConfig> _configOptions;
+        private static string lastLobbyResponse = "";
+        private static string lastApexResponse = "";
 
         public ControlPanelHub(
             StatisticsProcessor statisticsProcessor,
             Request lobbyRequestService,
             CommandExecutionService commandExecutionService,
-            IOptionsMonitor<AppConfig> configOptions)
+            IOptionsMonitor<AppConfig> configOptions,
+            ConfigService configService
+            )
         {
             _statisticsProcessor = statisticsProcessor;
             _lobbyRequestService = lobbyRequestService;
             _commandExecutionService = commandExecutionService;
             _configOptions = configOptions;
+            _configService = configService;
         }
 
+        // クライアント接続時に、サーバー側で保持している全ステータスを送信
         public override async Task OnConnectedAsync()
         {
-            await Clients.Caller.SendAsync("ReceiveData", sharedData);
-            await Clients.Caller.SendAsync("ReceiveSelectedData", selectedDataKeys);
+            await Clients.Caller.SendAsync("ReceiveStatus", GetCurrentStatus());
             await base.OnConnectedAsync();
         }
 
+        // 現在の全ステータスを集約して返す
+        private object GetCurrentStatus()
+        {
+            return new
+            {
+                SharedData = sharedData,
+                SelectedDataKeys = selectedDataKeys,
+                AppConfig = _configOptions.CurrentValue,
+                LastLobbyResponse = lastLobbyResponse,
+                LastApexResponse = lastApexResponse
+            };
+        }
+
+        // 全クライアントへ現在のステータスをブロードキャストする
+        private async Task BroadcastStatus()
+        {
+            await Clients.All.SendAsync("ReceiveStatus", GetCurrentStatus());
+        }
+
+        // 共有データ更新時はサーバー側の状態を更新し、全クライアントへブロードキャスト
         public async Task UpdateData(string newData)
         {
             sharedData = newData;
-            await Clients.All.SendAsync("ReceiveData", sharedData);
+            await BroadcastStatus();
         }
 
+        // 共有データのリセット時
         public async Task ResetData()
         {
             sharedData = "Initial Data";
-            await Clients.All.SendAsync("ReceiveData", sharedData);
+            await BroadcastStatus();
         }
 
+        // 選択データ更新時
         public async Task UpdateSelectedData(List<string> newSelectedKeys)
         {
             selectedDataKeys = newSelectedKeys;
-            await Clients.All.SendAsync("ReceiveSelectedData", selectedDataKeys);
+            await BroadcastStatus();
         }
 
+        // ロビー作成時に取得した結果を状態として保持し、全クライアントへブロードキャスト
         public async Task CreateLobby()
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             var response = await _lobbyRequestService.CreateLobbyAsync(cts.Token);
-            if (response != null)
-            {
-                await Clients.Caller.SendAsync("LobbyResponse", response.ToString());
-            }
-            else
-            {
-                await Clients.Caller.SendAsync("LobbyResponse", "Error or timeout in creating lobby.");
-            }
+            lastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
+            await BroadcastStatus();
         }
 
         /// <summary>
-        /// ユーザーから StartApex メッセージを受け取ったら、
-        /// config.json の apexlegends.path と api_option を結合した固定コマンドを
-        /// コマンドプロンプトで実行します。
+        /// ユーザーから StartApex メッセージを受け取ったら、config.json の設定に基づいて
+        /// Apex を起動し、その結果をサーバー側の状態に保持した上で全クライアントへブロードキャストします。
         /// </summary>
         public async Task StartApex()
         {
             try
             {
-                // DI で注入された設定から現在の値を取得
                 var config = _configOptions.CurrentValue;
-                // コマンドを生成：例）"D:\ea\Apex +cl_liveapi_enabled 1"
                 string command = $"{config.ApexLegends.Path}\\r5apex.exe {config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";
                 Console.WriteLine(command);
                 string result = await _commandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
-                await Clients.Caller.SendAsync("CommandResponse", result);
+                lastApexResponse = result;
             }
             catch (System.Exception ex)
             {
-                await Clients.Caller.SendAsync("CommandResponse", $"Error: {ex.Message}");
+                lastApexResponse = $"Error: {ex.Message}";
             }
+            await BroadcastStatus();
+        }
+
+    /// <summary>
+        /// コンフィグの変更リクエストを受け付け、指定されたセクションの更新を行います。
+        /// </summary>
+        /// <param name="sectionKey">更新対象のセクションキー（例："apexlegends", "score_setting" など）</param>
+        /// <param name="newData">新しい設定内容（JSON 形式の文字列）</param>
+        /// <param name="mode">更新モード（"overwrite", "append", "jsonAppend"）</param>
+        public async Task UpdateConfig(string sectionKey, string newData, string mode)
+        {
+            // 更新モードの判定（小文字で統一）
+            mode = mode.ToLowerInvariant();
+            // 現在の全設定を取得
+            AppConfig config = await _configService.GetConfigAsync();
+
+            // セクションの更新処理を実施
+            // ここでは、更新内容は newData に JSON 形式の値が入っている前提とする
+            try
+            {
+                switch (sectionKey.ToLowerInvariant())
+                {
+                    case "apexlegends":
+                        var newApex = System.Text.Json.JsonSerializer.Deserialize<ApexLegendsConfig>(newData);
+                        if (newApex != null)
+                        {
+                            // mode に応じた更新方法は、ConfigService.UpdateConfigSectionAsync 内で処理することも可能
+                            await _configService.UpdateConfigSectionAsync("apexlegends", newApex);
+                        }
+                        break;
+                    case "penetrator":
+                        var newPenetrator = System.Text.Json.JsonSerializer.Deserialize<List<string>>(newData);
+                        if (newPenetrator != null)
+                        {
+                            await _configService.UpdateConfigSectionAsync("penetrator", newPenetrator);
+                        }
+                        break;
+                    case "output":
+                        await _configService.UpdateConfigSectionAsync("output", newData);
+                        break;
+                    case "language":
+                        await _configService.UpdateConfigSectionAsync("language", newData);
+                        break;
+                    case "log_dir":
+                        await _configService.UpdateConfigSectionAsync("log_dir", newData);
+                        break;
+                    case "data_fps":
+                        await _configService.UpdateConfigSectionAsync("data_fps", newData);
+                        break;
+                    case "score_setting":
+                        var newScore = System.Text.Json.JsonSerializer.Deserialize<ScoreSettingConfig>(newData);
+                        if (newScore != null)
+                        {
+                            await _configService.UpdateConfigSectionAsync("score_setting", newScore);
+                        }
+                        break;
+                    default:
+                        await Clients.Caller.SendAsync("ConfigUpdateResponse", $"Unknown section: {sectionKey}");
+                        return;
+                }
+
+                await Clients.Caller.SendAsync("ConfigUpdateResponse", "Config update successful.");
+            }
+            catch (System.Exception ex)
+            {
+                await Clients.Caller.SendAsync("ConfigUpdateResponse", $"Config update failed: {ex.Message}");
+            }
+
+            await BroadcastStatus();
         }
     }
 }

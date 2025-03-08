@@ -11,7 +11,7 @@ interface StartApexButtonProps {
 export default function StartApexButton({ startApex, apexResponse, isApexLoading }: StartApexButtonProps) {
   return (
     <div className="flex flex-col items-center space-y-4">
-      <Button onClick={startApex} disabled={isApexLoading} className="w-40 bg-blue-500 hover:bg-blue-600">
+      <Button onClick={startApex} disabled={isApexLoading} className="w-40 bg-green-500 hover:bg-green-600">
         {isApexLoading ? "Starting..." : "Start Apex"}
       </Button>
       {apexResponse && (

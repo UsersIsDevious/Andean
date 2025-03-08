@@ -35,6 +35,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
+
+
+// 🚀 ConfigService をシングルトンで登録
+builder.Services.AddSingleton<ConfigService>();
+
 // 🚀 TimestampService をシングルトンで登録
 builder.Services.AddSingleton<TimestampService>();
 

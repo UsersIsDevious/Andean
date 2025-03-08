@@ -11,7 +11,7 @@ interface CreateLobbyButtonProps {
 export default function CreateLobbyButton({ createLobby, lobbyResponse, isLoading }: CreateLobbyButtonProps) {
   return (
     <div className="flex flex-col items-center space-y-4">
-      <Button onClick={createLobby} disabled={isLoading} className="w-40">
+      <Button onClick={createLobby} disabled={isLoading} className="w-40 bg-blue-500 hover:bg-blue-600">
         {isLoading ? "Creating..." : "Create Lobby"}
       </Button>
       {lobbyResponse && (
