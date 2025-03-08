@@ -1,5 +1,4 @@
 ﻿using Andean.Hubs;
-using Andean.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +13,7 @@ using Andean.WebsocketServer.Services;
 using Andean.Utilities;
 using Andean.Config;
 using System.Diagnostics;
+using Andean;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +41,7 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<ConfigService>();
 
 // 🚀 TimestampService をシングルトンで登録
-builder.Services.AddSingleton<TimestampService>();
+builder.Services.AddSingleton<AndeanSystem, TimestampService>();
 
 // 🚀 WebSocket サーバーをシングルトンとして登録
 builder.Services.AddSingleton<WebSocketServer>();
@@ -78,6 +78,11 @@ builder.Services.AddSingleton<FileReadService>();
 
 // 🚀 FileOutputService をシングルトンで登録
 builder.Services.AddSingleton<FileOutputService>();
+
+// UpdateManager をホストサービスとして登録
+builder.Services.AddHostedService<UpdateManager>();
+
+
 
 
 // 🚀 CORS 設定: localhost:3000 からのリクエストを許可
@@ -122,9 +127,6 @@ app.MapHub<OverlayHub>("/overlayHub");                 // オーバーレイ用
 app.MapHub<OverlayControlPanelHub>("/overlayControlPanelHub"); // オーバーレイコントロールパネル用
 app.MapHub<LiveViewHub>("/liveViewHub");
 
-
-// 🚀 TimestampService をアプリ起動時に作成（タイマーを開始）
-app.Services.GetRequiredService<TimestampService>();
 
 // 🚀 WebSocket サーバーをバックグラウンドで起動
 try

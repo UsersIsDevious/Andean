@@ -51,6 +51,7 @@ export function useControlPanelSignalR() {
     const [lobbyResponse, setLobbyResponse] = useState<string | null>(null);
     const [apexResponse, setApexResponse] = useState<string | null>(null);
     const [isLobbyLoading, setIsLobbyLoading] = useState(false);
+    const [messages, setMessages] = useState<string[]>([]);
     const [isApexLoading, setIsApexLoading] = useState(false);
 
     useEffect(() => {
@@ -86,6 +87,10 @@ export function useControlPanelSignalR() {
         newConnection.on("ReceiveStatus", response => {
             console.log("📩 Received Config Data:", response);
             setConfigData(response);
+        });
+        newConnection.on("ReceiveMessage", message => {
+            console.log("📩 Received Message:", message);
+            setMessages(prevMessages => [...prevMessages, message]);
         });
 
         setConnection(newConnection);
