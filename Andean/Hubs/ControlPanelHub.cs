@@ -116,7 +116,25 @@ namespace Andean.Hubs
             await BroadcastStatus();
         }
 
-    /// <summary>
+        /// <summary>
+        /// クライアントから送信された JSON（CSV データを含む）を受け取り、ログ出力や必要な処理を行います。
+        /// </summary>
+        /// <param name="jsonData">CSV データを含む JSON</param>
+        public async Task ReadCSV(object jsonData)
+        {
+            // jsonData を文字列に変換
+            string jsonString = jsonData?.ToString() ?? string.Empty;
+            Console.WriteLine($"[ReadCSV] Received CSV JSON data: {jsonString}");
+
+            // 必要に応じて、ここで CSV パースや変換処理を行い、メタデータとして利用することができます。
+            // 例：VdfParser を利用して処理する場合など
+            // var parsedData = VdfParser.ParseVdf(jsonString);
+
+            // 今回は、受け取った内容をそのままクライアントに確認用のレスポンスとして返す
+            await Clients.Caller.SendAsync("CSVReadResponse", "CSV data received: " + jsonString);
+        }
+
+        /// <summary>
         /// コンフィグの変更リクエストを受け付け、指定されたセクションの更新を行います。
         /// </summary>
         /// <param name="sectionKey">更新対象のセクションキー（例："apexlegends", "score_setting" など）</param>
