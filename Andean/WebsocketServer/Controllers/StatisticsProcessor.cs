@@ -213,7 +213,7 @@ namespace Andean.WebsocketServer.Controllers
                     {
                         break;
                     }
-                case GibraltarShieldAbsorbed gibraltarShieldAbsorbedMsg
+                case GibraltarShieldAbsorbed gibraltarShieldAbsorbedMsg:
                     {
                         break;
                     }
