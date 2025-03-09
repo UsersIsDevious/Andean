@@ -35,6 +35,15 @@ interface ConfigData {
     lastApexResponse: string;
 }
 
+// CSV データの型定義
+interface CSVTeamData {
+    TEAM: number;
+    NAME: string;
+    IMG_URL: string;
+    MEMBER_NUM: number;
+    MEMBERS: string[];
+}
+
 export function useControlPanelSignalR() {
     const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
     const [isConnected, setIsConnected] = useState(false);
@@ -42,6 +51,7 @@ export function useControlPanelSignalR() {
     const [lobbyResponse, setLobbyResponse] = useState<string | null>(null);
     const [apexResponse, setApexResponse] = useState<string | null>(null);
     const [isLobbyLoading, setIsLobbyLoading] = useState(false);
+    const [messages, setMessages] = useState<string[]>([]);
     const [isApexLoading, setIsApexLoading] = useState(false);
 
     useEffect(() => {
@@ -77,6 +87,10 @@ export function useControlPanelSignalR() {
         newConnection.on("ReceiveStatus", response => {
             console.log("📩 Received Config Data:", response);
             setConfigData(response);
+        });
+        newConnection.on("ReceiveMessage", message => {
+            console.log("📩 Received Message:", message);
+            setMessages(prevMessages => [...prevMessages, message]);
         });
 
         setConnection(newConnection);
@@ -118,7 +132,6 @@ export function useControlPanelSignalR() {
         }
     };
 
-    //const updateConfig = async (sectionKey: string, newData: any, mode: "overwrite" | "append" | "jsonAppend") => {
     const updateConfig = async (sectionKey: keyof ConfigData, newData: unknown, mode: "overwrite" | "append" | "jsonAppend") => {
         if (connection && isConnected) {
             try {
@@ -131,6 +144,19 @@ export function useControlPanelSignalR() {
             console.warn("⚠️ Connection not established. Cannot update config.");
         }
     };
+    const readCSV = async (jsonData: CSVTeamData[]) => {
+        if (connection && isConnected) {
+            try {
+                console.log("📤 Sending CSV data to readCSV...");
+                await connection.invoke("readCSV", jsonData);
+            } catch (error) {
+                console.error("❌ readCSV Error:", error);
+            }
+        } else {
+            console.warn("⚠️ Connection not established. Cannot send CSV data.");
+        }
+    };
+    
 
-    return { createLobby, startApex, updateConfig, lobbyResponse, apexResponse, configData, isLobbyLoading, isApexLoading, isConnected };
+    return { createLobby, startApex, updateConfig, readCSV, lobbyResponse, apexResponse, configData, isLobbyLoading, isApexLoading, isConnected };
 }

@@ -15,6 +15,7 @@ namespace Andean.Hubs
         private readonly StatisticsProcessor _statisticsProcessor;
         private readonly Request _lobbyRequestService;
         private readonly CommandExecutionService _commandExecutionService;
+        private readonly GetSteamPath _getSteamPath;
         private readonly IOptionsMonitor<AppConfig> _configOptions;
         private readonly ConfigService _configService;
 
@@ -28,6 +29,7 @@ namespace Andean.Hubs
             StatisticsProcessor statisticsProcessor,
             Request lobbyRequestService,
             CommandExecutionService commandExecutionService,
+            GetSteamPath getSteamPath,
             IOptionsMonitor<AppConfig> configOptions,
             ConfigService configService
             )
@@ -35,6 +37,7 @@ namespace Andean.Hubs
             _statisticsProcessor = statisticsProcessor;
             _lobbyRequestService = lobbyRequestService;
             _commandExecutionService = commandExecutionService;
+            _getSteamPath = getSteamPath;
             _configOptions = configOptions;
             _configService = configService;
         }
@@ -104,7 +107,27 @@ namespace Andean.Hubs
             try
             {
                 var config = _configOptions.CurrentValue;
-                string command = $"{config.ApexLegends.Path}\\r5apex.exe {config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";
+                string command = "";
+                string option = $"{config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";
+                if (config.ApexLegends.Game_Lancher == "EA")
+                {
+                    command = $"{config.ApexLegends.Path}\\r5apex.exe {option}";
+                }
+                else if (config.ApexLegends.Game_Lancher == "Steam")
+                {
+                    string? steamPath = await _getSteamPath.GetSteamPathAsync();
+                    if (steamPath == null)
+                    {
+                        lastApexResponse = "Error: Steam path not found or Steam not installed.";
+                        await BroadcastStatus();
+                        return;
+                    }
+                    else
+                    {
+                        //steamPath = steamPath.Replace("/", "\\");  // パスの区切り文字を統一
+                        command = "\"" + steamPath + "\\Steam.exe\" -applaunch 1172470 " + option;
+                    }
+                }
                 Console.WriteLine(command);
                 string result = await _commandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
                 lastApexResponse = result;
@@ -112,11 +135,30 @@ namespace Andean.Hubs
             catch (System.Exception ex)
             {
                 lastApexResponse = $"Error: {ex.Message}";
+                Console.WriteLine(lastApexResponse);
             }
             await BroadcastStatus();
         }
 
-    /// <summary>
+        /// <summary>
+        /// クライアントから送信された JSON（CSV データを含む）を受け取り、ログ出力や必要な処理を行います。
+        /// </summary>
+        /// <param name="jsonData">CSV データを含む JSON</param>
+        public async Task ReadCSV(object jsonData)
+        {
+            // jsonData を文字列に変換
+            string jsonString = jsonData?.ToString() ?? string.Empty;
+            Console.WriteLine($"[ReadCSV] Received CSV JSON data: {jsonString}");
+
+            // 必要に応じて、ここで CSV パースや変換処理を行い、メタデータとして利用することができます。
+            // 例：VdfParser を利用して処理する場合など
+            // var parsedData = VdfParser.ParseVdf(jsonString);
+
+            // 今回は、受け取った内容をそのままクライアントに確認用のレスポンスとして返す
+            await Clients.Caller.SendAsync("CSVReadResponse", "CSV data received: " + jsonString);
+        }
+
+        /// <summary>
         /// コンフィグの変更リクエストを受け付け、指定されたセクションの更新を行います。
         /// </summary>
         /// <param name="sectionKey">更新対象のセクションキー（例："apexlegends", "score_setting" など）</param>

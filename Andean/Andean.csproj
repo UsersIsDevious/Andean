@@ -20,6 +20,8 @@
 		<Protobuf Include="ApexLiveAPI\Protos\events.proto" GrpcServices="None" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Folder Include="Controllers\" />
+	  <Folder Include="output\" />
 	  <Folder Include="wwwroot\" />
 	</ItemGroup>
 

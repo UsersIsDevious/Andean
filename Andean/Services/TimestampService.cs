@@ -1,49 +1,44 @@
-﻿using Andean.Hubs;
+﻿// TimestampService.cs
+using Andean.Hubs;
+using Andean;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Andean.Services
+namespace Andean.AndeanClass.Services
 {
-    public class TimestampService
+    // TimestampService は BaseClass を継承し、Update() を実装する
+    public class TimestampService : AndeanSystem
     {
         private readonly IHubContext<ControlPanelHub> _hubContext;
-        private readonly ILogger<TimestampService> _logger; // 🚀 ログ用
-        private Timer? _timer;
-        private readonly object _lock = new();
+        private readonly ILogger<TimestampService> _logger;
+        private DateTime _lastSentTime = DateTime.MinValue;
+        private readonly TimeSpan _interval = TimeSpan.FromSeconds(5);
 
         public TimestampService(IHubContext<ControlPanelHub> hubContext, ILogger<TimestampService> logger)
         {
             _hubContext = hubContext;
-            _logger = logger; // 🚀 ログ機能を初期化
-            StartTimer();
+            _logger = logger;
+            _logger.LogInformation("TimestampService initialized using Update method.");
         }
 
-        private void StartTimer()
+        // Update() は UpdateManager により 60FPS (約16ms毎) で呼ばれる
+        public override void Update()
         {
-            lock (_lock)
+            // 前回送信から _interval 経過しているかチェック
+            if (DateTime.UtcNow - _lastSentTime >= _interval)
             {
-                if (_timer == null)
+                _lastSentTime = DateTime.UtcNow;
+                try
                 {
-                    _logger.LogInformation("⏳ タイマー開始...");
-
-                    _timer = new Timer(async _ =>
-                    {
-                        try
-                        {
-                            //_logger.LogInformation("📡 送信準備...");
-                            var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-
-                            await _hubContext.Clients.All.SendAsync("ReceiveMessage", $"Current UTC Time: {timestamp}");
-                            //_logger.LogInformation("✅ メッセージ送信完了: {Timestamp}", timestamp);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "❌ メッセージ送信エラー");
-                        }
-                    }, null, TimeSpan.Zero, TimeSpan.FromSeconds(5)); // 5秒ごとに送信
+                    var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                    // 非同期送信（Update() は同期メソッドなので fire-and-forget で実行）
+                    _hubContext.Clients.All.SendAsync("ReceiveMessage", $"Current UTC Time: {timestamp}");
+                    _logger.LogInformation("Sent timestamp: {Timestamp}", timestamp);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error sending timestamp.");
                 }
             }
         }
