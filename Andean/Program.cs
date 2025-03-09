@@ -86,9 +86,6 @@ builder.Services.AddSingleton<SplitBracketParts>();
 // 🚀 CheckLevel をシングルトンで登録
 builder.Services.AddSingleton<CheckLevel>();
 
-// 🚀 GetWeaponId をシングルトンで登録
-builder.Services.AddSingleton<GetWeaponId>();
-
 // 🚀 GetItemId をシングルトンで登録
 builder.Services.AddSingleton<GetItemId>();
 

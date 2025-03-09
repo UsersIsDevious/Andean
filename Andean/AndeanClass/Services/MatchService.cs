@@ -9,13 +9,13 @@ namespace Andean.AndeanClass.Services
     {
         private readonly SplitBracketParts _splitBracketParts;
         private readonly CheckLevel _checkLevel;
-        private readonly GetWeaponId _getWeaponId;
+        private readonly GetItemId _getItemId;
 
-        public MatchService(SplitBracketParts splitBracketParts, CheckLevel checkLevel, GetWeaponId getWeaponId)
+        public MatchService(SplitBracketParts splitBracketParts, CheckLevel checkLevel, GetItemId getItemId)
         {
             _splitBracketParts = splitBracketParts;
             _checkLevel = checkLevel;
-            _getWeaponId = getWeaponId;
+            _getItemId = getItemId;
         }
         public void HandleInitMessage(Init initMsg)
         {
@@ -66,7 +66,7 @@ namespace Andean.AndeanClass.Services
                     }
 
                     // 武器IDの取得と名前の置き換え
-                    string? weaponId = _getWeaponId.ReturnWeaponId(name);
+                    string? weaponId = _getItemId.ReturnItemId("Weapon", name);
                     if (weaponId != null)
                     {
                         name = weaponId;
@@ -95,7 +95,7 @@ namespace Andean.AndeanClass.Services
                     }
 
                     // 装備品IDの取得と名前の置き換え
-                    string? itemId = _getWeaponId.ReturnWeaponId(name);
+                    string? itemId = _getItemId.ReturnItemId("Item", name);
                     if (itemId != null)
                     {
                         name = itemId;

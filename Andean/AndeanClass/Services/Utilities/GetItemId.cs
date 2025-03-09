@@ -14,17 +14,29 @@ namespace Andean.AndeanClass.Utilities
         }
 
         /// <summary>
-        /// 武器名からゲーム内IDをチェックする
+        /// アイテム名からゲーム内IDをチェックする
         /// </summary>
-        /// <param name="name">武器名</param>
+        /// <param name="type">アイテムのタイプを指定する Weapon or Item</param>
+        /// <param name="name">アイテム名</param>
         /// <returns>ゲーム内ID。見つからなければ null を返す</returns>
-        public string? ReturnItemId(string name)
+        public string? ReturnItemId(string type, string name)
         {
-            string? result = _localizationService.GetOriginalKey("items_label", name);
-
+            string? result;
+            switch (type)
+            {
+                case "Weapon":
+                    result = _localizationService.GetOriginalKey("weapons_label", name);
+                    break;
+                case "Item":
+                    result = _localizationService.GetOriginalKey("items_label", name);
+                    break;
+                default:
+                    Console.WriteLine($"[GET ITEM ID] Invalid type: {type}");
+                    return null;
+            }
             if (result == null)
             {
-                Console.WriteLine($"[GET WEAPON ID] Weapon ID not found: {name}");
+                Console.WriteLine($"[GET ITEM ID] ID not found. TYPE: {type} NAME: {name}");
             }
 
             return result;
