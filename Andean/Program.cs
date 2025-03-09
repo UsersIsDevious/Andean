@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Andean.ApexLiveAPI.Request;
+using Andean.ApexLiveAPI.Services;
 using Andean.WebsocketServer;
 using Andean.WebsocketServer.Controllers;
 using Andean.AndeanClass.Controllers;
@@ -56,6 +57,9 @@ builder.Services.AddSingleton<ClientManagementService>();
 // 🚀 LobbyRequestService をシングルトンで登録
 builder.Services.AddSingleton<Request>();
 
+// 🚀 ApexPlaylistService をシングルトンで登録
+builder.Services.AddSingleton<ApexPlaylistService>();
+
 // 🚀 AndeanClassController をシングルトンで登録
 builder.Services.AddSingleton<AndeanClassController>();
 
@@ -89,10 +93,14 @@ builder.Services.AddSingleton<CheckLevel>();
 // 🚀 GetItemId をシングルトンで登録
 builder.Services.AddSingleton<GetItemId>();
 
-// UpdateManager をホストサービスとして登録
+// 🚀 VdfParser をシングルトンで登録
+builder.Services.AddSingleton<VdfParser>();
+
+// ☆ UpdateManager をホストサービスとして登録
 builder.Services.AddHostedService<UpdateManager>();
 
-
+// 🚀 SystemShutdownService をホストサービスとして登録
+builder.Services.AddSingleton<SystemShutdownService>();
 
 // 🚀 CORS 設定: localhost:3000 からのリクエストを許可
 builder.Services.AddCors(options =>
@@ -113,6 +121,7 @@ var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 //app.MapGet("/", () => "Custom settings are loaded!");
 
+app.UseMiddleware<HtmlExtensionRewriteMiddleware>();
 // 静的ファイルの配信ミドルウェアを有効化
 app.UseDefaultFiles();  // wwwroot/index.html などの既定ファイルを有効化
 app.UseStaticFiles();

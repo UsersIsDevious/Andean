@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Andean.Hubs
 {
-    public class OverlayControlPanelHub : Hub
+    public class OverlayControlPanelHub : Hub, IAndeanWebUI
     {
         private readonly StatisticsProcessor _statisticsProcessor;
 
@@ -32,6 +32,15 @@ namespace Andean.Hubs
             // OverlayHub にデータを送信
             //var filteredData = _statisticsProcessor.GetFilteredData(selectedDataKeys);
             //await Clients.All.SendAsync("SendOverlayData", filteredData);
+        }
+
+        /// <summary>
+        /// システムシャットダウンをクライアントに通知するメソッド
+        /// </summary>
+        public async Task NotifyShutdown(string message = "System is shutting down.")
+        {
+            // 全クライアントに "ShutdownNotification" イベントとして通知を送信
+            await Clients.All.SendAsync("ShutdownNotification", message);
         }
     }
 }

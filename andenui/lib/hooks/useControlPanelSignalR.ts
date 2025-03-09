@@ -51,7 +51,7 @@ export function useControlPanelSignalR() {
     const [lobbyResponse, setLobbyResponse] = useState<string | null>(null);
     const [apexResponse, setApexResponse] = useState<string | null>(null);
     const [isLobbyLoading, setIsLobbyLoading] = useState(false);
-    const [messages, setMessages] = useState<string[]>([]);
+    //const [messages, setMessages] = useState<string[]>([]);
     const [isApexLoading, setIsApexLoading] = useState(false);
 
     useEffect(() => {
@@ -90,7 +90,12 @@ export function useControlPanelSignalR() {
         });
         newConnection.on("ReceiveMessage", message => {
             console.log("📩 Received Message:", message);
-            setMessages(prevMessages => [...prevMessages, message]);
+            //setMessages(prevMessages => [...prevMessages, message]);
+        });
+        newConnection.on("NotifyShutdown", message => {
+            console.log("🛑 Received Shutdown Notification:", message);
+            alert("System is shutting down. This page will close.");
+            window.close(); // 🔹 ページを閉じる
         });
 
         setConnection(newConnection);
@@ -156,7 +161,20 @@ export function useControlPanelSignalR() {
             console.warn("⚠️ Connection not established. Cannot send CSV data.");
         }
     };
+    const shutdownSystem = async () => {
+        if (connection && isConnected) {
+            try {
+                console.log("🛑 Sending Shutdown request...");
+                await connection.invoke("Shutdown");
+            } catch (error) {
+                console.error("❌ Shutdown Error:", error);
+            }
+        } else {
+            console.warn("⚠️ Connection not established. Cannot send Shutdown request.");
+        }
+    };
+    
     
 
-    return { createLobby, startApex, updateConfig, readCSV, lobbyResponse, apexResponse, configData, isLobbyLoading, isApexLoading, isConnected };
+    return { createLobby, startApex, updateConfig, readCSV, shutdownSystem, lobbyResponse, apexResponse, configData, isLobbyLoading, isApexLoading, isConnected};
 }

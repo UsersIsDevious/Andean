@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Andean.Hubs
 {
-    public class OverlayHub : Hub
+    public class OverlayHub : Hub, IAndeanWebUI
     {
         public override async Task OnConnectedAsync()
         {
@@ -14,6 +14,15 @@ namespace Andean.Hubs
         public async Task ReceiveOverlayData(object overlayData)
         {
             await Clients.All.SendAsync("UpdateOverlay", overlayData);
+        }
+
+        /// <summary>
+        /// システムシャットダウンをクライアントに通知するメソッド
+        /// </summary>
+        public async Task NotifyShutdown(string message = "System is shutting down.")
+        {
+            // 全クライアントに "ShutdownNotification" イベントとして通知を送信
+            await Clients.All.SendAsync("ShutdownNotification", message);
         }
     }
 }

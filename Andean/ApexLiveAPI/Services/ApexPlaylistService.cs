@@ -11,11 +11,13 @@ namespace Andean.ApexLiveAPI.Services
     {
         private readonly ConfigService _configService;
         private readonly FileReadService _fileReadService;
+        private readonly VdfParser _vdfParser;
 
-        public ApexPlaylistService(ConfigService configService, FileReadService fileReadService)
+        public ApexPlaylistService(ConfigService configService, FileReadService fileReadService, VdfParser vdfParser)
         {
             _configService = configService;
             _fileReadService = fileReadService;
+            _vdfParser = vdfParser;
         }
 
         /// <summary>
@@ -35,14 +37,9 @@ namespace Andean.ApexLiveAPI.Services
             string fileContent = await _fileReadService.ReadFileAsync(filePath);
 
             // VDF 形式の内容をパースして Dictionary として取得
-            Dictionary<string, object> metadata = VdfParser.ParseVdf(fileContent);
+            Dictionary<string, object> playlists_r5 = await _vdfParser.ParseVdf(fileContent);
 
-            // ログに出力（ここでは Console に出力していますが、必要に応じてロガーを利用）
-            Console.WriteLine("=== Apex Playlist Metadata ===");
-            Console.WriteLine(fileContent);
-            Console.WriteLine("=== End Metadata ===");
-
-            return metadata;
+            return playlists_r5;
         }
     }
 }
