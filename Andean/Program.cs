@@ -10,6 +10,7 @@ using Andean.WebsocketServer;
 using Andean.WebsocketServer.Controllers;
 using Andean.AndeanClass.Controllers;
 using Andean.AndeanClass.Services;
+using Andean.AndeanClass.Utilities;
 using Andean.WebsocketServer.Services;
 using Andean.Utilities;
 using Andean.Config;
@@ -83,6 +84,15 @@ builder.Services.AddSingleton<FileReadService>();
 // 🚀 FileOutputService をシングルトンで登録
 builder.Services.AddSingleton<FileOutputService>();
 
+// 🚀 SplitBracketParts をシングルトンで登録
+builder.Services.AddSingleton<SplitBracketParts>();
+
+// 🚀 CheckLevel をシングルトンで登録
+builder.Services.AddSingleton<CheckLevel>();
+
+// 🚀 GetItemId をシングルトンで登録
+builder.Services.AddSingleton<GetItemId>();
+
 // 🚀 VdfParser をシングルトンで登録
 builder.Services.AddSingleton<VdfParser>();
 
@@ -91,7 +101,6 @@ builder.Services.AddHostedService<UpdateManager>();
 
 // 🚀 SystemShutdownService をホストサービスとして登録
 builder.Services.AddSingleton<SystemShutdownService>();
-
 
 // 🚀 CORS 設定: localhost:3000 からのリクエストを許可
 builder.Services.AddCors(options =>
