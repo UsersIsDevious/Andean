@@ -3,7 +3,7 @@
 import React, { CSSProperties } from "react";
 import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalR"
 import { useState, useEffect, useRef } from "react"
-import { Settings, Play, Sliders, Code, Server, Gamepad2, Loader2, Upload } from "lucide-react"
+import { Settings, Play, Sliders, Code, Server, Gamepad2, Loader2, Upload, Power } from "lucide-react"
 
 
 // CSV データの型定義
@@ -20,6 +20,7 @@ export default function ControlPanelPage() {
         createLobby,
         startApex,
         readCSV,
+        shutdownSystem,
         lobbyResponse,
         apexResponse,
         isLobbyLoading,
@@ -39,7 +40,9 @@ export default function ControlPanelPage() {
     const [isProcessingCSV, setIsProcessingCSV] = useState(false)
     const [csvResponse, setCsvResponse] = useState("")
     const fileInputRef = useRef<HTMLInputElement>(null)
-
+    // Add state for shutdown confirmation
+    const [isShuttingDown, setIsShuttingDown] = useState(false)
+    const [showShutdownConfirm, setShowShutdownConfirm] = useState(false)
     // Add this function inside the component
     const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
@@ -121,7 +124,18 @@ export default function ControlPanelPage() {
     useEffect(() => {
         setMounted(true)
     }, [])
+    // Add the handleShutdown function
+    const handleShutdown = () => {
+        setShowShutdownConfirm(true)
+    }
 
+    // Add the confirmShutdown function
+    const confirmShutdown = async () => {
+        setIsShuttingDown(true)
+        await shutdownSystem()
+        setIsShuttingDown(false)
+        setShowShutdownConfirm(false)
+    }
     // Add a useEffect to set loading state
     useEffect(() => {
         if (configData) {
@@ -262,7 +276,7 @@ export default function ControlPanelPage() {
                     {/* Game Controls Tab */}
                     {activeTab === "game-controls" && (
                         <div className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {/* Create Lobby Card */}
                                 <div style={cardStyle} className="rounded-lg overflow-hidden">
                                     <div style={cardHeaderStyle} className="px-6 py-4">
@@ -399,6 +413,68 @@ export default function ControlPanelPage() {
                                                 TEAM,NAME,IMG_URL,MEMBER_NUM,MEMBER1,...
                                             </code>
                                         </div>
+                                    </div>
+                                </div>
+                                {/* Shutdown System Card */}
+                                <div style={cardStyle} className="rounded-lg overflow-hidden md:col-span-3">
+                                    <div style={{ ...cardHeaderStyle, backgroundColor: "rgba(220, 38, 38, 0.2)" }} className="px-6 py-4">
+                                        <div className="flex items-center gap-2">
+                                            <Power className="h-5 w-5 text-red-500" />
+                                            <h2 className="text-xl font-bold text-red-400">System Shutdown</h2>
+                                        </div>
+                                        <p className="text-gray-400 text-sm mt-1">Safely shutdown the system</p>
+                                    </div>
+                                    <div className="p-6">
+                                        {showShutdownConfirm ? (
+                                            <div className="space-y-4">
+                                                <div className="bg-red-900/20 border border-red-900/30 rounded-md p-3 text-sm text-red-300">
+                                                    <p className="font-medium">⚠️ Warning: This will shutdown the entire system.</p>
+                                                    <p className="mt-1">Are you sure you want to continue?</p>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <button
+                                                        onClick={confirmShutdown}
+                                                        disabled={isShuttingDown}
+                                                        className="flex-1 py-3 px-4 rounded-md text-white font-medium flex items-center justify-center"
+                                                        style={{ backgroundColor: "#dc2626" }} // red-600
+                                                        onMouseOver={(e) => !isShuttingDown && (e.currentTarget.style.backgroundColor = "#b91c1c")}
+                                                        onMouseOut={(e) => !isShuttingDown && (e.currentTarget.style.backgroundColor = "#dc2626")}
+                                                    >
+                                                        {isShuttingDown ? (
+                                                            <>
+                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                Shutting Down...
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Power className="mr-2 h-4 w-4" />
+                                                                Yes, Shutdown System
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setShowShutdownConfirm(false)}
+                                                        disabled={isShuttingDown}
+                                                        className="flex-1 py-3 px-4 rounded-md bg-gray-800 text-white font-medium"
+                                                        onMouseOver={(e) => !isShuttingDown && (e.currentTarget.style.backgroundColor = "#374151")}
+                                                        onMouseOut={(e) => !isShuttingDown && (e.currentTarget.style.backgroundColor = "#1f2937")}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={handleShutdown}
+                                                className="w-full py-3 px-4 rounded-md text-white font-medium flex items-center justify-center"
+                                                style={{ backgroundColor: "#dc2626" }} // red-600
+                                                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#b91c1c")}
+                                                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#dc2626")}
+                                            >
+                                                <Power className="mr-2 h-4 w-4" />
+                                                Shutdown System
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>

@@ -51,8 +51,11 @@ export function useControlPanelSignalR() {
     const [lobbyResponse, setLobbyResponse] = useState<string | null>(null);
     const [apexResponse, setApexResponse] = useState<string | null>(null);
     const [isLobbyLoading, setIsLobbyLoading] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [messages, setMessages] = useState<string[]>([]);
     const [isApexLoading, setIsApexLoading] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [isShuttingDown, setIsShuttingDown] = useState(false);
 
     useEffect(() => {
         const newConnection = new signalR.HubConnectionBuilder()
@@ -91,6 +94,11 @@ export function useControlPanelSignalR() {
         newConnection.on("ReceiveMessage", message => {
             console.log("📩 Received Message:", message);
             setMessages(prevMessages => [...prevMessages, message]);
+        });
+        newConnection.on("NotifyShutdown", message => {
+            console.log("🛑 Received Shutdown Notification:", message);
+            alert("System is shutting down. This page will close.");
+            window.close(); // 🔹 ページを閉じる
         });
 
         setConnection(newConnection);
@@ -156,7 +164,22 @@ export function useControlPanelSignalR() {
             console.warn("⚠️ Connection not established. Cannot send CSV data.");
         }
     };
+    const shutdownSystem = async () => {
+        if (connection && isConnected) {
+            try {
+                setIsShuttingDown(true)
+                console.log("🛑 Sending Shutdown request...");
+                await connection.invoke("Shutdown");
+            } catch (error) {
+                console.error("❌ Shutdown Error:", error);
+                setIsShuttingDown(false)
+            }
+        } else {
+            console.warn("⚠️ Connection not established. Cannot send Shutdown request.");
+        }
+    };
+    
     
 
-    return { createLobby, startApex, updateConfig, readCSV, lobbyResponse, apexResponse, configData, isLobbyLoading, isApexLoading, isConnected };
+    return { createLobby, startApex, updateConfig, readCSV, shutdownSystem, lobbyResponse, apexResponse, configData, isLobbyLoading, isApexLoading, isConnected ,setIsShuttingDown};
 }

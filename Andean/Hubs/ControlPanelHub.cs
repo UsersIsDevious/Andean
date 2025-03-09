@@ -8,10 +8,12 @@ using Andean.WebsocketServer.Controllers;
 using Andean.Utilities;
 using Andean.Config;
 using Microsoft.Extensions.Options;
+using Andean;
+using Andean.ApexLiveAPI.Message;
 
 namespace Andean.Hubs
 {
-    public class ControlPanelHub : Hub
+    public class ControlPanelHub : Hub ,IAndeanWebUI
     {
         private readonly ApexPlaylistService _apexPlaylistService;
         private readonly StatisticsProcessor _statisticsProcessor;
@@ -20,6 +22,7 @@ namespace Andean.Hubs
         private readonly GetSteamPath _getSteamPath;
         private readonly IOptionsMonitor<AppConfig> _configOptions;
         private readonly ConfigService _configService;
+        private readonly SystemShutdownService _shutdownService;
 
         // サーバー側で全てのステータスを保持する（各クライアントで状態が異なることを防ぐ）
         private static string sharedData = "Initial Data";
@@ -34,7 +37,8 @@ namespace Andean.Hubs
             CommandExecutionService commandExecutionService,
             GetSteamPath getSteamPath,
             IOptionsMonitor<AppConfig> configOptions,
-            ConfigService configService
+            ConfigService configService,
+            SystemShutdownService shutdownService
             )
         {
             _apexPlaylistService = apexPlaylistService;
@@ -44,6 +48,7 @@ namespace Andean.Hubs
             _getSteamPath = getSteamPath;
             _configOptions = configOptions;
             _configService = configService;
+            _shutdownService = shutdownService;
         }
 
         // クライアント接続時に、サーバー側で保持している全ステータスを送信
@@ -232,5 +237,25 @@ namespace Andean.Hubs
 
             await BroadcastStatus();
         }
+        /// <summary>
+        /// クライアントから "Shutdown" イベントを受信した場合に、サーバー側で ShutdownAsync を実行します。
+        /// </summary>
+        public async Task Shutdown()
+        {
+            // クライアントからシャットダウン要求があったことをログ出力
+            Console.WriteLine("Shutdown command received from client.");
+
+            // 実際のシャットダウン処理を実行するメソッドを呼び出す
+            await _shutdownService.ShutdownAsync(new SystemShutdownService.ShutdownOptions { DelaySeconds = 3 });
+        }
+        /// <summary>
+        /// システムシャットダウンをクライアントに通知するメソッド
+        /// </summary>
+        public virtual async Task NotifyShutdown(string message = "System is shutting down.")
+        {
+            // 全クライアントに "ShutdownNotification" イベントとして通知を送信
+            await Clients.All.SendAsync("ShutdownNotification", message);
+        }
+
     }
 }

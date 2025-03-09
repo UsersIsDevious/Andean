@@ -11,7 +11,7 @@ namespace Andean
     // IHostedService を実装してバックグラウンドで更新処理を行う
     public class UpdateManager : IHostedService
     {
-        // DI により、BaseClass を継承した全オブジェクトを受け取る
+        // DI により、AndeanSystem を継承した全オブジェクトを受け取る
         private readonly IEnumerable<AndeanSystem> _updatables;
         private CancellationTokenSource _cts;
 
