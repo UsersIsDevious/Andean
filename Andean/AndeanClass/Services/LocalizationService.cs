@@ -18,7 +18,7 @@ namespace Andean.AndeanClass.Services
         public LocalizedDataModel LocalizedData { get; private set; }
 
         // プライベートコンストラクタ
-        private LocalizationService(IConfiguration configuration, FileReadService fileReadService)
+        public LocalizationService(IConfiguration configuration, FileReadService fileReadService)
         {
             // 設定から言語コードを取得（存在しなければ "en" をデフォルトとする）
             string langCode = configuration["Localization:Language"] ?? "en";

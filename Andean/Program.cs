@@ -102,6 +102,9 @@ builder.Services.AddHostedService<UpdateManager>();
 // 🚀 SystemShutdownService をホストサービスとして登録
 builder.Services.AddSingleton<SystemShutdownService>();
 
+// 🚀 LocalizationService をホストサービスとして登録
+builder.Services.AddSingleton<LocalizationService>();
+
 // 🚀 CORS 設定: localhost:3000 からのリクエストを許可
 builder.Services.AddCors(options =>
 {
