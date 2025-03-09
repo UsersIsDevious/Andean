@@ -1,6 +1,6 @@
 {
   "apexlegends": {
-    "path": "D:\\ea\\Apex",
+    "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Apex Legends",
     "game_lancher": "Steam",
     "api_port": "7777",
     "api_option": "+cl_liveapi_enabled 1",

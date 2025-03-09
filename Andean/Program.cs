@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Andean.ApexLiveAPI.Request;
+using Andean.ApexLiveAPI.Services;
 using Andean.WebsocketServer;
 using Andean.WebsocketServer.Controllers;
 using Andean.AndeanClass.Controllers;
@@ -55,6 +56,9 @@ builder.Services.AddSingleton<ClientManagementService>();
 // 🚀 LobbyRequestService をシングルトンで登録
 builder.Services.AddSingleton<Request>();
 
+// 🚀 ApexPlaylistService をシングルトンで登録
+builder.Services.AddSingleton<ApexPlaylistService>();
+
 // 🚀 AndeanClassController をシングルトンで登録
 builder.Services.AddSingleton<AndeanClassController>();
 
@@ -79,9 +83,11 @@ builder.Services.AddSingleton<FileReadService>();
 // 🚀 FileOutputService をシングルトンで登録
 builder.Services.AddSingleton<FileOutputService>();
 
+// 🚀 VdfParser をシングルトンで登録
+builder.Services.AddSingleton<VdfParser>();
+
 // UpdateManager をホストサービスとして登録
 builder.Services.AddHostedService<UpdateManager>();
-
 
 
 
