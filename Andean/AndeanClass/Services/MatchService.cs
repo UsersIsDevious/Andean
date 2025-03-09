@@ -7,6 +7,16 @@ namespace Andean.AndeanClass.Services
 {
     public class MatchService : IMatchService
     {
+        private readonly SplitBracketParts _splitBracketParts;
+        private readonly CheckLevel _checkLevel;
+        private readonly GetWeaponId _getWeaponId;
+
+        public MatchService(SplitBracketParts splitBracketParts, CheckLevel checkLevel, GetWeaponId getWeaponId)
+        {
+            _splitBracketParts = splitBracketParts;
+            _checkLevel = checkLevel;
+            _getWeaponId = getWeaponId;
+        }
         public void HandleInitMessage(Init initMsg)
         {
             // 例えば、platform が空の場合にマッチを初期化する
@@ -31,47 +41,72 @@ namespace Andean.AndeanClass.Services
         
         public void HandleMatchSetup(MatchSetup matchSetupMsg, CustomMatch match)
         {
+            // マッチセットアップメッセージから必要な情報を取得
             var startingLoadout = matchSetupMsg.StartingLoadout;
             var weapons = startingLoadout.Weapons;
             var equipment = startingLoadout.Equipment;
             var datacenter = matchSetupMsg.Datacenter;
 
+            // 武器情報の処理
             if (weapons != null && weapons.Count != 0)
             {
                 foreach (var weapon in weapons)
                 {
-                    var splitWeaponName = SplitBracketParts.ReturnSplitBracketParts(weapon.Item);
+                    // 武器ラベルから実際の武器名を抽出
                     string weaponLabel = weapon.Item;
-                    string weaponId = GetWeaponId(weaponLabel);
-                    string name = "";
+                    var splitWeaponName = _splitBracketParts.ReturnSplitBracketParts(weaponLabel);
+                    string name;
                     if (splitWeaponName == null)
                     {
-                        name = weaponId;
+                        name = weaponLabel;
                     }
                     else
                     {
                         name = splitWeaponName[0];
                     }
-                    match.StartingLoadout.AddOrUpdateWeapon(name, weaponLabel, CheckItemLevel(weaponLabel));
+
+                    // 武器IDの取得と名前の置き換え
+                    string? weaponId = _getWeaponId.ReturnWeaponId(name);
+                    if (weaponId != null)
+                    {
+                        name = weaponId;
+                    }
+                    
+                    // マッチの開始装備に武器情報を追加または更新
+                    match.StartingLoadout.AddOrUpdateWeapon(name, weaponLabel, _checkLevel.ReturnLevel(weaponLabel));
                 }
             }
 
+            // 装備品情報の処理
             if (equipment != null && equipment.Count != 0)
             {
                 foreach (var eq in equipment)
                 {
-                    var splitItemName = SplitBracketParts.ReturnSplitBracketParts(eq.Item);
+                    // 装備品名から実際の装備品名を抽出
+                    var splitItemName = _splitBracketParts.ReturnSplitBracketParts(eq.Item);
+                    string name;
                     if (splitItemName == null)
                     {
-                        match.StartingLoadout.AddOrUpdateItem(eq.Item, eq.Quantity, CheckItemLevel(eq.Item));
+                        name = eq.Item;
                     }
                     else
                     {
-                        match.StartingLoadout.AddOrUpdateItem(splitItemName[0], eq.Quantity, CheckItemLevel(eq.Item));
+                        name = splitItemName[0];
                     }
+
+                    // 装備品IDの取得と名前の置き換え
+                    string? itemId = _getWeaponId.ReturnWeaponId(name);
+                    if (itemId != null)
+                    {
+                        name = itemId;
+                    }
+                    
+                    // マッチの開始装備に装備品情報を追加または更新
+                    match.StartingLoadout.AddOrUpdateItem(name, eq.Quantity, _checkLevel.ReturnLevel(eq.Item));
                 }
             }
 
+            // マッチの基本設定を更新
             match.SetMatchSetup(matchSetupMsg.Map,
                                 matchSetupMsg.PlaylistName,
                                 matchSetupMsg.PlaylistDesc,
@@ -79,13 +114,16 @@ namespace Andean.AndeanClass.Services
                                 matchSetupMsg.AnonymousMode,
                                 matchSetupMsg.ServerId);
 
+            // データセンター情報を更新
             match.Datacenter.Update(datacenter.Timestamp,
                                     datacenter.Category,
                                     datacenter.Name);
 
+            // マップ情報を含めたマッチ名を設定
             match.SetMatchName($"{match.MatchName}-{matchSetupMsg.Map}");
 
-            var playlistName = SplitBracketParts.ReturnSplitBracketParts(matchSetupMsg.PlaylistName);
+            // プレイリスト名から最大プレイヤー数とチーム数を設定
+            var playlistName = _splitBracketParts.ReturnSplitBracketParts(matchSetupMsg.PlaylistName);
             if (playlistName == null)
             {
                 match.SetMaxPlayersAndTeams(matchSetupMsg.PlaylistName);

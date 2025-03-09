@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
-namespace Andean.Models
+namespace Andean.AndeanClass.Services
 {
     public class LocalizationService
     {
-        private static LocalizationService _instance;
+        private static LocalizationService? _instance;
         private static readonly object _lock = new object();
 
         /// <summary>

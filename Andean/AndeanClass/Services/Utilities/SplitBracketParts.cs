@@ -3,14 +3,14 @@ using System.Text.RegularExpressions;
 
 namespace Andean.AndeanClass.Utilities
 {
-    public static class SplitBracketParts
+    public class SplitBracketParts
     {
         /// <summary>
         /// 括弧で囲まれた部分とそうでない部分で分割する
         /// </summary>
         /// <param name="input">対象の文字列</param>
         /// <returns>見つかった場合は2要素の配列、見つからなかった場合はnullを返す</returns>
-        public static string[]? ReturnSplitBracketParts(string input)
+        public string[]? ReturnSplitBracketParts(string input)
         {
             try
             {

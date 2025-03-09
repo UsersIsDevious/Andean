@@ -9,6 +9,7 @@ using Andean.WebsocketServer;
 using Andean.WebsocketServer.Controllers;
 using Andean.AndeanClass.Controllers;
 using Andean.AndeanClass.Services;
+using Andean.AndeanClass.Utilities;
 using Andean.WebsocketServer.Services;
 using Andean.Utilities;
 using Andean.Config;
@@ -79,9 +80,20 @@ builder.Services.AddSingleton<FileReadService>();
 // 🚀 FileOutputService をシングルトンで登録
 builder.Services.AddSingleton<FileOutputService>();
 
+// 🚀 SplitBracketParts をシングルトンで登録
+builder.Services.AddSingleton<SplitBracketParts>();
+
+// 🚀 CheckLevel をシングルトンで登録
+builder.Services.AddSingleton<CheckLevel>();
+
+// 🚀 GetWeaponId をシングルトンで登録
+builder.Services.AddSingleton<GetWeaponId>();
+
+// 🚀 GetItemId をシングルトンで登録
+builder.Services.AddSingleton<GetItemId>();
+
 // UpdateManager をホストサービスとして登録
 builder.Services.AddHostedService<UpdateManager>();
-
 
 
 
