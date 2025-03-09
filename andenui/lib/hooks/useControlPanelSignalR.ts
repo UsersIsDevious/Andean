@@ -51,11 +51,8 @@ export function useControlPanelSignalR() {
     const [lobbyResponse, setLobbyResponse] = useState<string | null>(null);
     const [apexResponse, setApexResponse] = useState<string | null>(null);
     const [isLobbyLoading, setIsLobbyLoading] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [messages, setMessages] = useState<string[]>([]);
+    //const [messages, setMessages] = useState<string[]>([]);
     const [isApexLoading, setIsApexLoading] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isShuttingDown, setIsShuttingDown] = useState(false);
 
     useEffect(() => {
         const newConnection = new signalR.HubConnectionBuilder()
@@ -93,7 +90,7 @@ export function useControlPanelSignalR() {
         });
         newConnection.on("ReceiveMessage", message => {
             console.log("📩 Received Message:", message);
-            setMessages(prevMessages => [...prevMessages, message]);
+            //setMessages(prevMessages => [...prevMessages, message]);
         });
         newConnection.on("NotifyShutdown", message => {
             console.log("🛑 Received Shutdown Notification:", message);
@@ -167,12 +164,10 @@ export function useControlPanelSignalR() {
     const shutdownSystem = async () => {
         if (connection && isConnected) {
             try {
-                setIsShuttingDown(true)
                 console.log("🛑 Sending Shutdown request...");
                 await connection.invoke("Shutdown");
             } catch (error) {
                 console.error("❌ Shutdown Error:", error);
-                setIsShuttingDown(false)
             }
         } else {
             console.warn("⚠️ Connection not established. Cannot send Shutdown request.");
@@ -181,5 +176,5 @@ export function useControlPanelSignalR() {
     
     
 
-    return { createLobby, startApex, updateConfig, readCSV, shutdownSystem, lobbyResponse, apexResponse, configData, isLobbyLoading, isApexLoading, isConnected ,setIsShuttingDown};
+    return { createLobby, startApex, updateConfig, readCSV, shutdownSystem, lobbyResponse, apexResponse, configData, isLobbyLoading, isApexLoading, isConnected};
 }

@@ -112,6 +112,7 @@ var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
 //app.MapGet("/", () => "Custom settings are loaded!");
 
+app.UseMiddleware<HtmlExtensionRewriteMiddleware>();
 // 静的ファイルの配信ミドルウェアを有効化
 app.UseDefaultFiles();  // wwwroot/index.html などの既定ファイルを有効化
 app.UseStaticFiles();
