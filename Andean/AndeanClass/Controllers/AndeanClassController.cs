@@ -1,32 +1,53 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Andean.AndeanClass.Services;
+using AndeanClass;
+using Rtech.Liveapi;
 
 namespace Andean.AndeanClass.Controllers
 {
-    public class AndeanClassController : Controller
+    public class AndeanClassController
     {
-        private readonly IMatchService _matchService;
-        private readonly ILobbyService _lobbyService;
+        private readonly MatchService _matchService;
+        private readonly object _lock = new object();
+        private CustomMatch _lobby;
+        private CustomMatch _match;
 
-        public AndeanClassController(IMatchService matchService, ILobbyService lobbyService)
+        public AndeanClassController(MatchService matchService)
         {
             _matchService = matchService;
-            _lobbyService = lobbyService;
         }
 
-        // 例: マッチ初期化の操作（WebSocket からの Init メッセージ処理結果に応じて呼び出す）
-        public IActionResult CreateMatch(string identifier, string gameVersion)
+        public void InitializeLobby(Init initMsg)
         {
-            // ここで _matchService を使った処理を実施（本来は StatisticsProcessor 経由で処理された内容に基づく）
-            _matchService.HandleInitMessage(new Rtech.Liveapi.Init { Timestamp = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds(), GameVersion = gameVersion });
-            return Ok("Match created");
+            lock (_lock)
+            {
+                _lobby = _matchService.CreateCustomMatch(initMsg);
+            }
         }
 
-        // 例: ロビー情報の操作
-        public IActionResult UpdateLobby(/*必要なパラメータ*/)
+       
+        public void InitializeMatch(Init initMsg)
         {
-            // ここでは _lobbyService を使った処理を呼び出す
-            return Ok("Lobby updated");
+            lock (_lock)
+            {
+                _match = _matchService.CreateCustomMatch(initMsg);
+            }
+        }
+
+        // マッチセットアップメッセージの処理（ロビーまたはマッチに対して共通処理）
+        // isLobbyがtrueならロビー、falseならマッチを対象とする
+        public void ProcessMatchSetup(MatchSetup matchSetupMsg, bool isLobby = true)
+        {
+            lock (_lock)
+            {
+                CustomMatch targetMatch = isLobby ? _lobby : _match;
+                if (targetMatch == null)
+                {
+                    throw new InvalidOperationException("対象のCustomMatchが初期化されていません。");
+                }
+
+                _matchService.ConfigureMatchSetup(matchSetupMsg, targetMatch);
+            }
         }
     }
 }

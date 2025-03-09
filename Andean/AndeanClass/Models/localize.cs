@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 
-namespace Andean.AndeanClass
+namespace AndeanClass
 {
     // Legendに関するモデルクラス
     public class Legend

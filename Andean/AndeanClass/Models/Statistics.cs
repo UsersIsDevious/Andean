@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Andean.AndeanClass
+namespace AndeanClass
 {
     /// <summary>
     /// 統計情報を管理するクラス

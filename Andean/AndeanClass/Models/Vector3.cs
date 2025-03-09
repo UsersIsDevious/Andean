@@ -1,4 +1,4 @@
-﻿namespace Andean.AndeanClass
+﻿namespace AndeanClass
 {
     /// <summary>
     /// 3次元ベクトルを表すクラス

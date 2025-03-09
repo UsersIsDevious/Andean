@@ -1,4 +1,4 @@
-﻿namespace Andean.AndeanClass
+﻿namespace AndeanClass
 {
     /// <summary>
     /// Eventに関するクラス

@@ -6,6 +6,7 @@ using Rtech.Liveapi;
 using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
 using Andean.Utilities;
+using Andean.AndeanClass.Controllers;
 
 namespace Andean.WebsocketServer.Controllers
 {
@@ -29,23 +30,21 @@ namespace Andean.WebsocketServer.Controllers
         // クライアントIDと IMessage の組み合わせを保持するスレッドセーフなキュー
         private readonly BlockingCollection<MessageWrapper> _queue = new BlockingCollection<MessageWrapper>();
 
-        // 各サービスへの参照（DI により注入）
-        private readonly IMatchService _matchService;
-        private readonly ILobbyService _lobbyService;
         private readonly ClientManagementService _clientManagement;
         private readonly FileOutputService _fileOutputService;
+        private readonly AndeanClassController _andeanClassController;
 
         // ログ出力用ファイル名（サーバー起動時のタイムスタンプで固定）
         private readonly string _logFileName;
 
         public StatisticsProcessor(
-            IMatchService matchService,
-            ILobbyService lobbyService,
+            AndeanClassController andeanClassController,
             ClientManagementService clientManagement,
             FileOutputService fileOutputService)
         {
-            _matchService = matchService;
-            _lobbyService = lobbyService;
+
+            _andeanClassController = andeanClassController;
+           
             _clientManagement = clientManagement;
 
             _fileOutputService = fileOutputService;
@@ -96,7 +95,7 @@ namespace Andean.WebsocketServer.Controllers
                         _clientManagement.SetAuthorizedClient(clientId);
 
                         // マッチ初期化の処理はマッチサービスへ委譲
-                        _matchService.HandleInitMessage(initMsg);
+                        _andeanClassController.InitializeMatch(initMsg);
                         break;
                     }
                 case Rtech.Liveapi.Vector3 vector3Msg:
@@ -136,7 +135,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg:
                     {
-                        _lobbyService.HandleLobbyPlayers(customMatch_LobbyPlayersMsg);
+                        //_lobbyService.HandleLobbyPlayers(customMatch_LobbyPlayersMsg);
                         break;
                     }
                 case RequestStatus requestStatusMsg:

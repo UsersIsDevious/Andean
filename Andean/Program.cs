@@ -63,11 +63,8 @@ builder.Services.AddSingleton<ApexPlaylistService>();
 // 🚀 AndeanClassController をシングルトンで登録
 builder.Services.AddSingleton<AndeanClassController>();
 
-// 🚀 IMatchService をシングルトンで登録
-builder.Services.AddSingleton<IMatchService, MatchService>();
-
-// 🚀 ILobbyService をシングルトンで登録
-builder.Services.AddSingleton<ILobbyService, LobbyService>();
+// 🚀 AndeanClassController をシングルトンで登録
+builder.Services.AddSingleton<MatchService>();
 
 // 🚀 FileOutputService をシングルトンで登録
 builder.Services.AddSingleton<FileOutputService>();

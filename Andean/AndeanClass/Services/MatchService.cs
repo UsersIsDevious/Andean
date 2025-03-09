@@ -1,11 +1,12 @@
 ﻿using System;
 using Andean.AndeanClass;
 using Andean.AndeanClass.Utilities;
+using AndeanClass;
 using Rtech.Liveapi;
 
 namespace Andean.AndeanClass.Services
 {
-    public class MatchService : IMatchService
+    public class MatchService
     {
         private readonly SplitBracketParts _splitBracketParts;
         private readonly CheckLevel _checkLevel;
@@ -17,9 +18,10 @@ namespace Andean.AndeanClass.Services
             _checkLevel = checkLevel;
             _getItemId = getItemId;
         }
-        public void HandleInitMessage(Init initMsg)
+
+        // 共通の初期化処理：Initメッセージに応じたCustomMatch生成
+        public CustomMatch CreateCustomMatch(Init initMsg)
         {
-            // 例えば、platform が空の場合にマッチを初期化する
             if (string.IsNullOrEmpty(initMsg.Platform))
             {
                 long unixTimeSeconds = (long)initMsg.Timestamp;
@@ -30,17 +32,22 @@ namespace Andean.AndeanClass.Services
                 CustomMatch match = new CustomMatch(formattedDate);
                 match.SetGameVersion(initMsg.GameVersion);
                 Console.WriteLine($"[MatchService] CustomMatch 初期化完了：{formattedDate}");
-                // 必要な処理（DB登録やキャッシュ保存など）を追加
+                return match;
             }
             else
             {
                 Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
+                // 必要に応じた処理を追加（または例外を投げるなど）
+                return null;
             }
         }
 
-        
-        public void HandleMatchSetup(MatchSetup matchSetupMsg, CustomMatch match)
+        // 共通のマッチセットアップ処理
+        public void ConfigureMatchSetup(MatchSetup matchSetupMsg, CustomMatch match)
         {
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
+
             // マッチセットアップメッセージから必要な情報を取得
             var startingLoadout = matchSetupMsg.StartingLoadout;
             var weapons = startingLoadout.Weapons;
@@ -52,27 +59,14 @@ namespace Andean.AndeanClass.Services
             {
                 foreach (var weapon in weapons)
                 {
-                    // 武器ラベルから実際の武器名を抽出
                     string weaponLabel = weapon.Item;
                     var splitWeaponName = _splitBracketParts.ReturnSplitBracketParts(weaponLabel);
-                    string name;
-                    if (splitWeaponName == null)
-                    {
-                        name = weaponLabel;
-                    }
-                    else
-                    {
-                        name = splitWeaponName[0];
-                    }
-
-                    // 武器IDの取得と名前の置き換え
+                    string name = splitWeaponName != null ? splitWeaponName[0] : weaponLabel;
                     string? weaponId = _getItemId.ReturnItemId("Weapon", name);
                     if (weaponId != null)
                     {
                         name = weaponId;
                     }
-                    
-                    // マッチの開始装備に武器情報を追加または更新
                     match.StartingLoadout.AddOrUpdateWeapon(name, weaponLabel, _checkLevel.ReturnLevel(weaponLabel));
                 }
             }
@@ -82,26 +76,13 @@ namespace Andean.AndeanClass.Services
             {
                 foreach (var eq in equipment)
                 {
-                    // 装備品名から実際の装備品名を抽出
                     var splitItemName = _splitBracketParts.ReturnSplitBracketParts(eq.Item);
-                    string name;
-                    if (splitItemName == null)
-                    {
-                        name = eq.Item;
-                    }
-                    else
-                    {
-                        name = splitItemName[0];
-                    }
-
-                    // 装備品IDの取得と名前の置き換え
+                    string name = splitItemName != null ? splitItemName[0] : eq.Item;
                     string? itemId = _getItemId.ReturnItemId("Item", name);
                     if (itemId != null)
                     {
                         name = itemId;
                     }
-                    
-                    // マッチの開始装備に装備品情報を追加または更新
                     match.StartingLoadout.AddOrUpdateItem(name, eq.Quantity, _checkLevel.ReturnLevel(eq.Item));
                 }
             }
@@ -133,5 +114,6 @@ namespace Andean.AndeanClass.Services
                 match.SetMaxPlayersAndTeams(playlistName[0], playlistName[1]);
             }
         }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿using Andean.AndeanClass;
+﻿using AndeanClass;
 using Andean.Utilities;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;

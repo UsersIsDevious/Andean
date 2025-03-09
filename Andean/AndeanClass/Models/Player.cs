@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Andean.AndeanClass
+namespace AndeanClass
 {
     /// <summary>
     /// プレイヤーを表すクラス。インベントリとゲーム内でのステータスを保持する。
