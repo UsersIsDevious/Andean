@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Andean.ApexLiveAPI.Request;
+using Andean.ApexLiveAPI.Services;
 using Andean.WebsocketServer.Controllers;
 using Andean.Utilities;
 using Andean.Config;
@@ -12,6 +13,7 @@ namespace Andean.Hubs
 {
     public class ControlPanelHub : Hub
     {
+        private readonly ApexPlaylistService _apexPlaylistService;
         private readonly StatisticsProcessor _statisticsProcessor;
         private readonly Request _lobbyRequestService;
         private readonly CommandExecutionService _commandExecutionService;
@@ -26,6 +28,7 @@ namespace Andean.Hubs
         private static string lastApexResponse = "";
 
         public ControlPanelHub(
+            ApexPlaylistService apexPlaylistService,
             StatisticsProcessor statisticsProcessor,
             Request lobbyRequestService,
             CommandExecutionService commandExecutionService,
@@ -34,6 +37,7 @@ namespace Andean.Hubs
             ConfigService configService
             )
         {
+            _apexPlaylistService = apexPlaylistService;
             _statisticsProcessor = statisticsProcessor;
             _lobbyRequestService = lobbyRequestService;
             _commandExecutionService = commandExecutionService;
@@ -107,6 +111,9 @@ namespace Andean.Hubs
             try
             {
                 var config = _configOptions.CurrentValue;
+
+                Dictionary<string, object> playlists_r5 = await _apexPlaylistService.GetPlaylistMetadataAsync();
+
                 string command = "";
                 string option = $"{config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";
                 if (config.ApexLegends.Game_Lancher == "EA")
