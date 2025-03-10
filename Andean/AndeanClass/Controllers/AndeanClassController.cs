@@ -34,7 +34,7 @@ namespace Andean.AndeanClass.Controllers
         /// </summary>
         private List<(string, Event)> _ringEvents;
         /// <summary>
-        /// Config情報
+        /// configファイルの情報
         /// </summary>
         private AppConfig config;
 
