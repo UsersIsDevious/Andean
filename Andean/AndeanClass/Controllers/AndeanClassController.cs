@@ -2,6 +2,7 @@
 using Andean.AndeanClass.Services;
 using AndeanClass;
 using Rtech.Liveapi;
+using Andean.Config;
 
 namespace Andean.AndeanClass.Controllers
 {
@@ -9,12 +10,14 @@ namespace Andean.AndeanClass.Controllers
     {
         private readonly MatchService _matchService;
         private readonly object _lock = new object();
+        private readonly ConfigService _configService;
         private CustomMatch _lobby;
         private CustomMatch _match;
 
-        public AndeanClassController(MatchService matchService)
+        public AndeanClassController(MatchService matchService, ConfigService configService)
         {
             _matchService = matchService;
+            _configService = configService;
         }
 
         public void InitializeLobby(Init initMsg)
