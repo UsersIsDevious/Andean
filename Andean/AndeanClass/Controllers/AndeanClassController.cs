@@ -3,6 +3,7 @@ using Andean.AndeanClass.Services;
 using AndeanClass;
 using Rtech.Liveapi;
 using Andean.Config;
+using Microsoft.Extensions.Options;
 
 namespace Andean.AndeanClass.Controllers
 {
@@ -10,15 +11,7 @@ namespace Andean.AndeanClass.Controllers
     {
         private readonly MatchService _matchService;
         private readonly object _lock = new object();
-        private readonly ConfigService _configService;
-        private CustomMatch _lobby;
-        private CustomMatch _match;
-
-        public AndeanClassController(MatchService matchService, ConfigService configService)
-        {
-            _matchService = matchService;
-            _configService = configService;
-        }
+        private readonly IOptionsMonitor<AppConfig> _configOptions;
 
         /// <summary>
         /// ロビー情報
@@ -40,6 +33,17 @@ namespace Andean.AndeanClass.Controllers
         /// リング後処理用のEventsリスト
         /// </summary>
         private List<(string, Event)> _ringEvents;
+
+        private AppConfig config;
+
+
+
+        public AndeanClassController(MatchService matchService, IOptionsMonitor<AppConfig> configOptions)
+        {
+            _matchService = matchService;
+            _configOptions = configOptions;
+            config = _configOptions.CurrentValue;
+        }
 
         public void InitializeLobby(Init initMsg)
         {
