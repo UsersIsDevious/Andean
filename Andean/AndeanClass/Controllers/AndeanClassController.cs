@@ -36,17 +36,16 @@ namespace Andean.AndeanClass.Controllers
 
         // マッチセットアップメッセージの処理（ロビーまたはマッチに対して共通処理）
         // isLobbyがtrueならロビー、falseならマッチを対象とする
-        public void ProcessMatchSetup(MatchSetup matchSetupMsg, bool isLobby = true)
+        public void ProcessMatchSetup(MatchSetup matchSetupMsg)
         {
             lock (_lock)
             {
-                CustomMatch targetMatch = isLobby ? _lobby : _match;
-                if (targetMatch == null)
+                if (_match == null)
                 {
-                    throw new InvalidOperationException("対象のCustomMatchが初期化されていません。");
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                _matchService.ConfigureMatchSetup(matchSetupMsg, targetMatch);
+                _matchService.ConfigureMatchSetup(matchSetupMsg, _match);
             }
         }
     }

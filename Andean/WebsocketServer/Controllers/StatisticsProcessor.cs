@@ -91,11 +91,17 @@ namespace Andean.WebsocketServer.Controllers
             {
                 case Init initMsg:
                     {
-                        // Init メッセージの場合、クライアントを認定済みに設定
-                        _clientManagement.SetAuthorizedClient(clientId);
-
-                        // マッチ初期化の処理はマッチサービスへ委譲
-                        _andeanClassController.InitializeMatch(initMsg);
+                        if (string.IsNullOrEmpty(initMsg.Platform))
+                        {
+                            // マッチ初期化の処理はマッチサービスへ委譲
+                            _andeanClassController.InitializeMatch(initMsg);
+                        }
+                        else
+                        {
+                            // Init メッセージの場合、クライアントを認定済みに設定
+                            _clientManagement.SetAuthorizedClient(clientId);
+                            Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
+                        }                        
                         break;
                     }
                 case Rtech.Liveapi.Vector3 vector3Msg:
@@ -150,6 +156,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case MatchSetup matchSetupMsg:
                     {
+
                         break;
                     }
                 case GameStateChanged gameStateChangedMsg:

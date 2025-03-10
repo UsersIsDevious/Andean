@@ -22,24 +22,17 @@ namespace Andean.AndeanClass.Services
         // 共通の初期化処理：Initメッセージに応じたCustomMatch生成
         public CustomMatch CreateCustomMatch(Init initMsg)
         {
-            if (string.IsNullOrEmpty(initMsg.Platform))
-            {
-                long unixTimeSeconds = (long)initMsg.Timestamp;
-                long unixTimeMillis = unixTimeSeconds * 1000;
-                DateTime date = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeMillis).LocalDateTime;
-                string formattedDate = date.ToString("yyyy-MM-dd-HH-mm-ss");
+            // Unix時間をDateTimeに変換
+            long unixTimeSeconds = (long)initMsg.Timestamp;
+            long unixTimeMillis = unixTimeSeconds * 1000;
+            DateTime date = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeMillis).LocalDateTime;
+            string formattedDate = date.ToString("yyyy-MM-dd-HH-mm-ss");
 
-                CustomMatch match = new CustomMatch(formattedDate);
-                match.SetGameVersion(initMsg.GameVersion);
-                Console.WriteLine($"[MatchService] CustomMatch 初期化完了：{formattedDate}");
-                return match;
-            }
-            else
-            {
-                Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
-                // 必要に応じた処理を追加（または例外を投げるなど）
-                return null;
-            }
+            // CustomMatchを生成
+            CustomMatch match = new CustomMatch(formattedDate);
+            match.SetGameVersion(initMsg.GameVersion);
+            Console.WriteLine($"[MatchService] CustomMatch 初期化完了：{formattedDate}");
+            return match;
         }
 
         // 共通のマッチセットアップ処理
