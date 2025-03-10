@@ -18,10 +18,7 @@ namespace Andean.Hubs
         private readonly ApexPlaylistService _apexPlaylistService;
         private readonly StatisticsProcessor _statisticsProcessor;
         private readonly Request _lobbyRequestService;
-        private readonly CommandExecutionService _commandExecutionService;
-        private readonly GetSteamPath _getSteamPath;
-        private readonly IOptionsMonitor<AppConfig> _configOptions;
-        private readonly ConfigService _configService;
+        private readonly AppConfig _config = ConfigService.Config;
         private readonly SystemShutdownService _shutdownService;
 
         // サーバー側で全てのステータスを保持する（各クライアントで状態が異なることを防ぐ）
@@ -34,8 +31,6 @@ namespace Andean.Hubs
             ApexPlaylistService apexPlaylistService,
             StatisticsProcessor statisticsProcessor,
             Request lobbyRequestService,
-            CommandExecutionService commandExecutionService,
-            GetSteamPath getSteamPath,
             IOptionsMonitor<AppConfig> configOptions,
             ConfigService configService,
             SystemShutdownService shutdownService
@@ -44,10 +39,6 @@ namespace Andean.Hubs
             _apexPlaylistService = apexPlaylistService;
             _statisticsProcessor = statisticsProcessor;
             _lobbyRequestService = lobbyRequestService;
-            _commandExecutionService = commandExecutionService;
-            _getSteamPath = getSteamPath;
-            _configOptions = configOptions;
-            _configService = configService;
             _shutdownService = shutdownService;
         }
 
@@ -65,7 +56,7 @@ namespace Andean.Hubs
             {
                 SharedData = sharedData,
                 SelectedDataKeys = selectedDataKeys,
-                AppConfig = _configOptions.CurrentValue,
+                AppConfig = _config,
                 LastLobbyResponse = lastLobbyResponse,
                 LastApexResponse = lastApexResponse
             };
@@ -99,14 +90,20 @@ namespace Andean.Hubs
         }
 
         // ロビー作成時に取得した結果を状態として保持し、全クライアントへブロードキャスト
-        public async Task CreateLobby()
+        public async Task CreateLobby(string lobbyInfo = null)
         {
+            // オプションの引数 lobbyInfo が渡された場合の処理（必要に応じて）
+            if (!string.IsNullOrEmpty(lobbyInfo))
+            {
+                // 例えば、ログ出力など
+                Console.WriteLine($"Received lobby info: {lobbyInfo}");
+            }
+
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             var response = await _lobbyRequestService.CreateLobbyAsync(cts.Token);
             lastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
             await BroadcastStatus();
         }
-
         /// <summary>
         /// ユーザーから StartApex メッセージを受け取ったら、config.json の設定に基づいて
         /// Apex を起動し、その結果をサーバー側の状態に保持した上で全クライアントへブロードキャストします。
@@ -115,7 +112,7 @@ namespace Andean.Hubs
         {
             try
             {
-                var config = _configOptions.CurrentValue;
+                var config = _config;
 
                 Dictionary<string, object> playlists_r5 = await _apexPlaylistService.GetPlaylistMetadataAsync();
 
@@ -127,7 +124,7 @@ namespace Andean.Hubs
                 }
                 else if (config.ApexLegends.Game_Lancher == "Steam")
                 {
-                    string? steamPath = await _getSteamPath.GetSteamPathAsync();
+                    string? steamPath = await GetSteamPath.GetSteamPathAsync();
                     if (steamPath == null)
                     {
                         lastApexResponse = "Error: Steam path not found or Steam not installed.";
@@ -141,7 +138,7 @@ namespace Andean.Hubs
                     }
                 }
                 Console.WriteLine(command);
-                string result = await _commandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
+                string result = await CommandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
                 lastApexResponse = result;
             }
             catch (System.Exception ex)
@@ -180,8 +177,6 @@ namespace Andean.Hubs
         {
             // 更新モードの判定（小文字で統一）
             mode = mode.ToLowerInvariant();
-            // 現在の全設定を取得
-            AppConfig config = await _configService.GetConfigAsync();
 
             // セクションの更新処理を実施
             // ここでは、更新内容は newData に JSON 形式の値が入っている前提とする
@@ -194,33 +189,33 @@ namespace Andean.Hubs
                         if (newApex != null)
                         {
                             // mode に応じた更新方法は、ConfigService.UpdateConfigSectionAsync 内で処理することも可能
-                            await _configService.UpdateConfigSectionAsync("apexlegends", newApex);
+                            await ConfigService.UpdateConfigSectionAsync("apexlegends", newApex);
                         }
                         break;
                     case "penetrator":
                         var newPenetrator = System.Text.Json.JsonSerializer.Deserialize<List<string>>(newData);
                         if (newPenetrator != null)
                         {
-                            await _configService.UpdateConfigSectionAsync("penetrator", newPenetrator);
+                            await ConfigService.UpdateConfigSectionAsync("penetrator", newPenetrator);
                         }
                         break;
                     case "output":
-                        await _configService.UpdateConfigSectionAsync("output", newData);
+                        await ConfigService.UpdateConfigSectionAsync("output", newData);
                         break;
                     case "language":
-                        await _configService.UpdateConfigSectionAsync("language", newData);
+                        await ConfigService.UpdateConfigSectionAsync("language", newData);
                         break;
                     case "log_dir":
-                        await _configService.UpdateConfigSectionAsync("log_dir", newData);
+                        await ConfigService.UpdateConfigSectionAsync("log_dir", newData);
                         break;
                     case "data_fps":
-                        await _configService.UpdateConfigSectionAsync("data_fps", newData);
+                        await ConfigService.UpdateConfigSectionAsync("data_fps", newData);
                         break;
                     case "score_setting":
                         var newScore = System.Text.Json.JsonSerializer.Deserialize<ScoreSettingConfig>(newData);
                         if (newScore != null)
                         {
-                            await _configService.UpdateConfigSectionAsync("score_setting", newScore);
+                            await ConfigService.UpdateConfigSectionAsync("score_setting", newScore);
                         }
                         break;
                     default:

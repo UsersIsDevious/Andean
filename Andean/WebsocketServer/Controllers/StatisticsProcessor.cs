@@ -31,7 +31,6 @@ namespace Andean.WebsocketServer.Controllers
         private readonly BlockingCollection<MessageWrapper> _queue = new BlockingCollection<MessageWrapper>();
 
         private readonly ClientManagementService _clientManagement;
-        private readonly FileOutputService _fileOutputService;
         private readonly AndeanClassController _andeanClassController;
 
         // ログ出力用ファイル名（サーバー起動時のタイムスタンプで固定）
@@ -39,15 +38,12 @@ namespace Andean.WebsocketServer.Controllers
 
         public StatisticsProcessor(
             AndeanClassController andeanClassController,
-            ClientManagementService clientManagement,
-            FileOutputService fileOutputService)
+            ClientManagementService clientManagement)
         {
 
             _andeanClassController = andeanClassController;
            
             _clientManagement = clientManagement;
-
-            _fileOutputService = fileOutputService;
 
             // サーバー起動時のタイムスタンプでログファイル名を決定（例: 20250222_132800_log.txt）
             _logFileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_log.txt";
@@ -67,7 +63,7 @@ namespace Andean.WebsocketServer.Controllers
             string logContent = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Client: {clientId}, MessageType: {message.GetType().Name}, Content: {message}{Environment.NewLine}";
 
             // 非同期にファイルへ追記（ファイルは ./output フォルダ配下に作成）
-            Task.Run(() => _fileOutputService.WriteToFileAsync("./output", _logFileName, logContent, FileWriteMode.Append));
+            Task.Run(() => FileOutputService.WriteToFileAsync("./output", _logFileName, logContent, FileWriteMode.Append));
         }
 
         /// <summary>

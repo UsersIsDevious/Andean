@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Andean.Config;
 using Andean.Utilities;
+using Microsoft.Extensions.Primitives;
 
 namespace Andean.Config
 {
@@ -12,52 +13,63 @@ namespace Andean.Config
     /// </summary>
     public class ConfigService
     {
-        private readonly IConfiguration _configuration;
-        private readonly FileOutputService _fileOutputService;
-        private readonly string _configFilePath;
-
-        public ConfigService(IConfiguration configuration, FileOutputService fileOutputService)
-        {
-            _configuration = configuration;
-            _fileOutputService = fileOutputService;
-            // 設定ファイルのパス（プロジェクトルートからの相対パス）
-            _configFilePath = Path.Combine("Config", "config.json");
-        }
-
-        /// <summary>
-        /// IConfiguration を利用して、config.json の内容を AppConfig 型にバインドして取得します。
-        /// (reloadOnChange により自動更新済みの値を取得可能)
+        // <summary>
+        /// 最新の設定値が格納されるプロパティ
         /// </summary>
-        public Task<AppConfig> GetConfigAsync()
+        public static AppConfig Config { get; private set; }
+        private static IConfigurationRoot _configuration;
+        private static readonly string _configFilePath = Path.Combine("config", "config.json");
+
+
+        public ConfigService()
         {
-            // IConfiguration はすでに読み込まれているので、Task.FromResult でラップして返す
-            return Task.FromResult(_configuration.Get<AppConfig>());
+            _configuration = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile(_configFilePath, optional: true, reloadOnChange: true)
+               .Build();
+
+            LoadConfig();
+
+            // 設定ファイルの変更を監視して再読み込み（reloadOnChange 相当）
+            ChangeToken.OnChange(() => _configuration.GetReloadToken(), LoadConfig);
+        }
+
+        // _configuration から AppConfig を取得して Config プロパティを更新
+        private static void LoadConfig()
+        {
+            Config = _configuration.Get<AppConfig>();
         }
 
         /// <summary>
-        /// 指定された AppConfig オブジェクトを JSON にシリアライズし、config.json に上書き保存します。
-        /// FileOutputService の WriteToFileAsync を利用します。
+        /// 指定された AppConfig オブジェクトを JSON にシリアライズし、config/config.json に上書き保存します。
+        /// 保存後、設定ファイルの再読み込みを実施して Config を更新します。
         /// </summary>
         /// <param name="config">更新する AppConfig オブジェクト</param>
-        public async Task UpdateConfigAsync(AppConfig config)
+        public static async Task UpdateConfigAsync(AppConfig config)
         {
             var options = new JsonSerializerOptions { WriteIndented = true };
             string json = JsonSerializer.Serialize(config, options);
-            await _fileOutputService.WriteToFileAsync("Config", "config.json", json, FileWriteMode.Overwrite);
+            await FileOutputService.WriteToFileAsync("Config", "config.json", json, FileWriteMode.Overwrite);
+            // 保存後、再読み込みして最新値を反映（※reloadOnChange による自動更新が働かない場合の対策）
+            _configuration.Reload();
+            LoadConfig();
         }
 
+
+
         /// <summary>
-        /// 指定されたセクションのみを更新して config.json を上書き保存します。
+        /// 指定されたセクションのみを更新して config/config.json を上書き保存します。
         /// セクションキーは小文字で指定してください（例："apexlegends", "penetrator", "output", "language", "log_dir", "data_fps", "score_setting"）。
         /// </summary>
         /// <typeparam name="T">更新するセクションの型</typeparam>
         /// <param name="sectionKey">更新対象のセクションキー</param>
         /// <param name="newSection">新しい値</param>
-        public async Task UpdateConfigSectionAsync<T>(string sectionKey, T newSection)
+        public static async Task UpdateConfigSectionAsync<T>(string sectionKey, T newSection)
         {
-            // IConfiguration 経由で現在の設定を取得
-            AppConfig config = _configuration.Get<AppConfig>();
+            // 現在の設定を取得（ここでは Config プロパティにキャッシュされている内容を利用）
+            AppConfig config = Config;
 
+            // セクションキーに応じた更新処理（必要に応じて他のセクションも追加）
             switch (sectionKey.ToLowerInvariant())
             {
                 case "apexlegends":
@@ -85,6 +97,7 @@ namespace Andean.Config
                     throw new ArgumentException($"Unknown config section: {sectionKey}");
             }
 
+            // 更新後、ファイルに書き出し＆再読み込み
             await UpdateConfigAsync(config);
         }
     }

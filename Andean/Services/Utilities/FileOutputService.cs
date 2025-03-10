@@ -14,14 +14,9 @@ namespace Andean.Utilities
         JsonAppend  // JSON追記モード（既存の JSON 配列に新しいオブジェクトを追加）
     }
 
-    public class FileOutputService
+    public static class FileOutputService
     {
-        private readonly FileReadService _fileReadService;
 
-        public FileOutputService(FileReadService fileReadService)
-        {
-            _fileReadService = fileReadService;
-        }
 
         /// <summary>
         /// 指定されたパスとファイル名に対し、内容をモードに応じて非同期に書き込みます。
@@ -30,7 +25,7 @@ namespace Andean.Utilities
         /// <param name="fileName">出力するファイル名</param>
         /// <param name="content">書き込む内容</param>
         /// <param name="mode">書き込みモード (Overwrite, Append, JsonAppend)</param>
-        public async Task WriteToFileAsync(string path, string fileName, string content, FileWriteMode mode)
+        public static async Task WriteToFileAsync(string path, string fileName, string content, FileWriteMode mode)
         {
             // 出力先のディレクトリが存在しなければ作成
             if (!Directory.Exists(path))
@@ -55,7 +50,7 @@ namespace Andean.Utilities
                     if (File.Exists(fullPath))
                     {
                         // FileReadService の関数を利用してファイル内容を読み込む
-                        existingJson = await _fileReadService.ReadFileAsync(fullPath, encoding: Encoding.UTF8, throwIfNotFound: false);
+                        existingJson = await FileReadService.ReadFileAsync(fullPath, encoding: Encoding.UTF8, throwIfNotFound: false);
                     }
 
                     // 既存の JSON 配列が存在しなければ、新規配列を作成

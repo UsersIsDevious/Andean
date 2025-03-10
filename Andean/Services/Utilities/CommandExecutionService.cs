@@ -13,7 +13,7 @@ namespace Andean.Utilities
         PowerShell
     }
 
-    public class CommandExecutionService
+    public static class CommandExecutionService
     {
         /// <summary>
         /// 指定されたコマンドを指定されたモードで非同期実行します。
@@ -21,7 +21,7 @@ namespace Andean.Utilities
         /// <param name="command">実行するコマンド文字列</param>
         /// <param name="mode">実行モード（CommandPrompt または PowerShell）</param>
         /// <returns>コマンドの標準出力の結果</returns>
-        public async Task<string> ExecuteCommandAsync(string command, CommandMode mode)
+        public static async Task<string> ExecuteCommandAsync(string command, CommandMode mode)
         {
             // 使用するシェルと引数の設定
             string shell;

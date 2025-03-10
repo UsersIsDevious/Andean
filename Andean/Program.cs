@@ -10,7 +10,6 @@ using Andean.WebsocketServer;
 using Andean.WebsocketServer.Controllers;
 using Andean.AndeanClass.Controllers;
 using Andean.AndeanClass.Services;
-using Andean.AndeanClass.Utilities;
 using Andean.WebsocketServer.Services;
 using Andean.Utilities;
 using Andean.Config;
@@ -63,44 +62,11 @@ builder.Services.AddSingleton<ApexPlaylistService>();
 // 🚀 AndeanClassController をシングルトンで登録
 builder.Services.AddSingleton<AndeanClassController>();
 
-// 🚀 AndeanClassController をシングルトンで登録
-builder.Services.AddSingleton<MatchService>();
-
-// 🚀 FileOutputService をシングルトンで登録
-builder.Services.AddSingleton<FileOutputService>();
-
-// 🚀 CommandExecutionService をシングルトンで登録
-builder.Services.AddSingleton<CommandExecutionService>();
-
-// 🚀 GetSteamPath をシングルトンで登録
-builder.Services.AddSingleton<GetSteamPath>();
-
-// 🚀 FileReadService をシングルトンで登録
-builder.Services.AddSingleton<FileReadService>();
-
-// 🚀 FileOutputService をシングルトンで登録
-builder.Services.AddSingleton<FileOutputService>();
-
-// 🚀 SplitBracketParts をシングルトンで登録
-builder.Services.AddSingleton<SplitBracketParts>();
-
-// 🚀 CheckLevel をシングルトンで登録
-builder.Services.AddSingleton<CheckLevel>();
-
-// 🚀 GetItemId をシングルトンで登録
-builder.Services.AddSingleton<GetItemId>();
-
-// 🚀 VdfParser をシングルトンで登録
-builder.Services.AddSingleton<VdfParser>();
-
 // ☆ UpdateManager をホストサービスとして登録
 builder.Services.AddHostedService<UpdateManager>();
 
 // 🚀 SystemShutdownService をホストサービスとして登録
 builder.Services.AddSingleton<SystemShutdownService>();
-
-// 🚀 LocalizationService をホストサービスとして登録
-builder.Services.AddSingleton<LocalizationService>();
 
 // 🚀 CORS 設定: localhost:3000 からのリクエストを許可
 builder.Services.AddCors(options =>

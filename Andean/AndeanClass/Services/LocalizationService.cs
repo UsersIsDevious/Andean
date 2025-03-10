@@ -4,51 +4,29 @@ using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using Andean.Config;
 
 namespace Andean.AndeanClass.Services
 {
-    public class LocalizationService
+    public static class LocalizationService
     {
-        private static LocalizationService? _instance;
         private static readonly object _lock = new object();
 
         /// <summary>
         /// 前処理済みのローカライズデータ
         /// </summary>
-        public LocalizedDataModel LocalizedData { get; private set; }
+        public static LocalizedDataModel LocalizedData { get; private set; }
 
         // プライベートコンストラクタ
-        public LocalizationService(IConfiguration configuration, FileReadService fileReadService)
+        static LocalizationService()
         {
             // 設定から言語コードを取得（存在しなければ "en" をデフォルトとする）
-            string langCode = configuration["Localization:Language"] ?? "en";
+            string langCode = ConfigService.Config.Language ?? "en";
             string filePath = $"config/languages/{langCode}.json";
 
-            // JSONファイルを前処理してデータモデルを作成
-            // FileReadService を DI で受け取り、LocalizationDataProcessor を作成
-            var processor = new LocalizationDataProcessor(filePath, fileReadService);
+            var processor = new LocalizationDataProcessor(filePath);
             // 非同期メソッドを同期的に待機（ブロッキング）
             LocalizedData = processor.ProcessAsync().GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        /// シングルトンインスタンスを取得（初回呼び出し時に初期化）
-        /// </summary>
-        /// <param name="configuration">設定情報。初回のみ使用されます。</param>
-        /// <returns>LocalizationManager のインスタンス</returns>
-        public static LocalizationService GetInstance(IConfiguration configuration, FileReadService fileReadService)
-        {
-            if (_instance == null)
-            {
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new LocalizationService(configuration, fileReadService);
-                    }
-                }
-            }
-            return _instance;
         }
 
         /// <summary>
@@ -61,7 +39,7 @@ namespace Andean.AndeanClass.Services
         /// <exception cref="ArgumentException">未対応の type が指定された場合</exception>
         /// <exception cref="KeyNotFoundException">指定の value が見つからなかった場合</exception>
         /// <exception cref="Exception">その他のエラー発生時</exception>
-        public string GetOriginalKey(string type, string value)
+        public static string GetOriginalKey(string type, string value)
         {
             try
             {
@@ -104,10 +82,10 @@ namespace Andean.AndeanClass.Services
                         throw new ArgumentException($"未対応の type: {type}");
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                // 必要に応じてエラーログの出力などを実施
-                throw new Exception($"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}", ex);
+                // エラーログ出力などを適宜実施
+                throw new System.Exception($"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}", ex);
             }
         }
     }

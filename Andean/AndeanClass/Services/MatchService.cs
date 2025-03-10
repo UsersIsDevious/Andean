@@ -1,6 +1,6 @@
 ﻿using System;
 using Andean.AndeanClass;
-using Andean.AndeanClass.Utilities;
+using Andean.AndeanClass.Services.Utilities;
 using Andean.Config;
 using Andean.Utilities;
 using AndeanClass;
@@ -8,23 +8,11 @@ using Rtech.Liveapi;
 
 namespace Andean.AndeanClass.Services
 {
-    public class MatchService
+    public static class MatchService
     {
-        private readonly FileOutputService _fileOutputService;
-        private readonly SplitBracketParts _splitBracketParts;
-        private readonly CheckLevel _checkLevel;
-        private readonly GetItemId _getItemId;
-
-        public MatchService(FileOutputService fileOutputService, SplitBracketParts splitBracketParts, CheckLevel checkLevel, GetItemId getItemId)
-        {
-            _fileOutputService = fileOutputService;
-            _splitBracketParts = splitBracketParts;
-            _checkLevel = checkLevel;
-            _getItemId = getItemId;
-        }
 
         // 共通の初期化処理：Initメッセージに応じたCustomMatch生成
-        public CustomMatch CreateCustomMatch(Init initMsg)
+        public static CustomMatch CreateCustomMatch(Init initMsg)
         {
             // Unix時間をDateTimeに変換
             long unixTimeSeconds = (long)initMsg.Timestamp;
@@ -40,7 +28,7 @@ namespace Andean.AndeanClass.Services
         }
 
         // 共通のマッチセットアップ処理
-        public void ConfigureMatchSetup(MatchSetup matchSetupMsg, CustomMatch match)
+        public static void ConfigureMatchSetup(MatchSetup matchSetupMsg, CustomMatch match)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -56,14 +44,14 @@ namespace Andean.AndeanClass.Services
                 foreach (var weapon in weapons)
                 {
                     string weaponLabel = weapon.Item;
-                    var splitWeaponName = _splitBracketParts.ReturnSplitBracketParts(weaponLabel);
+                    var splitWeaponName = ItemUtilities.ReturnSplitBracketParts(weaponLabel);
                     string name = splitWeaponName != null ? splitWeaponName[0] : weaponLabel;
-                    string? weaponId = _getItemId.ReturnItemId("Weapon", name);
+                    string? weaponId = ItemUtilities.ReturnItemId("Weapon", name);
                     if (weaponId != null)
                     {
                         name = weaponId;
                     }
-                    match.StartingLoadout.AddOrUpdateWeapon(name, weaponLabel, _checkLevel.ReturnLevel(weaponLabel));
+                    match.StartingLoadout.AddOrUpdateWeapon(name, weaponLabel, ItemUtilities.ReturnLevel(weaponLabel));
                 }
             }
 
@@ -72,14 +60,14 @@ namespace Andean.AndeanClass.Services
             {
                 foreach (var eq in equipment)
                 {
-                    var splitItemName = _splitBracketParts.ReturnSplitBracketParts(eq.Item);
+                    var splitItemName = ItemUtilities.ReturnSplitBracketParts(eq.Item);
                     string name = splitItemName != null ? splitItemName[0] : eq.Item;
-                    string? itemId = _getItemId.ReturnItemId("Item", name);
+                    string? itemId = ItemUtilities.ReturnItemId("Item", name);
                     if (itemId != null)
                     {
                         name = itemId;
                     }
-                    match.StartingLoadout.AddOrUpdateItem(name, eq.Quantity, _checkLevel.ReturnLevel(eq.Item));
+                    match.StartingLoadout.AddOrUpdateItem(name, eq.Quantity, ItemUtilities.ReturnLevel(eq.Item));
                 }
             }
 
@@ -100,7 +88,7 @@ namespace Andean.AndeanClass.Services
             match.SetMatchName($"{match.MatchName}-{matchSetupMsg.Map}");
 
             // プレイリスト名から最大プレイヤー数とチーム数を設定
-            var playlistName = _splitBracketParts.ReturnSplitBracketParts(matchSetupMsg.PlaylistName);
+            var playlistName = ItemUtilities.ReturnSplitBracketParts(matchSetupMsg.PlaylistName);
             if (playlistName == null)
             {
                 match.SetMaxPlayersAndTeams(matchSetupMsg.PlaylistName);
@@ -111,7 +99,7 @@ namespace Andean.AndeanClass.Services
             }
         }
 
-        public async void UpdateGameStatus(GameStateChanged gameStateChangedMsg, CustomMatch match, AppConfig config, List<int> teamRanking, List<(string, Event)> ringEvents)
+        public static async void UpdateGameStatus(GameStateChanged gameStateChangedMsg, CustomMatch match, AppConfig config, List<int> teamRanking, List<(string, Event)> ringEvents)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -196,7 +184,7 @@ namespace Andean.AndeanClass.Services
                 }
 
                 // 更新内容を保存
-                await _fileOutputService.WriteToFileAsync(config.Output, $"{match.MatchName}", match.ToString(), FileWriteMode.Overwrite);
+                await FileOutputService.WriteToFileAsync(config.Output, $"{match.MatchName}", match.ToString(), FileWriteMode.Overwrite);
             }
         }
     }

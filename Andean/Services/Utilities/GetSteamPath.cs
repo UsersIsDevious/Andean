@@ -2,22 +2,16 @@ using System.Text.RegularExpressions;
 
 namespace Andean.Utilities
 {
-    public class GetSteamPath
+    public static class GetSteamPath
     {
-        private readonly CommandExecutionService _commandExecutionService;
-        
-        public GetSteamPath(CommandExecutionService commandExecutionService)
-        {
-            _commandExecutionService = commandExecutionService;
-        }
 
-        public async Task<string?> GetSteamPathAsync()
+        public static async Task<string?> GetSteamPathAsync()
         {
             try
             {
                 // レジストリからSteamPathを取得するコマンド
                 string command = "reg query \"HKCU\\Software\\Valve\\Steam\" /v SteamPath";
-                string output = await _commandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
+                string output = await CommandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
 
                 // 出力例:
                 // HKEY_CURRENT_USER\Software\Valve\Steam

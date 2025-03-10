@@ -10,23 +10,17 @@ using System.Text.Unicode;
 
 namespace Andean.Utilities
 {
-    public class VdfParser
+    public static class VdfParser
     {
-        private readonly FileOutputService _fileOutputService;
 
-        public VdfParser(FileOutputService fileOutputService)
-        {
-            _fileOutputService = fileOutputService;
-        }
-
-        public Dictionary<string, object> Playlists_r5 { get; private set; } = new Dictionary<string, object>();
+        public static Dictionary<string, object> Playlists_r5 { get; private set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// VDF形式の文字列をパースして、ネストされたDictionaryを返します。
         /// </summary>
         /// <param name="content">VDF形式のテキスト</param>
         /// <returns>解析結果のDictionary</returns>
-        public async Task<Dictionary<string, object>> ParseVdf(string content)
+        public static async Task<Dictionary<string, object>> ParseVdf(string content)
         {
             try
             {
@@ -58,7 +52,7 @@ namespace Andean.Utilities
                 // シリアライズ後の文字列に対して、\u0027 を実際のノンブレーキングスペースに置換
                 json = json.Replace("\\u0027", "\u0027");
 
-                await _fileOutputService.WriteToFileAsync("output", "playlists_r5.json", json, FileWriteMode.Overwrite);
+                await FileOutputService.WriteToFileAsync("output", "playlists_r5.json", json, FileWriteMode.Overwrite);
 
                 // JSON 文字列を Dictionary に変換する
                 return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);

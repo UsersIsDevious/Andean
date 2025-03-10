@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Andean.Utilities
 {
-    public class FileReadService
+    public static class FileReadService
     {
         /// <summary>
         /// 指定されたパスのファイルを非同期に読み込みます。
@@ -16,7 +16,7 @@ namespace Andean.Utilities
         /// <param name="throwIfNotFound">ファイルが存在しない場合、例外をスローするか（true: スロー、false: 空文字列を返す）</param>
         /// <param name="cancellationToken">キャンセル用の CancellationToken</param>
         /// <returns>ファイルの内容（文字列）</returns>
-        public async Task<string> ReadFileAsync(string filePath, Encoding? encoding = null, bool throwIfNotFound = true, CancellationToken cancellationToken = default)
+        public static async Task<string> ReadFileAsync(string filePath, Encoding? encoding = null, bool throwIfNotFound = true, CancellationToken cancellationToken = default)
         {
             if (!File.Exists(filePath))
             {

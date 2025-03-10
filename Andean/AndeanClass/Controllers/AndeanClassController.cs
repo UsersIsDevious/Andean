@@ -9,7 +9,6 @@ namespace Andean.AndeanClass.Controllers
 {
     public class AndeanClassController
     {
-        private readonly MatchService _matchService;
         private readonly object _lock = new object();
         private readonly IOptionsMonitor<AppConfig> _configOptions;
 
@@ -40,9 +39,8 @@ namespace Andean.AndeanClass.Controllers
 
 
 
-        public AndeanClassController(MatchService matchService, IOptionsMonitor<AppConfig> configOptions)
+        public AndeanClassController(IOptionsMonitor<AppConfig> configOptions)
         {
-            _matchService = matchService;
             _configOptions = configOptions;
             config = _configOptions.CurrentValue;
         }
@@ -51,7 +49,7 @@ namespace Andean.AndeanClass.Controllers
         {
             lock (_lock)
             {
-                _lobby = _matchService.CreateCustomMatch(initMsg);
+                _lobby = MatchService.CreateCustomMatch(initMsg);
             }
         }
 
@@ -60,7 +58,7 @@ namespace Andean.AndeanClass.Controllers
         {
             lock (_lock)
             {
-                _match = _matchService.CreateCustomMatch(initMsg);
+                _match = MatchService.CreateCustomMatch(initMsg);
                 // マッチが初期化されたらロビーから抜ける
                 _isLobby = false;
             }
@@ -76,7 +74,7 @@ namespace Andean.AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                _matchService.ConfigureMatchSetup(matchSetupMsg, _match);
+                MatchService.ConfigureMatchSetup(matchSetupMsg, _match);
             }
         }
 
@@ -93,7 +91,7 @@ namespace Andean.AndeanClass.Controllers
                 // Postmatchの場合はロビーに戻る
                 if (gameStateChangedMsg.State == "Postmatch") _isLobby = true;
 
-                _matchService.UpdateGameStatus(gameStateChangedMsg, _match, config, _teamRanking, _ringEvents);
+                MatchService.UpdateGameStatus(gameStateChangedMsg, _match, config, _teamRanking, _ringEvents);
             }
         }
     }

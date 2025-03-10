@@ -47,12 +47,10 @@ namespace AndeanClass
     public class LocalizationDataProcessor
     {
         private readonly string _filePath;
-        private readonly FileReadService _fileReadService;
 
-        public LocalizationDataProcessor(string filePath, FileReadService fileReadService)
+        public LocalizationDataProcessor(string filePath)
         {
             _filePath = filePath;
-            _fileReadService = fileReadService;
         }
 
         public async Task<LocalizedDataModel> ProcessAsync()
@@ -60,7 +58,7 @@ namespace AndeanClass
             if (!File.Exists(_filePath))
                 throw new FileNotFoundException($"Language file not found: {_filePath}");
 
-            string jsonContent = await _fileReadService.ReadFileAsync(_filePath, Encoding.UTF8, throwIfNotFound: true);
+            string jsonContent = await FileReadService.ReadFileAsync(_filePath, Encoding.UTF8, throwIfNotFound: true);
             // JSON全体をDictionary<string, JsonElement>として読み込む
             var rawData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonContent);
             var model = new LocalizedDataModel();
