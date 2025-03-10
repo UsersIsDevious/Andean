@@ -33,7 +33,9 @@ namespace Andean.AndeanClass.Controllers
         /// リング後処理用のEventsリスト
         /// </summary>
         private List<(string, Event)> _ringEvents;
-
+        /// <summary>
+        /// Config情報
+        /// </summary>
         private AppConfig config;
 
 
@@ -91,7 +93,7 @@ namespace Andean.AndeanClass.Controllers
                 // Postmatchの場合はロビーに戻る
                 if (gameStateChangedMsg.State == "Postmatch") _isLobby = true;
 
-                _matchService.UpdateGameStatus(gameStateChangedMsg, _match, _teamRanking, _ringEvents);
+                _matchService.UpdateGameStatus(gameStateChangedMsg, _match, config, _teamRanking, _ringEvents);
             }
         }
     }
