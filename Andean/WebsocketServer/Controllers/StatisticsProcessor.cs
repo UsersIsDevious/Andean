@@ -156,7 +156,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case MatchSetup matchSetupMsg:
                     {
-
+                        _andeanClassController.ProcessMatchSetup(matchSetupMsg);
                         break;
                     }
                 case GameStateChanged gameStateChangedMsg:
