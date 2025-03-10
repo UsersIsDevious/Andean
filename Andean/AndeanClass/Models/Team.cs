@@ -134,6 +134,15 @@ namespace AndeanClass
         }
 
         /// <summary>
+        /// チームのプレイヤーを取得するメソッド
+        /// </summary>
+        /// <returns>プレイヤーリスト</returns>
+        public List<string> GetPlayers()
+        {
+            return Players;
+        }
+
+        /// <summary>
         /// チームの残り人数を取得するメソッド
         /// (引数 match は CustomMatch クラスのインスタンスで、各プレイヤーの状態を取得可能なものとする)
         /// </summary>

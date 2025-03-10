@@ -1,6 +1,8 @@
 ﻿using System;
 using Andean.AndeanClass;
 using Andean.AndeanClass.Utilities;
+using Andean.Config;
+using Andean.Utilities;
 using AndeanClass;
 using Rtech.Liveapi;
 
@@ -8,12 +10,14 @@ namespace Andean.AndeanClass.Services
 {
     public class MatchService
     {
+        private readonly FileOutputService _fileOutputService;
         private readonly SplitBracketParts _splitBracketParts;
         private readonly CheckLevel _checkLevel;
         private readonly GetItemId _getItemId;
 
-        public MatchService(SplitBracketParts splitBracketParts, CheckLevel checkLevel, GetItemId getItemId)
+        public MatchService(FileOutputService fileOutputService, SplitBracketParts splitBracketParts, CheckLevel checkLevel, GetItemId getItemId)
         {
+            _fileOutputService = fileOutputService;
             _splitBracketParts = splitBracketParts;
             _checkLevel = checkLevel;
             _getItemId = getItemId;
@@ -38,8 +42,7 @@ namespace Andean.AndeanClass.Services
         // 共通のマッチセットアップ処理
         public void ConfigureMatchSetup(MatchSetup matchSetupMsg, CustomMatch match)
         {
-            if (match == null)
-                throw new ArgumentNullException(nameof(match));
+            ArgumentNullException.ThrowIfNull(match);
 
             // マッチセットアップメッセージから必要な情報を取得
             var startingLoadout = matchSetupMsg.StartingLoadout;
@@ -108,6 +111,93 @@ namespace Andean.AndeanClass.Services
             }
         }
 
-        
+        public async void UpdateGameStatus(GameStateChanged gameStateChangedMsg, CustomMatch match, AppConfig config, List<int> teamRanking, List<(string, Event)> ringEvents)
+        {
+            ArgumentNullException.ThrowIfNull(match);
+
+            // match の state を設定する
+            match.SetState(gameStateChangedMsg.State);
+
+            if (gameStateChangedMsg.State == "Prematch")
+            {
+                // teamRanking と ringEvents を初期化
+                teamRanking.Clear();
+                ringEvents.Clear();
+
+                // match.MaxTeams + 1 から 2 まで逆順に処理
+                for (int i = match.MaxTeams + 1; i >= 2; i--)
+                {
+                    Team team = match.GetTeam(i);
+                    // チーム内のプレイヤーがいない場合、ranks に追加
+                    if (team.Players.Count == 0)
+                    {
+                        teamRanking.Add(i);
+                    }
+                }
+            }
+
+            if (gameStateChangedMsg.State == "Playing")
+            {
+                // 開始タイムスタンプを設定
+                match.SetStartTimeStamp(gameStateChangedMsg.Timestamp);
+            }
+
+            if (gameStateChangedMsg.State == "Postmatch")
+            {
+                // ringEvents を 2 つずつ処理する
+                for (int i = 0; i < ringEvents.Count; i += 2)
+                {
+                    if ((i + 1) != ringEvents.Count)
+                    {
+                        // startRing, startRing_t, endRing を取得
+                        Event startRing = ringEvents[i].Item2;
+                        string startRing_t = ringEvents[i].Item1;
+                        Event endRing = ringEvents[i + 1].Item2;
+
+                        if (startRing.Category == "ringStartClosing" &&
+                            endRing.Category == "ringFinishedClosing" &&
+                            startRing.Data["Stage"] == endRing.Data["Stage"])
+                        {
+                            // matchBase.PacketLists[startRing_t].Events 内の "ringStartClosing" イベントを検索し、endCenter を設定
+                            if (match.PacketLists.TryGetValue(startRing_t, out Packet? packet))
+                            {
+                                if (packet.Events != null)
+                                {
+                                    Event? startRingEvent = packet.Events.FirstOrDefault(e => e.Category == "ringStartClosing");
+                                    if (startRingEvent != null)
+                                    {
+                                        // endRing.Data.Center のコピーを endCenter に設定（配列のコピー）
+                                        startRingEvent.Data["endCenter"] = (double[])((double[])endRing.Data["Center"]).Clone();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // match.Teams 内の各チームについて処理
+                foreach (var kvp in match.Teams)
+                {
+                    int id = kvp.Key;
+                    // ranks に含まれておらず、かつ id が 0, 1 でない場合
+                    if (!teamRanking.Contains(id) && id != 0 && id != 1)
+                    {
+                        teamRanking.Add(id);
+                    }
+                }
+
+                // ranks リストに基づいて各チームのランクを設定する
+                // 必要に応じて ranks をソート（ここでは昇順と仮定）
+                teamRanking.Sort();
+                for (int i = 0; i < teamRanking.Count; i++)
+                {
+                    Team team = match.GetTeam(teamRanking[i]);
+                    team.SetRank(teamRanking.Count - i);
+                }
+
+                // 更新内容を保存
+                await _fileOutputService.WriteToFileAsync(config.Output, $"{match.MatchName}", match.ToString(), FileWriteMode.Overwrite);
+            }
+        }
     }
 }
