@@ -22,12 +22,12 @@ namespace AndeanClass
         /// <summary>
         /// スタートタイムスタンプ
         /// </summary>
-        public long StartTimeStamp { get; set; }
+        public ulong StartTimeStamp { get; set; }
 
         /// <summary>
         /// エンドタイムスタンプ
         /// </summary>
-        public long EndTimeStamp { get; set; }
+        public ulong EndTimeStamp { get; set; }
 
         /// <summary>
         /// プレイヤーの連想配列 (キーはプレイヤーID、値は Player クラスのインスタンス)
@@ -348,7 +348,7 @@ namespace AndeanClass
         /// マッチ開始時刻を設定する
         /// </summary>
         /// <param name="timestamp">タイムスタンプ</param>
-        public void SetStartTimeStamp(long timestamp)
+        public void SetStartTimeStamp(ulong timestamp)
         {
             StartTimeStamp = timestamp;
         }
@@ -357,7 +357,7 @@ namespace AndeanClass
         /// マッチ終了時刻を設定する
         /// </summary>
         /// <param name="timestamp">タイムスタンプ</param>
-        public void SetEndTimeStamp(long timestamp)
+        public void SetEndTimeStamp(ulong timestamp)
         {
             EndTimeStamp = timestamp;
         }

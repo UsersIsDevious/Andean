@@ -18,7 +18,7 @@
         /// <summary>
         /// 受信したメッセージやクラスオブジェクトなどを格納するプロパティ
         /// </summary>
-        public object Data { get; set; }
+        public Dictionary<string, object> Data { get; set; }
 
         /// <summary>
         /// コンストラクタ
@@ -26,7 +26,7 @@
         /// <param name="timestamp">イベント発生時のタイムスタンプ</param>
         /// <param name="category">イベントの種類</param>
         /// <param name="data">受信したメッセージやクラスオブジェクトなど</param>
-        public Event(long timestamp, string category, object data)
+        public Event(long timestamp, string category, Dictionary<string, object> data)
         {
             Timestamp = timestamp;
             Category = category;
