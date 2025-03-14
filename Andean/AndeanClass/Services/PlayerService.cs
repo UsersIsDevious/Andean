@@ -34,13 +34,14 @@ namespace AndeanClass.Services
         /// <param name="data">フィールドが全て揃ったデータ</param>
         /// <param name="player">更新対象の Player。新規作成の場合は null を渡す</param>
         /// <returns>新規作成または更新後の Player オブジェクト</returns>
-        public static Player CreateOrUpdatePlayer(Dictionary<string, object> data, Player player = null)
+        public static Player CreateOrUpdatePlayer(CustomMatch customMatch, Player player = null)
         {
+            var players = customMatch.Players;
             // 必須フィールドの抽出
-            string name = data["name"].ToString();
-            int teamId = Convert.ToInt32(data["teamId"]);
-            string nucleusHash = data["nucleusHash"].ToString();
-            string hardwareName = data["hardwareName"].ToString();
+            string name = players["name"].ToString();
+            int teamId = Convert.ToInt32(players["teamId"]);
+            string nucleusHash = players["nucleusHash"].ToString();
+            string hardwareName = players["hardwareName"].ToString();
 
             if (player == null)
             {
@@ -58,8 +59,8 @@ namespace AndeanClass.Services
 
             // 位置情報と角度の更新
             // data["pos"] と data["angles"] は "x,y,z" 形式の文字列であると仮定
-            Vector3 pos = ParseVector3(data["pos"]);
-            Vector3 anglesVector = ParseVector3(data["angles"]);
+            Vector3 pos = ParseVector3(players["pos"]);
+            Vector3 anglesVector = ParseVector3(players["angles"]);
             // ここでは anglesVector の大きさを角度として利用する例です
             double newAngle = CalculateMagnitude(anglesVector);
             // mapOffset の値は環境に合わせて設定。ここではデフォルト値として {0, 0, 1} を使用
@@ -67,16 +68,16 @@ namespace AndeanClass.Services
             player.UpdatePositionAndAngles(pos.X, pos.Y, pos.Z, newAngle, defaultMapOffset);
 
             // 体力とシールドの更新
-            int currentHealth = Convert.ToInt32(data["currentHealth"]);
-            int maxHealth = Convert.ToInt32(data["maxHealth"]);
-            int shieldHealth = Convert.ToInt32(data["shieldHealth"]);
-            int shieldMaxHealth = Convert.ToInt32(data["shieldMaxHealth"]);
+            int currentHealth = Convert.ToInt32(players["currentHealth"]);
+            int maxHealth = Convert.ToInt32(players["maxHealth"]);
+            int shieldHealth = Convert.ToInt32(players["shieldHealth"]);
+            int shieldMaxHealth = Convert.ToInt32(players["shieldMaxHealth"]);
             player.UpdateHealthAndShields(currentHealth, maxHealth, shieldHealth, shieldMaxHealth);
 
             // チーム名、スカッドインデックス、キャラクター（レジェンド）とスキンの更新
-            player.SetTeamName(data["teamName"].ToString());
-            player.SetSquadIndex(Convert.ToInt32(data["squadIndex"]));
-            player.UpdateLegend(data["character"].ToString(), data["skin"].ToString());
+            player.SetTeamName(players["teamName"].ToString());
+            player.SetSquadIndex(Convert.ToInt32(players["squadIndex"]));
+            player.UpdateLegend(players["character"].ToString(), players["skin"].ToString());
 
             // 必要に応じて、他のプロパティも同様に更新可能
 
