@@ -10,6 +10,38 @@ namespace AndeanClass.Services
 {
     public class PlayerService
     {
+        /// <summary>
+        /// プレイヤーのインスタンスが存在するかどうかをチェックし、存在しなければ新規作成してマッチに追加します。
+        /// 取得または作成したプレイヤーのインスタンスを返します。
+        /// </summary>
+        /// <param name="PlayerMsg">プレイヤー情報を含む動的オブジェクト。プロパティ: nucleushash, name, teamid, hardwarename, teamname</param>
+        /// <param name="match">CustomMatch のインスタンス</param>
+        /// <returns>取得または新規作成された Player インスタンス</returns>
+        public static Player CheckPlayerInstance(Rtech.Liveapi.Player PlayerMsg, CustomMatch match)
+        {
+            // msg_player の nucleushash を取得
+            string nucleusHash = PlayerMsg.NucleusHash;
+
+            // 既存のプレイヤーがいるか確認
+            Player player = match.GetPlayer(nucleusHash);
+
+            // 存在しない場合、新規に作成してマッチに追加
+            if (player == null)
+            {
+                player = new Player(
+                    PlayerMsg.Name,
+                    Convert.ToInt32(PlayerMsg.TeamId),
+                    nucleusHash,
+                    PlayerMsg.HardwareName
+                );
+                match.AddPlayer(player, PlayerMsg.TeamName);
+            }
+
+            // 取得または新規作成したプレイヤーを返す
+            return player;
+        }
+
+
         //Player link
         //Field Name  Type Tag Description
         //name    string	1	The player’s name.
