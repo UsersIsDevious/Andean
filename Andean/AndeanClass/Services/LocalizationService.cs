@@ -6,7 +6,7 @@ using System.IO;
 using System.Text.Json;
 using Andean.Config;
 
-namespace Andean.AndeanClass.Services
+namespace AndeanClass.Services
 {
     public static class LocalizationService
     {

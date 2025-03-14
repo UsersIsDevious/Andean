@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Andean;
 
-namespace Andean
+namespace AndeanSystem
 {
     // IHostedService を実装してバックグラウンドで更新処理を行う
     public class UpdateManager : IHostedService

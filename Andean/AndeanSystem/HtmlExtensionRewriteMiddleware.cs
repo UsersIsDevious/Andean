@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-namespace Andean
+namespace AndeanSystem
 {
     /// <summary>
     /// URL に拡張子が含まれていない場合、自動で ".html" を付与するミドルウェア

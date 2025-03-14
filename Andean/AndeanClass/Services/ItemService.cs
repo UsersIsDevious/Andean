@@ -1,4 +1,4 @@
-﻿namespace Andean.AndeanClass.Services
+﻿namespace AndeanClass.Services
 {
     public class ItemService
     {

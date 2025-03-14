@@ -6,7 +6,7 @@ using Andean.Utilities;
 using AndeanClass;
 using Rtech.Liveapi;
 
-namespace Andean.AndeanClass.Services
+namespace AndeanClass.Services
 {
     public static class MatchService
     {

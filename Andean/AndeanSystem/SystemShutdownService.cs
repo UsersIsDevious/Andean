@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Andean.AndeanWebUI.Models;
 
-namespace Andean
+namespace AndeanSystem
 {
     public class SystemShutdownService
     {

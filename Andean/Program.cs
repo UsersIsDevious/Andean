@@ -14,7 +14,7 @@ using Andean.AndeanWebUI.Hubs;
 using Andean.Utilities;
 using Andean.Config;
 using System.Diagnostics;
-using Andean;
+using Andean.AndeanSystem;
 
 var builder = WebApplication.CreateBuilder(args);
 

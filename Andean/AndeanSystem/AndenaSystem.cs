@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Andean
+namespace AndeanSystem
 {
     public abstract class AndeanSystem
     {
