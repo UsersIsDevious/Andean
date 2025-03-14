@@ -6,7 +6,7 @@ using Rtech.Liveapi;
 using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
 using Andean.Utilities;
-using Andean.AndeanClass.Controllers;
+using AndeanClass.Controllers;
 
 namespace Andean.WebsocketServer.Controllers
 {
