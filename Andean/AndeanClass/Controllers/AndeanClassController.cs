@@ -6,7 +6,7 @@ using Andean.Config;
 using AndeanClass.Services;
 using Microsoft.Extensions.Options;
 
-namespace Andean.AndeanClass.Controllers
+namespace AndeanClass.Controllers
 {
     public class AndeanClassController
     {
@@ -93,6 +93,32 @@ namespace Andean.AndeanClass.Controllers
                 if (gameStateChangedMsg.State == "Postmatch") _isLobby = true;
 
                 MatchService.UpdateGameStatus(gameStateChangedMsg, _match, config, _teamRanking, _ringEvents);
+            }
+        }
+        public void ProcessPlayerDamaged(Rtech.Liveapi.PlayerDamaged PlayerDamagedMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+                
+                string WeaponName = LocalizationService.GetOriginalKey("weapons_label", PlayerDamagedMsg.Weapon);
+                Player Attacker = PlayerDamagedMsg.Attacker;
+                //MatchService.ConfigureMatchSetup(PlayerKilledMsg, _match);
+            }
+        }
+        public void ProcessPlayerKilled(Rtech.Liveapi.PlayerKilled PlayerKilledMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                //MatchService.ConfigureMatchSetup(PlayerKilledMsg, _match);
             }
         }
     }

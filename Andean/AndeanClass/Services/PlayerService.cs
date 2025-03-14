@@ -2,7 +2,7 @@
 using System.Xml.Linq;
 using System.Xml;
 using System;
-using Andean.AndeanClass.Controllers;
+using AndeanClass.Controllers;
 using AndeanClass;
 using Rtech.Liveapi;
 
@@ -40,6 +40,50 @@ namespace AndeanClass.Services
             // 取得または新規作成したプレイヤーを返す
             return player;
         }
+
+        /// <summary>
+        /// JSON オブジェクトから取得したデータをもとに、Player インスタンスを更新します。
+        /// </summary>
+        /// <param name="json">更新データ。pos, angles, currenthealth, maxhealth, shieldhealth, shieldmaxhealth, teamname, squadindex, character, skin を含む</param>
+        /// <param name="player">更新対象の Player インスタンス</param>
+        /// <param name="mapOffset">座標オフセット（例: double[]）</param>
+        /// <param name="characterSelected">
+        /// true の場合、キャラクターが選択済みとみなし、Legend（キャラクターID）と Skin を更新します。
+        /// </param>
+        /// <returns>更新後の Player インスタンス</returns>
+        public static Player UpdatePlayerFromJson(dynamic json, Player player, double[] mapOffset)
+        {
+            // 位置情報と角度の更新
+            // json.pos.x, json.pos.y, json.pos.z, json.angles.y を利用
+            player.UpdatePositionAndAngles(
+                (double)json.pos.x,
+                (double)json.pos.y,
+                (double)json.pos.z,
+                (double)json.angles.y,
+                mapOffset);
+
+            // 体力とシールドの更新
+            player.UpdateHealthAndShields(
+                Convert.ToInt32(json.currenthealth),
+                Convert.ToInt32(json.maxhealth),
+                Convert.ToInt32(json.shieldhealth),
+                Convert.ToInt32(json.shieldmaxhealth));
+
+            // チーム名が未設定の場合のみ設定
+            if (string.IsNullOrEmpty(player.TeamName))
+            {
+                player.SetTeamName(json.teamname.ToString());
+            }
+
+            // squadIndex が -1 の場合のみ更新
+            if (player.SquadIndex == -1)
+            {
+                player.SetSquadIndex(Convert.ToInt32(json.squadindex));
+            }
+
+            return player;
+        }
+
 
 
         //Player link
