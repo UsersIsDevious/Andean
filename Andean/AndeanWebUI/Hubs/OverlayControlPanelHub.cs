@@ -1,9 +1,8 @@
 ﻿using Andean.WebsocketServer.Controllers;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Andean.AndeanWebUI.Models;
 
-namespace Andean.Hubs
+namespace Andean.AndeanWebUI.Hubs
 {
     public class OverlayControlPanelHub : Hub, IAndeanWebUI
     {

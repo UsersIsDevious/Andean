@@ -8,14 +8,4 @@ namespace Andean
         public abstract void Update();
 
     }
-
-    public interface IAndeanWebUI
-    {
-        Task NotifyShutdown(string message = "System is shutting down.");
-    }
-
-    public abstract class AndeanWebUI
-    {
-        public abstract void NotifyShutdown();
-    }
 }

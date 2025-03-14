@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Andean.AndeanWebUI.Models;
 
-namespace Andean.Hubs
+namespace Andean.AndeanWebUI.Hubs
 {
     public class LiveViewHub : Hub, IAndeanWebUI
     {

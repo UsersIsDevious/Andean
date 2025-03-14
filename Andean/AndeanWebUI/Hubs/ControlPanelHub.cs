@@ -8,10 +8,12 @@ using Andean.WebsocketServer.Controllers;
 using Andean.Utilities;
 using Andean.Config;
 using Microsoft.Extensions.Options;
-using Andean;
+using Andean.AndeanWebUI.Models;
+using Andean.AndeanWebUI.Services;
 using Andean.ApexLiveAPI.Message;
+using AndeanClass;
 
-namespace Andean.Hubs
+namespace Andean.AndeanWebUI.Hubs
 {
     public class ControlPanelHub : Hub ,IAndeanWebUI
     {
@@ -20,6 +22,10 @@ namespace Andean.Hubs
         private readonly Request _lobbyRequestService;
         private readonly AppConfig _config = ConfigService.Config;
         private readonly SystemShutdownService _shutdownService;
+
+
+        private Dictionary<string, LobbyPlayerSection> lobbyPlayers = new Dictionary<string, LobbyPlayerSection>();
+        private LobbySettings lobbySettings = new LobbySettings();
 
         // サーバー側で全てのステータスを保持する（各クライアントで状態が異なることを防ぐ）
         private static string sharedData = "Initial Data";
@@ -41,6 +47,16 @@ namespace Andean.Hubs
             _lobbyRequestService = lobbyRequestService;
             _shutdownService = shutdownService;
         }
+
+        // CustomMatch から取得したデータを更新するメソッド
+        public async Task UpdateLobbyFromCustomMatch(CustomMatch customMatch)
+        {
+            lobbyPlayers = LobbyDataConverter.ConvertLobbyPlayers(customMatch);
+            lobbySettings = LobbyDataConverter.ConvertLobbySettings(customMatch);
+            await BroadcastStatus();
+        }
+
+        //以下接続系処理
 
         // クライアント接続時に、サーバー側で保持している全ステータスを送信
         public override async Task OnConnectedAsync()
@@ -141,7 +157,7 @@ namespace Andean.Hubs
                 string result = await CommandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
                 lastApexResponse = result;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 lastApexResponse = $"Error: {ex.Message}";
                 Console.WriteLine(lastApexResponse);
@@ -225,11 +241,24 @@ namespace Andean.Hubs
 
                 await Clients.Caller.SendAsync("ConfigUpdateResponse", "Config update successful.");
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 await Clients.Caller.SendAsync("ConfigUpdateResponse", $"Config update failed: {ex.Message}");
             }
 
+            await BroadcastStatus();
+        }
+        // ロビープレーヤー情報の更新
+        //public async Task UpdateLobbyPlayers(Dictionary<string, LobbyPlayer> newLobbyPlayers)
+        //{
+        //    lobbyPlayers = newLobbyPlayers;
+        //    await BroadcastStatus();
+        //}
+
+        // ロビー設定の更新
+        public async Task UpdateLobbySettings(LobbySettings newLobbySettings)
+        {
+            lobbySettings = newLobbySettings;
             await BroadcastStatus();
         }
         /// <summary>
