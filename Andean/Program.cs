@@ -1,5 +1,4 @@
-﻿using Andean.Hubs;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,6 +10,7 @@ using Andean.WebsocketServer.Controllers;
 using Andean.AndeanClass.Controllers;
 using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
+using Andean.AndeanWebUI.Hubs;
 using Andean.Utilities;
 using Andean.Config;
 using System.Diagnostics;

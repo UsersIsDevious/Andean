@@ -1,9 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using Andean.Config;
+using System.Text.RegularExpressions;
 
 namespace Andean.AndeanClass.Services.Utilities
 {
     public static class ItemUtilities
-    {
+    { 
+
         /// <summary>
         /// アイテム名からレベルをチェックする
         /// </summary>

@@ -121,7 +121,6 @@ export function useControlPanelSignalR() {
             console.warn("⚠️ Connection not established. Cannot send CreateLobby request.");
         }
     };
-
     const startApex = async () => {
         if (connection && isConnected) {
             try {
@@ -136,7 +135,6 @@ export function useControlPanelSignalR() {
             console.warn("⚠️ Connection not established. Cannot send StartApex request.");
         }
     };
-
     const updateConfig = async (sectionKey: keyof ConfigData, newData: unknown, mode: "overwrite" | "append" | "jsonAppend") => {
         if (connection && isConnected) {
             try {
@@ -173,6 +171,90 @@ export function useControlPanelSignalR() {
             console.warn("⚠️ Connection not established. Cannot send Shutdown request.");
         }
     };
+    const changeCamera = async (cameraId: string) => {
+        if (connection && isConnected) {
+          try {
+            console.log("🛠️ Sending change_camera request...", cameraId);
+            await connection.invoke("change_camera", cameraId);
+          } catch (error) {
+            console.error("❌ change_camera Error:", error);
+          }
+        } else {
+          console.warn("⚠️ Connection not established. Cannot send change_camera request.");
+        }
+      };
+      const leaveLobbySignalR = async () => {
+        if (connection && isConnected) {
+          try {
+            console.log("🛠️ Sending leave_lobby request...");
+            await connection.invoke("leave_lobby");
+          } catch (error) {
+            console.error("❌ leave_lobby Error:", error);
+          }
+        } else {
+          console.warn("⚠️ Connection not established. Cannot send leave_lobby request.");
+        }
+      };
+      const setReady = async (ready: boolean) => {
+        if (connection && isConnected) {
+          try {
+            console.log("🛠️ Sending set_ready request...", ready);
+            await connection.invoke("set_ready", ready);
+          } catch (error) {
+            console.error("❌ set_ready Error:", error);
+          }
+        } else {
+          console.warn("⚠️ Connection not established. Cannot send set_ready request.");
+        }
+      };
+      const setMatchmaking = async (matchmaking: boolean) => {
+        if (connection && isConnected) {
+          try {
+            console.log("🛠️ Sending set_matchmaking request...", matchmaking);
+            await connection.invoke("set_matchmaking", matchmaking);
+          } catch (error) {
+            console.error("❌ set_matchmaking Error:", error);
+          }
+        } else {
+          console.warn("⚠️ Connection not established. Cannot send set_matchmaking request.");
+        }
+      };
+      const setTeamName = async (teamId: string, newName: string) => {
+        if (connection && isConnected) {
+          try {
+            console.log("🛠️ Sending set_team_name request...", teamId, newName);
+            await connection.invoke("set_team_name", teamId, newName);
+          } catch (error) {
+            console.error("❌ set_team_name Error:", error);
+          }
+        } else {
+          console.warn("⚠️ Connection not established. Cannot send set_team_name request.");
+        }
+      };
+      const setSpawnPoint = async (teamId: string, spawnPoint: number) => {
+        if (connection && isConnected) {
+          try {
+            console.log("🛠️ Sending set_spawn_point request...", teamId, spawnPoint);
+            await connection.invoke("set_spawn_point", teamId, spawnPoint);
+          } catch (error) {
+            console.error("❌ set_spawn_point Error:", error);
+          }
+        } else {
+          console.warn("⚠️ Connection not established. Cannot send set_spawn_point request.");
+        }
+      };
+      const setEndRingExclusion = async (exclude: boolean) => {
+        if (connection && isConnected) {
+          try {
+            console.log("🛠️ Sending set_end_ring_exclusion request...", exclude);
+            await connection.invoke("set_end_ring_exclusion", exclude);
+          } catch (error) {
+            console.error("❌ set_end_ring_exclusion Error:", error);
+          }
+        } else {
+          console.warn("⚠️ Connection not established. Cannot send set_end_ring_exclusion request.");
+        }
+      };
     
     
 
