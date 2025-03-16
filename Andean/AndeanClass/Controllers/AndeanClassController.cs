@@ -38,6 +38,10 @@ namespace AndeanClass.Controllers
         /// configファイルの情報
         /// </summary>
         private AppConfig config;
+        /// <summary>
+        /// player以外の攻撃の際用のworldプレーヤー
+        /// </summary>
+        private Player WorldPlayer = new Player("World", 99, "World", "World").SetLegend("World");
 
 
 

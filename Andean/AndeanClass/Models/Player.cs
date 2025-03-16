@@ -207,61 +207,77 @@ namespace AndeanClass
         /// プレイヤーの接続状態を取得する
         /// </summary>
         public bool GetOnlineStatus() => IsOnline;
+        
+        /// <summary>
+        /// Legendを更新する
+        /// </summary>
+        public Player SetLegend(string legend)
+        {
+            Legend = legend;
+            return this;
+        }
 
         /// <summary>
         /// キル数を更新する
         /// </summary>
-        public void SetKills(string perpetrator, string victim, string legend)
+        public Player SetKills(string perpetrator, string victim, string legend)
         {
             Kills.UpdateStatistics(1, perpetrator, victim, legend);
+            return this;
         }
 
         /// <summary>
         /// キルされた数を更新する
         /// </summary>
-        public void SetKillsReceived(string perpetrator, string awardedTo, string legend)
+        public Player SetKillsReceived(string perpetrator, string awardedTo, string legend)
         {
             KillsReceived.UpdateStatistics(1, perpetrator, awardedTo, legend);
+            return this;
         }
 
         /// <summary>
         /// キルアシスト数を更新する
         /// </summary>
-        public void SetKillAssists(string perpetrator, string victim, string legend)
+        public Player SetKillAssists(string perpetrator, string victim, string legend)
         {
             KillAssists.UpdateStatistics(1, perpetrator, victim, legend);
+            return this;
         }
 
         /// <summary>
         /// キルアシストされた数を更新する
         /// </summary>
-        public void SetKillAssistsReceived(string perpetrator, string awardedTo, string legend)
+        public Player SetKillAssistsReceived(string perpetrator, string awardedTo, string legend)
         {
             KillAssistsReceived.UpdateStatistics(1, perpetrator, awardedTo, legend);
+            return this;
         }
 
         /// <summary>
         /// ダウン数を更新する
         /// </summary>
-        public void SetDowns(string perpetrator, string victim, string legend)
+        public Player SetDowns(string perpetrator, string victim, string legend)
         {
             Downs.UpdateStatistics(1, perpetrator, victim, legend);
+            return this;
         }
 
         /// <summary>
         /// ダウンされた数を更新する
         /// </summary>
-        public void SetDownsReceived(string perpetrator, string awardedTo, string legend)
+        public Player SetDownsReceived(string perpetrator, string awardedTo, string legend)
         {
             DownsReceived.UpdateStatistics(1, perpetrator, awardedTo, legend);
+            return this;
         }
 
         /// <summary>
         /// 敵に与えたダメージを加算する
         /// </summary>
-        public void AddDamageDealt(uint amount, string perpetrator, string victim, string legend)
+        public Player AddDamageDealt(uint amount, string perpetrator, string victim, string legend)
         {
             DamageDealt.UpdateStatistics(amount, perpetrator, victim, legend);
+            return this;
         }
 
         /// <summary>
@@ -308,66 +324,73 @@ namespace AndeanClass
         /// <summary>
         /// プレイヤーのアビリティ使用回数を加算する
         /// </summary>
-        public void AddAbilityUseCount(string abilityId)
+        public Player AddAbilityUseCount(string abilityId)
         {
             if (!AbilityUseCount.ContainsKey(abilityId))
                 AbilityUseCount[abilityId] = 0;
             AbilityUseCount[abilityId]++;
+            return this;
         }
 
         /// <summary>
         /// プレイヤーのアルティメット使用回数を加算する
         /// </summary>
-        public void AddUltimateUseCount(string ultimateId)
+        public Player AddUltimateUseCount(string ultimateId)
         {
             if (!UltimateUseCount.ContainsKey(ultimateId))
                 UltimateUseCount[ultimateId] = 0;
             UltimateUseCount[ultimateId]++;
+            return this;
         }
 
         /// <summary>
         /// プレイヤーのジップライン使用回数を加算する
         /// </summary>
-        public void AddZiplineUseCount()
+        public Player AddZiplineUseCount()
         {
             ZiplineUseCount++;
+            return this;
         }
 
         /// <summary>
         /// プレイヤーのグレネード使用回数を加算する
         /// </summary>
-        public void AddGrenadeUseCount(string grenadeId)
+        public Player AddGrenadeUseCount(string grenadeId)
         {
             if (!GrenadeUseCount.ContainsKey(grenadeId))
                 GrenadeUseCount[grenadeId] = 0;
             GrenadeUseCount[grenadeId]++;
+            return this;
         }
 
         /// <summary>
         /// プレイヤーのブラックマーケット使用回数を加算する
         /// </summary>
-        public void AddBlackMarketUseCount(string itemId)
+        public Player AddBlackMarketUseCount(string itemId)
         {
             if (!BlackMarket.Items.ContainsKey(itemId))
                 BlackMarket.Items[itemId] = 0;
             BlackMarket.Items[itemId]++;
             BlackMarket.UseCount++;
+            return this;
         }
 
         /// <summary>
         /// プレイヤーのレイスのポータル使用回数を加算する
         /// </summary>
-        public void AddWraithPortalUseCount()
+        public Player AddWraithPortalUseCount()
         {
             WraithPortalUseCount++;
+            return this;
         }
 
         /// <summary>
         /// プレイヤーのアルティメットチャージ状態を設定する
         /// </summary>
-        public void SetUltimateCharged(bool status)
+        public Player SetUltimateCharged(bool status)
         {
             UltimateCharged = status;
+            return this;
         }
 
         /// <summary>
@@ -378,62 +401,46 @@ namespace AndeanClass
         /// <summary>
         /// レヴナントのフォージドシャドウが受けたダメージを加算する
         /// </summary>
-        public void AddForgedShadowDamaged(uint amount)
+        public Player AddForgedShadowDamaged(uint amount)
         {
             ForgedShadowDamaged += amount;
+            return this;
         }
 
         /// <summary>
         /// ワープゲート使用回数を加算する
         /// </summary>
-        public void AddWarpGateUseCount()
+        public Player AddWarpGateUseCount()
         {
             WarpGateUseCount++;
+            return this;
         }
 
         /// <summary>
         /// ジブラルタルのシールドが吸収したダメージを加算する
         /// </summary>
-        public void AddGibraltarShieldAbsorbed(uint amount)
+        public Player AddGibraltarShieldAbsorbed(uint amount)
         {
             GibraltarShieldAbsorbed += amount;
+            return this;
         }
 
         /// <summary>
         /// バナー回収回数を加算する
         /// </summary>
-        public void AddBannerCollectedCount()
+        public Player AddBannerCollectedCount()
         {
             BannerCollectedCount++;
+            return this;
         }
 
         /// <summary>
         /// プレイヤーの蘇生可能状態を設定する
         /// </summary>
-        public void SetCanRevive(bool status)
+        public Player SetCanRevive(bool status)
         {
             CanRevive = status;
-        }
-    }
-
-    /// <summary>
-    /// ブラックマーケットの統計情報を保持するクラス
-    /// </summary>
-    public class BlackMarket
-    {
-        /// <summary>
-        /// 使用回数
-        /// </summary>
-        public int UseCount { get; set; }
-        /// <summary>
-        /// アイテムごとの使用回数
-        /// </summary>
-        public Dictionary<string, uint> Items { get; set; }
-
-        public BlackMarket()
-        {
-            UseCount = 0;
-            Items = new Dictionary<string, uint>();
+            return this;
         }
     }
 }
