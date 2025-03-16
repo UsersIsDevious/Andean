@@ -57,12 +57,12 @@ namespace AndeanClass
         /// <param name="quantity">追加または更新する個数</param>
         /// <param name="level">アイテムのレベル</param>
         /// <returns>更新後の Inventory インスタンス</returns>
-        public Inventory AddOrUpdateItem(string itemName, uint quantity, uint level)
+        public Inventory AddOrUpdateItem(string itemName, long quantity, uint level)
         {
             var existingItem = GetItem(itemName, level);
             if (existingItem != null)
             {
-                uint newQuantity = existingItem.Quantity + quantity;
+                uint newQuantity = (uint)(existingItem.Quantity + quantity);
                 // 所持数が0未満になった場合は、アイテムを削除する
                 if (newQuantity < 0)
                 {
@@ -75,7 +75,7 @@ namespace AndeanClass
             }
             else
             {
-                var newItem = new Item(itemName, level, quantity);
+                var newItem = new Item(itemName, level, (uint)quantity);
                 AddItem(newItem);
             }
             return this;

@@ -48,11 +48,15 @@ namespace Andean.AndeanClass.Models
         }
 
 
-        // JSON形式でファイルに保存するメソッド
-        public void Save(string filePath)
+        public Dictionary<string,object> Get()
         {
-            string json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(filePath, json);
+            return new Dictionary<string, object>()
+            {
+                { "id", this.id },
+                { "pos", this.pos },
+                { "hp", this.hp },
+                { "ang", this.ang }
+            };
         }
     }
 }

@@ -197,18 +197,22 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case PlayerDamaged playerDamagedMsg:
                     {
+                        _andeanClassController.ProcessPlayerDamaged(playerDamagedMsg);
                         break;
                     }
                 case PlayerKilled playerKilledMsg:
                     {
+                        _andeanClassController.ProcessPlayerKilled(playerKilledMsg);
                         break;
                     }
                 case PlayerDowned playerDownedMsg:
                     {
+                        _andeanClassController.ProcessPlayerDowned(playerDownedMsg);
                         break;
                     }
                 case PlayerAssist playerAssistMsg:
                     {
+                        _andeanClassController.ProcessPlayerAssist(playerAssistMsg);
                         break;
                     }
                 case SquadEliminated squadEliminatedMsg:
@@ -245,22 +249,28 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case ArenasItemSelected arenasItemSelectedMsg:
                     {
+                        _andeanClassController.ProcessArenasItemSelected(arenasItemSelectedMsg);
                         break;
                     }
                 case ArenasItemDeselected arenasItemDeselectedMsg:
                     {
+                        _andeanClassController.ProcessArenasItemDeselected(arenasItemDeselectedMsg);
+
                         break;
                     }
                 case InventoryPickUp inventoryPickUpMsg:
                     {
+                        _andeanClassController.ProcessInventoryPickUp(inventoryPickUpMsg);
                         break;
                     }
                 case InventoryDrop inventoryDropMsg:
                     {
+                        _andeanClassController.ProcessInventoryDrop(inventoryDropMsg);
                         break;
                     }
                 case InventoryUse inventoryUseMsg:
                     {
+                        _andeanClassController.ProcessInventoryUse(inventoryUseMsg);
                         break;
                     }
                 case BannerCollected bannerCollectedMsg:
@@ -281,10 +291,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case GrenadeThrown grenadeThrownMsg:
                     {
+                        _andeanClassController.ProcessGrenadeThrown(grenadeThrownMsg);
                         break;
                     }
                 case BlackMarketAction blackMarketActionMsg:
                     {
+                        _andeanClassController.ProcessBlackMarketAction(blackMarketActionMsg);
                         break;
                     }
                 case WraithPortal wraithPortalMsg:
@@ -297,6 +309,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case AmmoUsed ammoUsedMsg:
                     {
+                        _andeanClassController.ProcessAmmoUsed(ammoUsedMsg);
                         break;
                     }
                 case WeaponSwitched weaponSwitchedMsg:
