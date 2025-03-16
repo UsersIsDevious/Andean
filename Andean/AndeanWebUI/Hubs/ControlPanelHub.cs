@@ -12,7 +12,7 @@ using Andean.AndeanWebUI.Models;
 using Andean.AndeanWebUI.Services;
 using Andean.ApexLiveAPI.Message;
 using AndeanClass;
-using Andean.AndeanSystem;
+using AndeanSystem;
 
 namespace Andean.AndeanWebUI.Hubs
 {

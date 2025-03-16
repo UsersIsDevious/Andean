@@ -7,14 +7,14 @@ using Andean.ApexLiveAPI.Request;
 using Andean.ApexLiveAPI.Services;
 using Andean.WebsocketServer;
 using Andean.WebsocketServer.Controllers;
-using Andean.AndeanClass.Controllers;
+using AndeanClass.Controllers;
 using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
 using Andean.AndeanWebUI.Hubs;
 using Andean.Utilities;
 using Andean.Config;
 using System.Diagnostics;
-using Andean.AndeanSystem;
+using AndeanSystem;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +42,7 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<ConfigService>();
 
 // 🚀 TimestampService をシングルトンで登録
-builder.Services.AddSingleton<AndeanSystem, TimestampService>();
+builder.Services.AddSingleton<AndeanSystem.AndeanSystem, TimestampService>();
 
 // 🚀 WebSocket サーバーをシングルトンとして登録
 builder.Services.AddSingleton<WebSocketServer>();

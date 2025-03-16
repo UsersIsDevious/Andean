@@ -29,7 +29,7 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// チーム順位のリスト
         /// </summary>
-        private List<int> _teamRanking;
+        private List<uint> _teamRanking;
         /// <summary>
         /// リング後処理用のEventsリスト
         /// </summary>

@@ -1,4 +1,5 @@
 ﻿using Andean.Config;
+using AndeanClass.Services;
 using System.Text.RegularExpressions;
 
 namespace Andean.AndeanClass.Services.Utilities
@@ -11,7 +12,7 @@ namespace Andean.AndeanClass.Services.Utilities
         /// </summary>
         /// <param name="name">アイテム名</param>
         /// <returns>レベル。該当部分が見つからなければ1を返す</returns>
-        public static int ReturnLevel(string name)
+        public static uint ReturnLevel(string name)
         {
             var Language = LocalizationService.LocalizedData;
 
@@ -25,7 +26,7 @@ namespace Andean.AndeanClass.Services.Utilities
             }
             else
             {
-                if (int.TryParse(match.Groups[1].Value, out int level))
+                if (uint.TryParse(match.Groups[1].Value, out uint level))
                 {
                     return level;
                 }

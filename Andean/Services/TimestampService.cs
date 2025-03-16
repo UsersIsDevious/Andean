@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Andean.AndeanWebUI.Hubs;
 using System;
+using AndeanSystem;
 
 namespace Andean.AndeanClass.Services
 {
     // TimestampService は BaseClass を継承し、Update() を実装する
-    public class TimestampService : AndeanSystem
+    public class TimestampService : AndeanSystem.AndeanSystem
     {
         private readonly IHubContext<ControlPanelHub> _hubContext;
         private readonly ILogger<TimestampService> _logger;

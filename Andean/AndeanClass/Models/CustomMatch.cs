@@ -37,17 +37,17 @@ namespace AndeanClass
         /// <summary>
         /// チームの連想配列 (キーは teamId、値は Team クラスのインスタンス)
         /// </summary>
-        public Dictionary<int, Team> Teams { get; set; }
+        public Dictionary<uint, Team> Teams { get; set; }
 
         /// <summary>
         /// 最大プレイヤー数
         /// </summary>
-        public int MaxPlayers { get; set; }
+        public uint MaxPlayers { get; set; }
 
         /// <summary>
         /// 最大チーム数
         /// </summary>
-        public int MaxTeams { get; set; }
+        public uint MaxTeams { get; set; }
 
         /// <summary>
         /// 現在の状態（gameStateChanged 等）
@@ -135,7 +135,7 @@ namespace AndeanClass
             StartTimeStamp = 0;
             EndTimeStamp = 0;
             Players = new Dictionary<string, Player>();
-            Teams = new Dictionary<int, Team>();
+            Teams = new Dictionary<uint, Team>();
             MaxPlayers = 60;
             MaxTeams = 20;
             State = "";
@@ -242,7 +242,7 @@ namespace AndeanClass
         /// <param name="teamId">チームID</param>
         /// <param name="teamName">チーム名</param>
         /// <returns>追加または既存の Team インスタンス</returns>
-        public Team AddTeam(int teamId, string teamName)
+        public Team AddTeam(uint teamId, string teamName)
         {
             if (!Teams.ContainsKey(teamId))
             {
@@ -463,7 +463,7 @@ namespace AndeanClass
         /// </summary>
         /// <param name="teamId">チームID</param>
         /// <returns>見つかった場合は Team インスタンス、なければ null</returns>
-        public Team GetTeam(int teamId)
+        public Team GetTeam(uint teamId)
         {
             if (Teams.ContainsKey(teamId))
             {

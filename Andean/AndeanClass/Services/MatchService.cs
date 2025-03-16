@@ -67,7 +67,7 @@ namespace AndeanClass.Services
                     {
                         name = itemId;
                     }
-                    match.StartingLoadout.AddOrUpdateItem(name, eq.Quantity, ItemUtilities.ReturnLevel(eq.Item));
+                    match.StartingLoadout.AddOrUpdateItem(name, (uint)eq.Quantity, ItemUtilities.ReturnLevel(eq.Item));
                 }
             }
 
@@ -99,7 +99,7 @@ namespace AndeanClass.Services
             }
         }
 
-        public static async void UpdateGameStatus(GameStateChanged gameStateChangedMsg, CustomMatch match, AppConfig config, List<int> teamRanking, List<(string, Event)> ringEvents)
+        public static async void UpdateGameStatus(GameStateChanged gameStateChangedMsg, CustomMatch match, AppConfig config, List<uint> teamRanking, List<(string, Event)> ringEvents)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -113,7 +113,7 @@ namespace AndeanClass.Services
                 ringEvents.Clear();
 
                 // match.MaxTeams + 1 から 2 まで逆順に処理
-                for (int i = match.MaxTeams + 1; i >= 2; i--)
+                for (uint i = match.MaxTeams + 1; i >= 2; i--)
                 {
                     Team team = match.GetTeam(i);
                     // チーム内のプレイヤーがいない場合、ranks に追加
@@ -166,7 +166,7 @@ namespace AndeanClass.Services
                 // match.Teams 内の各チームについて処理
                 foreach (var kvp in match.Teams)
                 {
-                    int id = kvp.Key;
+                    uint id = kvp.Key;
                     // ranks に含まれておらず、かつ id が 0, 1 でない場合
                     if (!teamRanking.Contains(id) && id != 0 && id != 1)
                     {
@@ -180,7 +180,7 @@ namespace AndeanClass.Services
                 for (int i = 0; i < teamRanking.Count; i++)
                 {
                     Team team = match.GetTeam(teamRanking[i]);
-                    team.SetRank(teamRanking.Count - i);
+                    team.SetRank((uint)(teamRanking.Count - i));
                 }
 
                 // 更新内容を保存
