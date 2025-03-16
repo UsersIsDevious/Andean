@@ -16,6 +16,7 @@ using Andean.Config;
 using System.Diagnostics;
 using AndeanSystem;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ カスタム設定ファイル `config/config.json` を読み込み
