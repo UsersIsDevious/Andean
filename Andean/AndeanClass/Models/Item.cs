@@ -13,12 +13,12 @@
         /// <summary>
         /// アイテムレベル
         /// </summary>
-        public int Level { get; set; }
+        public uint Level { get; set; }
 
         /// <summary>
         /// アイテムの保有数
         /// </summary>
-        public int Quantity { get; set; }
+        public uint Quantity { get; set; }
 
         /// <summary>
         /// コンストラクタ
@@ -26,7 +26,7 @@
         /// <param name="name">アイテムの名前</param>
         /// <param name="level">アイテムのレベル</param>
         /// <param name="quantity">アイテムの保有数</param>
-        public Item(string name, int level, int quantity)
+        public Item(string name, uint level, uint quantity)
         {
             Name = name;
             Level = level;
@@ -38,7 +38,7 @@
         /// </summary>
         /// <param name="newQuantity">新しい個数</param>
         /// <returns>更新後の Item インスタンス</returns>
-        public Item SetQuantity(int newQuantity)
+        public Item SetQuantity(uint newQuantity)
         {
             Quantity = newQuantity;
             return this;

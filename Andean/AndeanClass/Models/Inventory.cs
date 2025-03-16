@@ -57,12 +57,12 @@ namespace AndeanClass
         /// <param name="quantity">追加または更新する個数</param>
         /// <param name="level">アイテムのレベル</param>
         /// <returns>更新後の Inventory インスタンス</returns>
-        public Inventory AddOrUpdateItem(string itemName, int quantity, int level)
+        public Inventory AddOrUpdateItem(string itemName, uint quantity, uint level)
         {
             var existingItem = GetItem(itemName, level);
             if (existingItem != null)
             {
-                int newQuantity = existingItem.Quantity + quantity;
+                uint newQuantity = existingItem.Quantity + quantity;
                 // 所持数が0未満になった場合は、アイテムを削除する
                 if (newQuantity < 0)
                 {
@@ -89,7 +89,7 @@ namespace AndeanClass
         /// <param name="level">武器のレベル</param>
         /// <param name="ammoUsed">使用された弾数（現状は未使用）</param>
         /// <returns>更新後の Inventory インスタンス</returns>
-        public Inventory AddOrUpdateWeapon(string weaponId, string _weaponLabel, int level, int ammoUsed = 0)
+        public Inventory AddOrUpdateWeapon(string weaponId, string _weaponLabel, uint level, uint ammoUsed = 0)
         {
             // 表示名の " (" 以前の部分を抽出
             string weaponLabel = _weaponLabel.Split(new string[] { " (" }, StringSplitOptions.None)[0];
@@ -117,7 +117,7 @@ namespace AndeanClass
         /// <param name="itemName">削除するアイテムの名前</param>
         /// <param name="level">削除するアイテムのレベル</param>
         /// <returns>削除された Item インスタンス、存在しない場合は null</returns>
-        public Item RemoveItem(string itemName, int level)
+        public Item RemoveItem(string itemName, uint level)
         {
             int index = Items.FindIndex(item => item.Name == itemName && item.Level == level);
             if (index != -1)
@@ -135,7 +135,7 @@ namespace AndeanClass
         /// <param name="weaponLabel">削除する武器の表示名</param>
         /// <param name="level">削除する武器のレベル</param>
         /// <returns>削除された Weapon インスタンス、存在しない場合は null</returns>
-        public Weapon RemoveWeapon(string weaponLabel, int level)
+        public Weapon RemoveWeapon(string weaponLabel, uint level)
         {
             int index = Weapons.FindIndex(weapon => weapon.Label == weaponLabel && weapon.Level == level);
             if (index != -1)
@@ -153,7 +153,7 @@ namespace AndeanClass
         /// <param name="itemName">取得するアイテムの名前</param>
         /// <param name="level">取得するアイテムのレベル</param>
         /// <returns>見つかった Item インスタンス、存在しない場合は null</returns>
-        public Item GetItem(string itemName, int level)
+        public Item GetItem(string itemName, uint level)
         {
             return Items.Find(item => item.Name == itemName && item.Level == level);
         }
@@ -164,7 +164,7 @@ namespace AndeanClass
         /// <param name="weaponLabel">取得する武器の表示名</param>
         /// <param name="level">取得する武器のレベル</param>
         /// <returns>見つかった Weapon インスタンス、存在しない場合は null</returns>
-        public Weapon GetWeapon(string weaponLabel, int level)
+        public Weapon GetWeapon(string weaponLabel, uint level)
         {
             return Weapons.Find(weapon => weapon.Label == weaponLabel && weapon.Level == level);
         }

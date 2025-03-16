@@ -18,12 +18,12 @@
         /// <summary>
         /// 武器のレベル
         /// </summary>
-        public int Level { get; set; }
+        public uint Level { get; set; }
 
         /// <summary>
         /// AmmoUsedで使用された最大の弾数を格納するプロパティ
         /// </summary>
-        public int MaxMagazine { get; set; }
+        public uint MaxMagazine { get; set; }
 
         /// <summary>
         /// コンストラクタ
@@ -31,7 +31,7 @@
         /// <param name="id">内部の武器名</param>
         /// <param name="label">表示されている武器名</param>
         /// <param name="level">武器のレベル</param>
-        public Weapon(string id, string label, int level)
+        public Weapon(string id, string label, uint level)
         {
             Id = id;
             Label = label;
@@ -43,7 +43,7 @@
         /// AmmoUsedで使用された最大の弾数を返すメソッド
         /// </summary>
         /// <returns>AmmoUsedで使用された最大の弾数</returns>
-        public int GetMaxMagazine()
+        public uint GetMaxMagazine()
         {
             return MaxMagazine;
         }

@@ -18,7 +18,7 @@
         /// <summary>
         /// ステージ番号
         /// </summary>
-        public int Stage { get; set; }
+        public uint Stage { get; set; }
 
         /// <summary>
         /// 現在のリングの半径（マップの倍率で補正済み）
@@ -55,7 +55,7 @@
         /// <param name="currentRadius">現在の半径</param>
         /// <param name="shrinkDuration">縮む期間</param>
         /// <param name="mapOffset">マップのオフセット配列（[x, y, scale]）</param>
-        public Ring(double timestamp, string category, int stage, Vector3 center, double currentRadius, double shrinkDuration, double[] mapOffset)
+        public Ring(double timestamp, string category, uint stage, Vector3 center, double currentRadius, double shrinkDuration, double[] mapOffset)
         {
             Timestamp = timestamp;
             Category = category;

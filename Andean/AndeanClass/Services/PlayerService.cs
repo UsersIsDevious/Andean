@@ -17,7 +17,7 @@ namespace AndeanClass.Services
         /// <param name="PlayerMsg">プレイヤー情報を含む動的オブジェクト。プロパティ: nucleushash, name, teamid, hardwarename, teamname</param>
         /// <param name="match">CustomMatch のインスタンス</param>
         /// <returns>取得または新規作成された Player インスタンス</returns>
-        public static Player CheckPlayerInstance(Rtech.Liveapi.Player PlayerMsg, CustomMatch match)
+        public static Player CheckPlayerInstance(CustomMatch match , Rtech.Liveapi.Player PlayerMsg)
         {
             // msg_player の nucleushash を取得
             string nucleusHash = PlayerMsg.NucleusHash;
@@ -30,7 +30,7 @@ namespace AndeanClass.Services
             {
                 player = new Player(
                     PlayerMsg.Name,
-                    Convert.ToInt32(PlayerMsg.TeamId),
+                    PlayerMsg.TeamId,
                     nucleusHash,
                     PlayerMsg.HardwareName
                 );
@@ -41,49 +41,11 @@ namespace AndeanClass.Services
             return player;
         }
 
-        /// <summary>
-        /// JSON オブジェクトから取得したデータをもとに、Player インスタンスを更新します。
-        /// </summary>
-        /// <param name="json">更新データ。pos, angles, currenthealth, maxhealth, shieldhealth, shieldmaxhealth, teamname, squadindex, character, skin を含む</param>
-        /// <param name="player">更新対象の Player インスタンス</param>
-        /// <param name="mapOffset">座標オフセット（例: double[]）</param>
-        /// <param name="characterSelected">
-        /// true の場合、キャラクターが選択済みとみなし、Legend（キャラクターID）と Skin を更新します。
-        /// </param>
-        /// <returns>更新後の Player インスタンス</returns>
-        public static Player UpdatePlayerFromJson(dynamic json, Player player, double[] mapOffset)
+        public static Player addDamageReceived(Player player, bool penetrator = false)
         {
-            // 位置情報と角度の更新
-            // json.pos.x, json.pos.y, json.pos.z, json.angles.y を利用
-            player.UpdatePositionAndAngles(
-                (double)json.pos.x,
-                (double)json.pos.y,
-                (double)json.pos.z,
-                (double)json.angles.y,
-                mapOffset);
-
-            // 体力とシールドの更新
-            player.UpdateHealthAndShields(
-                Convert.ToInt32(json.currenthealth),
-                Convert.ToInt32(json.maxhealth),
-                Convert.ToInt32(json.shieldhealth),
-                Convert.ToInt32(json.shieldmaxhealth));
-
-            // チーム名が未設定の場合のみ設定
-            if (string.IsNullOrEmpty(player.TeamName))
-            {
-                player.SetTeamName(json.teamname.ToString());
-            }
-
-            // squadIndex が -1 の場合のみ更新
-            if (player.SquadIndex == -1)
-            {
-                player.SetSquadIndex(Convert.ToInt32(json.squadindex));
-            }
 
             return player;
         }
-
 
 
         //Player link
@@ -92,7 +54,7 @@ namespace AndeanClass.Services
         //teamId  uint32  2	The player’s team ID.
         //pos Vector3	3	The player’s position.
         //angles Vector3	4	The player’s viewing angles.
-        //currentHealth uint32	5	The player’s current health.
+        //currentHealth uint32	5	The player’s current health. x
         //maxHealth uint32	6	The player’s maximum health.
         //shieldHealth uint32	7	The player’s current shield health.
         //shieldMaxHealth uint32	8	The player’s maximum shield health.
@@ -110,78 +72,34 @@ namespace AndeanClass.Services
         /// <param name="data">フィールドが全て揃ったデータ</param>
         /// <param name="player">更新対象の Player。新規作成の場合は null を渡す</param>
         /// <returns>新規作成または更新後の Player オブジェクト</returns>
-        public static Player CreateOrUpdatePlayer(CustomMatch customMatch, Player player = null)
+        public static Player CreateOrUpdatePlayer(CustomMatch customMatch , Rtech.Liveapi.Player player)
         {
-            var players = customMatch.Players;
-            // 必須フィールドの抽出
-            string name = players["name"].ToString();
-            int teamId = Convert.ToInt32(players["teamId"]);
-            string nucleusHash = players["nucleusHash"].ToString();
-            string hardwareName = players["hardwareName"].ToString();
-
-            if (player == null)
-            {
-                // 新規作成：コンストラクタで必須フィールドを設定
-                player = new Player(name, teamId, nucleusHash, hardwareName);
-            }
-            else
-            {
-                // 既存の場合、必要に応じて基本情報も更新
-                player.Name = name;
-                player.TeamId = teamId;
-                player.NucleusHash = nucleusHash;
-                player.HardwareName = hardwareName;
-            }
+            Player _player = CheckPlayerInstance(customMatch , player);
 
             // 位置情報と角度の更新
-            // data["pos"] と data["angles"] は "x,y,z" 形式の文字列であると仮定
-            Vector3 pos = ParseVector3(players["pos"]);
-            Vector3 anglesVector = ParseVector3(players["angles"]);
-            // ここでは anglesVector の大きさを角度として利用する例です
-            double newAngle = CalculateMagnitude(anglesVector);
-            // mapOffset の値は環境に合わせて設定。ここではデフォルト値として {0, 0, 1} を使用
-            double[] defaultMapOffset = new double[] { 0, 0, 1 };
-            player.UpdatePositionAndAngles(pos.X, pos.Y, pos.Z, newAngle, defaultMapOffset);
+            // json.pos.x, json.pos.y, json.pos.z, json.angles.y を利用
+            _player.UpdatePositionAndAngles(
+                player.Pos.X,
+                player.Pos.Y,
+                player.Pos.Z,
+                player.Angles.Y,
+                customMatch.MapOffset);
 
             // 体力とシールドの更新
-            int currentHealth = Convert.ToInt32(players["currentHealth"]);
-            int maxHealth = Convert.ToInt32(players["maxHealth"]);
-            int shieldHealth = Convert.ToInt32(players["shieldHealth"]);
-            int shieldMaxHealth = Convert.ToInt32(players["shieldMaxHealth"]);
-            player.UpdateHealthAndShields(currentHealth, maxHealth, shieldHealth, shieldMaxHealth);
+            _player.UpdateHealthAndShields(
+                player.CurrentHealth,
+                player.MaxHealth,
+                player.ShieldHealth,
+                player.ShieldMaxHealth);
 
             // チーム名、スカッドインデックス、キャラクター（レジェンド）とスキンの更新
-            player.SetTeamName(players["teamName"].ToString());
-            player.SetSquadIndex(Convert.ToInt32(players["squadIndex"]));
-            player.UpdateLegend(players["character"].ToString(), players["skin"].ToString());
+            _player.SetTeamName(player.TeamName);
+            _player.SetSquadIndex((int)player.SquadIndex);
+            _player.UpdateLegend(player.Character,player.Skin);
 
             // 必要に応じて、他のプロパティも同様に更新可能
 
-            return player;
-        }
-
-        /// <summary>
-        /// "x,y,z" 形式の文字列から Vector3 への変換を行います。
-        /// </summary>
-        private static Vector3 ParseVector3(object data)
-        {
-            string[] parts = data.ToString().Split(',');
-            if (parts.Length == 3)
-            {
-                double x = double.Parse(parts[0]);
-                double y = double.Parse(parts[1]);
-                double z = double.Parse(parts[2]);
-                return new Vector3(x, y, z);
-            }
-            return new Vector3();
-        }
-
-        /// <summary>
-        /// Vector3 の大きさ（ノルム）を計算します。
-        /// </summary>
-        private static double CalculateMagnitude(Vector3 v)
-        {
-            return Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
+            return _player;
         }
     }
 }

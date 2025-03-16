@@ -8,7 +8,7 @@
         /// <summary>
         /// イベント発生時のタイムスタンプ
         /// </summary>
-        public long Timestamp { get; set; }
+        public ulong Timestamp { get; set; }
 
         /// <summary>
         /// イベントの種類
@@ -26,7 +26,7 @@
         /// <param name="timestamp">イベント発生時のタイムスタンプ</param>
         /// <param name="category">イベントの種類</param>
         /// <param name="data">受信したメッセージやクラスオブジェクトなど</param>
-        public Event(long timestamp, string category, Dictionary<string, object> data)
+        public Event(ulong timestamp, string category, Dictionary<string, object> data)
         {
             Timestamp = timestamp;
             Category = category;

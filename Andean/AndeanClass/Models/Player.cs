@@ -11,7 +11,7 @@ namespace AndeanClass
     {
         // 基本情報
         public string Name { get; set; }
-        public int TeamId { get; set; } // uint32相当。必要に応じて uint を使用可能
+        public uint TeamId { get; set; } // uint32相当。必要に応じて uint を使用可能
         public string NucleusHash { get; set; }
         public string HardwareName { get; set; }
 
@@ -21,10 +21,10 @@ namespace AndeanClass
         public double Angles { get; set; }
 
         // 体力・シールド
-        public int CurrentHealth { get; set; }
-        public int MaxHealth { get; set; }
-        public int ShieldHealth { get; set; }
-        public int ShieldMaxHealth { get; set; }
+        public uint CurrentHealth { get; set; }
+        public uint MaxHealth { get; set; }
+        public uint ShieldHealth { get; set; }
+        public uint ShieldMaxHealth { get; set; }
 
         // チーム・キャラクター情報
         public string TeamName { get; set; }
@@ -62,10 +62,10 @@ namespace AndeanClass
         public BlackMarket BlackMarket { get; set; }
         public int WraithPortalUseCount { get; set; }
         public bool UltimateCharged { get; set; }
-        public int ForgedShadowDamaged { get; set; }
-        public int WarpGateUseCount { get; set; }
-        public int GibraltarShieldAbsorbed { get; set; }
-        public int BannerCollectedCount { get; set; }
+        public uint ForgedShadowDamaged { get; set; }
+        public uint WarpGateUseCount { get; set; }
+        public uint GibraltarShieldAbsorbed { get; set; }
+        public uint BannerCollectedCount { get; set; }
         public bool CanRevive { get; set; }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace AndeanClass
         /// <param name="teamId">チームID</param>
         /// <param name="nucleusHash">プレイヤーの識別用ハッシュ</param>
         /// <param name="hardwareName">使用ハードウェア名</param>
-        public Player(string name, int teamId, string nucleusHash, string hardwareName)
+        public Player(string name, uint teamId, string nucleusHash, string hardwareName)
         {
             Name = name;
             TeamId = teamId;
@@ -149,7 +149,7 @@ namespace AndeanClass
         /// <summary>
         /// プレイヤーの体力とシールドを更新する
         /// </summary>
-        public void UpdateHealthAndShields(int newCurrentHealth, int newMaxHealth, int newShieldHealth, int newShieldMaxHealth)
+        public void UpdateHealthAndShields(uint newCurrentHealth, uint newMaxHealth, uint newShieldHealth, uint newShieldMaxHealth)
         {
             CurrentHealth = newCurrentHealth;
             MaxHealth = newMaxHealth;
@@ -259,7 +259,7 @@ namespace AndeanClass
         /// <summary>
         /// 敵に与えたダメージを加算する
         /// </summary>
-        public void AddDamageDealt(int amount, string perpetrator, string victim, string legend)
+        public void AddDamageDealt(uint amount, string perpetrator, string victim, string legend)
         {
             DamageDealt.UpdateStatistics(amount, perpetrator, victim, legend);
         }
@@ -270,7 +270,7 @@ namespace AndeanClass
         /// <returns>
         /// 更新後の (currentHealth, maxHealth, shieldHealth, shieldMaxHealth) のタプル
         /// </returns>
-        public (int, int, int, int) AddDamageReceived(int amount, string perpetrator, string attacker, string legend, bool penetrator = false)
+        public (uint, uint, uint, uint) AddDamageReceived(uint amount, string perpetrator, string attacker, string legend, bool penetrator = false)
         {
             DamageReceived.UpdateStatistics(amount, perpetrator, attacker, legend);
 
@@ -283,7 +283,7 @@ namespace AndeanClass
 
             if (penetrator)
             {
-                int resultHealth = CurrentHealth - amount;
+                uint resultHealth = CurrentHealth - amount;
                 if (resultHealth < 0)
                     resultHealth = 0;
                 UpdateHealthAndShields(resultHealth, MaxHealth, ShieldHealth, ShieldMaxHealth);
@@ -291,8 +291,8 @@ namespace AndeanClass
             }
             else
             {
-                int resultShield = ShieldHealth - amount;
-                int resultHealth = CurrentHealth;
+                uint resultShield = ShieldHealth - amount;
+                uint resultHealth = CurrentHealth;
                 if (resultShield < 0)
                 {
                     resultHealth += resultShield; // resultShield は負の値
@@ -378,7 +378,7 @@ namespace AndeanClass
         /// <summary>
         /// レヴナントのフォージドシャドウが受けたダメージを加算する
         /// </summary>
-        public void AddForgedShadowDamaged(int amount)
+        public void AddForgedShadowDamaged(uint amount)
         {
             ForgedShadowDamaged += amount;
         }
@@ -394,7 +394,7 @@ namespace AndeanClass
         /// <summary>
         /// ジブラルタルのシールドが吸収したダメージを加算する
         /// </summary>
-        public void AddGibraltarShieldAbsorbed(int amount)
+        public void AddGibraltarShieldAbsorbed(uint amount)
         {
             GibraltarShieldAbsorbed += amount;
         }
@@ -428,12 +428,12 @@ namespace AndeanClass
         /// <summary>
         /// アイテムごとの使用回数
         /// </summary>
-        public Dictionary<string, int> Items { get; set; }
+        public Dictionary<string, uint> Items { get; set; }
 
         public BlackMarket()
         {
             UseCount = 0;
-            Items = new Dictionary<string, int>();
+            Items = new Dictionary<string, uint>();
         }
     }
 }

@@ -38,32 +38,32 @@ namespace AndeanClass
         /// <summary>
         /// チームのスポーンポイント
         /// </summary>
-        public int SpawnPoint { get; set; }
+        public uint SpawnPoint { get; set; }
 
         /// <summary>
         /// チームの最終順位
         /// </summary>
-        public int Rank { get; set; }
+        public uint Rank { get; set; }
 
         /// <summary>
         /// チームのスコア
         /// </summary>
-        public int Score { get; set; }
+        public uint Score { get; set; }
 
         /// <summary>
         /// チーム全体でダウンさせた数
         /// </summary>
-        public int TotalDowns { get; set; }
+        public uint TotalDowns { get; set; }
 
         /// <summary>
         /// チームの合計キル数
         /// </summary>
-        public int TotalKills { get; set; }
+        public uint TotalKills { get; set; }
 
         /// <summary>
         /// チームの合計アシスト数
         /// </summary>
-        public int TotalKillAssists { get; set; }
+        public uint TotalKillAssists { get; set; }
 
         /// <summary>
         /// チームの合計ダメージ量
@@ -95,7 +95,7 @@ namespace AndeanClass
         /// </summary>
         /// <param name="teamName">チーム名</param>
         /// <param name="rank">初期順位（デフォルトは 0）</param>
-        public Team(string teamName, int rank = 0)
+        public Team(string teamName, uint rank = 0)
         {
             TeamName = teamName;
             Players = new List<string>();
@@ -181,7 +181,7 @@ namespace AndeanClass
             LastDeath = nucleusHash;
         }
 
-        public void SetSpawnPoint(int spawnPoint)
+        public void SetSpawnPoint(uint spawnPoint)
         {
             SpawnPoint = spawnPoint;
         }
@@ -208,7 +208,7 @@ namespace AndeanClass
         /// チームの順位を設定するメソッド
         /// </summary>
         /// <param name="rank">順位</param>
-        public void SetRank(int rank)
+        public void SetRank(uint rank)
         {
             Rank = rank;
         }
@@ -217,7 +217,7 @@ namespace AndeanClass
         /// チームのスコアを設定するメソッド
         /// </summary>
         /// <param name="score">スコア</param>
-        public void SetScore(int score)
+        public void SetScore(uint score)
         {
             Score = score;
         }
