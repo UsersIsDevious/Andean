@@ -2,13 +2,23 @@
 
 import type React from "react"
 import type { CSSProperties } from "react"
-// Add the Power icon import at the top with the other icons
-import { Settings, Play, Sliders, Server, Loader2, Upload, Power, Users } from "lucide-react"
-// Add these imports at the top with the other imports
+import { Settings, Play, Server, Loader2, Upload, Power, Users } from "lucide-react"
 import { Search, Camera, Map, Eye, SkipForward, Zap } from "lucide-react"
-import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalR"
 import { useState, useEffect, useRef } from "react"
-import TeamCard from "@/components/TeamCard"
+
+// Custom components
+import TeamCard from "@/components/control-panel/TeamCard"
+import PlayerContextMenu from "@/components/control-panel/context-menu/PlayerContextMenu"
+import TeamSelectorModal from "@/components/control-panel/modals/TeamSelectorModal"
+import TabNavigation from "@/components/control-panel/navigation/TabNavigation"
+import SpecialTeamView from "@/components/control-panel/teams/SpecialTeamView"
+
+// Hooks and utilities
+import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalR"
+import { getAllPlayersFromTeams, movePlayerBetweenTeams, removePlayerFromTeam } from "@/lib/utils/team-utils"
+
+// Types
+import type { TeamData, LobbySettings } from "@/lib/types/team-types"
 
 // CSV データの型定義
 interface CSVTeamData {
@@ -19,36 +29,6 @@ interface CSVTeamData {
   MEMBERS: string[]
 }
 
-// Team data interface
-interface Player {
-  index: number
-  id: string
-  name: string
-}
-
-interface Team {
-  name: string
-  logoUrl: string
-  spawnPoint: number
-  players: Player[]
-}
-
-interface TeamData {
-  [key: string]: Team
-}
-
-// Lobby settings interface
-interface LobbySettings {
-  playlistname: string
-  adminchat: boolean
-  teamrename: boolean
-  selfassign: boolean
-  aimassist: boolean
-  anonmode: boolean
-  gamemode: string
-  map: string
-}
-
 // Add POI interface
 interface POIOption {
   id: string
@@ -57,7 +37,7 @@ interface POIOption {
 }
 
 export default function ControlPanelPage() {
-  // Add the shutdownSystem to the destructured hook values
+  // Hook for SignalR connection
   const {
     createLobby,
     startApex,
@@ -71,38 +51,44 @@ export default function ControlPanelPage() {
     updateConfig,
     leaveLobbySignalR,
   } = useControlPanelSignalR()
+
+  // UI state
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("system")
   const [mounted, setMounted] = useState(false)
-  const [specialTeamTab, setSpecialTeamTab] = useState("unassigned") // For special teams tabs
+  const [specialTeamTab, setSpecialTeamTab] = useState("unassigned")
 
-  // Add the CSV upload functionality
-  // First, import the necessary hooks and components
-
-  // Then, add the CSV processing function inside the component
-  // Add this after the existing state declarations
+  // CSV upload state
   const [isProcessingCSV, setIsProcessingCSV] = useState(false)
   const [csvResponse, setCsvResponse] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Add state for shutdown confirmation
+  // System state
   const [isShuttingDown, setIsShuttingDown] = useState(false)
   const [showShutdownConfirm, setShowShutdownConfirm] = useState(false)
 
+  // Lobby state
   const [lobbyCode, setLobbyCode] = useState("")
   const [isLeavingLobby, setIsLeavingLobby] = useState(false)
 
-  // Add state for expanded teams
+  // Team state
   const [expandedTeams, setExpandedTeams] = useState<{ [key: string]: boolean }>({})
   const [editingTeam, setEditingTeam] = useState<string | null>(null)
   const [editedTeamName, setEditedTeamName] = useState("")
 
-  // Add these new states after the other state declarations (around line 50)
-  const [cameraViewMode, setCameraViewMode] = useState("poi") // "poi" or "player"
+  // Camera state
+  const [cameraViewMode, setCameraViewMode] = useState("poi")
   const [selectedPlayer, setSelectedPlayer] = useState("")
   const [playerSearchQuery, setPlayerSearchQuery] = useState("")
   const [selectedPOI, setSelectedPOI] = useState("")
   const [poiSearchQuery, setPoiSearchQuery] = useState("")
+
+  // Context menu and player movement state
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; playerId: string; teamId: string } | null>(
+    null,
+  )
+  const [showTeamSelector, setShowTeamSelector] = useState(false)
+  const [playerToMove, setPlayerToMove] = useState<{ playerId: string; teamId: string } | null>(null)
 
   // Define POI options
   const poiOptions: POIOption[] = [
@@ -112,7 +98,7 @@ export default function ControlPanelPage() {
     { id: "overviewmap", name: "OverviewMap", icon: <Map className="h-4 w-4 text-red-400" /> },
   ]
 
-  // Add this function inside the component
+  // CSV upload handler
   const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
@@ -150,7 +136,7 @@ export default function ControlPanelPage() {
     reader.readAsText(file)
   }
 
-  // Add the CSV parsing function
+  // CSV parsing function
   const parseCSV = (csvText: string): CSVTeamData[] => {
     // Split the CSV text into lines
     const lines = csvText.split(/\r\n|\n/)
@@ -189,12 +175,11 @@ export default function ControlPanelPage() {
     return result
   }
 
-  // Add the handleShutdown function
+  // System shutdown handlers
   const handleShutdown = () => {
     setShowShutdownConfirm(true)
   }
 
-  // Add the confirmShutdown function
   const confirmShutdown = async () => {
     setIsShuttingDown(true)
     await shutdownSystem()
@@ -202,6 +187,7 @@ export default function ControlPanelPage() {
     setShowShutdownConfirm(false)
   }
 
+  // Lobby handlers
   const leaveLobby = async () => {
     setIsLeavingLobby(true)
     try {
@@ -211,7 +197,7 @@ export default function ControlPanelPage() {
     }
   }
 
-  // Toggle team expansion
+  // Team management handlers
   const toggleTeamExpansion = (teamId: string) => {
     setExpandedTeams((prev) => ({
       ...prev,
@@ -219,13 +205,11 @@ export default function ControlPanelPage() {
     }))
   }
 
-  // Start editing team name
   const startEditingTeam = (teamId: string, currentName: string) => {
     setEditingTeam(teamId)
     setEditedTeamName(currentName)
   }
 
-  // Save edited team name
   const saveTeamName = (teamId: string) => {
     if (!configData?.teamData) return
 
@@ -239,12 +223,11 @@ export default function ControlPanelPage() {
     setEditingTeam(null)
   }
 
-  // Cancel editing team name
   const cancelEditingTeam = () => {
     setEditingTeam(null)
   }
 
-  // Update lobby setting
+  // Lobby settings handler
   const updateLobbySetting = (key: keyof LobbySettings, value: any) => {
     if (!configData?.lobbySettings) return
 
@@ -256,12 +239,59 @@ export default function ControlPanelPage() {
     updateConfig("lobbySettings", updatedSettings, "overwrite")
   }
 
-  // Add useEffect to handle client-side mounting
+  // Player context menu handlers
+  const handlePlayerRightClick = (e: React.MouseEvent, playerId: string, teamId: string) => {
+    e.preventDefault()
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      playerId,
+      teamId,
+    })
+  }
+
+  const closeContextMenu = () => {
+    setContextMenu(null)
+  }
+
+  const handleKickPlayer = () => {
+    if (!contextMenu || !configData?.teamData) return
+
+    const { playerId, teamId } = contextMenu
+    const updatedTeamData = removePlayerFromTeam(configData.teamData, teamId, playerId)
+
+    updateConfig("teamData", updatedTeamData, "overwrite")
+    closeContextMenu()
+  }
+
+  const handleMovePlayerOption = () => {
+    if (!contextMenu) return
+
+    setPlayerToMove({
+      playerId: contextMenu.playerId,
+      teamId: contextMenu.teamId,
+    })
+    setShowTeamSelector(true)
+    closeContextMenu()
+  }
+
+  const handleMovePlayerToTeam = (destinationTeamId: string) => {
+    if (!playerToMove || !configData?.teamData) return
+
+    const { playerId, teamId } = playerToMove
+    const updatedTeamData = movePlayerBetweenTeams(configData.teamData, teamId, playerId, destinationTeamId)
+
+    updateConfig("teamData", updatedTeamData, "overwrite")
+    setShowTeamSelector(false)
+    setPlayerToMove(null)
+  }
+
+  // Client-side mounting effect
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Add a useEffect to set loading state
+  // Loading state effect
   useEffect(() => {
     if (configData) {
       setIsLoading(false)
@@ -296,7 +326,7 @@ export default function ControlPanelPage() {
   // Team data
   const teamData = (configData?.teamData as TeamData) || {}
 
-  // カスタムスタイル
+  // Custom styles
   const headerStyle: CSSProperties = {
     borderBottom: "1px solid rgba(139, 0, 0, 0.3)",
     backgroundColor: "rgba(0, 0, 0, 0.8)",
@@ -344,9 +374,87 @@ export default function ControlPanelPage() {
     color: "#f87171", // red-400
   }
 
-  // renderSpecialTeamSlotsメソッドをよりコンパクトに調整します
+  // Add these functions before the return statement
 
-  // 特殊チーム用のプレースホルダースロットを作成
+  // Handle right-click on player
+  const handlePlayerRightClickOriginal = (e: React.MouseEvent, playerId: string, teamId: string) => {
+    e.preventDefault()
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      playerId,
+      teamId,
+    })
+  }
+
+  // Close context menu
+  const closeContextMenuOriginal = () => {
+    setContextMenu(null)
+  }
+
+  // Handle kick player
+  const handleKickPlayerOriginal = () => {
+    if (!contextMenu || !configData?.teamData) return
+
+    const { playerId, teamId } = contextMenu
+    const updatedTeamData = { ...configData.teamData }
+
+    // Filter out the player to kick
+    updatedTeamData[teamId] = {
+      ...updatedTeamData[teamId],
+      players: updatedTeamData[teamId].players.filter((player) => player.id !== playerId),
+    }
+
+    updateConfig("teamData", updatedTeamData, "overwrite")
+    closeContextMenu()
+  }
+
+  // Handle move player option selection
+  const handleMovePlayerOptionOriginal = () => {
+    if (!contextMenu) return
+
+    setPlayerToMove({
+      playerId: contextMenu.playerId,
+      teamId: contextMenu.teamId,
+    })
+    setShowTeamSelector(true)
+    closeContextMenu()
+  }
+
+  // Handle move player to team
+  const handleMovePlayerToTeamOriginal = (destinationTeamId: string) => {
+    if (!playerToMove || !configData?.teamData) return
+
+    const { playerId, teamId } = playerToMove
+    const updatedTeamData = { ...configData.teamData }
+
+    // Find the player in the source team
+    const playerToMoveData = updatedTeamData[teamId].players.find((player) => player.id === playerId)
+
+    if (!playerToMoveData) {
+      setShowTeamSelector(false)
+      setPlayerToMove(null)
+      return
+    }
+
+    // Remove player from source team
+    updatedTeamData[teamId] = {
+      ...updatedTeamData[teamId],
+      players: updatedTeamData[teamId].players.filter((player) => player.id !== playerId),
+    }
+
+    // Add player to destination team
+    updatedTeamData[destinationTeamId] = {
+      ...updatedTeamData[destinationTeamId],
+      players: [...updatedTeamData[destinationTeamId].players, playerToMoveData],
+    }
+
+    updateConfig("teamData", updatedTeamData, "overwrite")
+    setShowTeamSelector(false)
+    setPlayerToMove(null)
+  }
+
+  // Update the renderSpecialTeamSlots function to include right-click handling
   const renderSpecialTeamSlots = (teamId: string) => {
     const team = teamData[teamId]
     if (!team) return null
@@ -357,7 +465,11 @@ export default function ControlPanelPage() {
     return Array.from({ length: slotCount }).map((_, idx) => {
       const player = team.players[idx]
       return (
-        <div key={idx} className="flex items-center bg-black/30 p-1.5 rounded text-xs">
+        <div
+          key={idx}
+          className="flex items-center bg-black/30 p-1.5 rounded text-xs"
+          onContextMenu={player ? (e) => handlePlayerRightClickOriginal(e, player.id, teamId) : undefined}
+        >
           <div className="w-4 h-4 flex items-center justify-center bg-gray-800 rounded-full mr-1.5">
             <span className="text-xs text-gray-400">{idx + 1}</span>
           </div>
@@ -431,74 +543,7 @@ export default function ControlPanelPage() {
       <main className="px-[100px] py-6">
         <div className="w-full mx-auto">
           {/* Custom Tabs */}
-          <div className="mb-6">
-            <div className="grid grid-cols-5 bg-gray-900/50 border border-red-900/20 rounded-md overflow-hidden">
-              <button
-                onClick={() => setActiveTab("system")}
-                className={`flex items-center justify-center py-2 px-4 text-sm font-medium ${activeTab === "system" ? "text-red-400" : "text-gray-300"}`}
-                style={activeTab === "system" ? activeTabStyle : {}}
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                System
-              </button>
-              <button
-                onClick={() => setActiveTab("match")}
-                className={`flex items-center justify-center py-2 px-4 text-sm font-medium ${activeTab === "match" ? "text-red-400" : "text-gray-300"}`}
-                style={activeTab === "match" ? activeTabStyle : {}}
-              >
-                <Play className="mr-2 h-4 w-4" />
-                Match
-              </button>
-              <button
-                onClick={() => setActiveTab("lobby")}
-                className={`flex items-center justify-center py-2 px-4 text-sm font-medium ${activeTab === "lobby" ? "text-red-400" : "text-gray-300"}`}
-                style={activeTab === "lobby" ? activeTabStyle : {}}
-              >
-                <Server className="mr-2 h-4 w-4" />
-                Lobby
-              </button>
-              <button
-                onClick={() => setActiveTab("camera")}
-                className={`flex items-center justify-center py-2 px-4 text-sm font-medium ${activeTab === "camera" ? "text-red-400" : "text-gray-300"}`}
-                style={activeTab === "camera" ? activeTabStyle : {}}
-              >
-                <svg
-                  className="mr-2 h-4 w-4 text-current"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M15 10L19.5528 7.72361C19.8343 7.58281 20 7.30339 20 7V17C20 17.3034 19.8343 17.5828 19.5528 17.7236L15 15"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <rect
-                    x="3"
-                    y="6"
-                    width="12"
-                    height="12"
-                    rx="2"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Camera
-              </button>
-              <button
-                onClick={() => setActiveTab("setting")}
-                className={`flex items-center justify-center py-2 px-4 text-sm font-medium ${activeTab === "setting" ? "text-red-400" : "text-gray-300"}`}
-                style={activeTab === "setting" ? activeTabStyle : {}}
-              >
-                <Sliders className="mr-2 h-4 w-4" />
-                Setting
-              </button>
-            </div>
-          </div>
+          <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
           {/* System Tab */}
           {activeTab === "system" && (
@@ -757,6 +802,7 @@ export default function ControlPanelPage() {
                   <p className="text-gray-400 text-sm mt-1">Configure match scoring parameters</p>
                 </div>
                 <div style={{ backgroundColor: "rgba(139, 0, 0, 0.2)" }} className="h-px w-full"></div>
+                <div style={{ backgroundColor: "rgba(139, 0, 0, 0.2)" }} className="h-px w-full"></div>
                 <div className="p-6 space-y-6">
                   {/* Kill Points Settings - Side by side */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -861,7 +907,6 @@ export default function ControlPanelPage() {
           {/* Lobby Tab */}
           {activeTab === "lobby" && (
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Left Side: Settings Container - 1/4 width */}
               {/* Left Side: Settings Container - 1/4 width */}
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
@@ -1030,38 +1075,12 @@ export default function ControlPanelPage() {
                     <div className="flex-grow overflow-y-auto">
                       {/* Unassigned Team Tab Content */}
                       {specialTeamTab === "unassigned" && (
-                        <div className="p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 flex items-center justify-center bg-gray-800 rounded-full">
-                                <Users className="h-3 w-3 text-red-400" />
-                              </div>
-                              <span className="font-medium text-white text-xs">{teamData["0"]?.name}</span>
-                            </div>
-                          </div>
-
-                          {/* Players List - max height limited to show ~6 items with scrollbar */}
-                          <div className="space-y-1 max-h-[204px] overflow-y-auto pr-1">
-                            {renderSpecialTeamSlots("0")}
-                          </div>
-                        </div>
+                        <SpecialTeamView teamId="0" team={teamData["0"]} onPlayerRightClick={handlePlayerRightClick} />
                       )}
 
                       {/* Observers Team Tab Content */}
                       {specialTeamTab === "observers" && (
-                        <div className="p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 flex items-center justify-center bg-gray-800 rounded-full">
-                                <Users className="h-3 w-3 text-red-400" />
-                              </div>
-                              <span className="font-medium text-white text-xs">{teamData["1"]?.name}</span>
-                            </div>
-                          </div>
-
-                          {/* Players List */}
-                          <div className="space-y-1">{renderSpecialTeamSlots("1")}</div>
-                        </div>
+                        <SpecialTeamView teamId="1" team={teamData["1"]} onPlayerRightClick={handlePlayerRightClick} />
                       )}
                     </div>
                   </div>
@@ -1097,6 +1116,7 @@ export default function ControlPanelPage() {
                             saveTeamName={saveTeamName}
                             cancelEditingTeam={cancelEditingTeam}
                             setEditedTeamName={setEditedTeamName}
+                            onPlayerRightClick={handlePlayerRightClick}
                           />
                         ))}
                     </div>
@@ -1230,7 +1250,7 @@ export default function ControlPanelPage() {
                       </div>
 
                       <div className="bg-black/50 border border-gray-800 rounded-md p-2 max-h-[300px] overflow-y-auto">
-                        {getAllPlayers()
+                        {getAllPlayersFromTeams(teamData)
                           .filter(
                             (player) =>
                               player.name.toLowerCase().includes(playerSearchQuery.toLowerCase()) ||
@@ -1254,7 +1274,7 @@ export default function ControlPanelPage() {
                             </div>
                           ))}
 
-                        {getAllPlayers().filter(
+                        {getAllPlayersFromTeams(teamData).filter(
                           (player) =>
                             player.name.toLowerCase().includes(playerSearchQuery.toLowerCase()) ||
                             player.teamName.toLowerCase().includes(playerSearchQuery.toLowerCase()),
@@ -1433,6 +1453,30 @@ export default function ControlPanelPage() {
           )}
         </div>
       </main>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <PlayerContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onKickPlayer={handleKickPlayer}
+          onMovePlayer={handleMovePlayerOption}
+          onClose={closeContextMenu}
+        />
+      )}
+
+      {/* Team Selector Modal */}
+      {showTeamSelector && playerToMove && (
+        <TeamSelectorModal
+          teamData={teamData}
+          sourceTeamId={playerToMove.teamId}
+          onSelectTeam={handleMovePlayerToTeam}
+          onClose={() => {
+            setShowTeamSelector(false)
+            setPlayerToMove(null)
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -1,19 +1,11 @@
 "use client"
 
+import type React from "react"
+
 import { Edit, Save, X } from "lucide-react"
-
-interface Player {
-  index: number
-  id: string
-  name: string
-}
-
-interface Team {
-  name: string
-  logoUrl: string
-  spawnPoint: number
-  players: Player[]
-}
+import PlayerSlot from "@/components/control-panel/players/PlayerSlot"
+import { getTeamColor } from "@/lib/utils/team-utils"
+import type { Team } from "@/lib/types/team-types"
 
 interface TeamCardProps {
   teamId: string
@@ -24,6 +16,7 @@ interface TeamCardProps {
   saveTeamName: (teamId: string) => void
   cancelEditingTeam: () => void
   setEditedTeamName: (name: string) => void
+  onPlayerRightClick: (e: React.MouseEvent, playerId: string, teamId: string) => void
 }
 
 export default function TeamCard({
@@ -35,39 +28,10 @@ export default function TeamCard({
   saveTeamName,
   cancelEditingTeam,
   setEditedTeamName,
+  onPlayerRightClick,
 }: TeamCardProps) {
-  // チームカラーの取得
-  const getTeamColor = (id: number): string => {
-    const colors: { [key: number]: string } = {
-      2: "rgb(6, 131, 149)",
-      3: "rgb(27, 71, 105)",
-      4: "rgb(31, 84, 205)",
-      5: "rgb(68, 42, 96)",
-      6: "rgb(110, 44, 111)",
-      7: "rgb(173, 45, 119)",
-      8: "rgb(176, 28, 81)",
-      9: "rgb(195, 0, 11)",
-      10: "rgb(197, 67, 32)",
-      11: "rgb(120, 30, 19)",
-      12: "rgb(159, 59, 13)",
-      13: "rgb(119, 75, 0)",
-      14: "rgb(204, 121, 19)",
-      15: "rgb(150, 125, 0)",
-      16: "rgb(133, 147, 10)",
-      17: "rgb(73, 88, 3)",
-      18: "rgb(112, 151, 67)",
-      19: "rgb(57, 137, 52)",
-      20: "rgb(47, 90, 26)",
-      21: "rgb(0, 116, 88)",
-    }
-    return colors[id] || "rgb(31, 41, 55)" // デフォルトはグレー
-  }
-
   const teamNumber = Number.parseInt(teamId)
   const teamColor = getTeamColor(teamNumber)
-
-  // TeamCardコンポーネントをよりコンパクトにします
-  // カードのパディングとマージンを調整
 
   // カードスタイル
   const cardStyle = {
@@ -86,21 +50,14 @@ export default function TeamCard({
   }
 
   // プレースホルダーメンバーの生成（最低3人分）
-  const placeholderMembers = [0, 1, 2].map((idx) => {
-    const player = team.players[idx]
-    return (
-      <div key={`placeholder-${idx}`} className="flex items-center bg-black/30 p-1 rounded text-xs">
-        <div className="w-4 h-4 flex items-center justify-center bg-gray-800 rounded-full mr-1">
-          <span className="text-xs text-gray-400">{idx + 1}</span>
-        </div>
-        {player ? (
-          <span className="text-gray-300 truncate">{player.name}</span>
-        ) : (
-          <span className="text-gray-500 italic text-xs">Empty slot</span>
-        )}
-      </div>
-    )
-  })
+  const placeholderMembers = [0, 1, 2].map((idx) => (
+    <PlayerSlot
+      key={`placeholder-${idx}`}
+      index={idx}
+      player={team.players[idx] || null}
+      onRightClick={team.players[idx] ? (e) => onPlayerRightClick(e, team.players[idx].id, teamId) : undefined}
+    />
+  ))
 
   return (
     <div style={cardStyle} className="rounded-md overflow-hidden">
