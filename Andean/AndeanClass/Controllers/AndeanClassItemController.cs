@@ -33,6 +33,14 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
+
+                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+                
+
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+                
+                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
+                _match.AddEventElement(_event);
             }
         }
         public void ProcessInventoryDrop(Rtech.Liveapi.InventoryDrop Msg)
@@ -43,6 +51,14 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
+
+                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+
+
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+
+                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
+                _match.AddEventElement(_event);
             }
         }
         public void ProcessInventoryUse(Rtech.Liveapi.InventoryUse Msg)
@@ -53,6 +69,14 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
+
+                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+
+
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+
+                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
+                _match.AddEventElement(_event);
             }
         }
         public void ProcessGrenadeThrown(Rtech.Liveapi.GrenadeThrown Msg)
@@ -63,6 +87,14 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
+
+                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+
+
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+
+                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
+                _match.AddEventElement(_event);
             }
         }
         public void ProcessBlackMarketAction(Rtech.Liveapi.BlackMarketAction Msg)
@@ -73,6 +105,14 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
+
+                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+
+
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+
+                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
+                _match.AddEventElement(_event);
 
             }
         }
