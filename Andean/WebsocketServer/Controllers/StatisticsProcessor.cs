@@ -161,6 +161,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CharacterSelected characterSelectedMsg:
                     {
+                        _andeanClassController.ProcessCharacterSelected(characterSelectedMsg);
                         break;
                     }
                 case MatchStateEnd matchStateEndMsg:
@@ -177,22 +178,27 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case PlayerConnected playerConnectedMsg:
                     {
+                        _andeanClassController.ProcessPlayerConnected(playerConnectedMsg);
                         break;
                     }
                 case PlayerDisconnected playerDisconnectedMsg:
                     {
+                        _andeanClassController.ProcessPlayerDisconnected(playerDisconnectedMsg);
                         break;
                     }
                 case PlayerStatChanged playerStatChangedMsg:
                     {
+                        _andeanClassController.ProcessPlayerStatChanged(playerStatChangedMsg);
                         break;
                     }
                 case PlayerUltimateCharged playerUltimateChargedMsg:
                     {
+                        _andeanClassController.ProcessPlayerUltimateCharged(playerUltimateChargedMsg);
                         break;
                     }
                 case PlayerUpgradeTierChanged playerUpgradeTierChangedMsg:
                     {
+                        _andeanClassController.ProcessPlayerUpgradeTierChanged(playerUpgradeTierChangedMsg);
                         break;
                     }
                 case PlayerDamaged playerDamagedMsg:
@@ -221,10 +227,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case GibraltarShieldAbsorbed gibraltarShieldAbsorbedMsg:
                     {
+                        _andeanClassController.ProcessGibraltarShieldAbsorbed(gibraltarShieldAbsorbedMsg);
                         break;
                     }
                 case RevenantForgedShadowDamaged revenantForgedShadowDamagedMsg:
                     {
+                        _andeanClassController.ProcessRevenantForgedShadowDamaged(revenantForgedShadowDamagedMsg);
                         break;
                     }
                 case ChangeCamera changeCameraMsg:
@@ -241,10 +249,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case PlayerRespawnTeam playerRespawnTeamMsg:
                     {
+                        _andeanClassController.ProcessPlayerRespawnTeam(playerRespawnTeamMsg);
                         break;
                     }
                 case PlayerRevive playerReviveMsg:
                     {
+                        _andeanClassController.ProcessPlayerRevive(playerReviveMsg);
                         break;
                     }
                 case ArenasItemSelected arenasItemSelectedMsg:
@@ -279,14 +289,17 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case PlayerAbilityUsed playerAbilityUsedMsg:
                     {
+                        _andeanClassController.ProcessPlayerAbilityUsed(playerAbilityUsedMsg);
                         break;
                     }
                 case LegendUpgradeSelected legendUpgradeSelectedMsg:
                     {
+                        _andeanClassController.ProcessLegendUpgradeSelected(legendUpgradeSelectedMsg);
                         break;
                     }
                 case ZiplineUsed ziplineUsedMsg:
                     {
+                        _andeanClassController.ProcessZiplineUsed(ziplineUsedMsg);
                         break;
                     }
                 case GrenadeThrown grenadeThrownMsg:
@@ -301,10 +314,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case WraithPortal wraithPortalMsg:
                     {
+                        _andeanClassController.ProcessWraithPortal(wraithPortalMsg);
                         break;
                     }
                 case WarpGateUsed warpGateUsedMsg:
                     {
+                        _andeanClassController.ProcessWarpGateUsed(warpGateUsedMsg);
                         break;
                     }
                 case AmmoUsed ammoUsedMsg:
@@ -314,6 +329,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case WeaponSwitched weaponSwitchedMsg:
                     {
+                        _andeanClassController.ProcessWeaponSwitched(weaponSwitchedMsg);
                         break;
                     }
                 case ObserverSwitched observerSwitchedMsg:
