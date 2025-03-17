@@ -48,7 +48,7 @@ namespace AndeanClass
         public bool IsOnline { get; set; }
 
         // レベル情報 (例: { "now": "0", "0": {} })
-        public Dictionary<string, object> Level { get; set; }
+        public LegendLevel Level { get; set; }
 
         // 武器情報
         public List<object> WeaponList { get; set; }
@@ -109,11 +109,7 @@ namespace AndeanClass
             Status = "alive";
             IsOnline = true;
 
-            Level = new Dictionary<string, object>
-            {
-                { "now", "0" },
-                { "0", new object() } // 詳細なレベル情報が必要な場合は適宜実装
-            };
+            Level = new LegendLevel();
 
             WeaponList = new List<object>();
             InHand = "mp_weapon_melee_survival";
@@ -440,6 +436,31 @@ namespace AndeanClass
         public Player SetCanRevive(bool status)
         {
             CanRevive = status;
+            return this;
+        }
+        /// <summary>
+        /// プレイヤーのレベルアップグレードする
+        /// </summary>
+        public Player SetUpgradeLevel(int level)
+        {
+            string levelKey = level.ToString();
+            Level[levelKey] = new LevelEntry();
+            Level.Now = levelKey;
+            return this;
+        }
+        /// <summary>
+        /// プレイヤーのレベルをアップデートする
+        /// </summary>
+        public Player SetNewLevel(int level, string upgradeName, string upgradeDesc, string selected)
+        {
+            string levelKey = level.ToString();
+            Level[levelKey] = new LevelEntry
+            {
+                UpgradeName = upgradeName,
+                UpgradeDesc = upgradeDesc,
+                Selected = selected
+            };
+            Level.Now = levelKey;
             return this;
         }
     }

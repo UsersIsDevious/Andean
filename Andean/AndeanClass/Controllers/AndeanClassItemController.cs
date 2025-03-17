@@ -85,25 +85,24 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
+                Player player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+
+                string AmmoType = Msg.AmmoType;
+                uint AmountUsed = Msg.AmountUsed;
+
+                player.Inventory.AddOrUpdateItem(AmmoType, -(AmountUsed), ItemUtilities.ReturnLevel(AmmoType));
+
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(player).Get();
+
+                _eventData["ammotype"] = AmmoType;
+                _eventData["amountused"] = AmountUsed;
+                _eventData["oldammocount"] = Msg.OldAmmoCount;
+                _eventData["newammocount"] = Msg.NewAmmoCount;
+
+                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
+
+                _match.AddEventElement(_event);
             }
-            
-            Player player = PlayerService.CreateOrUpdatePlayer(_match , Msg.Player);
-            
-            string AmmoType = Msg.AmmoType;
-            uint AmountUsed = Msg.AmountUsed;
-
-            player.Inventory.AddOrUpdateItem(AmmoType,-(AmountUsed),ItemUtilities.ReturnLevel(AmmoType));
-            
-            Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(player).Get();
-            
-            _eventData["ammotype"] = AmmoType;
-            _eventData["amountused"] = AmountUsed;
-            _eventData["oldammocount"] = Msg.OldAmmoCount;
-            _eventData["newammocount"] = Msg.NewAmmoCount;
-
-            Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
-
-            _match.AddEventElement(_event);
         }
     }
 }

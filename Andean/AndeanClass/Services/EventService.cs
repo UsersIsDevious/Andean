@@ -51,5 +51,21 @@ namespace AndeanClass.Services
 
             return eventData;
         }
+        /// <summary>
+        /// 攻撃者と被攻撃者のプレイヤー情報、および使用武器情報を基にイベントデータの辞書を生成して返します。
+        /// </summary>
+        /// <param name="attacker">攻撃者のプレイヤー情報</param>
+        /// <param name="victim">被攻撃者のプレイヤー情報</param>
+        /// <returns>生成されたイベントデータ辞書</returns>
+        public static Dictionary<string, object> CreateEventDataForInteraction(Player attacker, Player victim)
+        {
+            var eventData = new Dictionary<string, object>
+            {
+                ["attacker"] = CreateEventDataForPlayer(attacker),
+                ["victim"] = CreateEventDataForPlayer(victim)
+            };
+
+            return eventData;
+        }
     }
 }
