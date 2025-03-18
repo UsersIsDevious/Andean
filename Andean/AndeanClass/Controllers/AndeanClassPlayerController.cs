@@ -526,8 +526,6 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-
-        //(@_#_@)途中まで作成未完成 @ConeCone ヨロ！
         public void ProcessPlayerAbilityUsed(Rtech.Liveapi.PlayerAbilityUsed Msg)
         {
             lock (_lock)
@@ -539,7 +537,7 @@ namespace AndeanClass.Controllers
 
                 Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
 
-
+                ReturnSplitBracketParts(Msg.LinkedEntity);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
                 //_eventData["linkedentity"] = linkedentity ?;
