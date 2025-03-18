@@ -123,7 +123,6 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        //(@_#_@)途中まで作成未完成 @ConeCone ヨロ！
         public void ProcessPlayerDamaged(Rtech.Liveapi.PlayerDamaged Msg)
         {
             lock (_lock)
