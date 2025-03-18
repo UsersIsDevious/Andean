@@ -137,7 +137,20 @@ namespace AndeanClass.Controllers
                 bool penetrator = config.Penetrator.Contains(_weaponName);
                 uint _damageInflicted = Msg.DamageInflicted;
 
-                Player _attacker = PlayerService.CreateOrUpdatePlayer(_match, Msg.Attacker);
+                Player _attacker;
+                /**
+                 * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
+                 * If the awardedto is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
+                */
+                if (Msg.Attacker.NucleusHash != "")
+                {
+                    _attacker = PlayerService.CreateOrUpdatePlayer(_match, Msg.Attacker);
+                }
+                else
+                {
+                    _attacker = WorldPlayer;
+                }
+                
                 Player _victim = PlayerService.CreateOrUpdatePlayer(_match, Msg.Victim);
 
                 // 攻撃者側の処理
