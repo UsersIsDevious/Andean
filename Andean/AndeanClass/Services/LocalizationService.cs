@@ -79,14 +79,16 @@ namespace AndeanClass.Services
                         }
 
                     case "legend_label":
-                        if (LocalizedData.Legends != null &&
-                            LocalizedData.Legends.TryGetValue(value, out var LegendId))
+                        if (LocalizedData.Legends != null)
                         {
-                            if (LegendId == null)
+                            foreach (var legend in LocalizedData.Legends)
                             {
-                                throw new KeyNotFoundException($"value '{value}' が legends_label に存在しません。");
+                                if (legend.Value.Name == value)
+                                {
+                                    return legend.Key;
+                                }
                             }
-                            return LegendId.ToString();
+                            throw new KeyNotFoundException($"value '{value}' が legends_label に存在しません。");
                         }
                         else
                         {
