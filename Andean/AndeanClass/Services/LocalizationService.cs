@@ -47,9 +47,9 @@ namespace AndeanClass.Services
                 {
                     case "weapons_label":
                         if (LocalizedData.WeaponsLabelSwapped != null &&
-                            LocalizedData.WeaponsLabelSwapped.TryGetValue(value, out var originalKey1))
+                            LocalizedData.WeaponsLabelSwapped.TryGetValue(value, out var weapoonId))
                         {
-                            return originalKey1;
+                            return weapoonId;
                         }
                         else
                         {
@@ -58,9 +58,9 @@ namespace AndeanClass.Services
 
                     case "associate_weapons_label":
                         if (LocalizedData.AssociateWeaponsLabelSwapped != null &&
-                            LocalizedData.AssociateWeaponsLabelSwapped.TryGetValue(value, out var originalKey2))
+                            LocalizedData.AssociateWeaponsLabelSwapped.TryGetValue(value, out var associateWeaponId))
                         {
-                            return originalKey2;
+                            return associateWeaponId;
                         }
                         else
                         {
@@ -69,13 +69,28 @@ namespace AndeanClass.Services
 
                     case "items_label":
                         if (LocalizedData.ItemsLabelSwapped != null &&
-                            LocalizedData.ItemsLabelSwapped.TryGetValue(value, out var originalKey3))
+                            LocalizedData.ItemsLabelSwapped.TryGetValue(value, out var itemId))
                         {
-                            return originalKey3;
+                            return itemId;
                         }
                         else
                         {
                             throw new KeyNotFoundException($"value '{value}' が items_label に存在しません。");
+                        }
+
+                    case "legend_label":
+                        if (LocalizedData.Legends != null &&
+                            LocalizedData.Legends.TryGetValue(value, out var LegendId))
+                        {
+                            if (LegendId == null)
+                            {
+                                throw new KeyNotFoundException($"value '{value}' が legends_label に存在しません。");
+                            }
+                            return LegendId.ToString();
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException($"value '{value}' が legends_label に存在しません。");
                         }
 
                     default:

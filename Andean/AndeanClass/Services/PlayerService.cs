@@ -95,6 +95,8 @@ namespace AndeanClass.Services
             // チーム名、スカッドインデックス、キャラクター（レジェンド）とスキンの更新
             _player.SetTeamName(player.TeamName);
             _player.SetSquadIndex((int)player.SquadIndex);
+
+            var character = LocalizationService.GetOriginalKey("legend_label", player.Character);
             _player.UpdateLegend(player.Character,player.Skin);
 
             // 必要に応じて、他のプロパティも同様に更新可能

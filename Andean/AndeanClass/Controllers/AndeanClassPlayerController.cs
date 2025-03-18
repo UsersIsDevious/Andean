@@ -1,6 +1,7 @@
 ﻿using AndeanClass.Services;
 using AndeanClass;
 using Andean.Config;
+using Andean.AndeanClass.Services.Utilities;
 using System.Collections.Generic;
 
 namespace AndeanClass.Controllers
@@ -537,7 +538,7 @@ namespace AndeanClass.Controllers
 
                 Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
 
-                ReturnSplitBracketParts(Msg.LinkedEntity);
+                string[]? abilityType = ItemUtilities.ReturnSplitBracketParts(Msg.LinkedEntity);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
                 //_eventData["linkedentity"] = linkedentity ?;
