@@ -88,5 +88,15 @@ namespace AndeanClass.Services
                 throw new System.Exception($"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}", ex);
             }
         }
+
+        /// <summary>
+        /// 使用された武器が貫通武器かどうかをConfig.Penetratorの設定に基づいて判定します。
+        /// </summary>
+        /// <param name="weaponName">武器ID</param>
+        /// <returns>貫通武器かどうか</returns>
+        public static bool CheckShieldPenetrator(string weaponName)
+        {
+            return ConfigService.Config.Penetrator.Contains(weaponName);
+        }
     }
 }
