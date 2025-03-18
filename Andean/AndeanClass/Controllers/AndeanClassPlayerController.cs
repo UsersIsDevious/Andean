@@ -134,7 +134,7 @@ namespace AndeanClass.Controllers
                 }
                 Event _event;
                 string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
-                bool penetrator = config.Penetrator.Contains(_weaponName);
+                bool penetrator = LocalizationService.CheckShieldPenetrator(_weaponName);
                 uint _damageInflicted = Msg.DamageInflicted;
 
                 Player _attacker;
@@ -150,7 +150,7 @@ namespace AndeanClass.Controllers
                 {
                     _attacker = WorldPlayer;
                 }
-                
+
                 Player _victim = PlayerService.CreateOrUpdatePlayer(_match, Msg.Victim);
 
                 // 攻撃者側の処理
