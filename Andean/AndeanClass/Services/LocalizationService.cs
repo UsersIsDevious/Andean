@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Andean.Config;
+using System.Xml.XPath;
 
 namespace AndeanClass.Services
 {
@@ -47,9 +48,9 @@ namespace AndeanClass.Services
                 {
                     case "weapons_label":
                         if (LocalizedData.WeaponsLabelSwapped != null &&
-                            LocalizedData.WeaponsLabelSwapped.TryGetValue(value, out var originalKey1))
+                            LocalizedData.WeaponsLabelSwapped.TryGetValue(value, out var weapoonId))
                         {
-                            return originalKey1;
+                            return weapoonId;
                         }
                         else
                         {
@@ -58,9 +59,9 @@ namespace AndeanClass.Services
 
                     case "associate_weapons_label":
                         if (LocalizedData.AssociateWeaponsLabelSwapped != null &&
-                            LocalizedData.AssociateWeaponsLabelSwapped.TryGetValue(value, out var originalKey2))
+                            LocalizedData.AssociateWeaponsLabelSwapped.TryGetValue(value, out var associateWeaponId))
                         {
-                            return originalKey2;
+                            return associateWeaponId;
                         }
                         else
                         {
@@ -69,13 +70,30 @@ namespace AndeanClass.Services
 
                     case "items_label":
                         if (LocalizedData.ItemsLabelSwapped != null &&
-                            LocalizedData.ItemsLabelSwapped.TryGetValue(value, out var originalKey3))
+                            LocalizedData.ItemsLabelSwapped.TryGetValue(value, out var itemId))
                         {
-                            return originalKey3;
+                            return itemId;
                         }
                         else
                         {
                             throw new KeyNotFoundException($"value '{value}' が items_label に存在しません。");
+                        }
+
+                    case "legend_label":
+                        if (LocalizedData.Legends != null)
+                        {
+                            foreach (var legend in LocalizedData.Legends)
+                            {
+                                if (legend.Value.Name == value)
+                                {
+                                    return legend.Key;
+                                }
+                            }
+                            throw new KeyNotFoundException($"value '{value}' が legends_label に存在しません。");
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException($"value '{value}' が legends_label に存在しません。");
                         }
 
                     default:
@@ -90,13 +108,48 @@ namespace AndeanClass.Services
         }
 
         /// <summary>
-        /// 使用された武器が貫通武器かどうかをConfig.Penetratorの設定に基づいて判定します。
+        /// レジェンドのアビリティ名を取得します。
         /// </summary>
-        /// <param name="weaponName">武器ID</param>
-        /// <returns>貫通武器かどうか</returns>
-        public static bool CheckShieldPenetrator(string weaponName)
+        /// <param name="legendId">対象のレジェンドID</param>
+        /// <param name="type">対象アビリティの種別</param>
+        /// <param name="abilityName">アビリティ名</param>
+        /// <returns>対象のレジェンドのローカライズされたアビリティ名</returns>
+        /// <exception cref="KeyNotFoundException">指定のレジェンドIDが見つからなかった場合</exception>
+        /// <exception cref="Exception">その他のエラー発生時</exception>
+        public static string GetLegendAbilityName(string legendId, string type, string abilityName)
         {
-            return ConfigService.Config.Penetrator.Contains(weaponName);
+            try
+            {
+                if (LocalizedData.Legends != null &&
+                    LocalizedData.Legends.TryGetValue(legendId, out var legend))
+                {
+                    string result = type switch
+                    {
+                        "Passive" => legend.Passive,
+                        "Tactical" => legend.Tactical,
+                        "Ultimate" => legend.Ultimate,
+                        _ => throw new KeyNotFoundException($"未対応の type: {type}"),
+                    };
+
+                    if (result == abilityName)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException($"abilityName '{abilityName}' が見つかりません。");
+                    }
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"LegendID '{legendId}' が見つかりません。");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                // エラーログ出力などを適宜実施
+                throw new System.Exception($"レジェンド '{legendId}' のアビリティ名取得中にエラーが発生しました: {ex.Message}", ex);
+            }
         }
     }
 }

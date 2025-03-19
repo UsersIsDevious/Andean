@@ -1,6 +1,7 @@
 ﻿using AndeanClass.Services;
 using AndeanClass;
 using Andean.Config;
+using Andean.AndeanClass.Services.Utilities;
 using System.Collections.Generic;
 
 namespace AndeanClass.Controllers
@@ -549,8 +550,6 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-
-        //(@_#_@)途中まで作成未完成 @ConeCone ヨロ！
         public void ProcessPlayerAbilityUsed(Rtech.Liveapi.PlayerAbilityUsed Msg)
         {
             lock (_lock)
@@ -562,11 +561,26 @@ namespace AndeanClass.Controllers
 
                 Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
 
+                string[]? ability = ItemUtilities.ReturnSplitBracketParts(Msg.LinkedEntity);
+                if (ability == null)
+                {
+                    throw new InvalidOperationException("LinkedEntityが不正です。");
+                }
 
+                string character = _player.Legend;
+                string abilityType = ability[0];
+                string abilityName = LocalizationService.GetLegendAbilityName(character, abilityType, ability[1]);
+
+                if (abilityType == "Ultimate") {
+                    _player.AddUltimateUseCount(abilityName);
+                    _player.SetUltimateCharged(false);
+                } else if (abilityType == "Tactical") {
+                    _player.AddAbilityUseCount(abilityName);
+                }
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
-                //_eventData["linkedentity"] = linkedentity ?;
-                //_eventData["character"] = character ?;
+                _eventData["linkedentity"] = abilityType;
+                _eventData["character"] = character;
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
