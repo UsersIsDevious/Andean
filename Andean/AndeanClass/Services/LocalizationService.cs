@@ -108,7 +108,61 @@ namespace AndeanClass.Services
         }
 
         /// <summary>
+        /// 使用された武器が貫通武器かどうかをConfig.Penetratorの設定に基づいて判定します。
+        /// </summary>
+        /// <param name="weaponName">武器ID</param>
+        /// <returns>貫通武器かどうか</returns>
+        public static bool CheckShieldPenetrator(string weaponName)
+        {
+            return ConfigService.Config.Penetrator.Contains(weaponName);
+        }
 
+        /// <summary>
+        /// レジェンドのアビリティ名を取得します。
+        /// </summary>
+        /// <param name="legendId">対象のレジェンドID</param>
+        /// <param name="type">対象アビリティの種別</param>
+        /// <param name="abilityName">アビリティ名</param>
+        /// <returns>対象のレジェンドのローカライズされたアビリティ名</returns>
+        /// <exception cref="KeyNotFoundException">指定のレジェンドIDが見つからなかった場合</exception>
+        /// <exception cref="Exception">その他のエラー発生時</exception>
+        public static string GetLegendAbilityName(string legendId, string type, string abilityName)
+        {
+            try
+            {
+                if (LocalizedData.Legends != null &&
+                    LocalizedData.Legends.TryGetValue(legendId, out var legend))
+                {
+                    string result = type switch
+                    {
+                        "Passive" => legend.Passive,
+                        "Tactical" => legend.Tactical,
+                        "Ultimate" => legend.Ultimate,
+                        _ => throw new KeyNotFoundException($"未対応の type: {type}"),
+                    };
+
+                    if (result == abilityName)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException($"abilityName '{abilityName}' が見つかりません。");
+                    }
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"LegendID '{legendId}' が見つかりません。");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                // エラーログ出力などを適宜実施
+                throw new System.Exception($"レジェンド '{legendId}' のアビリティ名取得中にエラーが発生しました: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
         /// レジェンドのアップグレードで左右どちらを選択したかを取得します。
         /// </summary>
         /// <param name="legendName">対象のレジェンド名</param>
@@ -123,7 +177,6 @@ namespace AndeanClass.Services
             try
             {
                 if (LocalizedData.Legends != null &&
-
                     LocalizedData.Legends.TryGetValue(legendName, out var legend))
                 {
                     if (legend.Upgrade != null &&
@@ -148,39 +201,17 @@ namespace AndeanClass.Services
                     else
                     {
                         throw new KeyNotFoundException($"level '{level}' が見つかりません。");
-
-                    LocalizedData.Legends.TryGetValue(legendId, out var legend))
-                {
-                    string result = type switch
-                    {
-                        "Passive" => legend.Passive,
-                        "Tactical" => legend.Tactical,
-                        "Ultimate" => legend.Ultimate,
-                        _ => throw new KeyNotFoundException($"未対応の type: {type}"),
-                    };
-
-                    if (result == abilityName)
-                    {
-                        return result;
-                    }
-                    else
-                    {
-                        throw new KeyNotFoundException($"abilityName '{abilityName}' が見つかりません。");
                     }
                 }
                 else
                 {
-
                     throw new KeyNotFoundException($"legendName '{legendName}' が見つかりません。");
-                    throw new KeyNotFoundException($"LegendID '{legendId}' が見つかりません。");
                 }
             }
             catch (System.Exception ex)
             {
                 // エラーログ出力などを適宜実施
                 throw new System.Exception($"レジェンド '{legendName}' のレベル '{level}' アップグレード '{upgradeName}' : '{upgradeDesc}' のサイド取得中にエラーが発生しました: {ex.Message}", ex);
-
-                throw new System.Exception($"レジェンド '{legendId}' のアビリティ名取得中にエラーが発生しました: {ex.Message}", ex);
             }
         }
     }
