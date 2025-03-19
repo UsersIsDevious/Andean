@@ -107,7 +107,7 @@ export function useControlPanelSignalR() {
         };
     }, []);
 
-    const createLobby = async () => {
+    const joinLobby = async () => {
         if (connection && isConnected) {
             try {
                 console.log("🛠️ Sending CreateLobby request...");

@@ -1,126 +1,14 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Andean.ApexLiveAPI.Request;
-using Andean.ApexLiveAPI.Services;
-using Andean.WebsocketServer.Controllers;
-using Andean.Utilities;
+﻿using Andean.AndeanWebUI.Models;
 using Andean.Config;
-using Microsoft.Extensions.Options;
-using Andean.AndeanWebUI.Models;
-using Andean.AndeanWebUI.Services;
-using Andean.ApexLiveAPI.Message;
-using AndeanClass;
+using Andean.Utilities;
 using AndeanSystem;
+using Microsoft.AspNetCore.SignalR;
+using Andean.ApexLiveAPI.Request;
 
 namespace Andean.AndeanWebUI.Hubs
 {
-    public class ControlPanelHub : Hub ,IAndeanWebUI
+    public partial class ControlPanelHub : Hub, IAndeanWebUI
     {
-        private readonly ApexPlaylistService _apexPlaylistService;
-        private readonly StatisticsProcessor _statisticsProcessor;
-        private readonly Request _lobbyRequestService;
-        private readonly AppConfig _config = ConfigService.Config;
-        private readonly SystemShutdownService _shutdownService;
-
-
-        private Dictionary<string, LobbyPlayerSection> lobbyPlayers = new Dictionary<string, LobbyPlayerSection>();
-        private LobbySettings lobbySettings = new LobbySettings();
-
-        // サーバー側で全てのステータスを保持する（各クライアントで状態が異なることを防ぐ）
-        private static string sharedData = "Initial Data";
-        private static List<string> selectedDataKeys = new List<string>();
-        private static string lastLobbyResponse = "";
-        private static string lastApexResponse = "";
-
-        public ControlPanelHub(
-            ApexPlaylistService apexPlaylistService,
-            StatisticsProcessor statisticsProcessor,
-            Request lobbyRequestService,
-            IOptionsMonitor<AppConfig> configOptions,
-            ConfigService configService,
-            SystemShutdownService shutdownService
-            )
-        {
-            _apexPlaylistService = apexPlaylistService;
-            _statisticsProcessor = statisticsProcessor;
-            _lobbyRequestService = lobbyRequestService;
-            _shutdownService = shutdownService;
-        }
-
-        // CustomMatch から取得したデータを更新するメソッド
-        public async Task UpdateLobbyFromCustomMatch(CustomMatch customMatch)
-        {
-            lobbyPlayers = LobbyDataConverter.ConvertLobbyPlayers(customMatch);
-            lobbySettings = LobbyDataConverter.ConvertLobbySettings(customMatch);
-            await BroadcastStatus();
-        }
-
-        //以下接続系処理
-
-        // クライアント接続時に、サーバー側で保持している全ステータスを送信
-        public override async Task OnConnectedAsync()
-        {
-            await Clients.Caller.SendAsync("ReceiveStatus", GetCurrentStatus());
-            await base.OnConnectedAsync();
-        }
-
-        // 現在の全ステータスを集約して返す
-        private object GetCurrentStatus()
-        {
-            return new
-            {
-                SharedData = sharedData,
-                SelectedDataKeys = selectedDataKeys,
-                AppConfig = _config,
-                LastLobbyResponse = lastLobbyResponse,
-                LastApexResponse = lastApexResponse
-            };
-        }
-
-        // 全クライアントへ現在のステータスをブロードキャストする
-        private async Task BroadcastStatus()
-        {
-            await Clients.All.SendAsync("ReceiveStatus", GetCurrentStatus());
-        }
-
-        // 共有データ更新時はサーバー側の状態を更新し、全クライアントへブロードキャスト
-        public async Task UpdateData(string newData)
-        {
-            sharedData = newData;
-            await BroadcastStatus();
-        }
-
-        // 共有データのリセット時
-        public async Task ResetData()
-        {
-            sharedData = "Initial Data";
-            await BroadcastStatus();
-        }
-
-        // 選択データ更新時
-        public async Task UpdateSelectedData(List<string> newSelectedKeys)
-        {
-            selectedDataKeys = newSelectedKeys;
-            await BroadcastStatus();
-        }
-
-        // ロビー作成時に取得した結果を状態として保持し、全クライアントへブロードキャスト
-        public async Task CreateLobby(string lobbyInfo = null)
-        {
-            // オプションの引数 lobbyInfo が渡された場合の処理（必要に応じて）
-            if (!string.IsNullOrEmpty(lobbyInfo))
-            {
-                // 例えば、ログ出力など
-                Console.WriteLine($"Received lobby info: {lobbyInfo}");
-            }
-
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            var response = await _lobbyRequestService.CreateLobbyAsync(cts.Token);
-            lastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
-            await BroadcastStatus();
-        }
         /// <summary>
         /// ユーザーから StartApex メッセージを受け取ったら、config.json の設定に基づいて
         /// Apex を起動し、その結果をサーバー側の状態に保持した上で全クライアントへブロードキャストします。
@@ -165,7 +53,6 @@ namespace Andean.AndeanWebUI.Hubs
             }
             await BroadcastStatus();
         }
-
         /// <summary>
         /// クライアントから送信された JSON（CSV データを含む）を受け取り、ログ出力や必要な処理を行います。
         /// </summary>
@@ -249,19 +136,6 @@ namespace Andean.AndeanWebUI.Hubs
 
             await BroadcastStatus();
         }
-        // ロビープレーヤー情報の更新
-        //public async Task UpdateLobbyPlayers(Dictionary<string, LobbyPlayer> newLobbyPlayers)
-        //{
-        //    lobbyPlayers = newLobbyPlayers;
-        //    await BroadcastStatus();
-        //}
-
-        // ロビー設定の更新
-        public async Task UpdateLobbySettings(LobbySettings newLobbySettings)
-        {
-            lobbySettings = newLobbySettings;
-            await BroadcastStatus();
-        }
         /// <summary>
         /// クライアントから "Shutdown" イベントを受信した場合に、サーバー側で ShutdownAsync を実行します。
         /// </summary>
@@ -273,13 +147,64 @@ namespace Andean.AndeanWebUI.Hubs
             // 実際のシャットダウン処理を実行するメソッドを呼び出す
             await _shutdownService.ShutdownAsync(new SystemShutdownService.ShutdownOptions { DelaySeconds = 3 });
         }
-        /// <summary>
-        /// システムシャットダウンをクライアントに通知するメソッド
-        /// </summary>
-        public virtual async Task NotifyShutdown(string message = "System is shutting down.")
+
+        // ロビー作成時に取得した結果を状態として保持し、全クライアントへブロードキャスト
+        public async Task joinLobby(string lobbyInfo = null)
         {
-            // 全クライアントに "ShutdownNotification" イベントとして通知を送信
-            await Clients.All.SendAsync("ShutdownNotification", message);
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            Rtech.Liveapi.Response response;
+            // オプションの引数 lobbyInfo が渡された場合の処理（必要に応じて）
+            if (!string.IsNullOrEmpty(lobbyInfo))
+            {
+                response = await _request.JoinLobbyAsync(lobbyInfo, cts.Token);
+                Console.WriteLine($"Received lobby info: {lobbyInfo}");
+            }
+            else
+            {
+                response = await _request.CreateLobbyAsync(cts.Token);
+            }
+
+
+            lastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
+            await BroadcastStatus();
+        }
+
+        public async Task leaveLobby()
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.LeaveLobbyAsync(cts.Token);
+            await BroadcastStatus();
+        }
+
+        public async Task setReady()
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            //await _request.SetReadyAsync(cts.Token);
+            await BroadcastStatus();
+        }
+        public async Task setTeam(int teamId, string targetHardwareName, string targetNucleushash)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.SetTeamAsync(teamId,targetHardwareName,targetNucleushash,cts.Token);
+            await BroadcastStatus();
+        }
+        public async Task setTeamName(int teamId, string teamName)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.SetTeamNameAsync(teamId,teamName, cts.Token);
+            await BroadcastStatus();
+        }
+        public async Task setSpawnPoint(int teamId, int spawnPoint)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.SetSpawnPointAsync(teamId, spawnPoint, cts.Token);
+            await BroadcastStatus();
+        }
+        public async Task changeCamera(string type, string value)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.ChangeCameraAsync(type, value, cts.Token);
+            await BroadcastStatus();
         }
 
     }

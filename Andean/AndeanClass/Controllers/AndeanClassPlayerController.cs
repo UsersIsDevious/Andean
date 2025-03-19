@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 namespace AndeanClass.Controllers
 {
-    public partial class AndeanClassController
+    public static partial class AndeanClassController
     {
 
-        public void ProcessCharacterSelected(Rtech.Liveapi.CharacterSelected Msg)
+        public static void ProcessCharacterSelected(Rtech.Liveapi.CharacterSelected Msg)
         {
             lock (_lock)
             {
@@ -28,7 +28,7 @@ namespace AndeanClass.Controllers
             }
         }
 
-        public void ProcessPlayerConnected(Rtech.Liveapi.PlayerConnected Msg)
+        public static void ProcessPlayerConnected(Rtech.Liveapi.PlayerConnected Msg)
         {
             lock (_lock)
             {
@@ -49,7 +49,7 @@ namespace AndeanClass.Controllers
                 //_match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerDisconnected(Rtech.Liveapi.PlayerDisconnected Msg)
+        public static void ProcessPlayerDisconnected(Rtech.Liveapi.PlayerDisconnected Msg)
         {
             lock (_lock)
             {
@@ -68,7 +68,7 @@ namespace AndeanClass.Controllers
                 //_match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerStatChanged(Rtech.Liveapi.PlayerStatChanged Msg)
+        public static void ProcessPlayerStatChanged(Rtech.Liveapi.PlayerStatChanged Msg)
         {
             lock (_lock)
             {
@@ -85,7 +85,7 @@ namespace AndeanClass.Controllers
                 //_match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerUltimateCharged(Rtech.Liveapi.PlayerUltimateCharged Msg)
+        public static void ProcessPlayerUltimateCharged(Rtech.Liveapi.PlayerUltimateCharged Msg)
         {
             lock (_lock)
             {
@@ -105,7 +105,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerUpgradeTierChanged(Rtech.Liveapi.PlayerUpgradeTierChanged Msg)
+        public static void ProcessPlayerUpgradeTierChanged(Rtech.Liveapi.PlayerUpgradeTierChanged Msg)
         {
             lock (_lock)
             {
@@ -124,7 +124,7 @@ namespace AndeanClass.Controllers
             }
         }
         //(@_#_@)途中まで作成未完成 @ConeCone ヨロ！
-        public void ProcessPlayerDamaged(Rtech.Liveapi.PlayerDamaged Msg)
+        public static void ProcessPlayerDamaged(Rtech.Liveapi.PlayerDamaged Msg)
         {
             lock (_lock)
             {
@@ -147,7 +147,7 @@ namespace AndeanClass.Controllers
                 //MatchService.ConfigureMatchSetup(PlayerKilledMsg, _match);
             }
         }
-        public void ProcessPlayerKilled(Rtech.Liveapi.PlayerKilled Msg)
+        public static void ProcessPlayerKilled(Rtech.Liveapi.PlayerKilled Msg)
         {
             lock (_lock)
             {
@@ -194,7 +194,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerDowned(Rtech.Liveapi.PlayerDowned Msg)
+        public static void ProcessPlayerDowned(Rtech.Liveapi.PlayerDowned Msg)
         {
             lock (_lock)
             {
@@ -234,7 +234,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerAssist(Rtech.Liveapi.PlayerAssist Msg)
+        public static void ProcessPlayerAssist(Rtech.Liveapi.PlayerAssist Msg)
         {
             lock (_lock)
             {
@@ -278,7 +278,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessGibraltarShieldAbsorbed(Rtech.Liveapi.GibraltarShieldAbsorbed Msg)
+        public static void ProcessGibraltarShieldAbsorbed(Rtech.Liveapi.GibraltarShieldAbsorbed Msg)
         {
             lock (_lock)
             {
@@ -326,7 +326,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessRevenantForgedShadowDamaged(Rtech.Liveapi.RevenantForgedShadowDamaged Msg)
+        public static void ProcessRevenantForgedShadowDamaged(Rtech.Liveapi.RevenantForgedShadowDamaged Msg)
         {
             lock (_lock)
             {
@@ -373,7 +373,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerRespawnTeam(Rtech.Liveapi.PlayerRespawnTeam Msg)
+        public static void ProcessPlayerRespawnTeam(Rtech.Liveapi.PlayerRespawnTeam Msg)
         {
             lock (_lock)
             {
@@ -400,7 +400,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerRevive(Rtech.Liveapi.PlayerRevive Msg)
+        public static void ProcessPlayerRevive(Rtech.Liveapi.PlayerRevive Msg)
         {
             lock (_lock)
             {
@@ -424,7 +424,7 @@ namespace AndeanClass.Controllers
             }
         }
         //(@_#_@)途中まで作成未完成 @ConeCone ヨロ！
-        public void ProcessLegendUpgradeSelected(Rtech.Liveapi.LegendUpgradeSelected Msg)
+        public static void ProcessLegendUpgradeSelected(Rtech.Liveapi.LegendUpgradeSelected Msg)
         {
             lock (_lock)
             {
@@ -447,7 +447,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessZiplineUsed(Rtech.Liveapi.ZiplineUsed Msg)
+        public static void ProcessZiplineUsed(Rtech.Liveapi.ZiplineUsed Msg)
         {
             lock (_lock)
             {
@@ -468,7 +468,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessWraithPortal(Rtech.Liveapi.WraithPortal Msg)
+        public static void ProcessWraithPortal(Rtech.Liveapi.WraithPortal Msg)
         {
             lock (_lock)
             {
@@ -487,7 +487,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessWarpGateUsed(Rtech.Liveapi.WarpGateUsed Msg)
+        public static void ProcessWarpGateUsed(Rtech.Liveapi.WarpGateUsed Msg)
         {
             lock (_lock)
             {
@@ -506,7 +506,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessWeaponSwitched(Rtech.Liveapi.WeaponSwitched Msg)
+        public static void ProcessWeaponSwitched(Rtech.Liveapi.WeaponSwitched Msg)
         {
             lock (_lock)
             {
@@ -528,7 +528,7 @@ namespace AndeanClass.Controllers
         }
 
         //(@_#_@)途中まで作成未完成 @ConeCone ヨロ！
-        public void ProcessPlayerAbilityUsed(Rtech.Liveapi.PlayerAbilityUsed Msg)
+        public static void ProcessPlayerAbilityUsed(Rtech.Liveapi.PlayerAbilityUsed Msg)
         {
             lock (_lock)
             {
