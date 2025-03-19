@@ -1,6 +1,7 @@
 ﻿using AndeanClass.Services;
 using AndeanClass;
 using Andean.Config;
+using Andean.AndeanClass.Services.Utilities;
 using System.Collections.Generic;
 
 namespace AndeanClass.Controllers
@@ -123,7 +124,6 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        //(@_#_@)途中まで作成未完成 @ConeCone ヨロ！
         public void ProcessPlayerDamaged(Rtech.Liveapi.PlayerDamaged Msg)
         {
             lock (_lock)
@@ -134,17 +134,41 @@ namespace AndeanClass.Controllers
                 }
                 Event _event;
                 string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
-                int _damageInflicted = (int)Msg.DamageInflicted;
+                bool penetrator = LocalizationService.CheckShieldPenetrator(_weaponName);
+                uint _damageInflicted = Msg.DamageInflicted;
 
-                Player _attacker = PlayerService.CreateOrUpdatePlayer(_match, Msg.Attacker);
+                Player _attacker;
+                /**
+                 * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
+                 * If the awardedto is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
+                */
+                if (Msg.Attacker.NucleusHash != "")
+                {
+                    _attacker = PlayerService.CreateOrUpdatePlayer(_match, Msg.Attacker);
+                }
+                else
+                {
+                    _attacker = WorldPlayer;
+                }
+
                 Player _victim = PlayerService.CreateOrUpdatePlayer(_match, Msg.Victim);
 
+                // 攻撃者側の処理
+                _attacker.AddDamageDealt(_damageInflicted, _weaponName, _victim.NucleusHash, _victim.Legend);
+                _match.GetTeam(_attacker.TeamId).AddTotalDamageDealt(_damageInflicted);
+
+                // 被害者側の処理
+                _victim.AddDamageReceived(_damageInflicted, _weaponName, _attacker.NucleusHash, _attacker.Legend, LocalizationService.CheckShieldPenetrator(_weaponName));
+                _match.GetTeam(_victim.TeamId).AddTotalDamageReceived(_damageInflicted);
+
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_attacker, _victim, _weaponName);
+                _eventData["damageinflicted"] = _damageInflicted;
 
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
 
-                //MatchService.ConfigureMatchSetup(PlayerKilledMsg, _match);
+                // packetへの追加は行っていないため、修正必須
+                // AddEventElementのタイミングでpacketへ自動追加してもいいと思う
             }
         }
         public void ProcessPlayerKilled(Rtech.Liveapi.PlayerKilled Msg)
@@ -529,8 +553,6 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-
-        //(@_#_@)途中まで作成未完成 @ConeCone ヨロ！
         public void ProcessPlayerAbilityUsed(Rtech.Liveapi.PlayerAbilityUsed Msg)
         {
             lock (_lock)
@@ -542,11 +564,26 @@ namespace AndeanClass.Controllers
 
                 Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
 
+                string[]? ability = ItemUtilities.ReturnSplitBracketParts(Msg.LinkedEntity);
+                if (ability == null)
+                {
+                    throw new InvalidOperationException("LinkedEntityが不正です。");
+                }
 
+                string character = _player.Legend;
+                string abilityType = ability[0];
+                string abilityName = LocalizationService.GetLegendAbilityName(character, abilityType, ability[1]);
+
+                if (abilityType == "Ultimate") {
+                    _player.AddUltimateUseCount(abilityName);
+                    _player.SetUltimateCharged(false);
+                } else if (abilityType == "Tactical") {
+                    _player.AddAbilityUseCount(abilityName);
+                }
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
-                //_eventData["linkedentity"] = linkedentity ?;
-                //_eventData["character"] = character ?;
+                _eventData["linkedentity"] = abilityType;
+                _eventData["character"] = character;
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
