@@ -447,7 +447,6 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        //(@_#_@)途中まで作成未完成 @ConeCone ヨロ！
         public void ProcessLegendUpgradeSelected(Rtech.Liveapi.LegendUpgradeSelected Msg)
         {
             lock (_lock)
@@ -458,14 +457,18 @@ namespace AndeanClass.Controllers
                 }
 
                 Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
-                //(@_#_@) selectedに何入れれば良いか分からんかった @ConeCone ヨロ！
-                _player.SetNewLevel(Msg.Level, Msg.UpgradeName, Msg.UpgradeDesc, "何かが入るらしい");
+
+                string upgradeName = Msg.UpgradeName;
+                string upgradeDesc = Msg.UpgradeDesc;
+
+                // selectedにはローカライズ用に、左右どちらのアップグレードが選択されたかが入る
+                string selected = LocalizationService.GetLegendUpgradeSide(Msg.Player.Character, Msg.Level.ToString(), upgradeName, upgradeDesc);
+                _player.SetNewLevel(Msg.Level, upgradeName, upgradeDesc, selected);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
                 _eventData["character"] = _player.Legend;
                 _eventData["level"] = Msg.Level;
-                //_eventData["selected"] = selected?
-
+                _eventData["selected"] = selected;
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);

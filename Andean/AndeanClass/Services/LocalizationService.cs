@@ -108,19 +108,47 @@ namespace AndeanClass.Services
         }
 
         /// <summary>
-        /// レジェンドのアビリティ名を取得します。
+
+        /// レジェンドのアップグレードで左右どちらを選択したかを取得します。
         /// </summary>
-        /// <param name="legendId">対象のレジェンドID</param>
-        /// <param name="type">対象アビリティの種別</param>
-        /// <param name="abilityName">アビリティ名</param>
-        /// <returns>対象のレジェンドのローカライズされたアビリティ名</returns>
-        /// <exception cref="KeyNotFoundException">指定のレジェンドIDが見つからなかった場合</exception>
+        /// <param name="legendName">対象のレジェンド名</param>
+        /// <param name="level">対象のレジェンドのレベル</param>
+        /// <param name="upgradeName">対象のアップグレード名</param>
+        /// <param name="upgradeDesc">対象のアップグレードの説明</param>
+        /// <returns>対象のレジェンドのアップグレード関連ローカライズデータ</returns>
+        /// <exception cref="KeyNotFoundException">指定のレジェンド名が見つからなかった場合</exception>
         /// <exception cref="Exception">その他のエラー発生時</exception>
-        public static string GetLegendAbilityName(string legendId, string type, string abilityName)
+        public static string GetLegendUpgradeSide(string legendName, string level, string upgradeName, string upgradeDesc)
         {
             try
             {
                 if (LocalizedData.Legends != null &&
+
+                    LocalizedData.Legends.TryGetValue(legendName, out var legend))
+                {
+                    if (legend.Upgrade != null &&
+                        legend.Upgrade.TryGetValue(level, out var upgrades))
+                    {
+                        var left = upgrades.Left;
+                        var right = upgrades.Right;
+
+                        if (left != null && left.Name == upgradeName && left.Description == upgradeDesc)
+                        {
+                            return "left";
+                        }
+                        else if (right != null && right.Name == upgradeName && right.Description == upgradeDesc)
+                        {
+                            return "right";
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException($"upgradeName '{upgradeName}' が見つかりません。");
+                        }
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException($"level '{level}' が見つかりません。");
+
                     LocalizedData.Legends.TryGetValue(legendId, out var legend))
                 {
                     string result = type switch
@@ -142,12 +170,16 @@ namespace AndeanClass.Services
                 }
                 else
                 {
+
+                    throw new KeyNotFoundException($"legendName '{legendName}' が見つかりません。");
                     throw new KeyNotFoundException($"LegendID '{legendId}' が見つかりません。");
                 }
             }
             catch (System.Exception ex)
             {
                 // エラーログ出力などを適宜実施
+                throw new System.Exception($"レジェンド '{legendName}' のレベル '{level}' アップグレード '{upgradeName}' : '{upgradeDesc}' のサイド取得中にエラーが発生しました: {ex.Message}", ex);
+
                 throw new System.Exception($"レジェンド '{legendId}' のアビリティ名取得中にエラーが発生しました: {ex.Message}", ex);
             }
         }
