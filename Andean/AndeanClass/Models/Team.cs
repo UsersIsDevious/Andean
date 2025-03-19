@@ -259,7 +259,7 @@ namespace AndeanClass
         /// チーム全体で受けたダメージ量を増加させるメソッド
         /// </summary>
         /// <param name="amount">増加させるダメージ量</param>
-        public void AddTotalDamageRecived(double amount)
+        public void AddTotalDamageReceived(double amount)
         {
             TotalDamageRecived += amount;
         }
