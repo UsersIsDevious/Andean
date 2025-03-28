@@ -193,6 +193,7 @@ namespace AndeanClass.Services
 
             var _MsgPlayers = squadEliminatedMsg.Players;
             var _teamId = _MsgPlayers[0].TeamId;
+            Team _team = match.GetTeam(_teamId);
 
             foreach (var msg_player in _MsgPlayers)
             {
@@ -200,8 +201,11 @@ namespace AndeanClass.Services
                 _player.SetStatus("eliminated");
             }
 
-            Team _team = match.GetTeam(_teamId);
-            teamRanking.Add(_teamId);
+            // ランキングにチームIDが含まれていない場合、追加
+            if (!teamRanking.Contains(_teamId))
+            {
+                teamRanking.Add(_teamId);
+            }
 
             // イベントデータを作成
             Dictionary<string, object> _eventData = new Dictionary<string, object>
