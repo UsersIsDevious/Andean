@@ -22,7 +22,7 @@ namespace AndeanClass.Controllers
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
 
-                _eventData["character"] = _player.Legend;
+                _eventData["character"] = LocalizationService.GetOriginalKey("legend_label", _player.Legend);
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
