@@ -176,7 +176,6 @@ namespace AndeanClass.Services
 
                 // ranks リストに基づいて各チームのランクを設定する
                 // 必要に応じて ranks をソート（ここでは昇順と仮定）
-                teamRanking.Sort();
                 for (int i = 0; i < teamRanking.Count; i++)
                 {
                     Team team = match.GetTeam(teamRanking[i]);
@@ -186,6 +185,33 @@ namespace AndeanClass.Services
                 // 更新内容を保存
                 await FileOutputService.WriteToFileAsync(config.Output, $"{match.MatchName}", match.ToString(), FileWriteMode.Overwrite);
             }
+        }
+
+        public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg, CustomMatch match, List<uint> teamRanking)
+        {
+            ArgumentNullException.ThrowIfNull(match);
+
+            var _players = squadEliminatedMsg.Players;
+            var _teamId = _players[0].TeamId;
+
+            foreach (var msg_player in _players)
+            {
+                Player _player = PlayerService.CreateOrUpdatePlayer(match, msg_player);
+                _player.SetStatus("eliminated");
+            }
+
+            Team _team = match.GetTeam(_teamId);
+            teamRanking.Add(_teamId);
+
+            // イベントデータを作成
+            Dictionary<string, object> _eventData = new Dictionary<string, object>
+            {
+                { "teamId", _teamId },
+                { "lastPlayer", _team.LastDeath },
+                { "destroyer", _team.DestroyerId }
+            };
+            Event _event = new Event(squadEliminatedMsg.Timestamp, squadEliminatedMsg.Category, _eventData);
+            match.AddEventElement(_event);
         }
     }
 }
