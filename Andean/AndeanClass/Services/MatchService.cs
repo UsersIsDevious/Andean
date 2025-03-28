@@ -191,10 +191,10 @@ namespace AndeanClass.Services
         {
             ArgumentNullException.ThrowIfNull(match);
 
-            var _players = squadEliminatedMsg.Players;
-            var _teamId = _players[0].TeamId;
+            var _MsgPlayers = squadEliminatedMsg.Players;
+            var _teamId = _MsgPlayers[0].TeamId;
 
-            foreach (var msg_player in _players)
+            foreach (var msg_player in _MsgPlayers)
             {
                 Player _player = PlayerService.CreateOrUpdatePlayer(match, msg_player);
                 _player.SetStatus("eliminated");
