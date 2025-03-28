@@ -157,6 +157,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case GameStateChanged gameStateChangedMsg:
                     {
+                        _andeanClassController.ProcessGameStatus(gameStateChangedMsg);
                         break;
                     }
                 case CharacterSelected characterSelectedMsg:
