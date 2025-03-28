@@ -192,18 +192,18 @@ namespace AndeanClass.Services
         {
             ArgumentNullException.ThrowIfNull(match);
 
-            List<uint> winnerTeams = new List<uint>();
+            List<uint> _winnerTeams = new List<uint>();
 
             // プレイヤーの更新
             for (int i = 0; i < matchStateEndMsg.Winners.Count; i++)
             {
-                var player = matchStateEndMsg.Winners[i];
+                var _MsgPlayer = matchStateEndMsg.Winners[i];
 
-                PlayerService.CreateOrUpdatePlayer(match, player);
+                PlayerService.CreateOrUpdatePlayer(match, _MsgPlayer);
 
-                if (!winnerTeams.Contains(player.TeamId))
+                if (!_winnerTeams.Contains(_MsgPlayer.TeamId))
                 {
-                    winnerTeams.Add(player.TeamId);
+                    _winnerTeams.Add(_MsgPlayer.TeamId);
                 }
             }
 
@@ -216,7 +216,7 @@ namespace AndeanClass.Services
             // イベントデータを作成
             Dictionary<string, object> _eventData = new Dictionary<string, object>
             {
-                { "winnerTeams", winnerTeams },
+                { "winnerTeams", _winnerTeams },
                 { "state", matchStateEndMsg.State }
             };
 
