@@ -101,5 +101,18 @@ namespace AndeanClass.Controllers
             }
         }
         
+        // ゲーム終了時の処理
+        public void ProcessMatchEnd(MatchStateEnd matchStateEndMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                MatchService.ProcessGameEnd(matchStateEndMsg, _match);
+            }
+        }
     }
 }

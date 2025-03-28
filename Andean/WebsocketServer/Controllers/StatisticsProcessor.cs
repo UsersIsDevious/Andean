@@ -167,6 +167,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case MatchStateEnd matchStateEndMsg:
                     {
+                        _andeanClassController.ProcessMatchEnd(matchStateEndMsg);
                         break;
                     }
                 case RingStartClosing ringStartClosingMsg:

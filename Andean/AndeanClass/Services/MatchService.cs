@@ -187,5 +187,41 @@ namespace AndeanClass.Services
                 await FileOutputService.WriteToFileAsync(config.Output, $"{match.MatchName}", match.ToString(), FileWriteMode.Overwrite);
             }
         }
+
+        public static void ProcessGameEnd(MatchStateEnd matchStateEndMsg, CustomMatch match)
+        {
+            ArgumentNullException.ThrowIfNull(match);
+
+            List<uint> winnerTeams = new List<uint>();
+
+            // プレイヤーの更新
+            for (int i = 0; i < matchStateEndMsg.Winners.Count; i++)
+            {
+                var player = matchStateEndMsg.Winners[i];
+
+                PlayerService.CreateOrUpdatePlayer(match, player);
+
+                if (!winnerTeams.Contains(player.TeamId))
+                {
+                    winnerTeams.Add(player.TeamId);
+                }
+            }
+
+            // ゲーム終了時のタイムスタンプを設定
+            match.SetEndTimeStamp(matchStateEndMsg.Timestamp);
+
+            // マッチの状態を更新
+            match.SetState(matchStateEndMsg.State);
+
+            // イベントデータを作成
+            Dictionary<string, object> _eventData = new Dictionary<string, object>
+            {
+                { "winnerTeams", winnerTeams },
+                { "state", matchStateEndMsg.State }
+            };
+
+            Event _event = new Event(matchStateEndMsg.Timestamp, matchStateEndMsg.Category, _eventData);
+            match.AddEventElement(_event);
+        }
     }
 }
