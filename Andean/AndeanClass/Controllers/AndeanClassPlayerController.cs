@@ -167,7 +167,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
 
-                // packetへの追加は行っていないため、修正必須
+                // packetへの追加は行っていないため、修正必須 @nitiyou
                 // AddEventElementのタイミングでpacketへ自動追加してもいいと思う
             }
         }
@@ -186,11 +186,12 @@ namespace AndeanClass.Controllers
                 
                 //KillPointが入るplayer(Msg)
                 Rtech.Liveapi.Player AwardedTo = Msg.AwardedTo;
-                //被害者側
+
+                // 被害者
                 Player _victim = PlayerService.CreateOrUpdatePlayer(_match, Msg.Victim);
                 _victim.SetStatus("death");
 
-                // 攻撃者側
+                // 攻撃者
                 Player _awardedto;
 
                 /**
@@ -206,11 +207,12 @@ namespace AndeanClass.Controllers
                     _awardedto = WorldPlayer;
                 }
 
-                _victim.SetKillsReceived(_weaponName, AwardedTo.NucleusHash, AwardedTo.Character);
-
+                // 攻撃者側の処理
                 _awardedto.SetKills(_weaponName, _victim.NucleusHash, _victim.Legend);
-                
                 _match.GetTeam(_awardedto.TeamId).AddTotalKills();
+
+                // 被害者側の処理
+                _victim.SetKillsReceived(_weaponName, _awardedto.NucleusHash, _awardedto.Legend);
                 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_awardedto, _victim, _weaponName);
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
@@ -230,12 +232,14 @@ namespace AndeanClass.Controllers
                 Event _event;
                 string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
 
-                // 攻撃者側
+                // 攻撃者
                 Player _attacker;
 
                 Rtech.Liveapi.Player Attacker = Msg.Attacker;
 
+                // 被害者
                 Player _victim = PlayerService.CreateOrUpdatePlayer(_match, Msg.Victim);
+
                 /**
                  * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
                  * If the awardedto is not a player but instead caused by ring damage or fall damage, it will be identified as "world," and the nucleushash value will return as an empty string (""). Therefore, it should be ignored.
@@ -248,8 +252,14 @@ namespace AndeanClass.Controllers
                 {
                     _attacker = WorldPlayer;
                 }
+
+                // 攻撃者側の処理
                 _attacker.SetDowns(_weaponName, _victim.NucleusHash, _victim.Legend);
+                _match.GetTeam(_attacker.TeamId).AddTotalDowns();
+
+                // 被害者側の処理
                 _victim.SetDownsReceived(_weaponName,_attacker.NucleusHash,_attacker.Legend);
+                _victim.SetStatus("down");
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_attacker, _victim, _weaponName);
 
@@ -288,12 +298,12 @@ namespace AndeanClass.Controllers
                     _assistant = WorldPlayer;
                 }
 
-                _victim.SetKillAssistsReceived(_weaponName, _assistant.NucleusHash, _assistant.Legend);
+                // 攻撃者側の処理
                 _assistant.SetKillAssists(_weaponName, _victim.NucleusHash, _victim.Legend);
+                _match.GetTeam(_assistant.TeamId).AddTotalKillAssists();
 
-                _match.GetTeam(_victim.TeamId).AddTotalKillAssists();
-
-
+                // 被害者側の処理
+                _victim.SetKillAssistsReceived(_weaponName, _assistant.NucleusHash, _assistant.Legend);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_assistant, _victim, _weaponName);
 
@@ -337,12 +347,13 @@ namespace AndeanClass.Controllers
                 }
 
                 // (@_#_@) シールド貫通武器かの判定が武器が取れない為未実装　@ConeCone
+                // -> そもそもシールドに対してのみ攻撃しているから、シールド貫通武器の判定は不要
                 _victim.AddDamageReceived(Msg.DamageInflicted, "Unknown by GibraltarShieldAbsorbed",_attacker.NucleusHash,_attacker.Legend);
-
                 _attacker.AddDamageDealt(Msg.DamageInflicted, "Unknown by GibraltarShieldAbsorbed", _victim.NucleusHash, _victim.Legend);
 
-                // (@_#_@) チームの合計に含めるべき？　@ConeCone
-                //_match.GetTeam(_attacker.TeamId).AddTotalKills();
+                // チームの合計に加算
+                _match.GetTeam(_attacker.TeamId).AddTotalDamageDealt(Msg.DamageInflicted);
+                _match.GetTeam(_victim.TeamId).AddTotalDamageReceived(Msg.DamageInflicted);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_attacker, _victim);
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
@@ -384,12 +395,13 @@ namespace AndeanClass.Controllers
                 }
 
                 // (@_#_@) シールド貫通武器かの判定が武器が取れない為未実装　@ConeCone
+                // -> そもそもシールドに対してのみ攻撃しているから、シールド貫通武器の判定は不要
                 _victim.AddDamageReceived(Msg.DamageInflicted, "Unknown by RevenantForgedShadowDamaged", _attacker.NucleusHash, _attacker.Legend);
-
                 _attacker.AddDamageDealt(Msg.DamageInflicted, "Unknown by RevenantForgedShadowDamaged", _victim.NucleusHash, _victim.Legend);
 
-                // (@_#_@) チームの合計に含めるべき？　@ConeCone
-                //_match.GetTeam(_attacker.TeamId).AddTotalKills();
+                // チームの合計に加算
+                _match.GetTeam(_attacker.TeamId).AddTotalDamageDealt(Msg.DamageInflicted);
+                _match.GetTeam(_victim.TeamId).AddTotalDamageReceived(Msg.DamageInflicted);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_attacker, _victim);
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
