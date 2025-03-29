@@ -23,6 +23,10 @@ namespace AndeanClass.Controllers
         /// </summary>
         private CustomMatch _match;
         /// <summary>
+        /// パケット情報
+        /// </summary>
+        private Packet _packet;
+        /// <summary>
         /// ロビーかどうかのフラグ
         /// </summary>
         private bool _isLobby = true;

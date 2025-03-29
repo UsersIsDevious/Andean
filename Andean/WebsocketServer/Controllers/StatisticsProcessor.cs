@@ -339,6 +339,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case ObserverAnnotation observerAnnotationMsg:
                     {
+                        // 現状何も処理しない
                         break;
                     }
                 default:
