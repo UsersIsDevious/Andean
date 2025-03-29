@@ -335,6 +335,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case ObserverSwitched observerSwitchedMsg:
                     {
+                        _andeanClassController.ProcessObserverSwitched(observerSwitchedMsg);
                         break;
                     }
                 case ObserverAnnotation observerAnnotationMsg:
