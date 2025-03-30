@@ -105,5 +105,32 @@ namespace AndeanClass.Controllers
             }
         }
         
+        // リング収縮開始メッセージの処理
+        public void ProcessRingStart(RingStartClosing ringStartClosingMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                MatchService.ProcessRingStartClosing(ringStartClosingMsg, _match, _ringEvents);
+            }
+        }
+
+        // リング収縮終了メッセージの処理
+        public void ProcessRingFinished(RingFinishedClosing ringFinishedClosingMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                MatchService.ProcessRingFinishedClosing(ringFinishedClosingMsg, _match, _ringEvents);
+            }
+        }
     }
 }

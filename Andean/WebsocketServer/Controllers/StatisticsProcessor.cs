@@ -171,10 +171,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case RingStartClosing ringStartClosingMsg:
                     {
+                        _andeanClassController.ProcessRingStart(ringStartClosingMsg);
                         break;
                     }
                 case RingFinishedClosing ringFinishedClosingMsg:
                     {
+                        _andeanClassController.ProcessRingFinished(ringFinishedClosingMsg);
                         break;
                     }
                 case PlayerConnected playerConnectedMsg:
