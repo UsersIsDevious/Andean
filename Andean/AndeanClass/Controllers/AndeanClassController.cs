@@ -23,6 +23,10 @@ namespace AndeanClass.Controllers
         /// </summary>
         private CustomMatch _match;
         /// <summary>
+        /// パケット情報
+        /// </summary>
+        private Packet _packet;
+        /// <summary>
         /// ロビーかどうかのフラグ
         /// </summary>
         private bool _isLobby = true;
@@ -103,7 +107,7 @@ namespace AndeanClass.Controllers
 
         // チーム壊滅時の処理
         public void ProcessSquadEliminated(SquadEliminated squadEliminatedMsg)
-        {
+          {
             lock (_lock)
             {
                 if (_match == null)
@@ -113,6 +117,32 @@ namespace AndeanClass.Controllers
 
                 MatchService.ProcessTeamEliminated(squadEliminatedMsg, _match, _teamRanking);
             }
-        }   
+        }
+        // リング収縮開始メッセージの処理
+        public void ProcessRingStart(RingStartClosing ringStartClosingMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                MatchService.ProcessRingStartClosing(ringStartClosingMsg, _match, _ringEvents);
+            }
+        }
+
+        // リング収縮終了メッセージの処理
+        public void ProcessRingFinished(RingFinishedClosing ringFinishedClosingMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+                MatchService.ProcessRingFinishedClosing(ringFinishedClosingMsg, _match, _ringEvents);
+            }
+        }
     }
 }
