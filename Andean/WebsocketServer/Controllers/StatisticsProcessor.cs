@@ -226,6 +226,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case SquadEliminated squadEliminatedMsg:
                     {
+                        _andeanClassController.ProcessSquadEliminated(squadEliminatedMsg);
                         break;
                     }
                 case GibraltarShieldAbsorbed gibraltarShieldAbsorbedMsg:

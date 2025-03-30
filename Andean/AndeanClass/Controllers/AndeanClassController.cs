@@ -104,7 +104,20 @@ namespace AndeanClass.Controllers
                 MatchService.UpdateGameStatus(gameStateChangedMsg, _match, config, _teamRanking, _ringEvents);
             }
         }
-        
+
+        // チーム壊滅時の処理
+        public void ProcessSquadEliminated(SquadEliminated squadEliminatedMsg)
+          {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                MatchService.ProcessTeamEliminated(squadEliminatedMsg, _match, _teamRanking);
+            }
+        }
         // リング収縮開始メッセージの処理
         public void ProcessRingStart(RingStartClosing ringStartClosingMsg)
         {
@@ -128,7 +141,6 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
-
                 MatchService.ProcessRingFinishedClosing(ringFinishedClosingMsg, _match, _ringEvents);
             }
         }
