@@ -188,6 +188,43 @@ namespace AndeanClass.Services
             }
         }
 
+
+        public static void ProcessGameEnd(MatchStateEnd matchStateEndMsg, CustomMatch match)
+        {
+            ArgumentNullException.ThrowIfNull(match);
+
+            List<uint> _winnerTeams = new List<uint>();
+
+            // プレイヤーの更新
+            for (int i = 0; i < matchStateEndMsg.Winners.Count; i++)
+            {
+                var _MsgPlayer = matchStateEndMsg.Winners[i];
+
+                PlayerService.CreateOrUpdatePlayer(match, _MsgPlayer);
+
+                if (!_winnerTeams.Contains(_MsgPlayer.TeamId))
+                {
+                    _winnerTeams.Add(_MsgPlayer.TeamId);
+                }
+            }
+
+            // ゲーム終了時のタイムスタンプを設定
+            match.SetEndTimeStamp(matchStateEndMsg.Timestamp);
+
+            // マッチの状態を更新
+            match.SetState(matchStateEndMsg.State);
+
+            // イベントデータを作成
+            Dictionary<string, object> _eventData = new Dictionary<string, object>
+            {
+                { "winnerTeams", _winnerTeams },
+                { "state", matchStateEndMsg.State }
+            };
+
+            Event _event = new Event(matchStateEndMsg.Timestamp, matchStateEndMsg.Category, _eventData);
+            match.AddEventElement(_event);
+        }
+
         public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg, CustomMatch match, List<uint> teamRanking)
         {
             ArgumentNullException.ThrowIfNull(match);
