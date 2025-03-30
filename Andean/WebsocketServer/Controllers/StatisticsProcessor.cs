@@ -335,10 +335,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case ObserverSwitched observerSwitchedMsg:
                     {
+                        _andeanClassController.ProcessObserverSwitched(observerSwitchedMsg);
                         break;
                     }
                 case ObserverAnnotation observerAnnotationMsg:
                     {
+                        // 現状何も処理しない
                         break;
                     }
                 default:
