@@ -4,6 +4,7 @@ using Andean.AndeanClass.Services.Utilities;
 using Andean.Config;
 using Andean.Utilities;
 using AndeanClass;
+using Newtonsoft.Json.Linq;
 using Rtech.Liveapi;
 
 namespace AndeanClass.Services
@@ -176,7 +177,6 @@ namespace AndeanClass.Services
 
                 // ranks リストに基づいて各チームのランクを設定する
                 // 必要に応じて ranks をソート（ここでは昇順と仮定）
-                teamRanking.Sort();
                 for (int i = 0; i < teamRanking.Count; i++)
                 {
                     Team team = match.GetTeam(teamRanking[i]);
@@ -187,6 +187,7 @@ namespace AndeanClass.Services
                 await FileOutputService.WriteToFileAsync(config.Output, $"{match.MatchName}", match.ToString(), FileWriteMode.Overwrite);
             }
         }
+
 
         public static void ProcessGameEnd(MatchStateEnd matchStateEndMsg, CustomMatch match)
         {
@@ -222,6 +223,131 @@ namespace AndeanClass.Services
 
             Event _event = new Event(matchStateEndMsg.Timestamp, matchStateEndMsg.Category, _eventData);
             match.AddEventElement(_event);
+        }
+
+        public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg, CustomMatch match, List<uint> teamRanking)
+        {
+            ArgumentNullException.ThrowIfNull(match);
+
+            var _MsgPlayers = squadEliminatedMsg.Players;
+            var _teamId = _MsgPlayers[0].TeamId;
+            Team _team = match.GetTeam(_teamId);
+
+            foreach (var msg_player in _MsgPlayers)
+            {
+                Player _player = PlayerService.CreateOrUpdatePlayer(match, msg_player);
+                _player.SetStatus("eliminated");
+            }
+
+            // ランキングにチームIDが含まれていない場合、追加
+            if (!teamRanking.Contains(_teamId))
+            {
+                teamRanking.Add(_teamId);
+            }
+
+            // イベントデータを作成
+            Dictionary<string, object> _eventData = new Dictionary<string, object>
+            {
+                { "teamId", _teamId },
+                { "lastPlayer", _team.LastDeath },
+                { "destroyer", _team.DestroyerId }
+            };
+            Event _event = new Event(squadEliminatedMsg.Timestamp, squadEliminatedMsg.Category, _eventData);
+            match.AddEventElement(_event);
+        }
+        public static void ProcessRingStartClosing(RingStartClosing ringStartClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
+        {
+            ArgumentNullException.ThrowIfNull(match);
+
+            // AndeanのRingクラスに追加する
+            var rings = match.Rings;
+            if (rings.Count == 0)
+            {
+                match.AddRingElement(new Ring(
+                    ringStartClosingMsg.Timestamp,
+                    ringStartClosingMsg.Category,
+                    ringStartClosingMsg.Stage,
+                    ringStartClosingMsg.Center,
+                    ringStartClosingMsg.CurrentRadius,
+                    ringStartClosingMsg.ShrinkDuration,
+                    match.MapOffset
+                ));
+            }
+            rings[rings.Count - 1].UpdateRing(
+                ringStartClosingMsg.Timestamp,
+                ringStartClosingMsg.Category,
+                ringStartClosingMsg.CurrentRadius,
+                ringStartClosingMsg.ShrinkDuration,
+                ringStartClosingMsg.EndRadius,
+                match.MapOffset
+            );
+
+            // AndeanのEventクラスに追加する
+
+            Dictionary<string, object> _eventData = new Dictionary<string, object>
+            {
+                ["stage"] = ringStartClosingMsg.Stage,
+                ["startCenter"] = new double[] {
+                    (ringStartClosingMsg.Center.X + match.MapOffset[0]) / match.MapOffset[2],
+                    (ringStartClosingMsg.Center.Y + match.MapOffset[1]) / match.MapOffset[2],
+                    ringStartClosingMsg.Center.Z / match.MapOffset[2]
+                },
+                ["currentradius"] = ringStartClosingMsg.CurrentRadius,
+                ["endradius"] = ringStartClosingMsg.EndRadius,
+                ["shrinkduration"] = ringStartClosingMsg.ShrinkDuration,
+            };
+
+            Event _event = new Event(ringStartClosingMsg.Timestamp, ringStartClosingMsg.Category, _eventData);
+            match.AddEventElement(_event);
+
+
+            // Packetの概念を導入する際には、以下のような処理を追加すること。
+            // // AndeanのPacketクラスに追加する
+            // packet.AddEvent(eventObj);
+
+            // // リングイベントが発生した時間を記録する
+            // ringEvents.Add(new object[] { packet.t, eventObj });
+        }
+
+        public static void ProcessRingFinishedClosing(RingFinishedClosing ringFinishedClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
+        {
+            ArgumentNullException.ThrowIfNull(match);
+
+            // AndeanのRingクラスに追加する
+            match.AddRingElement(new Ring(
+                ringFinishedClosingMsg.Timestamp,
+                ringFinishedClosingMsg.Category,
+                ringFinishedClosingMsg.Stage,
+                ringFinishedClosingMsg.Center,
+                ringFinishedClosingMsg.CurrentRadius,
+                ringFinishedClosingMsg.ShrinkDuration,
+                match.MapOffset
+            ));
+
+            // AndeanのEventクラスに追加する
+
+            Dictionary<string, object> _eventData = new Dictionary<string, object>
+            {
+                ["stage"] = ringFinishedClosingMsg.Stage,
+                ["startCenter"] = new double[] {
+                    (ringFinishedClosingMsg.Center.X + match.MapOffset[0]) / match.MapOffset[2],
+                    (ringFinishedClosingMsg.Center.Y + match.MapOffset[1]) / match.MapOffset[2],
+                    ringFinishedClosingMsg.Center.Z / match.MapOffset[2]
+                },
+                ["currentradius"] = ringFinishedClosingMsg.CurrentRadius,
+                ["shrinkduration"] = ringFinishedClosingMsg.ShrinkDuration,
+            };
+
+            Event _event = new Event(ringFinishedClosingMsg.Timestamp, ringFinishedClosingMsg.Category, _eventData);
+            match.AddEventElement(_event);
+            
+
+            // Packetの概念を導入する際には、以下のような処理を追加すること。
+            // // AndeanのPacketクラスに追加する
+            // packet.AddEvent(eventObj);
+
+            // // リングイベントが発生した時間を記録する
+            // ringEvents.Add(new object[] { packet.t, eventObj });
         }
     }
 }

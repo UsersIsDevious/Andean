@@ -172,10 +172,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case RingStartClosing ringStartClosingMsg:
                     {
+                        _andeanClassController.ProcessRingStart(ringStartClosingMsg);
                         break;
                     }
                 case RingFinishedClosing ringFinishedClosingMsg:
                     {
+                        _andeanClassController.ProcessRingFinished(ringFinishedClosingMsg);
                         break;
                     }
                 case PlayerConnected playerConnectedMsg:
@@ -225,6 +227,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case SquadEliminated squadEliminatedMsg:
                     {
+                        _andeanClassController.ProcessSquadEliminated(squadEliminatedMsg);
                         break;
                     }
                 case GibraltarShieldAbsorbed gibraltarShieldAbsorbedMsg:
@@ -336,10 +339,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case ObserverSwitched observerSwitchedMsg:
                     {
+                        _andeanClassController.ProcessObserverSwitched(observerSwitchedMsg);
                         break;
                     }
                 case ObserverAnnotation observerAnnotationMsg:
                     {
+                        // 現状何も処理しない
                         break;
                     }
                 default:
