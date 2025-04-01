@@ -290,6 +290,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case BannerCollected bannerCollectedMsg:
                     {
+                        _andeanClassController.ProcessBannerCollected(bannerCollectedMsg);
                         break;
                     }
                 case PlayerAbilityUsed playerAbilityUsedMsg:
