@@ -137,7 +137,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg:
                     {
-                        //_lobbyService.HandleLobbyPlayers(customMatch_LobbyPlayersMsg);
+                        _andeanClassController.ProcessCustomMatch_LobbyPlayers(customMatch_LobbyPlayersMsg);
                         break;
                     }
                 case RequestStatus requestStatusMsg:
@@ -270,7 +270,6 @@ namespace Andean.WebsocketServer.Controllers
                 case ArenasItemDeselected arenasItemDeselectedMsg:
                     {
                         _andeanClassController.ProcessArenasItemDeselected(arenasItemDeselectedMsg);
-
                         break;
                     }
                 case InventoryPickUp inventoryPickUpMsg:
