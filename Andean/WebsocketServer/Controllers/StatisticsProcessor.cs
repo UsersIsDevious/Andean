@@ -242,10 +242,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case ChangeCamera changeCameraMsg:
                     {
+                        // 現状何も処理しない
                         break;
                     }
                 case PauseToggle pauseToggleMsg:
                     {
+                        // 現状何も処理しない
                         break;
                     }
                 case CustomMatch_SetSettings customMatch_SetSettingsMsg:
