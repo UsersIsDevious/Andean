@@ -17,7 +17,7 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// ロビー情報
         /// </summary>
-        private CustomMatch _lobby;
+        private CustomMatch _lobby = new CustomMatch("Lobby");
         /// <summary>
         /// マッチ情報
         /// </summary>
@@ -46,6 +46,14 @@ namespace AndeanClass.Controllers
         /// player以外の攻撃の際用のworldプレーヤー
         /// </summary>
         private Player WorldPlayer = new Player("World", 99, "World", "World").SetLegend("World");
+        /// <summary>
+        /// CSVデータ
+        /// </summary>
+        private CsvData _csvData = new CsvData();
+        /// <summary>
+        /// ロビー関連メッセージを保持する変数
+        /// </summary>
+        private Dictionary<string, object> _waitMessages = new Dictionary<string, object>();
 
 
 

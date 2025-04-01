@@ -38,7 +38,7 @@ namespace AndeanClass
         /// <summary>
         /// チームのスポーンポイント
         /// </summary>
-        public uint SpawnPoint { get; set; }
+        public int SpawnPoint { get; set; }
 
         /// <summary>
         /// チームの最終順位
@@ -181,7 +181,7 @@ namespace AndeanClass
             LastDeath = nucleusHash;
         }
 
-        public void SetSpawnPoint(uint spawnPoint)
+        public void SetSpawnPoint(int spawnPoint)
         {
             SpawnPoint = spawnPoint;
         }
