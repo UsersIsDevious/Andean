@@ -3,13 +3,14 @@ using AndeanClass;
 using Andean.Config;
 using Andean.AndeanClass.Services.Utilities;
 using System.Collections.Generic;
+using Rtech.Liveapi;
 
 namespace AndeanClass.Controllers
 {
     public partial class AndeanClassController
     {
 
-        public void ProcessCharacterSelected(Rtech.Liveapi.CharacterSelected Msg)
+        public void ProcessCharacterSelected(CharacterSelected Msg)
         {
             lock (_lock)
             {
@@ -29,7 +30,7 @@ namespace AndeanClass.Controllers
             }
         }
 
-        public void ProcessPlayerConnected(Rtech.Liveapi.PlayerConnected Msg)
+        public void ProcessPlayerConnected(PlayerConnected Msg)
         {
             lock (_lock)
             {
@@ -38,7 +39,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                _match.AddTeam(Msg.Player.TeamId,Msg.Player.TeamName);
+                _match.AddTeam(Msg.Player.TeamId, Msg.Player.TeamName);
 
                 Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
 
@@ -50,7 +51,7 @@ namespace AndeanClass.Controllers
                 //_match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerDisconnected(Rtech.Liveapi.PlayerDisconnected Msg)
+        public void ProcessPlayerDisconnected(PlayerDisconnected Msg)
         {
             lock (_lock)
             {
@@ -69,7 +70,7 @@ namespace AndeanClass.Controllers
                 //_match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerStatChanged(Rtech.Liveapi.PlayerStatChanged Msg)
+        public void ProcessPlayerStatChanged(PlayerStatChanged Msg)
         {
             lock (_lock)
             {
@@ -86,7 +87,7 @@ namespace AndeanClass.Controllers
                 //_match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerUltimateCharged(Rtech.Liveapi.PlayerUltimateCharged Msg)
+        public void ProcessPlayerUltimateCharged(PlayerUltimateCharged Msg)
         {
             lock (_lock)
             {
@@ -106,7 +107,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerUpgradeTierChanged(Rtech.Liveapi.PlayerUpgradeTierChanged Msg)
+        public void ProcessPlayerUpgradeTierChanged(PlayerUpgradeTierChanged Msg)
         {
             lock (_lock)
             {
@@ -124,7 +125,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerDamaged(Rtech.Liveapi.PlayerDamaged Msg)
+        public void ProcessPlayerDamaged(PlayerDamaged Msg)
         {
             lock (_lock)
             {
@@ -171,7 +172,7 @@ namespace AndeanClass.Controllers
                 // AddEventElementのタイミングでpacketへ自動追加してもいいと思う
             }
         }
-        public void ProcessPlayerKilled(Rtech.Liveapi.PlayerKilled Msg)
+        public void ProcessPlayerKilled(PlayerKilled Msg)
         {
             lock (_lock)
             {
@@ -183,7 +184,7 @@ namespace AndeanClass.Controllers
                 Event _event;
 
                 string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
-                
+
                 //KillPointが入るplayer(Msg)
                 Rtech.Liveapi.Player AwardedTo = Msg.AwardedTo;
 
@@ -213,14 +214,14 @@ namespace AndeanClass.Controllers
 
                 // 被害者側の処理
                 _victim.SetKillsReceived(_weaponName, _awardedto.NucleusHash, _awardedto.Legend);
-                
+
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_awardedto, _victim, _weaponName);
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
-                
+
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerDowned(Rtech.Liveapi.PlayerDowned Msg)
+        public void ProcessPlayerDowned(PlayerDowned Msg)
         {
             lock (_lock)
             {
@@ -258,7 +259,7 @@ namespace AndeanClass.Controllers
                 _match.GetTeam(_attacker.TeamId).AddTotalDowns();
 
                 // 被害者側の処理
-                _victim.SetDownsReceived(_weaponName,_attacker.NucleusHash,_attacker.Legend);
+                _victim.SetDownsReceived(_weaponName, _attacker.NucleusHash, _attacker.Legend);
                 _victim.SetStatus("down");
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_attacker, _victim, _weaponName);
@@ -268,7 +269,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerAssist(Rtech.Liveapi.PlayerAssist Msg)
+        public void ProcessPlayerAssist(PlayerAssist Msg)
         {
             lock (_lock)
             {
@@ -312,7 +313,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessGibraltarShieldAbsorbed(Rtech.Liveapi.GibraltarShieldAbsorbed Msg)
+        public void ProcessGibraltarShieldAbsorbed(GibraltarShieldAbsorbed Msg)
         {
             lock (_lock)
             {
@@ -348,7 +349,7 @@ namespace AndeanClass.Controllers
 
                 // (@_#_@) シールド貫通武器かの判定が武器が取れない為未実装　@ConeCone
                 // -> そもそもシールドに対してのみ攻撃しているから、シールド貫通武器の判定は不要
-                _victim.AddDamageReceived(Msg.DamageInflicted, "Unknown by GibraltarShieldAbsorbed",_attacker.NucleusHash,_attacker.Legend);
+                _victim.AddDamageReceived(Msg.DamageInflicted, "Unknown by GibraltarShieldAbsorbed", _attacker.NucleusHash, _attacker.Legend);
                 _attacker.AddDamageDealt(Msg.DamageInflicted, "Unknown by GibraltarShieldAbsorbed", _victim.NucleusHash, _victim.Legend);
 
                 // チームの合計に加算
@@ -361,7 +362,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessRevenantForgedShadowDamaged(Rtech.Liveapi.RevenantForgedShadowDamaged Msg)
+        public void ProcessRevenantForgedShadowDamaged(RevenantForgedShadowDamaged Msg)
         {
             lock (_lock)
             {
@@ -409,7 +410,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerRespawnTeam(Rtech.Liveapi.PlayerRespawnTeam Msg)
+        public void ProcessPlayerRespawnTeam(PlayerRespawnTeam Msg)
         {
             lock (_lock)
             {
@@ -419,16 +420,16 @@ namespace AndeanClass.Controllers
                 }
 
                 Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
-                List<Dictionary<string,object>> _respawnedTeammates = new List<Dictionary<string, object>>();
+                List<Dictionary<string, object>> _respawnedTeammates = new List<Dictionary<string, object>>();
 
                 foreach (Rtech.Liveapi.Player RespawnPlayer in Msg.RespawnedTeammates)
                 {
-                    Player _respawnPlayer = PlayerService.CreateOrUpdatePlayer(_match,RespawnPlayer);
+                    Player _respawnPlayer = PlayerService.CreateOrUpdatePlayer(_match, RespawnPlayer);
                     _respawnPlayer.SetStatus("alive");
                     _respawnedTeammates.Add(EventService.CreateEventDataForPlayer(_respawnPlayer).Get());
                     _match.GetTeam(_respawnPlayer.TeamId).AddTotalRespawns();
                 }
-                
+
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
                 _eventData["respawnedteammatesList"] = _respawnedTeammates;
 
@@ -436,7 +437,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerRevive(Rtech.Liveapi.PlayerRevive Msg)
+        public void ProcessPlayerRevive(PlayerRevive Msg)
         {
             lock (_lock)
             {
@@ -446,7 +447,7 @@ namespace AndeanClass.Controllers
                 }
 
                 Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
-                Player _revived = PlayerService.CreateOrUpdatePlayer(_match,Msg.Revived);
+                Player _revived = PlayerService.CreateOrUpdatePlayer(_match, Msg.Revived);
 
                 _revived.SetStatus("alive");
                 _revived.SetCanRevive(false);
@@ -459,7 +460,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessLegendUpgradeSelected(Rtech.Liveapi.LegendUpgradeSelected Msg)
+        public void ProcessLegendUpgradeSelected(LegendUpgradeSelected Msg)
         {
             lock (_lock)
             {
@@ -486,7 +487,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessZiplineUsed(Rtech.Liveapi.ZiplineUsed Msg)
+        public void ProcessZiplineUsed(ZiplineUsed Msg)
         {
             lock (_lock)
             {
@@ -500,14 +501,14 @@ namespace AndeanClass.Controllers
                 _player.AddZiplineUseCount();
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
-                
+
                 _eventData["linkedentity"] = Msg.LinkedEntity;
-                
+
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessWraithPortal(Rtech.Liveapi.WraithPortal Msg)
+        public void ProcessWraithPortal(WraithPortal Msg)
         {
             lock (_lock)
             {
@@ -526,7 +527,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessWarpGateUsed(Rtech.Liveapi.WarpGateUsed Msg)
+        public void ProcessWarpGateUsed(WarpGateUsed Msg)
         {
             lock (_lock)
             {
@@ -545,7 +546,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessWeaponSwitched(Rtech.Liveapi.WeaponSwitched Msg)
+        public void ProcessWeaponSwitched(WeaponSwitched Msg)
         {
             lock (_lock)
             {
@@ -565,7 +566,7 @@ namespace AndeanClass.Controllers
                 _match.AddEventElement(_event);
             }
         }
-        public void ProcessPlayerAbilityUsed(Rtech.Liveapi.PlayerAbilityUsed Msg)
+        public void ProcessPlayerAbilityUsed(PlayerAbilityUsed Msg)
         {
             lock (_lock)
             {
@@ -586,10 +587,13 @@ namespace AndeanClass.Controllers
                 string abilityType = ability[0];
                 string abilityName = LocalizationService.GetLegendAbilityName(character, abilityType, ability[1]);
 
-                if (abilityType == "Ultimate") {
+                if (abilityType == "Ultimate")
+                {
                     _player.AddUltimateUseCount(abilityName);
                     _player.SetUltimateCharged(false);
-                } else if (abilityType == "Tactical") {
+                }
+                else if (abilityType == "Tactical")
+                {
                     _player.AddAbilityUseCount(abilityName);
                 }
 
@@ -599,6 +603,33 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+            }
+        }
+
+        public void ProcessBannerCollected(BannerCollected bannerCollectedMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                // プレイヤーインスタンスの作成または更新
+                Player _player = PlayerService.CreateOrUpdatePlayer(_match, bannerCollectedMsg.Player);
+                Player _collecter = PlayerService.CreateOrUpdatePlayer(_match, bannerCollectedMsg.Collected);
+
+                // 統計データの更新
+                _collecter.AddBannerCollectedCount();
+                _player.SetCanRevive(true);
+
+                // イベントデータの作成
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+                _eventData["collected"] = EventService.CreateEventDataForPlayer(_collecter).Get();
+                var eventObj = new Event(bannerCollectedMsg.Timestamp, bannerCollectedMsg.Category, _eventData);
+
+                // イベントデータの追加
+                _match.AddEventElement(eventObj);
             }
         }
     }
