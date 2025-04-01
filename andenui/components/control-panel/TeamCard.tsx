@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 
 import { Edit, Save, X } from "lucide-react"
 import PlayerSlot from "@/components/control-panel/players/PlayerSlot"
@@ -17,6 +18,7 @@ interface TeamCardProps {
   cancelEditingTeam: () => void
   setEditedTeamName: (name: string) => void
   onPlayerRightClick: (e: React.MouseEvent, playerId: string, teamId: string) => void
+  maxTeamPlayer?: number // 追加: チーム当たりの最大プレイヤー数
 }
 
 export default function TeamCard({
@@ -29,9 +31,11 @@ export default function TeamCard({
   cancelEditingTeam,
   setEditedTeamName,
   onPlayerRightClick,
+  maxTeamPlayer = 3, // デフォルト値は3
 }: TeamCardProps) {
   const teamNumber = Number.parseInt(teamId)
   const teamColor = getTeamColor(teamNumber)
+  const [isHovered, setIsHovered] = useState(false)
 
   // カードスタイル
   const cardStyle = {
@@ -49,8 +53,8 @@ export default function TeamCard({
     color: "#e5e7eb",
   }
 
-  // プレースホルダーメンバーの生成（最低3人分）
-  const placeholderMembers = [0, 1, 2].map((idx) => (
+  // プレースホルダーメンバーの生成（常にmaxTeamPlayer人分表示）
+  const placeholderMembers = Array.from({ length: maxTeamPlayer }).map((_, idx) => (
     <PlayerSlot
       key={`placeholder-${idx}`}
       index={idx}
@@ -60,7 +64,12 @@ export default function TeamCard({
   ))
 
   return (
-    <div style={cardStyle} className="rounded-md overflow-hidden">
+    <div
+      style={cardStyle}
+      className="rounded-md overflow-hidden"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="p-2 bg-gray-900/80 border-b border-gray-800 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <div className="w-5 h-5 flex items-center justify-center rounded-full" style={{ backgroundColor: teamColor }}>
@@ -74,6 +83,14 @@ export default function TeamCard({
               style={inputStyle}
               className="w-full h-6 px-2 py-0.5 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 text-xs"
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  saveTeamName(teamId)
+                } else if (e.key === "Escape") {
+                  cancelEditingTeam()
+                }
+              }}
+              autoFocus
             />
           ) : (
             <span className="font-medium text-white text-xs">{team.name}</span>
@@ -85,17 +102,23 @@ export default function TeamCard({
               <button
                 onClick={() => saveTeamName(teamId)}
                 className="p-0.5 rounded-full bg-green-900/30 hover:bg-green-900/50"
+                title="チーム名を保存"
               >
                 <Save className="h-3 w-3 text-green-400" />
               </button>
-              <button onClick={cancelEditingTeam} className="p-0.5 rounded-full bg-red-900/30 hover:bg-red-900/50">
+              <button
+                onClick={cancelEditingTeam}
+                className="p-0.5 rounded-full bg-red-900/30 hover:bg-red-900/50"
+                title="編集をキャンセル"
+              >
                 <X className="h-3 w-3 text-red-400" />
               </button>
             </>
           ) : (
             <button
               onClick={() => startEditingTeam(teamId, team.name)}
-              className="p-0.5 rounded-full bg-gray-800/50 hover:bg-gray-800"
+              className={`p-0.5 rounded-full ${isHovered ? "bg-gray-800" : "bg-gray-800/50"} hover:bg-gray-800`}
+              title="チーム名を編集"
             >
               <Edit className="h-3 w-3 text-gray-400" />
             </button>

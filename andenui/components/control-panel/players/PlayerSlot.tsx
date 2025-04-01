@@ -22,7 +22,7 @@ export default function PlayerSlot({ index, player, onRightClick }: PlayerSlotPr
           <span className="ml-auto text-gray-500 text-xs">{player.id.substring(0, 6)}...</span>
         </div>
       ) : (
-        <span className="text-gray-500 italic text-xs">Empty slot</span>
+        <span className="text-gray-500 italic text-xs">空きスロット</span>
       )}
     </div>
   )

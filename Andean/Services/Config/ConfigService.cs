@@ -11,7 +11,7 @@ namespace Andean.Config
     /// <summary>
     /// Config/config.json の内容を取得・更新するサービス
     /// </summary>
-    public class ConfigService
+    public static class ConfigService
     {
         // <summary>
         /// 最新の設定値が格納されるプロパティ
@@ -21,7 +21,7 @@ namespace Andean.Config
         private static readonly string _configFilePath = Path.Combine("config", "config.json");
 
 
-        public ConfigService()
+        static ConfigService()
         {
             _configuration = new ConfigurationBuilder()
                .SetBasePath(Directory.GetCurrentDirectory())

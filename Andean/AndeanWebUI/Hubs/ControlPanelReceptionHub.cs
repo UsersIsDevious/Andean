@@ -4,6 +4,7 @@ using Andean.Utilities;
 using AndeanSystem;
 using Microsoft.AspNetCore.SignalR;
 using Andean.ApexLiveAPI.Request;
+using Google.Protobuf.WellKnownTypes;
 
 namespace Andean.AndeanWebUI.Hubs
 {
@@ -15,6 +16,9 @@ namespace Andean.AndeanWebUI.Hubs
         /// </summary>
         public async Task StartApex()
         {
+            // リクエスト受信確認を即座に送信
+            await Clients.Caller.SendAsync("RequestReceived", "StartApex", "リクエストを受信しました");
+
             try
             {
                 var config = _config;
@@ -32,7 +36,7 @@ namespace Andean.AndeanWebUI.Hubs
                     string? steamPath = await GetSteamPath.GetSteamPathAsync();
                     if (steamPath == null)
                     {
-                        lastApexResponse = "Error: Steam path not found or Steam not installed.";
+                        ControlPanelStateService.LastApexResponse = "Error: Steam path not found or Steam not installed.";
                         await BroadcastStatus();
                         return;
                     }
@@ -44,13 +48,15 @@ namespace Andean.AndeanWebUI.Hubs
                 }
                 Console.WriteLine(command);
                 string result = await CommandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
-                lastApexResponse = result;
+                ControlPanelStateService.LastApexResponse = result;
             }
             catch (Exception ex)
             {
-                lastApexResponse = $"Error: {ex.Message}";
-                Console.WriteLine(lastApexResponse);
+                ControlPanelStateService.LastApexResponse = $"Error: {ex.Message}";
+                Console.WriteLine(ControlPanelStateService.LastApexResponse);
             }
+
+            ControlPanelStateService.LobbyJoinButtonEnabled = false;
             await BroadcastStatus();
         }
         /// <summary>
@@ -151,6 +157,9 @@ namespace Andean.AndeanWebUI.Hubs
         // ロビー作成時に取得した結果を状態として保持し、全クライアントへブロードキャスト
         public async Task joinLobby(string lobbyInfo = null)
         {
+            // リクエスト受信確認を即座に送信
+            await Clients.Caller.SendAsync("RequestReceived", "JoinLobby", "リクエストを受信しました");
+
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             Rtech.Liveapi.Response response;
             // オプションの引数 lobbyInfo が渡された場合の処理（必要に応じて）
@@ -163,16 +172,28 @@ namespace Andean.AndeanWebUI.Hubs
             {
                 response = await _request.CreateLobbyAsync(cts.Token);
             }
+            
 
+            ControlPanelStateService.LobbyJoinButtonEnabled = false;
+            ControlPanelStateService.LeaveLobbyButtonEnabled = true;
+            ControlPanelStateService.IsLobbyJoined = true;
 
-            lastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
+            ControlPanelStateService.LastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
+            Console.WriteLine($"ControlPanelStateService.LobbyJoinButtonEnabled:{ControlPanelStateService.LobbyJoinButtonEnabled}");
+            Console.WriteLine($"leaveLobbyButtonEnabled:{ControlPanelStateService.LeaveLobbyButtonEnabled}");
             await BroadcastStatus();
         }
 
         public async Task leaveLobby()
         {
+            // リクエスト受信確認を即座に送信
+            await Clients.Caller.SendAsync("RequestReceived", "LeaveLobby", "リクエストを受信しました");
+
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             await _request.LeaveLobbyAsync(cts.Token);
+            ControlPanelStateService.LobbyJoinButtonEnabled = true;
+            ControlPanelStateService.LeaveLobbyButtonEnabled = false;
+            ControlPanelStateService.IsLobbyJoined = false;
             await BroadcastStatus();
         }
 
@@ -206,6 +227,41 @@ namespace Andean.AndeanWebUI.Hubs
             await _request.ChangeCameraAsync(type, value, cts.Token);
             await BroadcastStatus();
         }
-
+        public async Task sendChat(string message)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.SendChatAsync(message, cts.Token);
+            await BroadcastStatus();
+        }
+        public async Task kickPlayer(string targetHardwareName, string targetNucleushash)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.KickPlayerAsync(targetHardwareName, targetNucleushash, cts.Token);
+            await BroadcastStatus();
+        }
+        public async Task setSettings(string matchName, bool adminChat, bool teamRename, bool selfAssign, bool aimAssist, bool anonMode)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.SetSettingsAsync(matchName, adminChat,teamRename,selfAssign,aimAssist,anonMode, cts.Token);
+            await BroadcastStatus();
+        }
+        public async Task setEndRingExclusion(int exclusion)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.SetEndRingExclusionAsync(exclusion, cts.Token);
+            await BroadcastStatus();
+        }
+        public async Task setMatchmaking(bool matchmaking)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.SetMatchmakingAsync(matchmaking, cts.Token);
+            await BroadcastStatus();
+        }
+        public async Task pauseToggle(double preTimer = 0)
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await _request.PauseToggleAsync(preTimer, cts.Token);
+            await BroadcastStatus();
+        }
     }
 }

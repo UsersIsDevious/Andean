@@ -20,7 +20,7 @@ using AndeanSystem;
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ カスタム設定ファイル `config/config.json` を読み込み
-builder.Configuration.AddJsonFile("config/config.json", optional: true, reloadOnChange: true);
+//builder.Configuration.AddJsonFile("config/config.json", optional: true, reloadOnChange: true);
 
 // ✅ DI (依存性注入) に `CustomSettings` を登録
 builder.Services.Configure<AppConfig>(builder.Configuration);
@@ -37,10 +37,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
-
-
-// 🚀 ConfigService をシングルトンで登録
-builder.Services.AddSingleton<ConfigService>();
 
 // 🚀 TimestampService をシングルトンで登録
 builder.Services.AddSingleton<AndeanSystem.AndeanSystem, TimestampService>();

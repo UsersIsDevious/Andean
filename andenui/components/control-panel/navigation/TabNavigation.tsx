@@ -21,7 +21,7 @@ export default function TabNavigation({ activeTab, onTabChange }: TabNavigationP
           style={activeTab === "system" ? activeTabStyle : {}}
         >
           <Settings className="mr-2 h-4 w-4" />
-          System
+          システム
         </button>
         <button
           onClick={() => onTabChange("match")}
@@ -29,7 +29,7 @@ export default function TabNavigation({ activeTab, onTabChange }: TabNavigationP
           style={activeTab === "match" ? activeTabStyle : {}}
         >
           <Play className="mr-2 h-4 w-4" />
-          Match
+          マッチ
         </button>
         <button
           onClick={() => onTabChange("lobby")}
@@ -37,7 +37,7 @@ export default function TabNavigation({ activeTab, onTabChange }: TabNavigationP
           style={activeTab === "lobby" ? activeTabStyle : {}}
         >
           <Server className="mr-2 h-4 w-4" />
-          Lobby
+          ロビー
         </button>
         <button
           onClick={() => onTabChange("camera")}
@@ -64,7 +64,7 @@ export default function TabNavigation({ activeTab, onTabChange }: TabNavigationP
               strokeLinejoin="round"
             />
           </svg>
-          Camera
+          カメラ
         </button>
         <button
           onClick={() => onTabChange("setting")}
@@ -72,7 +72,7 @@ export default function TabNavigation({ activeTab, onTabChange }: TabNavigationP
           style={activeTab === "setting" ? activeTabStyle : {}}
         >
           <Sliders className="mr-2 h-4 w-4" />
-          Setting
+          設定
         </button>
       </div>
     </div>

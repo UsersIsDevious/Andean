@@ -13,25 +13,37 @@ using Andean.AndeanWebUI.Services;
 using Andean.ApexLiveAPI.Message;
 using AndeanClass;
 using AndeanSystem;
+using AndeanClass.Controllers;
 
 namespace Andean.AndeanWebUI.Hubs
 {
-    public partial class ControlPanelHub : Hub ,IAndeanWebUI
+    public static class ControlPanelStateService
+    {
+        // 共有データ
+        public static string SharedData { get; set; } = "Initial Data";
+        public static List<string> SelectedDataKeys { get; set; } = new List<string>();
+        public static string LastLobbyResponse { get; set; } = "";
+        public static string LastApexResponse { get; set; } = "";
+
+        // UIステータス情報
+        public static bool LobbyJoinButtonEnabled { get; set; } = false;
+        public static bool LeaveLobbyButtonEnabled { get; set; } = false;
+        public static bool GameStartButtonEnabled { get; set; } = true;
+        public static bool IsLobbyJoined { get; set; } = false;
+        public static uint MaxTeamPlayer { get; set; } = 3;
+        public static uint MaxTeam { get; set; } = 20;
+        public static string GameStatus { get; set; } = "NoSignal";
+
+    }
+    public partial class ControlPanelHub : Hub, IAndeanWebUI
     {
         private readonly ApexPlaylistService _apexPlaylistService;
         private readonly Request _request;
-        private readonly AppConfig _config = ConfigService.Config;
+        private readonly AppConfig _config;
         private readonly SystemShutdownService _shutdownService;
-
 
         private Dictionary<string, LobbyPlayerSection> lobbyPlayers = new Dictionary<string, LobbyPlayerSection>();
         private LobbySettings lobbySettings = new LobbySettings();
-
-        // サーバー側で全てのステータスを保持する（各クライアントで状態が異なることを防ぐ）
-        private static string sharedData = "Initial Data";
-        private static List<string> selectedDataKeys = new List<string>();
-        private static string lastLobbyResponse = "";
-        private static string lastApexResponse = "";
 
         public ControlPanelHub(
             ApexPlaylistService apexPlaylistService,
@@ -43,6 +55,7 @@ namespace Andean.AndeanWebUI.Hubs
             _apexPlaylistService = apexPlaylistService;
             _shutdownService = shutdownService;
             _request = request;
+            _config = configOptions.CurrentValue;
         }
 
         // CustomMatch から取得したデータを更新するメソッド
@@ -53,8 +66,6 @@ namespace Andean.AndeanWebUI.Hubs
             await BroadcastStatus();
         }
 
-        //以下接続系処理
-
         // クライアント接続時に、サーバー側で保持している全ステータスを送信
         public override async Task OnConnectedAsync()
         {
@@ -62,16 +73,26 @@ namespace Andean.AndeanWebUI.Hubs
             await base.OnConnectedAsync();
         }
 
-        // 現在の全ステータスを集約して返す
+        // 現在の全ステータスを集約して返す（UI 状態も含む）
         private object GetCurrentStatus()
         {
             return new
             {
-                SharedData = sharedData,
-                SelectedDataKeys = selectedDataKeys,
+                SharedData = ControlPanelStateService.SharedData,
+                SelectedDataKeys = ControlPanelStateService.SelectedDataKeys,
                 AppConfig = _config,
-                LastLobbyResponse = lastLobbyResponse,
-                LastApexResponse = lastApexResponse
+                LastLobbyResponse = ControlPanelStateService.LastLobbyResponse,
+                LastApexResponse = ControlPanelStateService.LastApexResponse,
+                UIStatus = new
+                {
+                    LobbyJoinButtonEnabled = ControlPanelStateService.LobbyJoinButtonEnabled,
+                    GameStartButtonEnabled = ControlPanelStateService.GameStartButtonEnabled,
+                    LeaveLobbyButtonEnabled = ControlPanelStateService.LeaveLobbyButtonEnabled,
+                    IsLobbyJoined = ControlPanelStateService.IsLobbyJoined,
+                    MaxTeamPlayer = ControlPanelStateService.MaxTeamPlayer,
+                    MaxTeam = ControlPanelStateService.MaxTeam,
+                    GameStatus = ControlPanelStateService.GameStatus
+                }
             };
         }
 
@@ -84,31 +105,23 @@ namespace Andean.AndeanWebUI.Hubs
         // 共有データ更新時はサーバー側の状態を更新し、全クライアントへブロードキャスト
         public async Task UpdateData(string newData)
         {
-            sharedData = newData;
+            ControlPanelStateService.SharedData = newData;
             await BroadcastStatus();
         }
 
         // 共有データのリセット時
         public async Task ResetData()
         {
-            sharedData = "Initial Data";
+            ControlPanelStateService.SharedData = "Initial Data";
             await BroadcastStatus();
         }
 
         // 選択データ更新時
         public async Task UpdateSelectedData(List<string> newSelectedKeys)
         {
-            selectedDataKeys = newSelectedKeys;
+            ControlPanelStateService.SelectedDataKeys = newSelectedKeys;
             await BroadcastStatus();
         }
-
-       
-        // ロビープレーヤー情報の更新
-        //public async Task UpdateLobbyPlayers(Dictionary<string, LobbyPlayer> newLobbyPlayers)
-        //{
-        //    lobbyPlayers = newLobbyPlayers;
-        //    await BroadcastStatus();
-        //}
 
         // ロビー設定の更新
         public async Task UpdateLobbySettings(LobbySettings newLobbySettings)
@@ -122,9 +135,20 @@ namespace Andean.AndeanWebUI.Hubs
         /// </summary>
         public virtual async Task NotifyShutdown(string message = "System is shutting down.")
         {
-            // 全クライアントに "ShutdownNotification" イベントとして通知を送信
             await Clients.All.SendAsync("ShutdownNotification", message);
         }
 
+        // LiveAPI の状態更新（Hub 内の処理）
+        public async Task SetLiveAPIStatus(string type, string _gameStatus)
+        {
+            ControlPanelStateService.GameStatus = _gameStatus;
+            if (type == "Connect")
+            {
+                ControlPanelStateService.IsLobbyJoined = true;
+                ControlPanelStateService.LobbyJoinButtonEnabled = true;
+                ControlPanelStateService.GameStartButtonEnabled = false;
+            }
+            await BroadcastStatus();
+        }
     }
 }

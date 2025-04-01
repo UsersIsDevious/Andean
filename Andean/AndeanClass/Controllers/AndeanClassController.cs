@@ -43,6 +43,16 @@ namespace AndeanClass.Controllers
         /// </summary>
         private static Player WorldPlayer = new Player("World", 99, "World", "World").SetLegend("World");
 
+        public static void Update()
+        {
+            //var frame = Interlocked.Increment(ref currentFrame);
+            //var data = new FrameData(frame);
+            //frameDataMap[frame] = data;
+
+             //サンプル：マルチスレッドでデータ追加
+            //Task.Run(() => SimulateDataAdding(frame));
+        }
+
 
         public static void InitializeLobby(Init initMsg)
         {

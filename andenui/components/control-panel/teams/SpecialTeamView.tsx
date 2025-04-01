@@ -7,13 +7,19 @@ interface SpecialTeamViewProps {
   teamId: string
   team: Team
   onPlayerRightClick: (e: React.MouseEvent, playerId: string, teamId: string) => void
+  maxTeamPlayer?: number // 追加: チーム当たりの最大プレイヤー数
 }
 
-export default function SpecialTeamView({ teamId, team, onPlayerRightClick }: SpecialTeamViewProps) {
+export default function SpecialTeamView({
+  teamId,
+  team,
+  onPlayerRightClick,
+  maxTeamPlayer = 3, // デフォルト値は3
+}: SpecialTeamViewProps) {
   if (!team) return null
 
-  // 少なくとも5つのスロットを表示、または実際のプレイヤー数が5より大きい場合はその数
-  const slotCount = Math.max(5, team.players.length)
+  // 少なくともmaxTeamPlayerスロットを表示、または実際のプレイヤー数がmaxTeamPlayerより大きい場合はその数
+  const slotCount = Math.max(maxTeamPlayer, team.players.length)
   const slots = Array.from({ length: slotCount })
 
   return (

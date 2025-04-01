@@ -1,5 +1,5 @@
 "use client"
-import { UserMinus, UserPlus } from "lucide-react"
+import { useEffect, useRef } from "react"
 
 interface PlayerContextMenuProps {
   x: number
@@ -7,38 +7,62 @@ interface PlayerContextMenuProps {
   onKickPlayer: () => void
   onMovePlayer: () => void
   onClose: () => void
+  playerName?: string // Add player name prop
 }
 
-export default function PlayerContextMenu({ x, y, onKickPlayer, onMovePlayer, onClose }: PlayerContextMenuProps) {
+const PlayerContextMenu = ({
+  x,
+  y,
+  onKickPlayer,
+  onMovePlayer,
+  onClose,
+  playerName = "プレイヤー", // Default to "プレイヤー" if not provided
+}: PlayerContextMenuProps) => {
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [onClose])
+
+  // Adjust position to ensure menu stays within viewport
+  const adjustedX = Math.min(x, window.innerWidth - (menuRef.current?.offsetWidth || 200))
+  const adjustedY = Math.min(y, window.innerHeight - (menuRef.current?.offsetHeight || 100))
+
   return (
-    <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div
-        className="fixed z-50 bg-gray-900 border border-gray-800 rounded-md shadow-lg overflow-hidden"
-        style={{
-          left: `${x}px`,
-          top: `${y}px`,
-          transform: "translate(-50%, 10px)",
-        }}
-      >
-        <div className="py-1">
-          <button
-            onClick={onKickPlayer}
-            className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-red-900/30 hover:text-red-300"
-          >
-            <UserMinus className="mr-2 h-4 w-4" />
-            Kick Player
-          </button>
-          <button
-            onClick={onMovePlayer}
-            className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-gray-100"
-          >
-            <UserPlus className="mr-2 h-4 w-4" />
-            Move Player
-          </button>
-        </div>
+    <div
+      ref={menuRef}
+      className="absolute z-50 bg-gray-900 border border-gray-800 rounded-md shadow-lg overflow-hidden"
+      style={{ left: adjustedX, top: adjustedY }}
+    >
+      <div className="px-3 py-2 bg-red-900/20 border-b border-gray-800">
+        <span className="text-sm font-medium text-gray-200">{playerName}</span>
       </div>
-    </>
+      <div className="p-1">
+        <button
+          onClick={onMovePlayer}
+          className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-sm"
+        >
+          プレイヤーを移動
+        </button>
+        <button
+          onClick={onKickPlayer}
+          className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-gray-800 rounded-sm"
+        >
+          プレイヤーをキック
+        </button>
+      </div>
+    </div>
   )
 }
+
+export default PlayerContextMenu
 
