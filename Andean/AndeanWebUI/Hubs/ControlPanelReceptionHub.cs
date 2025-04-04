@@ -9,6 +9,7 @@ using Andean.AndeanWebUI.Services;
 using static Andean.AndeanWebUI.Services.ControlPanelHubService;
 using static Andean.Utilities.CommandExecutionService;
 using static Andean.Config.ConfigService;
+using System.Text.Json;
 
 namespace Andean.AndeanWebUI.Hubs
 {
@@ -91,6 +92,7 @@ namespace Andean.AndeanWebUI.Hubs
         {
             // 更新モードの判定（小文字で統一）
             mode = mode.ToLowerInvariant();
+            Console.WriteLine("ここ来てる？1");
 
             // セクションの更新処理を実施
             // ここでは、更新内容は newData に JSON 形式の値が入っている前提とする
@@ -126,7 +128,13 @@ namespace Andean.AndeanWebUI.Hubs
                         await UpdateConfigSectionAsync("data_fps", newData);
                         break;
                     case "score_setting":
-                        var newScore = System.Text.Json.JsonSerializer.Deserialize<ScoreSettingConfig>(newData);
+                        Console.WriteLine(newData);
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        };
+
+                        var newScore = JsonSerializer.Deserialize<ScoreSettingConfig>(newData, options);
                         if (newScore != null)
                         {
                             await UpdateConfigSectionAsync("score_setting", newScore);

@@ -1,3 +1,10 @@
+// Define the Team type
+interface Team {
+  id?: string // idをオプショナルに変更
+  name: string
+  players: { id: string; name: string }[]
+}
+
 // Get team color based on team ID
 export const getTeamColor = (id: number): string => {
   const colors: { [key: number]: string } = {
@@ -26,14 +33,14 @@ export const getTeamColor = (id: number): string => {
 }
 
 // Get all players from teams other than 0 and 1
-export const getAllPlayersFromTeams = (teamData: any) => {
+export const getAllPlayersFromTeams = (teamData: Record<string, Team> | undefined) => {
   if (!teamData) return []
 
   const players: { id: string; name: string; teamId: string; teamName: string }[] = []
 
-  Object.entries(teamData).forEach(([teamId, team]: [string, any]) => {
+  Object.entries(teamData).forEach(([teamId, team]) => {
     if (teamId !== "0" && teamId !== "1" && team.players) {
-      team.players.forEach((player: any) => {
+      team.players.forEach((player) => {
         if (player.name) {
           players.push({
             id: player.id,
@@ -51,7 +58,7 @@ export const getAllPlayersFromTeams = (teamData: any) => {
 
 // Move player between teams
 export const movePlayerBetweenTeams = (
-  teamData: any,
+  teamData: Record<string, Team> | undefined,
   sourceTeamId: string,
   playerId: string,
   destinationTeamId: string,
@@ -61,14 +68,14 @@ export const movePlayerBetweenTeams = (
   const updatedTeamData = { ...teamData }
 
   // Find the player in the source team
-  const playerToMoveData = updatedTeamData[sourceTeamId].players.find((player: any) => player.id === playerId)
+  const playerToMoveData = updatedTeamData[sourceTeamId].players.find((player) => player.id === playerId)
 
   if (!playerToMoveData) return teamData
 
   // Remove player from source team
   updatedTeamData[sourceTeamId] = {
     ...updatedTeamData[sourceTeamId],
-    players: updatedTeamData[sourceTeamId].players.filter((player: any) => player.id !== playerId),
+    players: updatedTeamData[sourceTeamId].players.filter((player) => player.id !== playerId),
   }
 
   // Add player to destination team
@@ -81,7 +88,7 @@ export const movePlayerBetweenTeams = (
 }
 
 // Remove player from team
-export const removePlayerFromTeam = (teamData: any, teamId: string, playerId: string) => {
+export const removePlayerFromTeam = (teamData: Record<string, Team> | undefined, teamId: string, playerId: string) => {
   if (!teamData) return teamData
 
   const updatedTeamData = { ...teamData }
@@ -89,7 +96,7 @@ export const removePlayerFromTeam = (teamData: any, teamId: string, playerId: st
   // Filter out the player to kick
   updatedTeamData[teamId] = {
     ...updatedTeamData[teamId],
-    players: updatedTeamData[teamId].players.filter((player: any) => player.id !== playerId),
+    players: updatedTeamData[teamId].players.filter((player) => player.id !== playerId),
   }
 
   return updatedTeamData

@@ -1,13 +1,16 @@
+// 既存のファイルを拡張
+
 export interface Player {
-  index: number
+  index?: number
   id: string
   name: string
 }
 
 export interface Team {
+  id?: string // idをオプショナルに追加
   name: string
-  logoUrl: string
-  spawnPoint: number
+  logoUrl?: string
+  spawnPoint?: number
   players: Player[]
 }
 
@@ -15,14 +18,11 @@ export interface TeamData {
   [key: string]: Team
 }
 
-export interface LobbySettings {
-  playlistname: string
-  adminchat: boolean
-  teamrename: boolean
-  selfassign: boolean
-  aimassist: boolean
-  anonmode: boolean
-  gamemode: string
-  map: string
+// プレイヤー一覧表示用の型定義
+export interface PlayerListItem {
+  id: string
+  name: string
+  teamId: string
+  teamName: string
 }
 

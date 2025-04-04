@@ -1,15 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import * as signalR from "@microsoft/signalr"
-import type { ConfigData, CSVTeamData } from "@/lib/types"
+import type { ConfigData, CSVTeamData, AppConfig } from "@/lib/types"
 
 const CONTROL_PANEL_HUB_URL = "https://localhost:7109/ControlPanelHub"
 
-// 型定義を削除し、インポートした型を使用
-
 export const useControlPanelSignalR = () => {
-  const [connection, setConnection] = useState<signalR.HubConnection | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [configData, setConfigData] = useState<ConfigData | null>(null)
   const [lobbyResponse, setLobbyResponse] = useState<string | null>(null)
@@ -17,74 +14,113 @@ export const useControlPanelSignalR = () => {
   const [isLobbyLoading, setIsLobbyLoading] = useState(false)
   const [isApexLoading, setIsApexLoading] = useState(false)
 
+  // connectionをuseRefで保持して、コンポーネントのレンダリング間で一貫性を保つ
+  const connectionRef = useRef<signalR.HubConnection | null>(null)
+
   useEffect(() => {
-    const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl(CONTROL_PANEL_HUB_URL, {
-        withCredentials: false,
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets,
-      })
-      .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Information)
-      .build()
+    let isMounted = true
 
-    newConnection
-      .start()
-      .then(() => {
-        console.log("✅ Connected to ControlPanelHub")
-        setIsConnected(true)
-      })
-      .catch((err) => console.error("❌ ControlPanelHub Connection Error:", err))
+    const startConnection = async () => {
+      try {
+        const newConnection = new signalR.HubConnectionBuilder()
+          .withUrl(CONTROL_PANEL_HUB_URL, {
+            withCredentials: false,
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets,
+          })
+          .withAutomaticReconnect()
+          .configureLogging(signalR.LogLevel.Information)
+          .build()
 
-    newConnection.on("LobbyResponse", (response) => {
-      console.log("📩 Received Lobby Response:", response)
-      setLobbyResponse(response)
-      setIsLobbyLoading(false)
-    })
+        // イベントハンドラを設定
+        newConnection.on("LobbyResponse", (response) => {
+          if (isMounted) {
+            console.log("📩 Received Lobby Response:", response)
+            setLobbyResponse(response)
+            setIsLobbyLoading(false)
+          }
+        })
 
-    newConnection.on("ApexResponse", (response) => {
-      console.log("📩 Received Apex Response:", response)
-      setApexResponse(response)
-      setIsApexLoading(false)
-    })
+        newConnection.on("ApexResponse", (response) => {
+          if (isMounted) {
+            console.log("📩 Received Apex Response:", response)
+            setApexResponse(response)
+            setIsApexLoading(false)
+          }
+        })
 
-    newConnection.on("ReceiveStatus", (response) => {
-      console.log("📩 Received Config Data:", response)
-      setConfigData(response)
-    })
+        newConnection.on("ReceiveStatus", (response) => {
+          if (isMounted) {
+            console.log("📩 Received Config Data:", response)
+            setConfigData(response)
+          }
+        })
 
-    newConnection.on("ReceiveMessage", (message) => {
-      console.log("📩 Received Message:", message)
-    })
+        newConnection.on("ReceiveMessage", (message) => {
+          if (isMounted) {
+            console.log("📩 Received Message:", message)
+          }
+        })
 
-    newConnection.on("NotifyShutdown", (message) => {
-      console.log("🛑 Received Shutdown Notification:", message)
-      alert("System is shutting down. This page will close.")
-      window.close() // 🔹 ページを閉じる
-    })
+        newConnection.on("NotifyShutdown", (message) => {
+          if (isMounted) {
+            console.log("🛑 Received Shutdown Notification:", message)
+            alert("System is shutting down. This page will close.")
+            window.close() // 🔹 ページを閉じる
+          }
+        })
 
-    // ConfigUpdateResponse ハンドラを追加（サーバー側のメソッド名に合わせる）
-    newConnection.on("ConfigUpdateResponse", (response) => {
-      console.log("📩 Received Config Update Response:", response)
-      // 必要に応じて、ユーザーに通知するなどの処理を追加
-    })
+        newConnection.on("ConfigUpdateResponse", (response) => {
+          if (isMounted) {
+            console.log("📩 Received Config Update Response:", response)
+          }
+        })
 
-    setConnection(newConnection)
+        // 接続を開始
+        await newConnection.start()
 
+        if (isMounted) {
+          console.log("✅ Connected to ControlPanelHub")
+          connectionRef.current = newConnection
+          setIsConnected(true)
+        } else {
+          // コンポーネントがアンマウントされていた場合は接続を停止
+          await newConnection.stop()
+          console.log("🛑 Connection stopped due to component unmount")
+        }
+      } catch (err) {
+        console.error("❌ ControlPanelHub Connection Error:", err)
+      }
+    }
+
+    startConnection()
+
+    // クリーンアップ関数
     return () => {
-      newConnection
-        .stop()
-        .then(() => console.log("🛑 Disconnected from ControlPanelHub"))
-        .catch((err) => console.error("❌ Error stopping SignalR connection:", err))
+      isMounted = false
+
+      const stopConnection = async () => {
+        if (connectionRef.current) {
+          try {
+            await connectionRef.current.stop()
+            console.log("🛑 Disconnected from ControlPanelHub")
+          } catch (err) {
+            console.error("❌ Error stopping SignalR connection:", err)
+          }
+          connectionRef.current = null
+        }
+      }
+
+      stopConnection()
     }
   }, [])
 
   const startApex = async () => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🏆 Sending StartApex request...")
         setIsApexLoading(true)
-        await connection.invoke("StartApex")
+        await connectionRef.current.invoke("StartApex")
       } catch (error) {
         console.error("❌ StartApex Error:", error)
         setIsApexLoading(false)
@@ -95,10 +131,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const readCSV = async (jsonData: CSVTeamData[]) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("📤 Sending CSV data to readCSV...")
-        await connection.invoke("readCSV", jsonData)
+        await connectionRef.current.invoke("readCSV", jsonData)
       } catch (error) {
         console.error("❌ readCSV Error:", error)
       }
@@ -113,12 +149,12 @@ export const useControlPanelSignalR = () => {
     newData: unknown,
     mode: "overwrite" | "append" | "jsonAppend",
   ) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log(`🔧 Updating config: ${sectionKey}`)
 
         // サーバー側が期待するセクションキーに変換
-        let serverSectionKey = sectionKey
+        let serverSectionKey: string = sectionKey as string
         let dataToSend = newData
 
         // appConfig セクションの場合は、具体的なサブセクションに変換
@@ -146,13 +182,33 @@ export const useControlPanelSignalR = () => {
             dataToSend = appConfigData.data_Fps
           } else if (appConfigData.score_Setting) {
             serverSectionKey = "score_setting"
+
+            // If we're updating score settings with rank_Points
+            if (appConfigData.score_Setting.rank_Points) {
+              // Ensure the array has enough elements for all teams
+              const maxTeam = configData?.uiStatus?.maxTeam || 20
+              const rankPoints = [...appConfigData.score_Setting.rank_Points]
+
+              // Fill with zeros if needed
+              while (rankPoints.length < maxTeam) {
+                rankPoints.push(0)
+              }
+
+              // Update the data to send
+              appConfigData.score_Setting.rank_Points = rankPoints
+            }
+
             dataToSend = appConfigData.score_Setting
           }
         }
 
         // サーバーに送信
-        console.log("UpdateConfig", serverSectionKey, JSON.stringify(dataToSend), mode.toLowerCase())
-        await connection.invoke("UpdateConfig", serverSectionKey, JSON.stringify(dataToSend), mode.toLowerCase())
+        await connectionRef.current.invoke(
+          "UpdateConfig",
+          serverSectionKey,
+          JSON.stringify(dataToSend),
+          mode.toLowerCase(),
+        )
       } catch (error) {
         console.error("❌ UpdateConfig Error:", error)
       }
@@ -162,10 +218,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const shutdown = async () => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛑 Sending Shutdown request...")
-        await connection.invoke("Shutdown")
+        await connectionRef.current.invoke("Shutdown")
       } catch (error) {
         console.error("❌ Shutdown Error:", error)
       }
@@ -175,12 +231,12 @@ export const useControlPanelSignalR = () => {
   }
 
   const joinLobby = async (lobbyCode?: string) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending joinLobby request...", lobbyCode ? `with code: ${lobbyCode}` : "without code")
         setIsLobbyLoading(true)
         // 引数がある場合はそのまま渡し、ない場合は null を渡す
-        await connection.invoke("joinLobby", lobbyCode ?? null)
+        await connectionRef.current.invoke("joinLobby", lobbyCode ?? null)
       } catch (error) {
         console.error("❌ joinLobby Error:", error)
         setIsLobbyLoading(false)
@@ -191,10 +247,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const setReady = async (ready: boolean) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending set_ready request...", ready)
-        await connection.invoke("set_ready", ready)
+        await connectionRef.current.invoke("set_ready", ready)
       } catch (error) {
         console.error("❌ set_ready Error:", error)
       }
@@ -204,10 +260,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const setTeam = async (teamId: number, targetHardwareName: string, targetNucleushash: string) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending setTeam request...", teamId, targetHardwareName, targetNucleushash)
-        await connection.invoke("setTeam", teamId, targetHardwareName, targetNucleushash)
+        await connectionRef.current.invoke("setTeam", teamId, targetHardwareName, targetNucleushash)
       } catch (error) {
         console.error("❌ setTeam Error:", error)
       }
@@ -217,10 +273,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const setTeamName = async (teamId: number, teamName: string) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending setTeamName request...", teamId, teamName)
-        await connection.invoke("setTeamName", teamId, teamName)
+        await connectionRef.current.invoke("setTeamName", teamId, teamName)
       } catch (error) {
         console.error("❌ setTeamName Error:", error)
       }
@@ -230,10 +286,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const setSpawnPoint = async (teamId: number, spawnPoint: number) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending setSpawnPoint request...", teamId, spawnPoint)
-        await connection.invoke("setSpawnPoint", teamId, spawnPoint)
+        await connectionRef.current.invoke("setSpawnPoint", teamId, spawnPoint)
       } catch (error) {
         console.error("❌ setSpawnPoint Error:", error)
       }
@@ -243,10 +299,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const changeCamera = async (type: string, value: string) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending changeCamera request...", type, value)
-        await connection.invoke("changeCamera", type, value)
+        await connectionRef.current.invoke("changeCamera", type, value)
       } catch (error) {
         console.error("❌ changeCamera Error:", error)
       }
@@ -256,10 +312,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const sendChat = async (message: string) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending sendChat request...", message)
-        await connection.invoke("sendChat", message)
+        await connectionRef.current.invoke("sendChat", message)
       } catch (error) {
         console.error("❌ sendChat Error:", error)
       }
@@ -269,10 +325,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const kickPlayer = async (targetHardwareName: string, targetNucleushash: string) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending kickPlayer request...", targetHardwareName, targetNucleushash)
-        await connection.invoke("kickPlayer", targetHardwareName, targetNucleushash)
+        await connectionRef.current.invoke("kickPlayer", targetHardwareName, targetNucleushash)
       } catch (error) {
         console.error("❌ kickPlayer Error:", error)
       }
@@ -289,7 +345,7 @@ export const useControlPanelSignalR = () => {
     aimAssist: boolean,
     anonMode: boolean,
   ) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log(
           "🛠️ Sending setSettings request...",
@@ -300,7 +356,15 @@ export const useControlPanelSignalR = () => {
           aimAssist,
           anonMode,
         )
-        await connection.invoke("setSettings", matchName, adminChat, teamRename, selfAssign, aimAssist, anonMode)
+        await connectionRef.current.invoke(
+          "setSettings",
+          matchName,
+          adminChat,
+          teamRename,
+          selfAssign,
+          aimAssist,
+          anonMode,
+        )
       } catch (error) {
         console.error("❌ setSettings Error:", error)
       }
@@ -309,10 +373,10 @@ export const useControlPanelSignalR = () => {
     }
   }
   const leaveLobby = async () => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending leaveLobby request...")
-        await connection.invoke("leaveLobby")
+        await connectionRef.current.invoke("leaveLobby")
       } catch (error) {
         console.error("❌ leaveLobby Error:", error)
       }
@@ -321,10 +385,10 @@ export const useControlPanelSignalR = () => {
     }
   }
   const setEndRingExclusion = async (exclusion: number) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending setEndRingExclusion request...", exclusion)
-        await connection.invoke("setEndRingExclusion", exclusion)
+        await connectionRef.current.invoke("setEndRingExclusion", exclusion)
       } catch (error) {
         console.error("❌ setEndRingExclusion Error:", error)
       }
@@ -334,10 +398,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const setMatchmaking = async (matchmaking: boolean) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending setMatchmaking request...", matchmaking)
-        await connection.invoke("setMatchmaking", matchmaking)
+        await connectionRef.current.invoke("setMatchmaking", matchmaking)
       } catch (error) {
         console.error("❌ setMatchmaking Error:", error)
       }
@@ -347,10 +411,10 @@ export const useControlPanelSignalR = () => {
   }
 
   const pauseToggle = async (preTimer = 0) => {
-    if (connection && isConnected) {
+    if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending pauseToggle request...", preTimer)
-        await connection.invoke("pauseToggle", preTimer)
+        await connectionRef.current.invoke("pauseToggle", preTimer)
       } catch (error) {
         console.error("❌ pauseToggle Error:", error)
       }
@@ -359,14 +423,13 @@ export const useControlPanelSignalR = () => {
     }
   }
 
-  // In the useControlPanelSignalR hook, add the leaveLobby function to the return object
   return {
     startApex,
     readCSV,
     updateConfig,
     shutdown,
     joinLobby,
-    leaveLobby, // Add this line
+    leaveLobby,
     setReady,
     setTeam,
     setTeamName,
@@ -385,15 +448,5 @@ export const useControlPanelSignalR = () => {
     isApexLoading,
     isConnected,
   }
-}
-
-interface AppConfig {
-  apexLegends?: any
-  penetrator?: any
-  output?: any
-  language?: any
-  log_Dir?: any
-  data_Fps?: any
-  score_Setting?: any
 }
 
