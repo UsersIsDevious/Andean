@@ -18,11 +18,15 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// ロビー情報
         /// </summary>
-        private static CustomMatch _lobby;
+        private CustomMatch _lobby = new CustomMatch("Lobby");
         /// <summary>
         /// マッチ情報
         /// </summary>
         public static CustomMatch _match;
+        /// <summary>
+        /// パケット情報
+        /// </summary>
+        private Packet _packet;
         /// <summary>
         /// ロビーかどうかのフラグ
         /// </summary>
@@ -42,7 +46,16 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// player以外の攻撃の際用のworldプレーヤー
         /// </summary>
-        private static Player WorldPlayer = new Player("World", 99, "World", "World").SetLegend("World");
+        private Player WorldPlayer = new Player("World", 99, "World", "World").SetLegend("World");
+        /// <summary>
+        /// CSVデータ
+        /// </summary>
+        private CsvData _csvData = new CsvData();
+        /// <summary>
+        /// ロビー関連メッセージを保持する変数
+        /// </summary>
+        private Dictionary<string, object> _waitMessages = new Dictionary<string, object>();
+
 
 
         public static void InitializeLobby(Init initMsg)
@@ -95,5 +108,57 @@ namespace AndeanClass.Controllers
             }
         }
         
+        // ゲーム終了時の処理
+        public void ProcessMatchEnd(MatchStateEnd matchStateEndMsg)
+          {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+               MatchService.ProcessGameEnd(matchStateEndMsg, _match);
+            }
+        }
+
+        // チーム壊滅時の処理
+        public void ProcessSquadEliminated(SquadEliminated squadEliminatedMsg)
+          {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                MatchService.ProcessTeamEliminated(squadEliminatedMsg, _match, _teamRanking);
+            }
+        }
+        // リング収縮開始メッセージの処理
+        public void ProcessRingStart(RingStartClosing ringStartClosingMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+                MatchService.ProcessRingStartClosing(ringStartClosingMsg, _match, _ringEvents);
+            }
+        }
+
+        // リング収縮終了メッセージの処理
+        public void ProcessRingFinished(RingFinishedClosing ringFinishedClosingMsg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+                MatchService.ProcessRingFinishedClosing(ringFinishedClosingMsg, _match, _ringEvents);
+            }
+        }
     }
 }

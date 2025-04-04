@@ -138,7 +138,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg:
                     {
-                        //_lobbyService.HandleLobbyPlayers(customMatch_LobbyPlayersMsg);
+                        _andeanClassController.ProcessCustomMatch_LobbyPlayers(customMatch_LobbyPlayersMsg);
                         break;
                     }
                 case RequestStatus requestStatusMsg:
@@ -158,6 +158,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case GameStateChanged gameStateChangedMsg:
                     {
+                        _andeanClassController.ProcessGameStatus(gameStateChangedMsg);
                         break;
                     }
                 case CharacterSelected characterSelectedMsg:
@@ -167,14 +168,17 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case MatchStateEnd matchStateEndMsg:
                     {
+                        _andeanClassController.ProcessMatchEnd(matchStateEndMsg);
                         break;
                     }
                 case RingStartClosing ringStartClosingMsg:
                     {
+                        _andeanClassController.ProcessRingStart(ringStartClosingMsg);
                         break;
                     }
                 case RingFinishedClosing ringFinishedClosingMsg:
                     {
+                        _andeanClassController.ProcessRingFinished(ringFinishedClosingMsg);
                         break;
                     }
                 case PlayerConnected playerConnectedMsg:
@@ -224,6 +228,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case SquadEliminated squadEliminatedMsg:
                     {
+                        _andeanClassController.ProcessSquadEliminated(squadEliminatedMsg);
                         break;
                     }
                 case GibraltarShieldAbsorbed gibraltarShieldAbsorbedMsg:
@@ -238,10 +243,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case ChangeCamera changeCameraMsg:
                     {
+                        // 現状何も処理しない
                         break;
                     }
                 case PauseToggle pauseToggleMsg:
                     {
+                        // 現状何も処理しない
                         break;
                     }
                 case CustomMatch_SetSettings customMatch_SetSettingsMsg:
@@ -266,7 +273,7 @@ namespace Andean.WebsocketServer.Controllers
                 case ArenasItemDeselected arenasItemDeselectedMsg:
                     {
                         AndeanClassController.ProcessArenasItemDeselected(arenasItemDeselectedMsg);
-
+                        _andeanClassController.ProcessArenasItemDeselected(arenasItemDeselectedMsg);
                         break;
                     }
                 case InventoryPickUp inventoryPickUpMsg:
@@ -286,6 +293,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case BannerCollected bannerCollectedMsg:
                     {
+                        _andeanClassController.ProcessBannerCollected(bannerCollectedMsg);
                         break;
                     }
                 case PlayerAbilityUsed playerAbilityUsedMsg:
@@ -335,10 +343,12 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case ObserverSwitched observerSwitchedMsg:
                     {
+                        _andeanClassController.ProcessObserverSwitched(observerSwitchedMsg);
                         break;
                     }
                 case ObserverAnnotation observerAnnotationMsg:
                     {
+                        // 現状何も処理しない
                         break;
                     }
                 default:
