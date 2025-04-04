@@ -5,6 +5,7 @@ using AndeanSystem;
 using Microsoft.AspNetCore.SignalR;
 using Andean.ApexLiveAPI.Request;
 using Google.Protobuf.WellKnownTypes;
+using Andean.AndeanWebUI.Services;
 
 namespace Andean.AndeanWebUI.Hubs
 {
@@ -36,7 +37,7 @@ namespace Andean.AndeanWebUI.Hubs
                     string? steamPath = await GetSteamPath.GetSteamPathAsync();
                     if (steamPath == null)
                     {
-                        ControlPanelStateService.LastApexResponse = "Error: Steam path not found or Steam not installed.";
+                        ControlPanelHubService.LastApexResponse = "Error: Steam path not found or Steam not installed.";
                         await BroadcastStatus();
                         return;
                     }
@@ -48,15 +49,15 @@ namespace Andean.AndeanWebUI.Hubs
                 }
                 Console.WriteLine(command);
                 string result = await CommandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
-                ControlPanelStateService.LastApexResponse = result;
+                ControlPanelHubService.LastApexResponse = result;
             }
             catch (Exception ex)
             {
-                ControlPanelStateService.LastApexResponse = $"Error: {ex.Message}";
-                Console.WriteLine(ControlPanelStateService.LastApexResponse);
+                ControlPanelHubService.LastApexResponse = $"Error: {ex.Message}";
+                Console.WriteLine(ControlPanelHubService.LastApexResponse);
             }
 
-            ControlPanelStateService.LobbyJoinButtonEnabled = false;
+            ControlPanelHubService.LobbyJoinButtonEnabled = false;
             await BroadcastStatus();
         }
         /// <summary>
@@ -174,13 +175,13 @@ namespace Andean.AndeanWebUI.Hubs
             }
             
 
-            ControlPanelStateService.LobbyJoinButtonEnabled = false;
-            ControlPanelStateService.LeaveLobbyButtonEnabled = true;
-            ControlPanelStateService.IsLobbyJoined = true;
+            ControlPanelHubService.LobbyJoinButtonEnabled = false;
+            ControlPanelHubService.LeaveLobbyButtonEnabled = true;
+            ControlPanelHubService.IsLobbyJoined = true;
 
-            ControlPanelStateService.LastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
-            Console.WriteLine($"ControlPanelStateService.LobbyJoinButtonEnabled:{ControlPanelStateService.LobbyJoinButtonEnabled}");
-            Console.WriteLine($"leaveLobbyButtonEnabled:{ControlPanelStateService.LeaveLobbyButtonEnabled}");
+            ControlPanelHubService.LastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
+            Console.WriteLine($"ControlPanelStateService.LobbyJoinButtonEnabled:{ControlPanelHubService.LobbyJoinButtonEnabled}");
+            Console.WriteLine($"leaveLobbyButtonEnabled:{ControlPanelHubService.LeaveLobbyButtonEnabled}");
             await BroadcastStatus();
         }
 
@@ -191,9 +192,9 @@ namespace Andean.AndeanWebUI.Hubs
 
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             await _request.LeaveLobbyAsync(cts.Token);
-            ControlPanelStateService.LobbyJoinButtonEnabled = true;
-            ControlPanelStateService.LeaveLobbyButtonEnabled = false;
-            ControlPanelStateService.IsLobbyJoined = false;
+            ControlPanelHubService.LobbyJoinButtonEnabled = true;
+            ControlPanelHubService.LeaveLobbyButtonEnabled = false;
+            ControlPanelHubService.IsLobbyJoined = false;
             await BroadcastStatus();
         }
 

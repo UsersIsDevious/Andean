@@ -9,6 +9,7 @@ using Andean.Utilities;
 using AndeanClass.Controllers;
 using Andean.AndeanWebUI.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using Andean.AndeanWebUI.Services;
 
 namespace Andean.WebsocketServer.Controllers
 {
@@ -33,20 +34,16 @@ namespace Andean.WebsocketServer.Controllers
         private readonly BlockingCollection<MessageWrapper> _queue = new BlockingCollection<MessageWrapper>();
 
         private readonly ClientManagementService _clientManagement;
-        ControlPanelHub _controlPanelHub;
 
         // ログ出力用ファイル名（サーバー起動時のタイムスタンプで固定）
         private readonly string _logFileName;
 
         public StatisticsProcessor(
-            ClientManagementService clientManagement,
-            ControlPanelHub controlPanelHub
+            ClientManagementService clientManagement
             )
         {
            
             _clientManagement = clientManagement;
-
-            _controlPanelHub = controlPanelHub;
 
             // サーバー起動時のタイムスタンプでログファイル名を決定（例: 20250222_132800_log.txt）
             _logFileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_log.txt";
@@ -99,7 +96,7 @@ namespace Andean.WebsocketServer.Controllers
                         {
                             // Init メッセージの場合、クライアントを認定済みに設定
                             _clientManagement.SetAuthorizedClient(clientId);
-                            await _controlPanelHub.SetLiveAPIStatus("Connect","isLobby");
+                            ControlPanelHubService.SetLiveAPIStatus("Connect","isLobby");
                             Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
                         }                        
                         break;

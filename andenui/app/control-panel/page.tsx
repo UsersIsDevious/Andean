@@ -149,43 +149,42 @@ export default function ControlPanelPage() {
   }
 
   // CSV parsing function
-  const parseCSV = (csvText: string): CSVTeamData[] => {
-    // Split the CSV text into lines
-    const lines = csvText.split(/\r\n|\n/)
-
-    // Extract headers (first line)
-    const headers = lines[0].split(",")
-
-    // Process data rows
-    const result: CSVTeamData[] = []
+  const parseCSV = (csvText: string): Record<string, { teamName: string; logoUrl: string; players: string[] }> => {
+    const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== "");
+    const headers = lines[0].split(",").map(h => h.trim());
+  
+    const result: Record<string, { teamName: string; logoUrl: string; players: string[] }> = {};
+  
     for (let i = 1; i < lines.length; i++) {
-      if (!lines[i].trim()) continue // 空行をスキップ
-
-      const data = lines[i].split(",")
-
-      // CSVTeamData 型のオブジェクトを作成
-      const teamData: CSVTeamData = {
-        TEAM: Number.parseInt(data[headers.indexOf("TEAM")]) || 0,
-        NAME: data[headers.indexOf("NAME")] || "",
-        IMG_URL: data[headers.indexOf("IMG_URL")] || "",
-        MEMBER_NUM: Number.parseInt(data[headers.indexOf("MEMBER_NUM")]) || 0,
-        MEMBERS: [],
-      }
-
-      // MEMBERS プロパティの生成 (MEMBER1～MEMBER6 を想定)
-      for (let j = 1; j <= 6; j++) {
-        const key = `MEMBER${j}`
-        const value = data[headers.indexOf(key)]
-        if (value && value.trim() !== "") {
-          teamData.MEMBERS.push(value)
+      const row = lines[i].split(",").map(cell => cell.trim());
+      if (row.length < 4) continue;
+  
+      const data: Record<string, string> = {};
+      headers.forEach((header, idx) => {
+        data[header] = row[idx] ?? "";
+      });
+  
+      const teamId = data["TEAM"];
+      if (!teamId) continue;
+  
+      const players: string[] = [];
+      for (let j = 1; j <= 12; j++) {
+        const member = data[`MEMBER${j}`];
+        if (member && member !== "") {
+          players.push(member);
         }
       }
-
-      result.push(teamData)
+  
+      result[teamId] = {
+        teamName: data["NAME"],
+        logoUrl: data["IMG_URL"],
+        players
+      };
     }
-
-    return result
-  }
+  
+    return result;
+  };
+  
 
   // System shutdown handlers
   const handleShutdown = () => {
