@@ -2,7 +2,7 @@ using Andean.Config;
 using Rtech.Liveapi;
 using AndeanClass;
 using AndeanClass.Services;
-using Andean.AndeanClass.Services.Utilities;
+using AndeanClass.Services.Utilities;
 using System.Collections.Generic;
 using static AndeanClass.Services.PlayerService;
 
@@ -145,16 +145,14 @@ namespace AndeanClass.Controllers
                 */
                 if (Msg.Attacker.NucleusHash != "")
                 {
-                    _attacker = PlayerService.CreateOrUpdatePlayer(_match, Msg.Attacker);
+                    _attacker = CreateOrUpdatePlayer(_match, Msg.Attacker);
                 }
                 else
                 {
                     _attacker = WorldPlayer;
                 }
 
-                //Player _attacker = CreateOrUpdatePlayer(_match, Msg.Attacker);
-                //Player _victim = CreateOrUpdatePlayer(_match, Msg.Victim);
-                Player _victim = PlayerService.CreateOrUpdatePlayer(_match, Msg.Victim);
+                Player _victim = CreateOrUpdatePlayer(_match, Msg.Victim);
 
                 // 攻撃者側の処理
                 _attacker.AddDamageDealt(_damageInflicted, _weaponName, _victim.NucleusHash, _victim.Legend);
@@ -192,10 +190,8 @@ namespace AndeanClass.Controllers
                 Rtech.Liveapi.Player AwardedTo = Msg.AwardedTo;
               
                 //被害者側
-                //Player _victim = CreateOrUpdatePlayer(_match, Msg.Victim);
-                // 被害者
-                Player _victim = PlayerService.CreateOrUpdatePlayer(_match, Msg.Victim);
-              
+                Player _victim = CreateOrUpdatePlayer(_match, Msg.Victim);
+                
                 _victim.SetStatus("death");
 
                 // 攻撃者
@@ -245,9 +241,8 @@ namespace AndeanClass.Controllers
 
                 Rtech.Liveapi.Player Attacker = Msg.Attacker;
 
-                //Player _victim = CreateOrUpdatePlayer(_match, Msg.Victim);
                 // 被害者
-                Player _victim = PlayerService.CreateOrUpdatePlayer(_match, Msg.Victim);
+                Player _victim = CreateOrUpdatePlayer(_match, Msg.Victim);
               
                 /**
                  * もしアタッカーがプレーヤーではなくリングダメージや落下ダメージの場合worldとなりハッシュ値が""で返って来るため無視する
@@ -429,21 +424,13 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
-
-
-              //  Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
-              //  List<Dictionary<string,object>> _respawnedTeammates = new List<Dictionary<string, object>>();
-
-              //  foreach (Rtech.Liveapi.Player RespawnPlayer in Msg.RespawnedTeammates)
-              //  {
-              //      Player _respawnPlayer = CreateOrUpdatePlayer(_match,RespawnPlayer);
               
-                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
                 List<Dictionary<string, object>> _respawnedTeammates = new List<Dictionary<string, object>>();
 
                 foreach (Rtech.Liveapi.Player RespawnPlayer in Msg.RespawnedTeammates)
                 {
-                    Player _respawnPlayer = PlayerService.CreateOrUpdatePlayer(_match, RespawnPlayer);
+                    Player _respawnPlayer = CreateOrUpdatePlayer(_match, RespawnPlayer);
                     _respawnPlayer.SetStatus("alive");
                     _respawnedTeammates.Add(EventService.CreateEventDataForPlayer(_respawnPlayer).Get());
                     _match.GetTeam(_respawnPlayer.TeamId).AddTotalRespawns();
@@ -465,12 +452,9 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
-              
-                //Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
-                //Player _revived = CreateOrUpdatePlayer(_match,Msg.Revived);
 
-                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
-                Player _revived = PlayerService.CreateOrUpdatePlayer(_match, Msg.Revived);
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
+                Player _revived = CreateOrUpdatePlayer(_match, Msg.Revived);
 
                 _revived.SetStatus("alive");
                 _revived.SetCanRevive(false);
@@ -492,9 +476,8 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                //Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
                 //_player.SetNewLevel(Msg.Level, Msg.UpgradeName, Msg.UpgradeDesc, "何かが入るらしい");
-                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
 
                 string upgradeName = Msg.UpgradeName;
                 string upgradeDesc = Msg.UpgradeDesc;
@@ -633,7 +616,7 @@ namespace AndeanClass.Controllers
             }
         }
 
-        public void ProcessBannerCollected(BannerCollected bannerCollectedMsg)
+        public static void ProcessBannerCollected(BannerCollected bannerCollectedMsg)
         {
             lock (_lock)
             {
@@ -643,8 +626,8 @@ namespace AndeanClass.Controllers
                 }
 
                 // プレイヤーインスタンスの作成または更新
-                Player _player = PlayerService.CreateOrUpdatePlayer(_match, bannerCollectedMsg.Player);
-                Player _collecter = PlayerService.CreateOrUpdatePlayer(_match, bannerCollectedMsg.Collected);
+                Player _player = CreateOrUpdatePlayer(_match, bannerCollectedMsg.Player);
+                Player _collecter = CreateOrUpdatePlayer(_match, bannerCollectedMsg.Collected);
 
                 // 統計データの更新
                 _collecter.AddBannerCollectedCount();

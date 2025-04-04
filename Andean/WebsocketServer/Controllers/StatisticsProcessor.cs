@@ -3,13 +3,14 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Rtech.Liveapi;
-using Andean.AndeanClass.Services;
+using AndeanClass.Services;
 using Andean.WebsocketServer.Services;
 using Andean.Utilities;
 using AndeanClass.Controllers;
-using Andean.AndeanWebUI.Hubs;
+using AndeanWebUI.Hubs;
 using Microsoft.AspNetCore.SignalR;
-using Andean.AndeanWebUI.Services;
+using AndeanWebUI.Services;
+using static AndeanClass.Controllers.AndeanClassController;
 
 namespace Andean.WebsocketServer.Controllers
 {
@@ -138,7 +139,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg:
                     {
-                        _andeanClassController.ProcessCustomMatch_LobbyPlayers(customMatch_LobbyPlayersMsg);
+                        ProcessCustomMatch_LobbyPlayers(customMatch_LobbyPlayersMsg);
                         break;
                     }
                 case RequestStatus requestStatusMsg:
@@ -153,92 +154,92 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case MatchSetup matchSetupMsg:
                     {
-                        AndeanClassController.ProcessMatchSetup(matchSetupMsg);
+                        ProcessMatchSetup(matchSetupMsg);
                         break;
                     }
                 case GameStateChanged gameStateChangedMsg:
                     {
-                        _andeanClassController.ProcessGameStatus(gameStateChangedMsg);
+                        ProcessGameStatus(gameStateChangedMsg);
                         break;
                     }
                 case CharacterSelected characterSelectedMsg:
                     {
-                        AndeanClassController.ProcessCharacterSelected(characterSelectedMsg);
+                        ProcessCharacterSelected(characterSelectedMsg);
                         break;
                     }
                 case MatchStateEnd matchStateEndMsg:
                     {
-                        _andeanClassController.ProcessMatchEnd(matchStateEndMsg);
+                        ProcessMatchEnd(matchStateEndMsg);
                         break;
                     }
                 case RingStartClosing ringStartClosingMsg:
                     {
-                        _andeanClassController.ProcessRingStart(ringStartClosingMsg);
+                        ProcessRingStart(ringStartClosingMsg);
                         break;
                     }
                 case RingFinishedClosing ringFinishedClosingMsg:
                     {
-                        _andeanClassController.ProcessRingFinished(ringFinishedClosingMsg);
+                        ProcessRingFinished(ringFinishedClosingMsg);
                         break;
                     }
                 case PlayerConnected playerConnectedMsg:
                     {
-                        AndeanClassController.ProcessPlayerConnected(playerConnectedMsg);
+                        ProcessPlayerConnected(playerConnectedMsg);
                         break;
                     }
                 case PlayerDisconnected playerDisconnectedMsg:
                     {
-                        AndeanClassController.ProcessPlayerDisconnected(playerDisconnectedMsg);
+                        ProcessPlayerDisconnected(playerDisconnectedMsg);
                         break;
                     }
                 case PlayerStatChanged playerStatChangedMsg:
                     {
-                        AndeanClassController.ProcessPlayerStatChanged(playerStatChangedMsg);
+                        ProcessPlayerStatChanged(playerStatChangedMsg);
                         break;
                     }
                 case PlayerUltimateCharged playerUltimateChargedMsg:
                     {
-                        AndeanClassController.ProcessPlayerUltimateCharged(playerUltimateChargedMsg);
+                        ProcessPlayerUltimateCharged(playerUltimateChargedMsg);
                         break;
                     }
                 case PlayerUpgradeTierChanged playerUpgradeTierChangedMsg:
                     {
-                        AndeanClassController.ProcessPlayerUpgradeTierChanged(playerUpgradeTierChangedMsg);
+                        ProcessPlayerUpgradeTierChanged(playerUpgradeTierChangedMsg);
                         break;
                     }
                 case PlayerDamaged playerDamagedMsg:
                     {
-                        AndeanClassController.ProcessPlayerDamaged(playerDamagedMsg);
+                        ProcessPlayerDamaged(playerDamagedMsg);
                         break;
                     }
                 case PlayerKilled playerKilledMsg:
                     {
-                        AndeanClassController.ProcessPlayerKilled(playerKilledMsg);
+                        ProcessPlayerKilled(playerKilledMsg);
                         break;
                     }
                 case PlayerDowned playerDownedMsg:
                     {
-                        AndeanClassController.ProcessPlayerDowned(playerDownedMsg);
+                        ProcessPlayerDowned(playerDownedMsg);
                         break;
                     }
                 case PlayerAssist playerAssistMsg:
                     {
-                        AndeanClassController.ProcessPlayerAssist(playerAssistMsg);
+                        ProcessPlayerAssist(playerAssistMsg);
                         break;
                     }
                 case SquadEliminated squadEliminatedMsg:
                     {
-                        _andeanClassController.ProcessSquadEliminated(squadEliminatedMsg);
+                        ProcessSquadEliminated(squadEliminatedMsg);
                         break;
                     }
                 case GibraltarShieldAbsorbed gibraltarShieldAbsorbedMsg:
                     {
-                        AndeanClassController.ProcessGibraltarShieldAbsorbed(gibraltarShieldAbsorbedMsg);
+                        ProcessGibraltarShieldAbsorbed(gibraltarShieldAbsorbedMsg);
                         break;
                     }
                 case RevenantForgedShadowDamaged revenantForgedShadowDamagedMsg:
                     {
-                        AndeanClassController.ProcessRevenantForgedShadowDamaged(revenantForgedShadowDamagedMsg);
+                        ProcessRevenantForgedShadowDamaged(revenantForgedShadowDamagedMsg);
                         break;
                     }
                 case ChangeCamera changeCameraMsg:
@@ -257,93 +258,92 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case PlayerRespawnTeam playerRespawnTeamMsg:
                     {
-                        AndeanClassController.ProcessPlayerRespawnTeam(playerRespawnTeamMsg);
+                        ProcessPlayerRespawnTeam(playerRespawnTeamMsg);
                         break;
                     }
                 case PlayerRevive playerReviveMsg:
                     {
-                        AndeanClassController.ProcessPlayerRevive(playerReviveMsg);
+                        ProcessPlayerRevive(playerReviveMsg);
                         break;
                     }
                 case ArenasItemSelected arenasItemSelectedMsg:
                     {
-                        AndeanClassController.ProcessArenasItemSelected(arenasItemSelectedMsg);
+                        ProcessArenasItemSelected(arenasItemSelectedMsg);
                         break;
                     }
                 case ArenasItemDeselected arenasItemDeselectedMsg:
                     {
-                        AndeanClassController.ProcessArenasItemDeselected(arenasItemDeselectedMsg);
-                        _andeanClassController.ProcessArenasItemDeselected(arenasItemDeselectedMsg);
+                        ProcessArenasItemDeselected(arenasItemDeselectedMsg);
                         break;
                     }
                 case InventoryPickUp inventoryPickUpMsg:
                     {
-                        AndeanClassController.ProcessInventoryPickUp(inventoryPickUpMsg);
+                        ProcessInventoryPickUp(inventoryPickUpMsg);
                         break;
                     }
                 case InventoryDrop inventoryDropMsg:
                     {
-                        AndeanClassController.ProcessInventoryDrop(inventoryDropMsg);
+                        ProcessInventoryDrop(inventoryDropMsg);
                         break;
                     }
                 case InventoryUse inventoryUseMsg:
                     {
-                        AndeanClassController.ProcessInventoryUse(inventoryUseMsg);
+                        ProcessInventoryUse(inventoryUseMsg);
                         break;
                     }
                 case BannerCollected bannerCollectedMsg:
                     {
-                        _andeanClassController.ProcessBannerCollected(bannerCollectedMsg);
+                        ProcessBannerCollected(bannerCollectedMsg);
                         break;
                     }
                 case PlayerAbilityUsed playerAbilityUsedMsg:
                     {
-                        AndeanClassController.ProcessPlayerAbilityUsed(playerAbilityUsedMsg);
+                        ProcessPlayerAbilityUsed(playerAbilityUsedMsg);
                         break;
                     }
                 case LegendUpgradeSelected legendUpgradeSelectedMsg:
                     {
-                        AndeanClassController.ProcessLegendUpgradeSelected(legendUpgradeSelectedMsg);
+                        ProcessLegendUpgradeSelected(legendUpgradeSelectedMsg);
                         break;
                     }
                 case ZiplineUsed ziplineUsedMsg:
                     {
-                        AndeanClassController.ProcessZiplineUsed(ziplineUsedMsg);
+                        ProcessZiplineUsed(ziplineUsedMsg);
                         break;
                     }
                 case GrenadeThrown grenadeThrownMsg:
                     {
-                        AndeanClassController.ProcessGrenadeThrown(grenadeThrownMsg);
+                        ProcessGrenadeThrown(grenadeThrownMsg);
                         break;
                     }
                 case BlackMarketAction blackMarketActionMsg:
                     {
-                        AndeanClassController.ProcessBlackMarketAction(blackMarketActionMsg);
+                        ProcessBlackMarketAction(blackMarketActionMsg);
                         break;
                     }
                 case WraithPortal wraithPortalMsg:
                     {
-                        AndeanClassController.ProcessWraithPortal(wraithPortalMsg);
+                        ProcessWraithPortal(wraithPortalMsg);
                         break;
                     }
                 case WarpGateUsed warpGateUsedMsg:
                     {
-                        AndeanClassController.ProcessWarpGateUsed(warpGateUsedMsg);
+                        ProcessWarpGateUsed(warpGateUsedMsg);
                         break;
                     }
                 case AmmoUsed ammoUsedMsg:
                     {
-                        AndeanClassController.ProcessAmmoUsed(ammoUsedMsg);
+                        ProcessAmmoUsed(ammoUsedMsg);
                         break;
                     }
                 case WeaponSwitched weaponSwitchedMsg:
                     {
-                        AndeanClassController.ProcessWeaponSwitched(weaponSwitchedMsg);
+                        ProcessWeaponSwitched(weaponSwitchedMsg);
                         break;
                     }
                 case ObserverSwitched observerSwitchedMsg:
                     {
-                        _andeanClassController.ProcessObserverSwitched(observerSwitchedMsg);
+                        ProcessObserverSwitched(observerSwitchedMsg);
                         break;
                     }
                 case ObserverAnnotation observerAnnotationMsg:

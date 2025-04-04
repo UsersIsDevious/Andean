@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Andean.AndeanWebUI.Services
+namespace AndeanWebUI.Services
 {
     public static class ControlPanelHubService
     {

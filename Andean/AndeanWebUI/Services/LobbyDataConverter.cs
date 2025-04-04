@@ -1,7 +1,7 @@
-﻿using Andean.AndeanWebUI.Models;
+﻿using AndeanWebUI.Models;
 using AndeanClass;
 
-namespace Andean.AndeanWebUI.Services
+namespace AndeanWebUI.Services
 {
     public static class LobbyDataConverter
     {

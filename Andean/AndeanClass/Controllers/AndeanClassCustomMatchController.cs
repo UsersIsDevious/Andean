@@ -1,12 +1,12 @@
-using Andean.AndeanClass.Services.Utilities;
+using AndeanClass.Services.Utilities;
 using AndeanClass.Services;
 using Rtech.Liveapi;
 
 namespace AndeanClass.Controllers
 {
-    public partial class AndeanClassController
+    public static partial class AndeanClassController
     {
-        public void ProcessObserverSwitched(ObserverSwitched observerSwitchedMsg)
+        public static void ProcessObserverSwitched(ObserverSwitched observerSwitchedMsg)
         {
             lock (_lock)
             {

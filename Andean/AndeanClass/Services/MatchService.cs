@@ -1,6 +1,5 @@
 ﻿using System;
-using Andean.AndeanClass;
-using Andean.AndeanClass.Services.Utilities;
+using AndeanClass.Services.Utilities;
 using Andean.Config;
 using Andean.Utilities;
 using AndeanClass;

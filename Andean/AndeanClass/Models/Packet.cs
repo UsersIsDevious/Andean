@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AndeanClass;
 
 namespace AndeanClass
 {
@@ -18,7 +19,7 @@ namespace AndeanClass
         /// 各エンティティのデータ配列
         /// (例: エンティティのID、位置情報、体力情報などを含む)
         /// </summary>
-        public List<Andean.AndeanClass.Models.EventPlayer> Data { get; set; }
+        public List<EventPlayer> Data { get; set; }
 
         /// <summary>
         /// イベントの配列
@@ -31,10 +32,10 @@ namespace AndeanClass
         /// <param name="t">マッチ開始からの経過秒数</param>
         /// <param name="data">各エンティティのデータ配列</param>
         /// <param name="events">イベントの配列</param>
-        public Packet(double t, List<Andean.AndeanClass.Models.EventPlayer> data = null, List<Event> events = null)
+        public Packet(double t, List<EventPlayer> data = null, List<Event> events = null)
         {
             T = t;
-            Data = data ?? new List<Andean.AndeanClass.Models.EventPlayer>();
+            Data = data ?? new List<EventPlayer>();
             Events = events ?? new List<Event>();
         }
 
@@ -62,7 +63,7 @@ namespace AndeanClass
         /// データを追加する
         /// </summary>
         /// <param name="entityData">追加するエンティティ情報</param>
-        public void AddData(Andean.AndeanClass.Models.EventPlayer entityData)
+        public void AddData(EventPlayer entityData)
         {
             Data.Add(entityData);
         }
@@ -72,7 +73,7 @@ namespace AndeanClass
         /// </summary>
         /// <param name="index">更新するデータのインデックス</param>
         /// <param name="entityData">更新するエンティティ情報</param>
-        public void UpdateData(int index, Andean.AndeanClass.Models.EventPlayer entityData)
+        public void UpdateData(int index, EventPlayer entityData)
         {
             if (index >= 0 && index < Data.Count)
             {

@@ -6,7 +6,7 @@ using Rtech.Liveapi; // Request, CustomMatch_CreateLobby, CustomMatch_JoinLobby,
 using Microsoft.Extensions.Logging;
 using Andean.WebsocketServer;
 
-namespace Andean.ApexLiveAPI.Request
+namespace ApexLiveAPI.Request
 {
     public class Request
     {

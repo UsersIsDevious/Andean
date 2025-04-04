@@ -1,4 +1,4 @@
-﻿using Andean.AndeanClass.Services.Utilities;
+﻿using AndeanClass.Services.Utilities;
 using AndeanClass.Services;
 using static AndeanClass.Services.PlayerService;
 

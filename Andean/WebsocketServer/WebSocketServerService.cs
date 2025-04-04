@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Andean.AndeanWebUI.Hubs;
+using AndeanWebUI.Hubs;
 using Rtech.Liveapi; // protoc により生成された型群
-using Andean.ApexLiveAPI.Message;
+using ApexLiveAPI.Message;
 using Andean.WebsocketServer.Controllers;
 
 namespace Andean.WebsocketServer

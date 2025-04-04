@@ -1,21 +1,21 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Andean.ApexLiveAPI.Request;
-using Andean.ApexLiveAPI.Services;
+using ApexLiveAPI.Request;
+using ApexLiveAPI.Services;
 using Andean.WebsocketServer.Controllers;
 using Andean.Utilities;
 using Andean.Config;
 using Microsoft.Extensions.Options;
-using Andean.AndeanWebUI.Models;
-using Andean.AndeanWebUI.Services;
-using Andean.ApexLiveAPI.Message;
+using AndeanWebUI.Models;
+using AndeanWebUI.Services;
+using ApexLiveAPI.Message;
 using AndeanClass;
 using AndeanSystems;
 using AndeanClass.Controllers;
-using static Andean.AndeanWebUI.Services.ControlPanelHubService;
+using static AndeanWebUI.Services.ControlPanelHubService;
 
-namespace Andean.AndeanWebUI.Hubs
+namespace AndeanWebUI.Hubs
 {
     public partial class ControlPanelHub : Hub, IAndeanWebUI
     {

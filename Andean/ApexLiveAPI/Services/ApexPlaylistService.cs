@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Andean.Config;
 using Andean.Utilities;
 
-namespace Andean.ApexLiveAPI.Services
+namespace ApexLiveAPI.Services
 {
     public class ApexPlaylistService
     {

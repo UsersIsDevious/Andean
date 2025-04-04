@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Andean.AndeanWebUI.Models;
+using AndeanWebUI.Models;
 
 namespace AndeanSystems
 {

@@ -1,11 +1,11 @@
 ﻿// TimestampService.cs
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Andean.AndeanWebUI.Hubs;
+using AndeanWebUI.Hubs;
 using System;
 using AndeanSystems;
 
-namespace Andean.AndeanClass.Services
+namespace AndeanClass.Services
 {
     // TimestampService は BaseClass を継承し、Update() を実装する
     public class TimestampService : AndeanSystem

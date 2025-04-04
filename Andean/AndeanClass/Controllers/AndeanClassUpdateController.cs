@@ -1,15 +1,17 @@
 ﻿using AndeanSystems;
-using Andean.AndeanClass;
 using AndeanClass.Controllers;
 using static AndeanClass.Controllers.AndeanClassController;
+using AndeanClass;
 
-namespace Andean.AndeanClass.Controllers
+namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
         public void Update()
         {
-            Console.WriteLine(_match);
+            long unixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            double time = unixTime - (long)_match.StartTimeStamp;
+            _packet = new Packet(time);
         }
     }
 }

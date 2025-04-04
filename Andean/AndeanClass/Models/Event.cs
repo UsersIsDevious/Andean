@@ -1,6 +1,4 @@
-﻿using Andean.AndeanClass.Models;
-
-namespace AndeanClass
+﻿namespace AndeanClass
 {
     /// <summary>
     /// Eventに関するクラス

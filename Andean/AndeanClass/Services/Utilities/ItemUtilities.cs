@@ -2,7 +2,7 @@
 using AndeanClass.Services;
 using System.Text.RegularExpressions;
 
-namespace Andean.AndeanClass.Services.Utilities
+namespace AndeanClass.Services.Utilities
 {
     public static class ItemUtilities
     { 

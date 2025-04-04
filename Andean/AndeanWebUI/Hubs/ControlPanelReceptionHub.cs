@@ -1,17 +1,17 @@
-﻿using Andean.AndeanWebUI.Models;
+﻿using AndeanWebUI.Models;
 using Andean.Config;
 using Andean.Utilities;
 using AndeanSystems;
 using Microsoft.AspNetCore.SignalR;
-using Andean.ApexLiveAPI.Request;
+using ApexLiveAPI.Request;
 using Google.Protobuf.WellKnownTypes;
-using Andean.AndeanWebUI.Services;
-using static Andean.AndeanWebUI.Services.ControlPanelHubService;
+using AndeanWebUI.Services;
+using static AndeanWebUI.Services.ControlPanelHubService;
 using static Andean.Utilities.CommandExecutionService;
 using static Andean.Config.ConfigService;
 using System.Text.Json;
 
-namespace Andean.AndeanWebUI.Hubs
+namespace AndeanWebUI.Hubs
 {
     public partial class ControlPanelHub : Hub, IAndeanWebUI
     {

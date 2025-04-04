@@ -14,10 +14,10 @@
   "Log_Dir": "../../log",
   "Data_Fps": 60,
   "Score_Setting": {
-    "Kill_Point": 3,
+    "Kill_Point": 4,
     "Max_Kill": 10,
     "Rank_Points": [
-      16,
+      14,
       9,
       7,
       5,
