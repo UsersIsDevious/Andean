@@ -1,23 +1,23 @@
 {
-  "apexlegends": {
-    "path": "D:\\ea\\Apex",
-    "game_lancher": "EA",
-    "api_port": "7777",
-    "api_option": "+cl_liveapi_enabled 1",
-    "option": "+miles_language english +cl_liveapi_ws_retry_count 20 +cl_liveapi_ws_retry_time 3 +cl_liveapi_ws_timeout 600"
+  "ApexLegends": {
+    "Path": "D:\\ea\\Apex",
+    "Game_Lancher": "EA",
+    "Api_Port": "7777",
+    "Api_Option": "\u002Bcl_liveapi_enabled 1",
+    "Option": "\u002Bmiles_language english \u002Bcl_liveapi_ws_retry_count 20 \u002Bcl_liveapi_ws_retry_time 3 \u002Bcl_liveapi_ws_timeout 600"
   },
-  "penetrator": [
+  "Penetrator": [
     "Caustic Gas"
   ],
-  "output": "../../output",
-  "language": "",
-  "log_dir": "../../log",
-  "data_fps": 60,
-  "score_setting": {
-    "kill_point": 1,
-    "max_kill": 10,
-    "rank_points": [
-      12,
+  "Output": "../../output",
+  "Language": "\u0022japanese\u0022",
+  "Log_Dir": "../../log",
+  "Data_Fps": 60,
+  "Score_Setting": {
+    "Kill_Point": 3,
+    "Max_Kill": 10,
+    "Rank_Points": [
+      16,
       9,
       7,
       5,

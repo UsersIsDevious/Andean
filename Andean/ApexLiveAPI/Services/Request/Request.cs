@@ -183,12 +183,12 @@ namespace Andean.ApexLiveAPI.Request
         /// <summary>
         /// 試合設定を適用するリクエスト
         /// </summary>
-        public async Task<Response?> SetSettingsAsync(string matchName, bool adminChat, bool teamRename, bool selfAssign, bool aimAssist, bool anonMode, CancellationToken cancellationToken)
+        public async Task<Response?> SetSettingsAsync(string playlistName, bool adminChat, bool teamRename, bool selfAssign, bool aimAssist, bool anonMode, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var setSettings = new CustomMatch_SetSettings
             {
-                PlaylistName = matchName,
+                PlaylistName = playlistName,
                 AdminChat = adminChat,
                 TeamRename = teamRename,
                 SelfAssign = selfAssign,

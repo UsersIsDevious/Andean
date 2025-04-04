@@ -1,9 +1,9 @@
-﻿namespace AndeanSystem
+﻿namespace AndeanSystems
 {
-    public abstract class AndeanSystem
+    public interface AndeanSystem
     {
         // サブクラスに実装を強制する
-        public abstract void Update();
+        void Update();
 
     }
 }

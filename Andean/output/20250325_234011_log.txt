@@ -1,0 +1,1 @@
+[2025-03-25 23:41:48] Client: 2335fc87-fd9b-4c9d-9899-81443293e0c2, MessageType: Init, Content: { "timestamp": "1742913708", "category": "init", "gameVersion": "Build ID: R5pc_r5-240_J31_CL8613390_2025_02_27_13_22", "apiVersion": { "majorNum": 2, "minorNum": 2, "buildStamp": 960913 }, "platform": "PC" }

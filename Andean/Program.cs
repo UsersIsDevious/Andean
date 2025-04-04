@@ -14,13 +14,13 @@ using Andean.AndeanWebUI.Hubs;
 using Andean.Utilities;
 using Andean.Config;
 using System.Diagnostics;
-using AndeanSystem;
+using AndeanSystems;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ カスタム設定ファイル `config/config.json` を読み込み
-builder.Configuration.AddJsonFile("config/config.json", optional: true, reloadOnChange: true);
+//builder.Configuration.AddJsonFile("config/config.json", optional: true, reloadOnChange: true);
 
 // ✅ DI (依存性注入) に `CustomSettings` を登録
 builder.Services.Configure<AppConfig>(builder.Configuration);
@@ -38,12 +38,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
 
-
-// 🚀 ConfigService をシングルトンで登録
-builder.Services.AddSingleton<ConfigService>();
-
 // 🚀 TimestampService をシングルトンで登録
-builder.Services.AddSingleton<AndeanSystem.AndeanSystem, TimestampService>();
+builder.Services.AddSingleton<AndeanSystem, TimestampService>();
 
 // 🚀 WebSocket サーバーをシングルトンとして登録
 builder.Services.AddSingleton<WebSocketServer>();
@@ -59,12 +55,6 @@ builder.Services.AddSingleton<Request>();
 
 // 🚀 ApexPlaylistService をシングルトンで登録
 builder.Services.AddSingleton<ApexPlaylistService>();
-
-// 🚀 AndeanClassController をシングルトンで登録
-builder.Services.AddSingleton<AndeanClassController>();
-
-// ☆ UpdateManager をホストサービスとして登録
-builder.Services.AddHostedService<UpdateManager>();
 
 // 🚀 SystemShutdownService をホストサービスとして登録
 builder.Services.AddSingleton<SystemShutdownService>();
