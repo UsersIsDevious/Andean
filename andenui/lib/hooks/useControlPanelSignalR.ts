@@ -2,62 +2,11 @@
 
 import { useState, useEffect } from "react"
 import * as signalR from "@microsoft/signalr"
+import type { ConfigData, CSVTeamData } from "@/lib/types"
 
 const CONTROL_PANEL_HUB_URL = "https://localhost:7109/ControlPanelHub"
 
-// 設定データの型定義
-interface ApexLegendsConfig {
-  path: string
-  api_Port: string
-  api_Option: string
-  option: string
-}
-
-interface ScoreSettingConfig {
-  kill_Point: number
-  max_Kill: number
-  rank_Points: number[]
-}
-
-interface AppConfig {
-  apexLegends: ApexLegendsConfig
-  penetrator: string[]
-  output: string
-  language: string
-  log_Dir: string
-  data_Fps: number
-  score_Setting: ScoreSettingConfig
-}
-
-// Add UIStatus interface after the existing interfaces
-interface UIStatus {
-  lobbyJoinButtonEnabled: boolean
-  gameStartButtonEnabled: boolean
-  leaveLobbyButtonEnabled: boolean
-  isLobbyJoined: boolean
-  maxTeamPlayer?: number
-  maxTeam?: number
-  gameStatus?: string
-}
-
-// Add UIStatus to ConfigData interface
-interface ConfigData {
-  sharedData: string
-  selectedDataKeys: string[]
-  appConfig: AppConfig
-  lastLobbyResponse: string
-  lastApexResponse: string
-  uiStatus?: UIStatus // Add this line
-}
-
-// CSV データの型定義
-interface CSVTeamData {
-  TEAM: number
-  NAME: string
-  IMG_URL: string
-  MEMBER_NUM: number
-  MEMBERS: string[]
-}
+// 型定義を削除し、インポートした型を使用
 
 export const useControlPanelSignalR = () => {
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null)
@@ -114,26 +63,10 @@ export const useControlPanelSignalR = () => {
       window.close() // 🔹 ページを閉じる
     })
 
-    // 新しいイベントハンドラーを追加します
-    // 既存のuseEffect内のnewConnection.onイベントリスナーに以下を追加してください
-
-    newConnection.on("RequestReceived", (requestType, message) => {
-      console.log(`📩 Request Received: ${requestType}`, message)
-
-      // リクエストタイプに応じてローディング状態を解除
-      switch (requestType) {
-        case "StartApex":
-          setIsApexLoading(false)
-          break
-        case "JoinLobby":
-          setIsLobbyLoading(false)
-          break
-        case "LeaveLobby":
-          // ロビー退出中の状態を管理する変数があれば、ここでfalseに設定
-          break
-        default:
-          console.log(`未処理のリクエストタイプ: ${requestType}`)
-      }
+    // ConfigUpdateResponse ハンドラを追加（サーバー側のメソッド名に合わせる）
+    newConnection.on("ConfigUpdateResponse", (response) => {
+      console.log("📩 Received Config Update Response:", response)
+      // 必要に応じて、ユーザーに通知するなどの処理を追加
     })
 
     setConnection(newConnection)
@@ -146,18 +79,12 @@ export const useControlPanelSignalR = () => {
     }
   }, [])
 
-  // startApex関数を更新
   const startApex = async () => {
     if (connection && isConnected) {
       try {
         console.log("🏆 Sending StartApex request...")
         setIsApexLoading(true)
         await connection.invoke("StartApex")
-        // RequestReceivedイベントが発生しない場合のフォールバックとして、
-        // タイムアウト後にローディング状態を解除
-        setTimeout(() => {
-          setIsApexLoading(false)
-        }, 10000) // 10秒のタイムアウト
       } catch (error) {
         console.error("❌ StartApex Error:", error)
         setIsApexLoading(false)
@@ -180,6 +107,7 @@ export const useControlPanelSignalR = () => {
     }
   }
 
+  // updateConfig メソッドを修正して、サーバー側が期待するセクションキーに変換する
   const updateConfig = async (
     sectionKey: keyof ConfigData,
     newData: unknown,
@@ -188,7 +116,43 @@ export const useControlPanelSignalR = () => {
     if (connection && isConnected) {
       try {
         console.log(`🔧 Updating config: ${sectionKey}`)
-        await connection.invoke("UpdateConfig", sectionKey, JSON.stringify(newData), mode)
+
+        // サーバー側が期待するセクションキーに変換
+        let serverSectionKey = sectionKey
+        let dataToSend = newData
+
+        // appConfig セクションの場合は、具体的なサブセクションに変換
+        if (sectionKey === "appConfig") {
+          // appConfig の中の特定のプロパティを更新する場合
+          const appConfigData = newData as Partial<AppConfig>
+
+          if (appConfigData.apexLegends) {
+            serverSectionKey = "apexlegends"
+            dataToSend = appConfigData.apexLegends
+          } else if (appConfigData.penetrator !== undefined) {
+            serverSectionKey = "penetrator"
+            dataToSend = appConfigData.penetrator
+          } else if (appConfigData.output !== undefined) {
+            serverSectionKey = "output"
+            dataToSend = appConfigData.output
+          } else if (appConfigData.language !== undefined) {
+            serverSectionKey = "language"
+            dataToSend = appConfigData.language
+          } else if (appConfigData.log_Dir !== undefined) {
+            serverSectionKey = "log_dir"
+            dataToSend = appConfigData.log_Dir
+          } else if (appConfigData.data_Fps !== undefined) {
+            serverSectionKey = "data_fps"
+            dataToSend = appConfigData.data_Fps
+          } else if (appConfigData.score_Setting) {
+            serverSectionKey = "score_setting"
+            dataToSend = appConfigData.score_Setting
+          }
+        }
+
+        // サーバーに送信
+        console.log("UpdateConfig", serverSectionKey, JSON.stringify(dataToSend), mode.toLowerCase())
+        await connection.invoke("UpdateConfig", serverSectionKey, JSON.stringify(dataToSend), mode.toLowerCase())
       } catch (error) {
         console.error("❌ UpdateConfig Error:", error)
       }
@@ -210,7 +174,6 @@ export const useControlPanelSignalR = () => {
     }
   }
 
-  // joinLobby関数を更新
   const joinLobby = async (lobbyCode?: string) => {
     if (connection && isConnected) {
       try {
@@ -218,11 +181,6 @@ export const useControlPanelSignalR = () => {
         setIsLobbyLoading(true)
         // 引数がある場合はそのまま渡し、ない場合は null を渡す
         await connection.invoke("joinLobby", lobbyCode ?? null)
-        // RequestReceivedイベントが発生しない場合のフォールバックとして、
-        // タイムアウト後にローディング状態を解除
-        setTimeout(() => {
-          setIsLobbyLoading(false)
-        }, 10000) // 10秒のタイムアウト
       } catch (error) {
         console.error("❌ joinLobby Error:", error)
         setIsLobbyLoading(false)
@@ -350,21 +308,13 @@ export const useControlPanelSignalR = () => {
       console.warn("⚠️ 接続が確立されていません。setSettingsリクエストを送信できません。")
     }
   }
-  // leaveLobby関数を更新
   const leaveLobby = async () => {
     if (connection && isConnected) {
       try {
         console.log("🛠️ Sending leaveLobby request...")
-        // ロビー退出中の状態を管理する変数があれば、ここでtrueに設定
         await connection.invoke("leaveLobby")
-        // RequestReceivedイベントが発生しない場合のフォールバックとして、
-        // タイムアウト後にローディング状態を解除
-        setTimeout(() => {
-          // ロビー退出中の状態を管理する変数があれば、ここでfalseに設定
-        }, 10000) // 10秒のタイムアウト
       } catch (error) {
         console.error("❌ leaveLobby Error:", error)
-        // ロビー退出中の状態を管理する変数があれば、ここでfalseに設定
       }
     } else {
       console.warn("⚠️ 接続が確立されていません。leaveLobbyリクエストを送信できません。")
@@ -435,5 +385,15 @@ export const useControlPanelSignalR = () => {
     isApexLoading,
     isConnected,
   }
+}
+
+interface AppConfig {
+  apexLegends?: any
+  penetrator?: any
+  output?: any
+  language?: any
+  log_Dir?: any
+  data_Fps?: any
+  score_Setting?: any
 }
 

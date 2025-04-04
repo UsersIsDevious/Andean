@@ -6,7 +6,7 @@ import { useState } from "react"
 import { Edit, Save, X } from "lucide-react"
 import PlayerSlot from "@/components/control-panel/players/PlayerSlot"
 import { getTeamColor } from "@/lib/utils/team-utils"
-import type { Team } from "@/lib/types/team-types"
+import type { Team } from "@/lib/types"
 
 interface TeamCardProps {
   teamId: string

@@ -1,7 +1,7 @@
 import type React from "react"
 import { Users } from "lucide-react"
 import PlayerSlot from "@/components/control-panel/players/PlayerSlot"
-import type { Team } from "@/lib/types/team-types"
+import type { Team } from "@/lib/types"
 
 interface SpecialTeamViewProps {
   teamId: string

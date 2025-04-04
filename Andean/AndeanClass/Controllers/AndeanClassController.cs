@@ -6,6 +6,7 @@ using Andean.Config;
 using AndeanClass.Services;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
+using static AndeanClass.Services.MatchService;
 
 namespace AndeanClass.Controllers
 {
@@ -21,7 +22,7 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// マッチ情報
         /// </summary>
-        private static CustomMatch _match;
+        public static CustomMatch _match;
         /// <summary>
         /// ロビーかどうかのフラグ
         /// </summary>
@@ -43,22 +44,12 @@ namespace AndeanClass.Controllers
         /// </summary>
         private static Player WorldPlayer = new Player("World", 99, "World", "World").SetLegend("World");
 
-        public static void Update()
-        {
-            //var frame = Interlocked.Increment(ref currentFrame);
-            //var data = new FrameData(frame);
-            //frameDataMap[frame] = data;
-
-             //サンプル：マルチスレッドでデータ追加
-            //Task.Run(() => SimulateDataAdding(frame));
-        }
-
 
         public static void InitializeLobby(Init initMsg)
         {
             lock (_lock)
             {
-                _lobby = MatchService.CreateCustomMatch(initMsg);
+                _lobby = CreateCustomMatch(initMsg);
             }
         }
 
@@ -67,7 +58,7 @@ namespace AndeanClass.Controllers
         {
             lock (_lock)
             {
-                _match = MatchService.CreateCustomMatch(initMsg);
+                _match = CreateCustomMatch(initMsg);
                 // マッチが初期化されたらロビーから抜ける
                 _isLobby = false;
             }
@@ -83,7 +74,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                MatchService.ConfigureMatchSetup(matchSetupMsg, _match);
+                ConfigureMatchSetup(matchSetupMsg, _match);
             }
         }
 
@@ -100,7 +91,7 @@ namespace AndeanClass.Controllers
                 // Postmatchの場合はロビーに戻る
                 if (gameStateChangedMsg.State == "Postmatch") _isLobby = true;
 
-                MatchService.UpdateGameStatus(gameStateChangedMsg, _match, config, _teamRanking, _ringEvents);
+                UpdateGameStatus(gameStateChangedMsg, _match, config, _teamRanking, _ringEvents);
             }
         }
         

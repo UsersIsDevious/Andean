@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Andean.AndeanWebUI.Hubs;
 using System;
-using AndeanSystem;
+using AndeanSystems;
 
 namespace Andean.AndeanClass.Services
 {
     // TimestampService は BaseClass を継承し、Update() を実装する
-    public class TimestampService : AndeanSystem.AndeanSystem
+    public class TimestampService : AndeanSystem
     {
         private readonly IHubContext<ControlPanelHub> _hubContext;
         private readonly ILogger<TimestampService> _logger;
@@ -23,7 +23,7 @@ namespace Andean.AndeanClass.Services
         }
 
         // Update() は UpdateManager により 60FPS (約16ms毎) で呼ばれる
-        public override void Update()
+        public void Update()
         {
             // 前回送信から _interval 経過しているかチェック
             if (DateTime.UtcNow - _lastSentTime >= _interval)

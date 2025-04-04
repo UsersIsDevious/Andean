@@ -1,7 +1,7 @@
 "use client"
 import { X, Info } from "lucide-react"
 import { getTeamColor } from "@/lib/utils/team-utils"
-import type { TeamData } from "@/lib/types/team-types"
+import type { TeamData } from "@/lib/types"
 
 interface TeamSelectorModalProps {
   teamData: TeamData

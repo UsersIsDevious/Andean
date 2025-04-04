@@ -14,7 +14,7 @@ using Andean.AndeanWebUI.Hubs;
 using Andean.Utilities;
 using Andean.Config;
 using System.Diagnostics;
-using AndeanSystem;
+using AndeanSystems;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,7 +39,7 @@ builder.Services.AddSignalR();
 
 
 // 🚀 TimestampService をシングルトンで登録
-builder.Services.AddSingleton<AndeanSystem.AndeanSystem, TimestampService>();
+builder.Services.AddSingleton<AndeanSystem, TimestampService>();
 
 // 🚀 WebSocket サーバーをシングルトンとして登録
 builder.Services.AddSingleton<WebSocketServer>();
@@ -55,9 +55,6 @@ builder.Services.AddSingleton<Request>();
 
 // 🚀 ApexPlaylistService をシングルトンで登録
 builder.Services.AddSingleton<ApexPlaylistService>();
-
-// ☆ UpdateManager をホストサービスとして登録
-builder.Services.AddHostedService<UpdateManager>();
 
 // 🚀 SystemShutdownService をホストサービスとして登録
 builder.Services.AddSingleton<SystemShutdownService>();

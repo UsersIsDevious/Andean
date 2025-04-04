@@ -11,8 +11,9 @@ using Andean.AndeanWebUI.Models;
 using Andean.AndeanWebUI.Services;
 using Andean.ApexLiveAPI.Message;
 using AndeanClass;
-using AndeanSystem;
+using AndeanSystems;
 using AndeanClass.Controllers;
+using static Andean.AndeanWebUI.Services.ControlPanelHubService;
 
 namespace Andean.AndeanWebUI.Hubs
 {
@@ -20,7 +21,7 @@ namespace Andean.AndeanWebUI.Hubs
     {
         private readonly ApexPlaylistService _apexPlaylistService;
         private readonly Request _request;
-        private readonly AppConfig _config;
+        private readonly AppConfig _config = ConfigService.Config;
         private readonly SystemShutdownService _shutdownService;
 
         private Dictionary<string, LobbyPlayerSection> lobbyPlayers = new Dictionary<string, LobbyPlayerSection>();
@@ -28,7 +29,6 @@ namespace Andean.AndeanWebUI.Hubs
 
         public ControlPanelHub(
             ApexPlaylistService apexPlaylistService,
-            IOptionsMonitor<AppConfig> configOptions,
             SystemShutdownService shutdownService,
             Request request
             )
@@ -36,7 +36,6 @@ namespace Andean.AndeanWebUI.Hubs
             _apexPlaylistService = apexPlaylistService;
             _shutdownService = shutdownService;
             _request = request;
-            _config = configOptions.CurrentValue;
         }
 
         // 全クライアントへ現在のステータスをブロードキャストする
@@ -48,22 +47,23 @@ namespace Andean.AndeanWebUI.Hubs
         // 現在の全ステータスを集約して返す（UI状態も含む）
         private object GetCurrentStatus()
         {
+            Console.WriteLine(_config);
             return new
             {
-                SharedData = ControlPanelHubService.SharedData,
-                SelectedDataKeys = ControlPanelHubService.SelectedDataKeys,
+                SharedData = SharedData,
+                SelectedDataKeys = SelectedDataKeys,
                 AppConfig = _config,
-                LastLobbyResponse = ControlPanelHubService.LastLobbyResponse,
-                LastApexResponse = ControlPanelHubService.LastApexResponse,
+                LastLobbyResponse = LastLobbyResponse,
+                LastApexResponse = LastApexResponse,
                 UIStatus = new
                 {
-                    LobbyJoinButtonEnabled = ControlPanelHubService.LobbyJoinButtonEnabled,
-                    GameStartButtonEnabled = ControlPanelHubService.GameStartButtonEnabled,
-                    LeaveLobbyButtonEnabled = ControlPanelHubService.LeaveLobbyButtonEnabled,
-                    IsLobbyJoined = ControlPanelHubService.IsLobbyJoined,
-                    MaxTeamPlayer = ControlPanelHubService.MaxTeamPlayer,
-                    MaxTeam = ControlPanelHubService.MaxTeam,
-                    GameStatus = ControlPanelHubService.GameStatus
+                    LobbyJoinButtonEnabled = LobbyJoinButtonEnabled,
+                    GameStartButtonEnabled = GameStartButtonEnabled,
+                    LeaveLobbyButtonEnabled = LeaveLobbyButtonEnabled,
+                    IsLobbyJoined = IsLobbyJoined,
+                    MaxTeamPlayer = MaxTeamPlayer,
+                    MaxTeam = MaxTeam,
+                    GameStatus = GameStatus
                 }
             };
         }

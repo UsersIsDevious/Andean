@@ -5,57 +5,57 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace AndeanSystem
+namespace AndeanSystems
 {
-    // IHostedService を実装してバックグラウンドで更新処理を行う
-    public class UpdateManager : IHostedService
+    public static class UpdateManager
     {
-        // DI により、AndeanSystem を継承した全オブジェクトを受け取る
-        private readonly IEnumerable<AndeanSystem> _updatables;
-        private CancellationTokenSource _cts;
+        private static List<AndeanSystem> updatables = new List<AndeanSystem>();
+        private static bool running = false;
+        private static int intervalMs = 16; // 約60FPS
 
-        public UpdateManager(IEnumerable<AndeanSystem> updatables)
+        public static void Register(AndeanSystem u)
         {
-            _updatables = updatables;
+            if (!updatables.Contains(u))
+                updatables.Add(u);
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public static void Unregister(AndeanSystem u)
         {
-            _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            // 別スレッドで更新ループを開始（60FPS = 約16.67ms毎）
-            Task.Run(() => UpdateLoop(_cts.Token));
-            return Task.CompletedTask;
+            if (updatables.Contains(u))
+                updatables.Remove(u);
         }
 
-        private async Task UpdateLoop(CancellationToken token)
+        public static void Start()
         {
-            const int targetFPS = 60;
-            const int frameDelay = 1000 / targetFPS; // 約16ms
+            if (running) return;
+            running = true;
 
-            while (!token.IsCancellationRequested)
+            Thread updateThread = new Thread(() =>
             {
-                var frameStart = DateTime.UtcNow;
-
-                // 登録されたすべての更新対象の Update() を呼び出す
-                foreach (var updatable in _updatables)
+                while (running)
                 {
-                    updatable.Update();
+                    foreach (var u in updatables.ToArray()) // 安全なイテレーション
+                    {
+                        try
+                        {
+                            u.Update();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Update error: {ex.Message}");
+                        }
+                    }
+                    Thread.Sleep(intervalMs);
                 }
+            });
 
-                // 1フレーム分の処理時間を計測し、残り時間分待機
-                var elapsed = (DateTime.UtcNow - frameStart).TotalMilliseconds;
-                var delay = frameDelay - (int)elapsed;
-                if (delay > 0)
-                {
-                    await Task.Delay(delay, token);
-                }
-            }
+            updateThread.IsBackground = true;
+            updateThread.Start();
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public static void Stop()
         {
-            _cts.Cancel();
-            return Task.CompletedTask;
+            running = false;
         }
     }
 }

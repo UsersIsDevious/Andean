@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Player } from "@/lib/types/team-types"
+import type { Player } from "@/lib/types"
 
 interface PlayerSlotProps {
   index: number

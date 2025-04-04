@@ -1,11 +1,14 @@
 ﻿using Andean.AndeanWebUI.Models;
 using Andean.Config;
 using Andean.Utilities;
-using AndeanSystem;
+using AndeanSystems;
 using Microsoft.AspNetCore.SignalR;
 using Andean.ApexLiveAPI.Request;
 using Google.Protobuf.WellKnownTypes;
 using Andean.AndeanWebUI.Services;
+using static Andean.AndeanWebUI.Services.ControlPanelHubService;
+using static Andean.Utilities.CommandExecutionService;
+using static Andean.Config.ConfigService;
 
 namespace Andean.AndeanWebUI.Hubs
 {
@@ -37,7 +40,7 @@ namespace Andean.AndeanWebUI.Hubs
                     string? steamPath = await GetSteamPath.GetSteamPathAsync();
                     if (steamPath == null)
                     {
-                        ControlPanelHubService.LastApexResponse = "Error: Steam path not found or Steam not installed.";
+                        LastApexResponse = "Error: Steam path not found or Steam not installed.";
                         await BroadcastStatus();
                         return;
                     }
@@ -48,16 +51,16 @@ namespace Andean.AndeanWebUI.Hubs
                     }
                 }
                 Console.WriteLine(command);
-                string result = await CommandExecutionService.ExecuteCommandAsync(command, CommandMode.CommandPrompt);
-                ControlPanelHubService.LastApexResponse = result;
+                string result = await ExecuteCommandAsync(command, CommandMode.CommandPrompt);
+                LastApexResponse = result;
             }
             catch (Exception ex)
             {
-                ControlPanelHubService.LastApexResponse = $"Error: {ex.Message}";
-                Console.WriteLine(ControlPanelHubService.LastApexResponse);
+                LastApexResponse = $"Error: {ex.Message}";
+                Console.WriteLine(LastApexResponse);
             }
 
-            ControlPanelHubService.LobbyJoinButtonEnabled = false;
+            LobbyJoinButtonEnabled = false;
             await BroadcastStatus();
         }
         /// <summary>
@@ -100,33 +103,33 @@ namespace Andean.AndeanWebUI.Hubs
                         if (newApex != null)
                         {
                             // mode に応じた更新方法は、ConfigService.UpdateConfigSectionAsync 内で処理することも可能
-                            await ConfigService.UpdateConfigSectionAsync("apexlegends", newApex);
+                            await UpdateConfigSectionAsync("apexlegends", newApex);
                         }
                         break;
                     case "penetrator":
                         var newPenetrator = System.Text.Json.JsonSerializer.Deserialize<List<string>>(newData);
                         if (newPenetrator != null)
                         {
-                            await ConfigService.UpdateConfigSectionAsync("penetrator", newPenetrator);
+                            await UpdateConfigSectionAsync("penetrator", newPenetrator);
                         }
                         break;
                     case "output":
-                        await ConfigService.UpdateConfigSectionAsync("output", newData);
+                        await UpdateConfigSectionAsync("output", newData);
                         break;
                     case "language":
-                        await ConfigService.UpdateConfigSectionAsync("language", newData);
+                        await UpdateConfigSectionAsync("language", newData);
                         break;
                     case "log_dir":
-                        await ConfigService.UpdateConfigSectionAsync("log_dir", newData);
+                        await UpdateConfigSectionAsync("log_dir", newData);
                         break;
                     case "data_fps":
-                        await ConfigService.UpdateConfigSectionAsync("data_fps", newData);
+                        await UpdateConfigSectionAsync("data_fps", newData);
                         break;
                     case "score_setting":
                         var newScore = System.Text.Json.JsonSerializer.Deserialize<ScoreSettingConfig>(newData);
                         if (newScore != null)
                         {
-                            await ConfigService.UpdateConfigSectionAsync("score_setting", newScore);
+                            await UpdateConfigSectionAsync("score_setting", newScore);
                         }
                         break;
                     default:
@@ -175,13 +178,13 @@ namespace Andean.AndeanWebUI.Hubs
             }
             
 
-            ControlPanelHubService.LobbyJoinButtonEnabled = false;
-            ControlPanelHubService.LeaveLobbyButtonEnabled = true;
-            ControlPanelHubService.IsLobbyJoined = true;
+            LobbyJoinButtonEnabled = false;
+            LeaveLobbyButtonEnabled = true;
+            IsLobbyJoined = true;
 
-            ControlPanelHubService.LastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
-            Console.WriteLine($"ControlPanelStateService.LobbyJoinButtonEnabled:{ControlPanelHubService.LobbyJoinButtonEnabled}");
-            Console.WriteLine($"leaveLobbyButtonEnabled:{ControlPanelHubService.LeaveLobbyButtonEnabled}");
+            LastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
+            Console.WriteLine($"ControlPanelStateService.LobbyJoinButtonEnabled:{LobbyJoinButtonEnabled}");
+            Console.WriteLine($"leaveLobbyButtonEnabled:{LeaveLobbyButtonEnabled}");
             await BroadcastStatus();
         }
 
@@ -192,9 +195,9 @@ namespace Andean.AndeanWebUI.Hubs
 
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             await _request.LeaveLobbyAsync(cts.Token);
-            ControlPanelHubService.LobbyJoinButtonEnabled = true;
-            ControlPanelHubService.LeaveLobbyButtonEnabled = false;
-            ControlPanelHubService.IsLobbyJoined = false;
+            LobbyJoinButtonEnabled = true;
+            LeaveLobbyButtonEnabled = false;
+            IsLobbyJoined = false;
             await BroadcastStatus();
         }
 

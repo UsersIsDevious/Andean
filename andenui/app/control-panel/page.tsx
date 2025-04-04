@@ -14,27 +14,21 @@ import TabNavigation from "@/components/control-panel/navigation/TabNavigation"
 import SpecialTeamView from "@/components/control-panel/teams/SpecialTeamView"
 
 // Hooks and utilities
-import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalR" // 本番用
+ import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalR" // 本番用
 //import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalRMock" // モック用
 import { getAllPlayersFromTeams, movePlayerBetweenTeams, removePlayerFromTeam } from "@/lib/utils/team-utils"
-// Types
-import type { TeamData, LobbySettings } from "@/lib/types/team-types"
 
-// CSV データの型定義
-interface CSVTeamData {
-  TEAM: number
-  NAME: string
-  IMG_URL: string
-  MEMBER_NUM: number
-  MEMBERS: string[]
-}
+// Types
+import type { TeamData, LobbySettings, CSVTeamData, POIOption, ContextMenuState, PlayerMoveState } from "@/lib/types"
+
+// CSV データの型定義は削除（インポートに置き換え）
 
 // Add POI interface
-interface POIOption {
-  id: string
-  name: string
-  icon: React.ReactNode
-}
+// interface POIOption {
+//   id: string
+//   name: string
+//   icon: React.ReactNode
+// }
 
 export default function ControlPanelPage() {
   // Hook for SignalR connection
@@ -96,11 +90,9 @@ export default function ControlPanelPage() {
   const [poiSearchQuery, setPoiSearchQuery] = useState("")
 
   // Context menu and player movement state
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; playerId: string; teamId: string } | null>(
-    null,
-  )
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
   const [showTeamSelector, setShowTeamSelector] = useState(false)
-  const [playerToMove, setPlayerToMove] = useState<{ playerId: string; teamId: string } | null>(null)
+  const [playerToMove, setPlayerToMove] = useState<PlayerMoveState | null>(null)
 
   // Define POI options
   const poiOptions: POIOption[] = [
@@ -149,42 +141,43 @@ export default function ControlPanelPage() {
   }
 
   // CSV parsing function
-  const parseCSV = (csvText: string): Record<string, { teamName: string; logoUrl: string; players: string[] }> => {
-    const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== "");
-    const headers = lines[0].split(",").map(h => h.trim());
-  
-    const result: Record<string, { teamName: string; logoUrl: string; players: string[] }> = {};
-  
+  const parseCSV = (csvText: string): CSVTeamData[] => {
+    // Split the CSV text into lines
+    const lines = csvText.split(/\r\n|\n/)
+
+    // Extract headers (first line)
+    const headers = lines[0].split(",")
+
+    // Process data rows
+    const result: CSVTeamData[] = []
     for (let i = 1; i < lines.length; i++) {
-      const row = lines[i].split(",").map(cell => cell.trim());
-      if (row.length < 4) continue;
-  
-      const data: Record<string, string> = {};
-      headers.forEach((header, idx) => {
-        data[header] = row[idx] ?? "";
-      });
-  
-      const teamId = data["TEAM"];
-      if (!teamId) continue;
-  
-      const players: string[] = [];
-      for (let j = 1; j <= 12; j++) {
-        const member = data[`MEMBER${j}`];
-        if (member && member !== "") {
-          players.push(member);
+      if (!lines[i].trim()) continue // 空行をスキップ
+
+      const data = lines[i].split(",")
+
+      // CSVTeamData 型のオブジェクトを作成
+      const teamData: CSVTeamData = {
+        TEAM: Number.parseInt(data[headers.indexOf("TEAM")]) || 0,
+        NAME: data[headers.indexOf("NAME")] || "",
+        IMG_URL: data[headers.indexOf("IMG_URL")] || "",
+        MEMBER_NUM: Number.parseInt(data[headers.indexOf("MEMBER_NUM")]) || 0,
+        MEMBERS: [],
+      }
+
+      // MEMBERS プロパティの生成 (MEMBER1～MEMBER6 を想定)
+      for (let j = 1; j <= 6; j++) {
+        const key = `MEMBER${j}`
+        const value = data[headers.indexOf(key)]
+        if (value && value.trim() !== "") {
+          teamData.MEMBERS.push(value)
         }
       }
-  
-      result[teamId] = {
-        teamName: data["NAME"],
-        logoUrl: data["IMG_URL"],
-        players
-      };
+
+      result.push(teamData)
     }
-  
-    return result;
-  };
-  
+
+    return result
+  }
 
   // System shutdown handlers
   const handleShutdown = () => {
@@ -205,13 +198,9 @@ export default function ControlPanelPage() {
     setIsLeavingLobby(true)
     try {
       await leaveLobby()
-      // RequestReceivedイベントが発生しない場合のフォールバックとして、
-      // タイムアウト後にローディング状態を解除
-      setTimeout(() => {
-        setIsLeavingLobby(false)
-      }, 10000) // 10秒のタイムアウト
     } catch (error) {
       console.error("ロビーを離れる際のエラー:", error)
+    } finally {
       setIsLeavingLobby(false)
     }
   }
@@ -574,13 +563,11 @@ export default function ControlPanelPage() {
 
   // Get UI status from configData
   const uiStatus = configData?.uiStatus || {
-    lobbyJoinButtonEnabled: true,
-    gameStartButtonEnabled: false,
-    leaveLobbyButtonEnabled: false,
-    isLobbyJoined: false,
-    maxTeamPlayer: 3,
-    maxTeam: 20,
-    gameStatus: "NotStarted", // ゲームステータスのデフォルト値
+    LobbyJoinButtonEnabled: true,
+    GameStartButtonEnabled: false,
+    LeaveLobbyButtonEnabled: false,
+    IsLobbyJoined: false,
+    GameStatus: "NotStarted", // ゲームステータスのデフォルト値
   }
 
   // Return loading state or null before client-side mounting
@@ -635,17 +622,17 @@ export default function ControlPanelPage() {
                     // 例: Start Apex ボタン */}
                     <button
                       onClick={startApex}
-                      disabled={isApexLoading || !uiStatus.gameStartButtonEnabled}
+                      disabled={isApexLoading || !uiStatus.GameStartButtonEnabled}
                       className="w-full py-3 px-4 rounded-md text-white font-medium flex items-center justify-center"
-                      style={isApexLoading || !uiStatus.gameStartButtonEnabled ? disabledButtonStyle : buttonStyle}
+                      style={isApexLoading || !uiStatus.GameStartButtonEnabled ? disabledButtonStyle : buttonStyle}
                       onMouseOver={(e) =>
                         !isApexLoading &&
-                        uiStatus.gameStartButtonEnabled &&
+                        uiStatus.GameStartButtonEnabled &&
                         (e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor)
                       }
                       onMouseOut={(e) =>
                         !isApexLoading &&
-                        uiStatus.gameStartButtonEnabled &&
+                        uiStatus.GameStartButtonEnabled &&
                         (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor)
                       }
                     >
@@ -772,17 +759,17 @@ export default function ControlPanelPage() {
                       {/* Start Apex ボタン */}
                       <button
                         onClick={() => joinLobby(lobbyCode || undefined)}
-                        disabled={isLobbyLoading || !uiStatus.lobbyJoinButtonEnabled}
+                        disabled={isLobbyLoading || !uiStatus.LobbyJoinButtonEnabled}
                         className="w-full py-3 px-4 rounded-md text-white font-medium flex items-center justify-center"
-                        style={isLobbyLoading || !uiStatus.lobbyJoinButtonEnabled ? disabledButtonStyle : buttonStyle}
+                        style={isLobbyLoading || !uiStatus.LobbyJoinButtonEnabled ? disabledButtonStyle : buttonStyle}
                         onMouseOver={(e) =>
                           !isLobbyLoading &&
-                          uiStatus.lobbyJoinButtonEnabled &&
+                          uiStatus.LobbyJoinButtonEnabled &&
                           (e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor)
                         }
                         onMouseOut={(e) =>
                           !isLobbyLoading &&
-                          uiStatus.lobbyJoinButtonEnabled &&
+                          uiStatus.LobbyJoinButtonEnabled &&
                           (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor)
                         }
                       >
@@ -799,23 +786,23 @@ export default function ControlPanelPage() {
                       {/* Leave Lobby ボタンを更新 */}
                       <button
                         onClick={handleLeaveLobby}
-                        disabled={isLeavingLobby || isLobbyLoading || !uiStatus.leaveLobbyButtonEnabled}
+                        disabled={isLeavingLobby || isLobbyLoading || !uiStatus.LeaveLobbyButtonEnabled}
                         className="w-full py-3 px-4 rounded-md text-white font-medium flex items-center justify-center"
                         style={
-                          isLeavingLobby || isLobbyLoading || !uiStatus.leaveLobbyButtonEnabled
+                          isLeavingLobby || isLobbyLoading || !uiStatus.LeaveLobbyButtonEnabled
                             ? disabledButtonStyle
                             : buttonStyle
                         }
                         onMouseOver={(e) =>
                           !isLeavingLobby &&
                           !isLobbyLoading &&
-                          uiStatus.leaveLobbyButtonEnabled &&
+                          uiStatus.LeaveLobbyButtonEnabled &&
                           (e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor)
                         }
                         onMouseOut={(e) =>
                           !isLeavingLobby &&
                           !isLobbyLoading &&
-                          uiStatus.leaveLobbyButtonEnabled &&
+                          uiStatus.LeaveLobbyButtonEnabled &&
                           (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor)
                         }
                       >
@@ -917,21 +904,21 @@ export default function ControlPanelPage() {
                       <div className="flex items-center">
                         <div
                           className={`w-3 h-3 rounded-full mr-2 ${
-                            uiStatus.gameStatus === "Running"
+                            uiStatus.GameStatus === "Running"
                               ? "bg-green-500"
-                              : uiStatus.gameStatus === "Paused"
+                              : uiStatus.GameStatus === "Paused"
                                 ? "bg-yellow-500"
-                                : uiStatus.gameStatus === "Finished"
+                                : uiStatus.GameStatus === "Finished"
                                   ? "bg-blue-500"
                                   : "bg-gray-500"
                           }`}
                         />
                         <span className="text-sm font-medium text-gray-300">
-                          {uiStatus.gameStatus === "Running"
+                          {uiStatus.GameStatus === "Running"
                             ? "実行中"
-                            : uiStatus.gameStatus === "Paused"
+                            : uiStatus.GameStatus === "Paused"
                               ? "一時停止中"
-                              : uiStatus.gameStatus === "Finished"
+                              : uiStatus.GameStatus === "Finished"
                                 ? "終了"
                                 : "未開始"}
                         </span>
@@ -940,7 +927,7 @@ export default function ControlPanelPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-gray-900/50 p-3 rounded-md">
                         <div className="text-xs text-gray-500 mb-1">ステータス</div>
-                        <div className="text-sm text-white font-medium">{uiStatus.gameStatus || "不明"}</div>
+                        <div className="text-sm text-white font-medium">{uiStatus.GameStatus || "不明"}</div>
                       </div>
                       {/* 他のゲーム情報を表示する場合はここに追加 */}
                     </div>
@@ -974,9 +961,9 @@ export default function ControlPanelPage() {
                         style={buttonStyle}
                         onMouseOver={(e) => (e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor)}
                         onMouseOut={(e) => (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor)}
-                        disabled={!uiStatus.isLobbyJoined}
+                        disabled={!uiStatus.IsLobbyJoined}
                       >
-                        {uiStatus.gameStatus === "Paused" ? <>再開</> : <>一時停止</>}
+                        {uiStatus.GameStatus === "Paused" ? <>再開</> : <>一時停止</>}
                       </button>
                     </div>
 
@@ -1096,7 +1083,7 @@ export default function ControlPanelPage() {
           {/* Lobby Tab */}
           {activeTab === "lobby" && (
             <>
-              {configData?.uiStatus?.isLobbyJoined ? (
+              {configData?.uiStatus?.IsLobbyJoined ? (
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                   {/* 既存のLobbyタブコンテンツ */}
                   {/* Left Side: Settings Container - 1/4 width */}
@@ -1310,7 +1297,7 @@ export default function ControlPanelPage() {
                           {/* Regular Teams - MaxTeam制限に基づいて表示 */}
                           {Object.keys(teamData)
                             .filter((id) => id !== "0" && id !== "1") // 特殊チームを除外
-                            .filter((id) => Number(id) <= (configData?.uiStatus?.maxTeam || 20) + 1) // MaxTeamの値に基づいてフィルタリング
+                            .filter((id) => Number(id) <= (configData?.uiStatus?.MaxTeam || 20) + 1) // MaxTeamの値に基づいてフィルタリング
                             .sort((a, b) => Number(a) - Number(b)) // チームIDで昇順ソート
                             .map((teamId) => (
                               <TeamCard
@@ -1324,7 +1311,7 @@ export default function ControlPanelPage() {
                                 cancelEditingTeam={cancelEditingTeam}
                                 setEditedTeamName={setEditedTeamName}
                                 onPlayerRightClick={handlePlayerRightClick}
-                                maxTeamPlayer={configData?.uiStatus?.maxTeamPlayer || 3}
+                                maxTeamPlayer={configData?.uiStatus?.MaxTeamPlayer || 3}
                               />
                             ))}
                         </div>
@@ -1372,7 +1359,7 @@ export default function ControlPanelPage() {
           {/* Camera Tab */}
           {activeTab === "camera" && (
             <>
-              {configData?.uiStatus?.isLobbyJoined ? (
+              {configData?.uiStatus?.IsLobbyJoined ? (
                 <div className="space-y-6">
                   <div style={cardStyle} className="rounded-lg overflow-hidden">
                     <div style={cardHeaderStyle} className="px-6 py-4">
@@ -1754,7 +1741,7 @@ export default function ControlPanelPage() {
             configData?.teamData?.[playerToMove.teamId]?.players.find((p) => p.id === playerToMove.playerId)?.name ||
             "プレイヤー"
           }
-          maxTeamPlayer={configData?.uiStatus?.maxTeamPlayer || 3}
+          maxTeamPlayer={configData?.uiStatus?.MaxTeamPlayer || 3}
         />
       )}
     </div>
