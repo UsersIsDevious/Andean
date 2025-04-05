@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
@@ -12,15 +13,15 @@ namespace Andean.Utilities
 {
     public static class VdfParser
     {
-
-        public static Dictionary<string, object> Playlists_r5 { get; private set; } = new Dictionary<string, object>();
+        // JObjectを使うことで、動的なプロパティアクセスが可能となる
+        public static JObject Playlists_r5 { get; private set; } = new JObject();
 
         /// <summary>
-        /// VDF形式の文字列をパースして、ネストされたDictionaryを返します。
+        /// VDF形式の文字列をパースして、JObjectを返します。
         /// </summary>
         /// <param name="content">VDF形式のテキスト</param>
-        /// <returns>解析結果のDictionary</returns>
-        public static async Task<Dictionary<string, object>> ParseVdf(string content)
+        /// <returns>解析結果のJObject</returns>
+        public static async Task<JObject> ParseVdf(string content)
         {
             try
             {
@@ -37,25 +38,17 @@ namespace Andean.Utilities
                 };
                 string json = System.Text.Json.JsonSerializer.Serialize(parsedData, options);
 
-                // シリアライズ後の文字列に対して、\u00A0 を実際のノンブレーキングスペースに置換
+                // 特定のUnicodeエスケープシーケンスを実際の文字に置換
                 json = json.Replace("\\u00A0", "\u00A0");
-
-                // シリアライズ後の文字列に対して、\u0060 を実際のノンブレーキングスペースに置換
                 json = json.Replace("\\u0060", "\u0060");
-
-                // シリアライズ後の文字列に対して、\u003C を実際のノンブレーキングスペースに置換
                 json = json.Replace("\\u003C", "\u003C");
-
-                // シリアライズ後の文字列に対して、\u003E を実際のノンブレーキングスペースに置換
                 json = json.Replace("\\u003E", "\u003E");
-
-                // シリアライズ後の文字列に対して、\u0027 を実際のノンブレーキングスペースに置換
                 json = json.Replace("\\u0027", "\u0027");
 
                 await FileOutputService.WriteToFileAsync("output", "playlists_r5.json", json, FileWriteMode.Overwrite);
 
-                // JSON 文字列を Dictionary に変換する
-                return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                // JSON文字列を JObject に変換する
+                return JObject.Parse(json);
             }
             catch (Exception ex)
             {

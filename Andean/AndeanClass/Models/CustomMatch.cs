@@ -309,7 +309,7 @@ namespace AndeanClass
         /// </summary>
         /// <param name="name">プレイリスト名</param>
         /// <param name="description">プレイリストの説明（オプション）</param>
-        public void SetMaxPlayersAndTeams(string name, string description = null)
+        public void SetMaxPlayersAndTeams(string name, string? description = null)
         {
             switch (name)
             {
@@ -445,7 +445,7 @@ namespace AndeanClass
         /// </summary>
         /// <param name="nucleusHash">プレイヤーの識別子</param>
         /// <returns>見つかった場合は Player インスタンス、なければ null</returns>
-        public Player GetPlayer(string nucleusHash)
+        public Player? GetPlayer(string nucleusHash)
         {
             if (Players.ContainsKey(nucleusHash))
             {
@@ -463,7 +463,7 @@ namespace AndeanClass
         /// </summary>
         /// <param name="teamId">チームID</param>
         /// <returns>見つかった場合は Team インスタンス、なければ null</returns>
-        public Team GetTeam(uint teamId)
+        public Team? GetTeam(uint teamId)
         {
             if (Teams.ContainsKey(teamId))
             {
