@@ -189,7 +189,7 @@ namespace AndeanClass.Services
         }
 
 
-        public static void ProcessGameEnd(MatchStateEnd matchStateEndMsg, CustomMatch match, Packet packet)
+        public static void ProcessGameEnd(MatchStateEnd matchStateEndMsg, CustomMatch match)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -223,10 +223,10 @@ namespace AndeanClass.Services
 
             Event _event = new Event(matchStateEndMsg.Timestamp, matchStateEndMsg.Category, _eventData);
             match.AddEventElement(_event);
-            packet.AddEvent(_event);
+            _packet.AddEvent(_event);
         }
 
-        public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg, CustomMatch match, Packet packet, List<uint> teamRanking)
+        public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg, CustomMatch match, List<uint> teamRanking)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -255,9 +255,9 @@ namespace AndeanClass.Services
             };
             Event _event = new Event(squadEliminatedMsg.Timestamp, squadEliminatedMsg.Category, _eventData);
             match.AddEventElement(_event);
-            packet.AddEvent(_event);
+            _packet.AddEvent(_event);
         }
-        public static void ProcessRingStartClosing(RingStartClosing ringStartClosingMsg, CustomMatch match, List<(string, Event)> ringEvents, Packet packet)
+        public static void ProcessRingStartClosing(RingStartClosing ringStartClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -303,13 +303,13 @@ namespace AndeanClass.Services
             match.AddEventElement(_event);
 
             // AndeanのPacketクラスに追加する
-            packet.AddEvent(_event);
+            _packet.AddEvent(_event);
 
             // リングイベントが発生した時間を記録する
-            ringEvents.Add((packet.T.ToString(), _event));
+            ringEvents.Add((_packet.T.ToString(), _event));
         }
 
-        public static void ProcessRingFinishedClosing(RingFinishedClosing ringFinishedClosingMsg, CustomMatch match, List<(string, Event)> ringEvents, Packet packet)
+        public static void ProcessRingFinishedClosing(RingFinishedClosing ringFinishedClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -342,10 +342,10 @@ namespace AndeanClass.Services
             match.AddEventElement(_event);
             
             // AndeanのPacketクラスに追加する
-            packet.AddEvent(_event);
+            _packet.AddEvent(_event);
 
             // リングイベントが発生した時間を記録する
-            ringEvents.Add((packet.T.ToString(), _event));
+            ringEvents.Add((_packet.T.ToString(), _event));
         }
     }
 }
