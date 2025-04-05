@@ -1,17 +1,226 @@
 ﻿using AndeanSystems;
 using AndeanClass.Controllers;
+using ApexLiveAPI.Request;
 using static AndeanClass.Controllers.AndeanClassController;
 using AndeanClass;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
+        private readonly Request _request;
+
+        public AndeanClassUpdateController(
+            Request request
+            )
+        {
+            _request = request;
+        }
+
         public void Update()
         {
             long unixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            double time = unixTime - (long)_match.StartTimeStamp;
-            _packet = new Packet(time);
+            if (_match.State == "Playing")
+            {
+                GetPlayerStatus(_match).Wait();
+
+                // マッチの状態がPlayingの場合、パケットを更新する
+                if (_packet != null && (_packet.Data.Count + _packet.Events.Count) != 0 && _packet.T > 2)
+                {
+                    // packet.tが整数かどうかをチェック
+                    // if (_packet.T % 1 == 0)
+                    // {
+                    //     if (_packet.Events.Count != 0)
+                    //     {
+                    //         // 最初のイベントのtimestampから試合開始時刻を引く
+                    //         _packet.T = _packet.Events[0].Timestamp - _match.StartTimeStamp;
+                    //         CheckPacketData(_packet, _playerData);
+                    //         _match.AddPacketElement(_packet.T.ToString(), (JObject)_packet.ToJson());
+                    //     }
+                    //     else
+                    //     {
+                    //         Console.WriteLine("[UPDATE] Packet is skipped");
+                    //     }
+                    // }
+                    // else
+                    // {
+                    //     CheckPacketData(_packet, _playerData);
+                    //     _match.AddPacketElement(_packet.T.ToString(), (JObject)_packet.ToJson());
+                    // }
+
+                    CheckPacketData(_packet, _playerData);
+                    _match.AddPacketElement(_packet.T.ToString(), (JObject)_packet.ToJson());
+                }
+
+                // 新たなPacketオブジェクトを生成
+                double time = unixTime - (long)_match.StartTimeStamp;
+                _packet = new Packet((time / 1000) - _match.StartTimeStamp);
+            }
+
+        }
+
+
+        /// <summary>
+        /// プレイヤーの状態を取得し、カメラを切り替えるメソッド
+        /// </summary>
+        /// <param name="match">CustomMatchのインスタンス</param>
+        /// <returns>非同期タスク</returns>
+        /// <remarks>
+        /// プレイヤーの状態を取得し、"alive" または "down" の場合にカメラを切り替える。
+        /// プレイヤーが "death" またはオンラインでない場合は、次のプレイヤーへスキップする。
+        /// チームが壊滅している場合は、次のチームへスキップする。
+        /// </remarks>
+        public async Task GetPlayerStatus(CustomMatch match)
+        {
+            // match.teams の全てのチームを列挙
+            foreach (Team team in match.Teams.Values)
+            {
+                // チームの最初のプレイヤーIDからプレイヤー情報を取得
+                Player player = match.GetPlayer(team.Players[0]);
+
+                // チームにプレイヤーが存在しない、またはチームが壊滅していた場合次のチームへ
+                if (team.Players.Count == 0 || player.GetStatus() == "eliminated")
+                    continue;
+
+                for (int i = 0; i < team.Players.Count; i++)
+                {
+                    // プレイヤーの状態が "death"、またはオンラインでなければ次のメンバーへ
+                    if (player.GetStatus() == "death" || !player.GetOnlineStatus())
+                        continue;
+
+                    // カメラをプレイヤー名に基づいて切り替え
+                    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                    await _request.ChangeCameraAsync("name", player.Name, cts.Token);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Packetのデータに含まれていないプレイヤーをチェックする
+        /// </summary>
+        /// <param name="packet">Packetクラスのインスタンス</param>
+        /// <param name="playerData">プレイヤーデータ（キー：プレイヤーID、値：Playerオブジェクト）</param>
+        /// <returns>正常に処理できた場合はtrue、例外発生時はfalse</returns>
+        public static bool CheckPacketData(Packet packet, Dictionary<string, EventPlayer> playerData)
+        {
+            try
+            {
+                // packet.Dataに含まれる各プレイヤーのIDをリストとして取得
+                var includedPlayers = packet.Data.Select(player => player.id).ToList();
+
+                // Dictionary内を変更するため、ToList()でキーと値のペアをコピーしてループ
+                foreach (var kvp in playerData.ToList())
+                {
+                    string playerId = kvp.Key;
+                    EventPlayer playerValue = kvp.Value;
+
+                    // packetに該当プレイヤーが含まれていない場合は追加
+                    if (!includedPlayers.Contains(playerId))
+                    {
+                        packet.AddData(playerValue);
+                    }
+                    else
+                    {
+                        // 含まれている場合は、packet.Dataから該当するプレイヤーを取得して更新
+                        var foundPlayer = packet.Data.FirstOrDefault(player => player.id == playerId);
+                        if (foundPlayer != null)
+                        {
+                            playerData[playerId] = foundPlayer;
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("[CHECK PACKET DATA] Error: " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// lobbyにCSVデータを反映する
+        /// </summary>
+        /// <param name="lobby">ロビー（CustomMatchのインスタンス）</param>
+        /// <param name="copyCSVData">CSVデータ（キー：teamId、値：CSVData）</param>
+        /// <returns>反映に成功した場合はtrue、CSVデータが空の場合はfalse</returns>
+        public static bool ApplyCSVData(CustomMatch lobby, Dictionary<int, CsvDataTeam> copyCSVData)
+        {
+            // CSVデータが空の場合は何もせずfalseを返す
+            if (copyCSVData.Count == 0)
+            {
+                return false;
+            }
+
+            return false; // いったんここまで書いた。続けるときはこの行を削除すること。
+
+            // // 辞書の最初のキー（teamId）を取得
+            // int teamId = copyCSVData.Keys.First();
+
+            // if (GlobalData.isPlayerSet.Success)
+            // {
+            //     // チーム情報を取得
+            //     Team team = lobby.GetTeam(teamId);
+            //     if (team != null)
+            //     {
+            //         // チーム名が異なる場合、チーム名を設定する
+            //         if (copyCSVData[teamId].TeamName != team.TeamName)
+            //         {
+            //             ApexCommon.SetTeamName(teamId, copyCSVData[teamId].TeamName);
+            //         }
+            //         // チームのロゴを設定する
+            //         team.SetTeamImg(copyCSVData[teamId].LogoUrl);
+            //     }
+            //     // 該当のCSVデータを削除する
+            //     copyCSVData.Remove(teamId);
+            //     GlobalData.isPlayerSet.Success = false;
+            //     GlobalData.isPlayerSet.Index = 0;
+            // }
+            // else
+            // {
+            //     // 現在のチームのプレイヤーリストから、指定されたインデックスのプレイヤー名を取得
+            //     CSVData csvData = copyCSVData[teamId];
+            //     // インデックスが範囲内か確認
+            //     if (GlobalData.isPlayerSet.Index < csvData.Players.Count)
+            //     {
+            //         string playerName = csvData.Players[GlobalData.isPlayerSet.Index];
+            //         if (GlobalData.PlayerNames.ContainsKey(playerName))
+            //         {
+            //             Player player = GlobalData.PlayerNames[playerName];
+            //             // チーム0のプレイヤーリストに対象プレイヤーのnucleusHashが含まれていれば処理を実行
+            //             Team team0 = lobby.GetTeam(0);
+            //             if (team0 != null && team0.Players.Contains(player.NucleusHash))
+            //             {
+            //                 ApexCommon.SetTeam(teamId, player.HardwareName, player.NucleusHash);
+            //             }
+            //         }
+            //         else if (playerName == null)
+            //         {
+            //             Console.WriteLine($"[APPLY CSV DATA] Player is empty, TEAM_ID: {teamId - 1}");
+            //         }
+            //         else
+            //         {
+            //             Console.WriteLine($"[APPLY CSV DATA] Player not found, TEAM_ID: {teamId - 1} PLAYER_NAME: {playerName}");
+            //         }
+
+            //         // CSVのプレイヤーリストの末尾に達していれば、次はチーム設定へ切り替える
+            //         if (GlobalData.isPlayerSet.Index >= csvData.Players.Count - 1)
+            //         {
+            //             GlobalData.isPlayerSet.Success = true;
+            //         }
+            //         else
+            //         {
+            //             GlobalData.isPlayerSet.Index++;
+            //         }
+            //     }
+            //     else
+            //     {
+            //         Console.WriteLine($"[APPLY CSV DATA] Index out of range for TEAM_ID: {teamId}");
+            //     }
+            // }
+            // return true;
         }
     }
 }

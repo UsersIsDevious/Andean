@@ -147,15 +147,15 @@ namespace AndeanClass.Services
                             startRing.Data["Stage"] == endRing.Data["Stage"])
                         {
                             // matchBase.PacketLists[startRing_t].Events 内の "ringStartClosing" イベントを検索し、endCenter を設定
-                            if (match.PacketLists.TryGetValue(startRing_t, out Packet? packet))
+                            if (match.PacketLists.TryGetValue(startRing_t, out JObject? packet))
                             {
-                                if (packet.Events != null)
+                                if (packet["Events"] != null)
                                 {
-                                    Event? startRingEvent = packet.Events.FirstOrDefault(e => e.Category == "ringStartClosing");
-                                    if (startRingEvent != null)
+                                    JToken? eventToken = packet["Events"]?.FirstOrDefault(e => (string)e["Category"] == "ringStartClosing");
+                                    if (eventToken != null)
                                     {
                                         // endRing.Data.Center のコピーを endCenter に設定（配列のコピー）
-                                        startRingEvent.Data["endCenter"] = (double[])((double[])endRing.Data["Center"]).Clone();
+                                        eventToken["endCenter"] = JArray.FromObject((double[])((double[])endRing.Data["Center"]).Clone());
                                     }
                                 }
                             }

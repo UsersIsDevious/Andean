@@ -28,7 +28,11 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// ロビーかどうかのフラグ
         /// </summary>
-        private static bool _isLobby = true;
+        public static bool _isLobby = true;
+        /// <summary>
+        /// プレイヤー情報を保持する変数
+        /// </summary>
+        public static Dictionary<string, EventPlayer> _playerData = new Dictionary<string, EventPlayer>();
         /// <summary>
         /// チーム順位のリスト
         /// </summary>
