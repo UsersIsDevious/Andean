@@ -110,8 +110,6 @@ namespace AndeanWebUI.Services
                 LobbyJoinButtonEnabled = true;
                 GameStartButtonEnabled = false;
             }
-            // 必要に応じて、他の条件もここで処理可能
-            Console.WriteLine("全員分に配信いたい");
             await BroadcastStatusAsync();
         }
     }

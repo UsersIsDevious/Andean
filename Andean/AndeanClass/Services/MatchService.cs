@@ -115,9 +115,9 @@ namespace AndeanClass.Services
                 // match.MaxTeams + 1 から 2 まで逆順に処理
                 for (uint i = match.MaxTeams + 1; i >= 2; i--)
                 {
-                    Team team = match.GetTeam(i);
+                    Team? team = match.GetTeam(i);
                     // チーム内のプレイヤーがいない場合、ranks に追加
-                    if (team.Players.Count == 0)
+                    if (team != null && team.Players.Count == 0)
                     {
                         teamRanking.Add(i);
                     }

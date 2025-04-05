@@ -31,11 +31,11 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// チーム順位のリスト
         /// </summary>
-        private static List<uint> _teamRanking;
+        private static List<uint> _teamRanking = new List<uint>();
         /// <summary>
         /// リング後処理用のEventsリスト
         /// </summary>
-        private static List<(string, Event)> _ringEvents;
+        private static List<(string, Event)> _ringEvents = new List<(string, Event)>();
         /// <summary>
         /// configファイルの情報
         /// </summary>
