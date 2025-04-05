@@ -124,9 +124,8 @@ Task.Run(async () =>
 
 logger.LogInformation("🚀 Application started successfully.");
 
-app.Run();
-
-
 // SignalR HubContext の注入
 var hubContext = app.Services.GetRequiredService<IHubContext<ControlPanelHub>>();
 ControlPanelHubService.Init(hubContext);
+
+app.Run();
