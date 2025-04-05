@@ -1,8 +1,5 @@
-﻿// TimestampService.cs
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.SignalR;
 using AndeanWebUI.Hubs;
-using System;
 using AndeanSystems;
 
 namespace AndeanClass.Services

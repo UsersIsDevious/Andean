@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using AndeanClass.Services;
-using AndeanClass;
-using Rtech.Liveapi;
+﻿using Rtech.Liveapi;
 using Andean.Config;
-using Microsoft.Extensions.Options;
-using System.Text.RegularExpressions;
 using static AndeanClass.Services.MatchService;
 
 namespace AndeanClass.Controllers

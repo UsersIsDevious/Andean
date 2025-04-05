@@ -1,9 +1,6 @@
-﻿using Andean.Config;
-using Rtech.Liveapi;
-using AndeanClass;
+﻿using Rtech.Liveapi;
 using AndeanClass.Services;
 using AndeanClass.Services.Utilities;
-using System.Collections.Generic;
 using static AndeanClass.Services.PlayerService;
 
 namespace AndeanClass.Controllers
@@ -83,7 +80,7 @@ namespace AndeanClass.Controllers
 
                 Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
 
-                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(player).Get();
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);

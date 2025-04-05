@@ -1,9 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using Andean.Config;
+using AndeanWebUI.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AndeanWebUI.Services
 {
     public static class ControlPanelHubService
     {
+
+
+        private static IHubContext<ControlPanelHub>? _hubContext;
+        private static AppConfig _config => ConfigService.Config;
+
+        public static void Init(IHubContext<ControlPanelHub> hubContext)
+        {
+            _hubContext = hubContext;
+        }
+
         // 共有データ
         public static string SharedData { get; set; } = "Initial Data";
         public static List<string> SelectedDataKeys { get; set; } = new List<string>();
@@ -18,6 +33,36 @@ namespace AndeanWebUI.Services
         public static uint MaxTeamPlayer { get; set; } = 3;
         public static uint MaxTeam { get; set; } = 20;
         public static string GameStatus { get; set; } = "NoSignal";
+
+
+
+        public static async Task BroadcastStatusAsync()
+        {
+            if (_hubContext != null)
+            {
+                var status = new
+                {
+                    SharedData = SharedData,
+                    SelectedDataKeys = SelectedDataKeys,
+                    AppConfig = _config,
+                    LastLobbyResponse = LastLobbyResponse,
+                    LastApexResponse = LastApexResponse,
+                    UIStatus = new
+                    {
+                        LobbyJoinButtonEnabled,
+                        GameStartButtonEnabled,
+                        LeaveLobbyButtonEnabled,
+                        IsLobbyJoined,
+                        MaxTeamPlayer,
+                        MaxTeam,
+                        GameStatus
+                    }
+                };
+
+                await _hubContext.Clients.All.SendAsync("ReceiveStatus", status);
+            }
+        }
+
 
         // 状態更新用の関数群
 
@@ -56,7 +101,7 @@ namespace AndeanWebUI.Services
         /// <summary>
         /// LiveAPI の接続状態に応じたUIステータスの更新
         /// </summary>
-        public static void SetLiveAPIStatus(string type, string gameStatus)
+        public static async Task SetLiveAPIStatus(string type, string gameStatus)
         {
             GameStatus = gameStatus;
             if (type == "Connect")
@@ -66,6 +111,7 @@ namespace AndeanWebUI.Services
                 GameStartButtonEnabled = false;
             }
             // 必要に応じて、他の条件もここで処理可能
+            await BroadcastStatusAsync();
         }
     }
 }

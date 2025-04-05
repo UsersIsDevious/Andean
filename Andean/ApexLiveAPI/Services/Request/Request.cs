@@ -1,9 +1,5 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Google.Protobuf;
+﻿using Google.Protobuf;
 using Rtech.Liveapi; // Request, CustomMatch_CreateLobby, CustomMatch_JoinLobby, etc.
-using Microsoft.Extensions.Logging;
 using Andean.WebsocketServer;
 
 namespace ApexLiveAPI.Request
