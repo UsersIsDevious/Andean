@@ -2,6 +2,7 @@
 using AndeanClass.Services;
 using static AndeanClass.Services.PlayerService;
 
+
 namespace AndeanClass.Controllers
 {
     public static partial class AndeanClassController

@@ -1,9 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Newtonsoft.Json.Linq;  // JSON 操作用（Newtonsoft.Json を使用）
-using System.Text.Json;      // 例として、System.Text.Json を使う場合もあり
 // 名前空間はプロジェクトに合わせて設定してください
 namespace Andean.Utilities
 {

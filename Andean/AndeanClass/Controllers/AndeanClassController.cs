@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using AndeanClass.Services;
-using AndeanClass;
-using Rtech.Liveapi;
+﻿using Rtech.Liveapi;
 using Andean.Config;
-using Microsoft.Extensions.Options;
-using System.Text.RegularExpressions;
 using static AndeanClass.Services.MatchService;
 
 namespace AndeanClass.Controllers
@@ -28,15 +23,19 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// ロビーかどうかのフラグ
         /// </summary>
-        private static bool _isLobby = true;
+        public static bool _isLobby = true;
+        /// <summary>
+        /// プレイヤー情報を保持する変数
+        /// </summary>
+        public static Dictionary<string, EventPlayer> _playerData = new Dictionary<string, EventPlayer>();
         /// <summary>
         /// チーム順位のリスト
         /// </summary>
-        private static List<uint> _teamRanking;
+        private static List<uint> _teamRanking = new List<uint>();
         /// <summary>
         /// リング後処理用のEventsリスト
         /// </summary>
-        private static List<(string, Event)> _ringEvents;
+        private static List<(string, Event)> _ringEvents = new List<(string, Event)>();
         /// <summary>
         /// configファイルの情報
         /// </summary>

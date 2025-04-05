@@ -1,9 +1,6 @@
-using Andean.Config;
-using Rtech.Liveapi;
-using AndeanClass;
+﻿using Rtech.Liveapi;
 using AndeanClass.Services;
 using AndeanClass.Services.Utilities;
-using System.Collections.Generic;
 using static AndeanClass.Services.PlayerService;
 
 namespace AndeanClass.Controllers
@@ -45,10 +42,14 @@ namespace AndeanClass.Controllers
 
                 _player.SetOnlineStatus(true);
 
-                //Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(player).Get();
-
-                //Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
-                //_match.AddEventElement(_event);
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
+                
+                _match.AddEventElement(_event);
+                if (_packet != null)
+                {
+                    _packet.AddEvent(_event);
+                }
             }
         }
         public static void ProcessPlayerDisconnected(Rtech.Liveapi.PlayerDisconnected Msg)
@@ -64,10 +65,14 @@ namespace AndeanClass.Controllers
 
                 _player.SetOnlineStatus(false);
 
-                //Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(player).Get();
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
-                //Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
-                //_match.AddEventElement(_event);
+                _match.AddEventElement(_event);
+                if (_packet != null)
+                {
+                    _packet.AddEvent(_event);
+                }
             }
         }
         public static void ProcessPlayerStatChanged(Rtech.Liveapi.PlayerStatChanged Msg)
@@ -81,10 +86,11 @@ namespace AndeanClass.Controllers
 
                 Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
 
-                //Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(player).Get();
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
-                //Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
-                //_match.AddEventElement(_event);
+                _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
         public static void ProcessPlayerUltimateCharged(Rtech.Liveapi.PlayerUltimateCharged Msg)
@@ -105,6 +111,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
         public static void ProcessPlayerUpgradeTierChanged(Rtech.Liveapi.PlayerUpgradeTierChanged Msg)
@@ -123,6 +130,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
         public static void ProcessPlayerDamaged(Rtech.Liveapi.PlayerDamaged Msg)
@@ -167,9 +175,7 @@ namespace AndeanClass.Controllers
 
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-
-                // packetへの追加は行っていないため、修正必須 @nitiyou
-                // AddEventElementのタイミングでpacketへ自動追加してもいいと思う
+                _packet.AddEvent(_event);
             }
         }
       
@@ -221,6 +227,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
       
@@ -270,6 +277,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
       
@@ -315,6 +323,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
         public static void ProcessGibraltarShieldAbsorbed(Rtech.Liveapi.GibraltarShieldAbsorbed Msg)
@@ -364,6 +373,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
       
@@ -413,6 +423,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
       
@@ -441,6 +452,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
       
@@ -465,6 +477,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
         public static void ProcessLegendUpgradeSelected(Rtech.Liveapi.LegendUpgradeSelected Msg)
@@ -493,6 +506,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
       
@@ -515,6 +529,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
       
@@ -535,6 +550,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
         public static void ProcessWarpGateUsed(Rtech.Liveapi.WarpGateUsed Msg)
@@ -554,6 +570,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
         public static void ProcessWeaponSwitched(Rtech.Liveapi.WeaponSwitched Msg)
@@ -574,6 +591,10 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                if(_packet != null)
+                {
+                    _packet.AddEvent(_event);
+                }
             }
         }
         public static void ProcessPlayerAbilityUsed(Rtech.Liveapi.PlayerAbilityUsed Msg)
@@ -613,6 +634,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
 
@@ -636,10 +658,11 @@ namespace AndeanClass.Controllers
                 // イベントデータの作成
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
                 _eventData["collected"] = EventService.CreateEventDataForPlayer(_collecter).Get();
-                var eventObj = new Event(bannerCollectedMsg.Timestamp, bannerCollectedMsg.Category, _eventData);
+                var _event = new Event(bannerCollectedMsg.Timestamp, bannerCollectedMsg.Category, _eventData);
 
                 // イベントデータの追加
-                _match.AddEventElement(eventObj);
+                _match.AddEventElement(_event);
+                _packet.AddEvent(_event);
             }
         }
     }

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Andean.Config
+﻿namespace Andean.Config
 {
     /// <summary>
     /// ApexLegends 関連の設定

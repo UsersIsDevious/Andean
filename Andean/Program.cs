@@ -1,20 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using ApexLiveAPI.Request;
+﻿using ApexLiveAPI.Request;
 using ApexLiveAPI.Services;
 using Andean.WebsocketServer;
 using Andean.WebsocketServer.Controllers;
-using AndeanClass.Controllers;
 using AndeanClass.Services;
 using Andean.WebsocketServer.Services;
 using AndeanWebUI.Hubs;
-using Andean.Utilities;
 using Andean.Config;
 using System.Diagnostics;
 using AndeanSystems;
+using AndeanWebUI.Services;
+using Microsoft.AspNetCore.SignalR;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -128,5 +123,9 @@ Task.Run(async () =>
 
 
 logger.LogInformation("🚀 Application started successfully.");
+
+// SignalR HubContext の注入
+var hubContext = app.Services.GetRequiredService<IHubContext<ControlPanelHub>>();
+ControlPanelHubService.Init(hubContext);
 
 app.Run();

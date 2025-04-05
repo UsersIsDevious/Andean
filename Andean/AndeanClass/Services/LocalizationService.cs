@@ -22,12 +22,16 @@ namespace AndeanClass.Services
         static LocalizationService()
         {
             // 設定から言語コードを取得（存在しなければ "en" をデフォルトとする）
-            string langCode = ConfigService.Config.Language ?? "en";
+            string langCode = string.IsNullOrWhiteSpace(ConfigService.Config.Language) ? "en" : ConfigService.Config.Language;
             string filePath = $"config/languages/{langCode}.json";
 
             var processor = new LocalizationDataProcessor(filePath);
             // 非同期メソッドを同期的に待機（ブロッキング）
             LocalizedData = processor.ProcessAsync().GetAwaiter().GetResult();
+            //Console.WriteLine(JsonSerializer.Serialize(LocalizedData, new JsonSerializerOptions
+            //{
+            //    WriteIndented = true // ← 見やすい整形
+            //}));
         }
 
         /// <summary>

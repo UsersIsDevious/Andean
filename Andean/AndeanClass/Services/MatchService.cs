@@ -5,6 +5,7 @@ using Andean.Utilities;
 using AndeanClass;
 using Newtonsoft.Json.Linq;
 using Rtech.Liveapi;
+using static AndeanClass.Controllers.AndeanClassController;
 
 namespace AndeanClass.Services
 {
@@ -115,9 +116,9 @@ namespace AndeanClass.Services
                 // match.MaxTeams + 1 から 2 まで逆順に処理
                 for (uint i = match.MaxTeams + 1; i >= 2; i--)
                 {
-                    Team team = match.GetTeam(i);
+                    Team? team = match.GetTeam(i);
                     // チーム内のプレイヤーがいない場合、ranks に追加
-                    if (team.Players.Count == 0)
+                    if (team != null && team.Players.Count == 0)
                     {
                         teamRanking.Add(i);
                     }
@@ -147,15 +148,15 @@ namespace AndeanClass.Services
                             startRing.Data["Stage"] == endRing.Data["Stage"])
                         {
                             // matchBase.PacketLists[startRing_t].Events 内の "ringStartClosing" イベントを検索し、endCenter を設定
-                            if (match.PacketLists.TryGetValue(startRing_t, out Packet? packet))
+                            if (match.PacketLists.TryGetValue(startRing_t, out JObject? packet))
                             {
-                                if (packet.Events != null)
+                                if (packet["Events"] != null)
                                 {
-                                    Event? startRingEvent = packet.Events.FirstOrDefault(e => e.Category == "ringStartClosing");
-                                    if (startRingEvent != null)
+                                    JToken? eventToken = packet["Events"]?.FirstOrDefault(e => (string)e["Category"] == "ringStartClosing");
+                                    if (eventToken != null)
                                     {
                                         // endRing.Data.Center のコピーを endCenter に設定（配列のコピー）
-                                        startRingEvent.Data["endCenter"] = (double[])((double[])endRing.Data["Center"]).Clone();
+                                        eventToken["endCenter"] = JArray.FromObject((double[])((double[])endRing.Data["Center"]).Clone());
                                     }
                                 }
                             }
@@ -222,6 +223,7 @@ namespace AndeanClass.Services
 
             Event _event = new Event(matchStateEndMsg.Timestamp, matchStateEndMsg.Category, _eventData);
             match.AddEventElement(_event);
+            _packet.AddEvent(_event);
         }
 
         public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg, CustomMatch match, List<uint> teamRanking)
@@ -253,6 +255,7 @@ namespace AndeanClass.Services
             };
             Event _event = new Event(squadEliminatedMsg.Timestamp, squadEliminatedMsg.Category, _eventData);
             match.AddEventElement(_event);
+            _packet.AddEvent(_event);
         }
         public static void ProcessRingStartClosing(RingStartClosing ringStartClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
         {
@@ -299,13 +302,11 @@ namespace AndeanClass.Services
             Event _event = new Event(ringStartClosingMsg.Timestamp, ringStartClosingMsg.Category, _eventData);
             match.AddEventElement(_event);
 
+            // AndeanのPacketクラスに追加する
+            _packet.AddEvent(_event);
 
-            // Packetの概念を導入する際には、以下のような処理を追加すること。
-            // // AndeanのPacketクラスに追加する
-            // packet.AddEvent(eventObj);
-
-            // // リングイベントが発生した時間を記録する
-            // ringEvents.Add(new object[] { packet.t, eventObj });
+            // リングイベントが発生した時間を記録する
+            ringEvents.Add((_packet.T.ToString(), _event));
         }
 
         public static void ProcessRingFinishedClosing(RingFinishedClosing ringFinishedClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
@@ -340,13 +341,11 @@ namespace AndeanClass.Services
             Event _event = new Event(ringFinishedClosingMsg.Timestamp, ringFinishedClosingMsg.Category, _eventData);
             match.AddEventElement(_event);
             
+            // AndeanのPacketクラスに追加する
+            _packet.AddEvent(_event);
 
-            // Packetの概念を導入する際には、以下のような処理を追加すること。
-            // // AndeanのPacketクラスに追加する
-            // packet.AddEvent(eventObj);
-
-            // // リングイベントが発生した時間を記録する
-            // ringEvents.Add(new object[] { packet.t, eventObj });
+            // リングイベントが発生した時間を記録する
+            ringEvents.Add((_packet.T.ToString(), _event));
         }
     }
 }
