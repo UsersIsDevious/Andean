@@ -28,6 +28,10 @@ namespace AndeanClass.Services
             var processor = new LocalizationDataProcessor(filePath);
             // 非同期メソッドを同期的に待機（ブロッキング）
             LocalizedData = processor.ProcessAsync().GetAwaiter().GetResult();
+            //Console.WriteLine(JsonSerializer.Serialize(LocalizedData, new JsonSerializerOptions
+            //{
+            //    WriteIndented = true // ← 見やすい整形
+            //}));
         }
 
         /// <summary>
