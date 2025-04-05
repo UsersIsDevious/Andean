@@ -35,7 +35,7 @@ namespace AndeanWebUI.Hubs
                 string option = $"{config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";
                 if (config.ApexLegends.Game_Lancher == "EA")
                 {
-                    command = $"{config.ApexLegends.Path}\\r5apex.exe {option}";
+                    command = $"\"{config.ApexLegends.Path}\\ApexLauncher.exe\" {option}";
                 }
                 else if (config.ApexLegends.Game_Lancher == "Steam")
                 {
