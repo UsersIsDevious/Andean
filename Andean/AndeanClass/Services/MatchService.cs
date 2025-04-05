@@ -188,7 +188,7 @@ namespace AndeanClass.Services
         }
 
 
-        public static void ProcessGameEnd(MatchStateEnd matchStateEndMsg, CustomMatch match)
+        public static void ProcessGameEnd(MatchStateEnd matchStateEndMsg, CustomMatch match, Packet packet)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -222,9 +222,10 @@ namespace AndeanClass.Services
 
             Event _event = new Event(matchStateEndMsg.Timestamp, matchStateEndMsg.Category, _eventData);
             match.AddEventElement(_event);
+            packet.AddEvent(_event);
         }
 
-        public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg, CustomMatch match, List<uint> teamRanking)
+        public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg, CustomMatch match, Packet packet, List<uint> teamRanking)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -253,8 +254,9 @@ namespace AndeanClass.Services
             };
             Event _event = new Event(squadEliminatedMsg.Timestamp, squadEliminatedMsg.Category, _eventData);
             match.AddEventElement(_event);
+            packet.AddEvent(_event);
         }
-        public static void ProcessRingStartClosing(RingStartClosing ringStartClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
+        public static void ProcessRingStartClosing(RingStartClosing ringStartClosingMsg, CustomMatch match, List<(string, Event)> ringEvents, Packet packet)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -299,16 +301,14 @@ namespace AndeanClass.Services
             Event _event = new Event(ringStartClosingMsg.Timestamp, ringStartClosingMsg.Category, _eventData);
             match.AddEventElement(_event);
 
+            // AndeanのPacketクラスに追加する
+            packet.AddEvent(_event);
 
-            // Packetの概念を導入する際には、以下のような処理を追加すること。
-            // // AndeanのPacketクラスに追加する
-            // packet.AddEvent(eventObj);
-
-            // // リングイベントが発生した時間を記録する
-            // ringEvents.Add(new object[] { packet.t, eventObj });
+            // リングイベントが発生した時間を記録する
+            ringEvents.Add((packet.T.ToString(), _event));
         }
 
-        public static void ProcessRingFinishedClosing(RingFinishedClosing ringFinishedClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
+        public static void ProcessRingFinishedClosing(RingFinishedClosing ringFinishedClosingMsg, CustomMatch match, List<(string, Event)> ringEvents, Packet packet)
         {
             ArgumentNullException.ThrowIfNull(match);
 
@@ -340,13 +340,11 @@ namespace AndeanClass.Services
             Event _event = new Event(ringFinishedClosingMsg.Timestamp, ringFinishedClosingMsg.Category, _eventData);
             match.AddEventElement(_event);
             
+            // AndeanのPacketクラスに追加する
+            packet.AddEvent(_event);
 
-            // Packetの概念を導入する際には、以下のような処理を追加すること。
-            // // AndeanのPacketクラスに追加する
-            // packet.AddEvent(eventObj);
-
-            // // リングイベントが発生した時間を記録する
-            // ringEvents.Add(new object[] { packet.t, eventObj });
+            // リングイベントが発生した時間を記録する
+            ringEvents.Add((packet.T.ToString(), _event));
         }
     }
 }

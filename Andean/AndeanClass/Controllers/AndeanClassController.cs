@@ -120,7 +120,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-               ProcessGameEnd(matchStateEndMsg, _match);
+               ProcessGameEnd(matchStateEndMsg, _match, _packet);
             }
         }
 
@@ -134,7 +134,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                ProcessTeamEliminated(squadEliminatedMsg, _match, _teamRanking);
+                ProcessTeamEliminated(squadEliminatedMsg, _match, _packet, _teamRanking);
             }
         }
         // リング収縮開始メッセージの処理
@@ -146,7 +146,7 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
-                ProcessRingStartClosing(ringStartClosingMsg, _match, _ringEvents);
+                ProcessRingStartClosing(ringStartClosingMsg, _match, _ringEvents, _packet);
             }
         }
 
@@ -159,7 +159,7 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
-                ProcessRingFinishedClosing(ringFinishedClosingMsg, _match, _ringEvents);
+                ProcessRingFinishedClosing(ringFinishedClosingMsg, _match, _ringEvents, _packet);
             }
         }
     }
