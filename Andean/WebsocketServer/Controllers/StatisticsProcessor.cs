@@ -7,6 +7,7 @@ using Andean.Config;
 using AndeanClass.Controllers;
 using AndeanWebUI.Services;
 using static AndeanClass.Controllers.AndeanClassController;
+using Newtonsoft.Json;
 
 namespace Andean.WebsocketServer.Controllers
 {
@@ -45,7 +46,7 @@ namespace Andean.WebsocketServer.Controllers
             _clientManagement = clientManagement;
 
             // サーバー起動時のタイムスタンプでログファイル名を決定（例: 20250222_132800_log.txt）
-            _logFileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_log.txt";
+            _logFileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_log.json";
 
             // 別スレッドでキュー処理を開始
             Task.Factory.StartNew(ProcessQueue, TaskCreationOptions.LongRunning);
@@ -58,11 +59,18 @@ namespace Andean.WebsocketServer.Controllers
         {
             _queue.Add(new MessageWrapper(clientId, message));
 
-            // ログ出力用の文字列を作成
-            string logContent = $"{{ Time: {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} Client: {clientId}, MessageType: {message.GetType().Name}, Content: {message}{Environment.NewLine}}}";
+            var data = new
+            {
+                Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                Client = clientId,
+                MessageType = message.GetType().Name,
+                Content = message
+            };
+
+            string logContent = JsonConvert.SerializeObject(data);
 
             // 非同期にファイルへ追記（ファイルは ./output フォルダ配下に作成）
-            Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, _logFileName, logContent, FileWriteMode.Append));
+            Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, _logFileName, logContent, FileWriteMode.JsonAppend));
         }
 
         /// <summary>

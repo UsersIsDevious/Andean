@@ -46,7 +46,10 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                if (_packet != null)
+                {
+                    _packet.AddEvent(_event);
+                }
             }
         }
         public static void ProcessPlayerDisconnected(Rtech.Liveapi.PlayerDisconnected Msg)
@@ -66,7 +69,10 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                if (_packet != null)
+                {
+                    _packet.AddEvent(_event);
+                }
             }
         }
         public static void ProcessPlayerStatChanged(Rtech.Liveapi.PlayerStatChanged Msg)
@@ -585,7 +591,10 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                if(_packet != null)
+                {
+                    _packet.AddEvent(_event);
+                }
             }
         }
         public static void ProcessPlayerAbilityUsed(Rtech.Liveapi.PlayerAbilityUsed Msg)

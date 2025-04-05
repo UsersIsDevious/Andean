@@ -71,8 +71,8 @@ namespace AndeanClass.Controllers
         /// </remarks>
         public async Task GetPlayerStatus(CustomMatch match)
         {
-            // ログ出力
-            Console.WriteLine("[GET PLAYER STATUS] Start");
+
+            Console.WriteLine("[GET PLAYER STATUS] Start"); // デバッグ用ログ
 
             // match.teams の全てのチームを列挙
             foreach (Team team in match.Teams.Values)
@@ -80,24 +80,33 @@ namespace AndeanClass.Controllers
                 // チームの最初のプレイヤーIDからプレイヤー情報を取得
                 Player player = match.GetPlayer(team.Players[0]);
 
+                Console.WriteLine($"[GET PLAYER STATUS] Team ID: {player.TeamId}, Player ID: {player.NucleusHash}"); // デバッグ用ログ
+
                 // チームにプレイヤーが存在しない、またはチームが壊滅していた場合次のチームへ
                 if (team.Players.Count == 0 || player.GetStatus() == "eliminated")
+                {
+                    Console.WriteLine($"[GET PLAYER STATUS] Team ID: {player.TeamId} is eliminated."); // デバッグ用ログ
                     continue;
+                }   
 
                 for (int i = 0; i < team.Players.Count; i++)
                 {
                     // プレイヤーの状態が "death"、またはオンラインでなければ次のメンバーへ
                     if (player.GetStatus() == "death" || !player.GetOnlineStatus())
+                    {
+                        Console.WriteLine($"[GET PLAYER STATUS] Player ID: {player.NucleusHash} is dead or offline."); // デバッグ用ログ
                         continue;
-
+                    }
+                        
                     // カメラをプレイヤー名に基づいて切り替え
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
                     await _request.ChangeCameraAsync("name", player.Name, cts.Token);
+
+                    Console.WriteLine($"[GET PLAYER STATUS] Camera changed to Player ID: {player.NucleusHash}"); // デバッグ用ログ
                 }
             }
 
-            // ログ出力
-            Console.WriteLine("[GET PLAYER STATUS] End");
+            Console.WriteLine("[GET PLAYER STATUS] End"); // デバッグ用ログ
         }
 
         /// <summary>
