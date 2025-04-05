@@ -10,6 +10,7 @@ using static AndeanWebUI.Services.ControlPanelHubService;
 using static Andean.Utilities.CommandExecutionService;
 using static Andean.Config.ConfigService;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 
 namespace AndeanWebUI.Hubs
 {
@@ -101,20 +102,26 @@ namespace AndeanWebUI.Hubs
                 switch (sectionKey.ToLowerInvariant())
                 {
                     case "apexlegends":
-                        var newApex = System.Text.Json.JsonSerializer.Deserialize<ApexLegendsConfig>(newData);
-                        if (newApex != null)
                         {
-                            // mode に応じた更新方法は、ConfigService.UpdateConfigSectionAsync 内で処理することも可能
-                            await UpdateConfigSectionAsync("apexlegends", newApex);
+                            var options = new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true
+                            };
+                            var newApex = JsonSerializer.Deserialize<ApexLegendsConfig>(newData, options);
+                            if (newApex != null)
+                            {
+                                // mode に応じた更新方法は、ConfigService.UpdateConfigSectionAsync 内で処理することも可能
+                                await UpdateConfigSectionAsync("apexlegends", newApex);
+                            }
+                            break;
                         }
-                        break;
                     case "penetrator":
                         {
                             var options = new JsonSerializerOptions
                             {
                                 PropertyNameCaseInsensitive = true
                             };
-                            var newPenetrator = JsonSerializer.Deserialize<ScoreSettingConfig>(newData, options);
+                            var newPenetrator = JsonSerializer.Deserialize<List<string>>(newData, options);
                             if (newPenetrator != null)
                             {
                                 await UpdateConfigSectionAsync("penetrator", newPenetrator);
