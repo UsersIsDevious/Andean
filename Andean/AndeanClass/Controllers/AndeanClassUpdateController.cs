@@ -71,6 +71,9 @@ namespace AndeanClass.Controllers
         /// </remarks>
         public async Task GetPlayerStatus(CustomMatch match)
         {
+            // ログ出力
+            Console.WriteLine("[GET PLAYER STATUS] Start");
+
             // match.teams の全てのチームを列挙
             foreach (Team team in match.Teams.Values)
             {
@@ -92,6 +95,9 @@ namespace AndeanClass.Controllers
                     await _request.ChangeCameraAsync("name", player.Name, cts.Token);
                 }
             }
+
+            // ログ出力
+            Console.WriteLine("[GET PLAYER STATUS] End");
         }
 
         /// <summary>

@@ -169,7 +169,7 @@ namespace Andean.WebsocketServer
                         var parsedMessage = Message.ParseMessage(incomingEvent.GameMessage);
                         if (parsedMessage != null)
                         {
-                            _logger.LogInformation("🎯 Decoded Message from authorized client {ClientId}: {Message}", clientId, parsedMessage);
+                            // _logger.LogInformation("🎯 Decoded Message from authorized client {ClientId}: {Message}", clientId, parsedMessage);
                             _statisticsProcessor.EnqueueMessage(clientId,parsedMessage);
 
                             var jsonMessage = new

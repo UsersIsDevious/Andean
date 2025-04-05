@@ -68,11 +68,11 @@ namespace Andean.WebsocketServer.Controllers
         /// <summary>
         /// キュー内の IMessage を処理します（別スレッドで実行）。
         /// </summary>
-        private void ProcessQueue()
+        private async void ProcessQueue()
         {
             foreach (var wrapper in _queue.GetConsumingEnumerable())
             {
-                ProcessMessage(wrapper.ClientId, wrapper.Message);
+                await ProcessMessage(wrapper.ClientId, wrapper.Message);
             }
         }
 
@@ -95,7 +95,7 @@ namespace Andean.WebsocketServer.Controllers
                         {
                             // Init メッセージの場合、クライアントを認定済みに設定
                             _clientManagement.SetAuthorizedClient(clientId);
-                            ControlPanelHubService.SetLiveAPIStatus("Connect","isLobby");
+                            await ControlPanelHubService.SetLiveAPIStatus("Connect","isLobby");
                             Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
                         }                        
                         break;
