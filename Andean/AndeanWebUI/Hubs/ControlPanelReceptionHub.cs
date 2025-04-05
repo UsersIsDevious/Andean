@@ -109,12 +109,18 @@ namespace AndeanWebUI.Hubs
                         }
                         break;
                     case "penetrator":
-                        var newPenetrator = System.Text.Json.JsonSerializer.Deserialize<List<string>>(newData);
-                        if (newPenetrator != null)
                         {
-                            await UpdateConfigSectionAsync("penetrator", newPenetrator);
+                            var options = new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true
+                            };
+                            var newPenetrator = JsonSerializer.Deserialize<ScoreSettingConfig>(newData, options);
+                            if (newPenetrator != null)
+                            {
+                                await UpdateConfigSectionAsync("penetrator", newPenetrator);
+                            }
+                            break;
                         }
-                        break;
                     case "output":
                         await UpdateConfigSectionAsync("output", newData);
                         break;
@@ -128,18 +134,20 @@ namespace AndeanWebUI.Hubs
                         await UpdateConfigSectionAsync("data_fps", newData);
                         break;
                     case "score_setting":
-                        Console.WriteLine(newData);
-                        var options = new JsonSerializerOptions
                         {
-                            PropertyNameCaseInsensitive = true
-                        };
+                            Console.WriteLine(newData);
+                            var options = new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true
+                            };
 
-                        var newScore = JsonSerializer.Deserialize<ScoreSettingConfig>(newData, options);
-                        if (newScore != null)
-                        {
-                            await UpdateConfigSectionAsync("score_setting", newScore);
+                            var newScore = JsonSerializer.Deserialize<ScoreSettingConfig>(newData, options);
+                            if (newScore != null)
+                            {
+                                await UpdateConfigSectionAsync("score_setting", newScore);
+                            }
+                            break;
                         }
-                        break;
                     default:
                         await Clients.Caller.SendAsync("ConfigUpdateResponse", $"Unknown section: {sectionKey}");
                         return;
