@@ -36,44 +36,34 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// チーム順位のリスト
         /// </summary>
-        private static List<uint> _teamRanking = new List<uint>();
+        public static List<uint> _teamRanking = new List<uint>();
         /// <summary>
         /// リング後処理用のEventsリスト
         /// </summary>
-        private static List<(string, Event)> _ringEvents = new List<(string, Event)>();
+        public static List<(string, Event)> _ringEvents = new List<(string, Event)>();
         /// <summary>
         /// configファイルの情報
         /// </summary>
-        private static AppConfig config = ConfigService.Config;
+        public static AppConfig config = ConfigService.Config;
         /// <summary>
         /// player以外の攻撃の際用のworldプレーヤー
         /// </summary>
-        private static Player WorldPlayer = new Player("World", 99, "World", "World").SetLegend("World");
+        public static Player WorldPlayer = new Player("World", 99, "World", "World").SetLegend("World");
         /// <summary>
         /// CSVデータ
         /// </summary>
-        private static CsvData _csvData = new CsvData();
+        public static CsvData _csvData = new CsvData();
         /// <summary>
         /// ロビー関連メッセージを保持する変数
         /// </summary>
-        private static Dictionary<string, object> _waitMessages = new Dictionary<string, object>();
-
-
-
-        public static void InitializeLobby(Init initMsg)
-        {
-            lock (_lock)
-            {
-                _lobby = CreateCustomMatch(initMsg);
-            }
-        }
+        public static Dictionary<string, object> _waitMessages = new Dictionary<string, object>();
 
 
         public static void InitializeMatch(Init initMsg)
         {
             lock (_lock)
             {
-                _match = CreateCustomMatch(initMsg);
+                CreateCustomMatch(initMsg);
                 // マッチが初期化されたらロビーから抜ける
                 _isLobby = false;
             }
@@ -89,7 +79,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                ConfigureMatchSetup(matchSetupMsg, _match);
+                ConfigureMatchSetup(matchSetupMsg);
             }
         }
 
@@ -140,7 +130,7 @@ namespace AndeanClass.Controllers
                     }
                 }
 
-                UpdateGameStatus(gameStateChangedMsg, _match, config, _teamRanking, _ringEvents);
+                UpdateGameStatus(gameStateChangedMsg);
             }
         }
 
@@ -154,7 +144,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                ProcessGameEnd(matchStateEndMsg, _match);
+                ProcessGameEnd(matchStateEndMsg);
             }
         }
 
@@ -168,7 +158,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                ProcessTeamEliminated(squadEliminatedMsg, _match, _teamRanking);
+                ProcessTeamEliminated(squadEliminatedMsg);
             }
         }
         // リング収縮開始メッセージの処理
@@ -180,7 +170,7 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
-                ProcessRingStartClosing(ringStartClosingMsg, _match, _ringEvents);
+                ProcessRingStartClosing(ringStartClosingMsg);
             }
         }
 
@@ -193,7 +183,7 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
-                ProcessRingFinishedClosing(ringFinishedClosingMsg, _match, _ringEvents);
+                ProcessRingFinishedClosing(ringFinishedClosingMsg);
             }
         }
 

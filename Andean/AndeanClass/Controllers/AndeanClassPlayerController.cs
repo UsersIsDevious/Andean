@@ -142,7 +142,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
                 Event _event;
-                string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
                 bool penetrator = LocalizationService.CheckShieldPenetrator(_weaponName);
                 uint _damageInflicted = Msg.DamageInflicted;
 
@@ -190,7 +190,7 @@ namespace AndeanClass.Controllers
 
                 Event _event;
 
-                string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
 
                 //KillPointが入るplayer(Msg)
                 Rtech.Liveapi.Player AwardedTo = Msg.AwardedTo;
@@ -241,7 +241,7 @@ namespace AndeanClass.Controllers
                 }
 
                 Event _event;
-                string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
 
                 // 攻撃者
                 Player _attacker;
@@ -290,7 +290,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
                 Event _event;
-                string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
 
                 //AssistantPointが入るplayer(Msg)
                 Rtech.Liveapi.Player Assistant = Msg.Assistant;
@@ -591,7 +591,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                if(_packetList.Count > 0)
+                if (_packetList.Count > 0)
                 {
                     _packetList[_updateTime].AddEvent(_event);
                 }
