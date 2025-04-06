@@ -1,6 +1,5 @@
-﻿using Andean.WebsocketServer.Controllers;
+﻿using AndeanWebUI.Models;
 using Microsoft.AspNetCore.SignalR;
-using AndeanWebUI.Models;
 
 namespace AndeanWebUI.Hubs
 {

@@ -1,10 +1,10 @@
 ﻿using System.Text;
-using System.Text.Json;
 using Newtonsoft.Json;
-using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Unicode;
+using System.Text.Encodings.Web;
 
-namespace Andean.Utilities
+namespace AndeanSystems
 {
     public static class VdfParser
     {

@@ -1,8 +1,7 @@
 ﻿using System.Text.Json;
-using Andean.Utilities;
 using Microsoft.Extensions.Primitives;
 
-namespace Andean.Config
+namespace AndeanSystems
 {
     /// <summary>
     /// Config/config.json の内容を取得・更新するサービス

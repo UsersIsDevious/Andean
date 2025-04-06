@@ -1,12 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using System.Xml.Linq;
-using System.Xml;
-using System;
-using AndeanClass.Controllers;
-using AndeanClass;
-using Rtech.Liveapi;
-
-namespace AndeanClass.Services
+﻿namespace AndeanClass.Services
 {
     public class PlayerService
     {

@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using AndeanWebUI.Models;
+﻿using AndeanWebUI.Models;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AndeanWebUI.Hubs
 {

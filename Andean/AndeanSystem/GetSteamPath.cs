@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Andean.Utilities
+namespace AndeanSystems
 {
     public static class GetSteamPath
     {

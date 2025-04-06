@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Andean.Utilities
+namespace AndeanSystems
 {
     /// <summary>
     /// コマンド実行モードの種類

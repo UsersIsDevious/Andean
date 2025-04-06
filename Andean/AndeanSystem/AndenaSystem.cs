@@ -1,6 +1,4 @@
-﻿using AndeanSystems;
-
-namespace AndeanSystems
+﻿namespace AndeanSystems
 {
     public abstract class AndeanSystem
     {
