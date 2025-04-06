@@ -1,61 +1,75 @@
-﻿// UpdateManager.cs
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
+﻿using AndeanSystems;
 
-namespace AndeanSystems
+public static class UpdateManager
 {
-    public static class UpdateManager
+    private static List<AndeanSystem> updateSystems = new List<AndeanSystem>();
+    private static Thread updateThread;
+    private static bool running = false;
+    private const int frameInterval = 16; // 約16msで60FPS
+    private static object lockObj = new object();
+
+    public static void Register(AndeanSystem system)
     {
-        private static List<AndeanSystem> updatables = new List<AndeanSystem>();
-        private static bool running = false;
-        private static int intervalMs = 16; // 約60FPS
-
-        public static void Register(AndeanSystem u)
+        lock (lockObj)
         {
-            if (!updatables.Contains(u))
-                updatables.Add(u);
-        }
-
-        public static void Unregister(AndeanSystem u)
-        {
-            if (updatables.Contains(u))
-                updatables.Remove(u);
-        }
-
-        public static void Start()
-        {
-            if (running) return;
-            running = true;
-
-            Thread updateThread = new Thread(() =>
+            if (!updateSystems.Contains(system))
             {
-                while (running)
-                {
-                    foreach (var u in updatables.ToArray()) // 安全なイテレーション
-                    {
-                        try
-                        {
-                            u.Update();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Update error: {ex.Message}");
-                        }
-                    }
-                    Thread.Sleep(intervalMs);
-                }
-            });
-
-            updateThread.IsBackground = true;
-            updateThread.Start();
+                updateSystems.Add(system);
+            }
         }
+    }
 
-        public static void Stop()
+    public static void Unregister(AndeanSystem system)
+    {
+        lock (lockObj)
         {
-            running = false;
+            if (updateSystems.Contains(system))
+            {
+                updateSystems.Remove(system);
+            }
         }
+    }
+
+    public static void StartLoop()
+    {
+        if (running) return;
+        running = true;
+        // バックグラウンドスレッドとして起動（メインスレッドを占有しない）
+        updateThread = new Thread(Loop)
+        {
+            IsBackground = true
+        };
+        updateThread.Start();
+    }
+
+    private static void Loop()
+    {
+        while (running)
+        {
+            DateTime frameStart = DateTime.UtcNow;
+
+            // 登録されている各システムのUpdateを呼び出す
+            lock (lockObj)
+            {
+                foreach (var system in updateSystems)
+                {
+                    system.Update();
+                }
+            }
+
+            // フレーム内にかかった時間を計測し、残りの時間だけスリープ
+            TimeSpan elapsed = DateTime.UtcNow - frameStart;
+            int sleepTime = frameInterval - (int)elapsed.TotalMilliseconds;
+            if (sleepTime > 0)
+            {
+                Thread.Sleep(sleepTime);
+            }
+        }
+    }
+
+    public static void StopLoop()
+    {
+        running = false;
+        updateThread?.Join();
     }
 }

@@ -8,16 +8,24 @@ namespace AndeanClass.Controllers
     public class AndeanClassUpdateController : AndeanSystem
     {
 
-        public void Update()
+        public override void Update()
         {
-            if (_match.State == "Playing")
+            try
             {
-                GetPlayerStatus(_match).Wait();
+                if (_match.State == "Playing")
+                {
+                    GetPlayerStatus(_match).Wait();
 
-                _updateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    _updateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                // 新たなPacketオブジェクトを生成し、_packetListに追加
-                _packetList[_updateTime] = new Packet(_updateTime / 1000 - (long)_match.StartTimeStamp);
+                    // 新たなPacketオブジェクトを生成し、_packetListに追加
+                    _packetList[_updateTime] = new Packet(_updateTime / 1000 - (long)_match.StartTimeStamp);
+                }
+            }
+            catch (Exception ex)
+            {
+                // 例外内容をログ出力する
+                Console.WriteLine($"Updateで例外発生: {ex.Message}");
             }
         }
 

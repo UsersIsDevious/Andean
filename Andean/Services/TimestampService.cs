@@ -20,7 +20,7 @@ namespace AndeanClass.Services
         }
 
         // Update() は UpdateManager により 60FPS (約16ms毎) で呼ばれる
-        public void Update()
+        public override void Update()
         {
             // 前回送信から _interval 経過しているかチェック
             if (DateTime.UtcNow - _lastSentTime >= _interval)

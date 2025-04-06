@@ -10,6 +10,7 @@ using System.Diagnostics;
 using AndeanSystems;
 using AndeanWebUI.Services;
 using Microsoft.AspNetCore.SignalR;
+using AndeanClass.Controllers;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,7 @@ builder.Services.AddSignalR();
 
 // 🚀 TimestampService をシングルトンで登録
 builder.Services.AddSingleton<AndeanSystem, TimestampService>();
+
 
 // 🚀 SystemShutdownService をホストサービスとして登録
 builder.Services.AddSingleton<SystemShutdownService>();
@@ -106,10 +108,15 @@ Task.Run(async () =>
 });
 
 
+
 logger.LogInformation("🚀 Application started successfully.");
 
 // SignalR HubContext の注入
 var hubContext = app.Services.GetRequiredService<IHubContext<ControlPanelHub>>();
 ControlPanelHubService.Init(hubContext);
+
+// UpdateManagerのループを開始
+UpdateManager.StartLoop();
+new AndeanClassUpdateController();
 
 app.Run();
