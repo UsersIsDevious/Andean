@@ -4,13 +4,12 @@ using Rtech.Liveapi; // protoc により生成された型群
 using ApexLiveAPI.Message;
 using Andean.WebsocketServer.Controllers;
 
+
 namespace Andean.WebsocketServer
 {
-    public class WebSocketServer
+    public static class WebSocketServer
     {
-        private readonly ILogger<WebSocketServer> _logger;
-        private readonly HttpListener _httpListener;
-        private readonly StatisticsProcessor _statisticsProcessor;
+        private static readonly HttpListener _httpListener;
         private const int Port = 7777;
 
         // 認定済みクライアントの情報（最初に Init イベントを送信したクライアントを記録）
@@ -19,24 +18,19 @@ namespace Andean.WebsocketServer
         private static readonly object _authLock = new object();
 
         // リクエスト送受信用の TaskCompletionSource とロック
-        private TaskCompletionSource<byte[]>? _requestTcs = null;
-        private readonly object _requestLock = new object();
+        private static TaskCompletionSource<byte[]>? _requestTcs = null;
+        private static readonly object _requestLock = new object();
 
-        public WebSocketServer(
-            ILogger<WebSocketServer> logger,
-            StatisticsProcessor statisticsProcessor)
-        {
-            _logger = logger;
-            _statisticsProcessor = statisticsProcessor;
+        static WebSocketServer() { 
             _httpListener = new HttpListener();
             _httpListener.Prefixes.Add($"http://127.0.0.1:{Port}/");
             _httpListener.Prefixes.Add($"http://localhost:{Port}/");
         }
 
-        public async Task StartAsync()
+        public static async Task StartAsync()
         {
             _httpListener.Start();
-            _logger.LogInformation("✅ WebSocket Server is listening on ws://127.0.0.1:{Port}/ and ws://localhost:{Port}/", Port, Port);
+            Console.WriteLine("✅ WebSocket Server is listening on ws://127.0.0.1:{Port}/ and ws://localhost:{Port}/", Port, Port);
 
             while (true)
             {
@@ -57,7 +51,7 @@ namespace Andean.WebsocketServer
         /// <summary>
         /// 認定済みクライアントを用いてリクエストを送信し、応答を受信する
         /// </summary>
-        public async Task<byte[]> SendRequestViaAuthorizedClientAsync(byte[] requestBytes, CancellationToken cancellationToken)
+        public static async Task<byte[]> SendRequestViaAuthorizedClientAsync(byte[] requestBytes, CancellationToken cancellationToken)
         {
             WebSocket? client;
             lock (_authLock)
@@ -97,10 +91,10 @@ namespace Andean.WebsocketServer
             }
         }
 
-        private async Task HandleClientAsync(WebSocket webSocket)
+        private static async Task HandleClientAsync(WebSocket webSocket)
         {
             var clientId = Guid.NewGuid().ToString();
-            _logger.LogInformation("📡 WebSocket client {ClientId} connected.", clientId);
+            Console.WriteLine("📡 WebSocket client {ClientId} connected.", clientId);
 
             var buffer = new byte[2048];
 
@@ -115,11 +109,11 @@ namespace Andean.WebsocketServer
                     try
                     {
                         var incomingEvent = LiveAPIEvent.Parser.ParseFrom(buffer, 0, result.Count);
-                        _logger.LogInformation("📩 Raw Protobuf message received: {MessageType}", incomingEvent.GameMessage?.TypeUrl);
+                        Console.WriteLine("📩 Raw Protobuf message received: {MessageType}", incomingEvent.GameMessage?.TypeUrl);
 
                         if (incomingEvent.GameMessage == null)
                         {
-                            _logger.LogWarning("⚠️ Received message with null GameMessage. Skipping.");
+                            Console.WriteLine("⚠️ Received message with null GameMessage. Skipping.");
                             continue;
                         }
 
@@ -132,7 +126,7 @@ namespace Andean.WebsocketServer
                             {
                                 _authorizedClient = webSocket;
                                 _authorizedClientId = clientId;
-                                _logger.LogInformation("✅ Client {ClientId} is set as the authorized client (Init received).", clientId);
+                                Console.WriteLine("✅ Client {ClientId} is set as the authorized client (Init received).", clientId);
                             }
                         }
 
@@ -161,7 +155,7 @@ namespace Andean.WebsocketServer
                         }
                         else
                         {
-                            _logger.LogWarning("⚠️ Client {ClientId} is not authorized. Ignoring message.", clientId);
+                            Console.WriteLine("⚠️ Client {ClientId} is not authorized. Ignoring message.", clientId);
                             continue;
                         }
 
@@ -170,7 +164,7 @@ namespace Andean.WebsocketServer
                         if (parsedMessage != null)
                         {
                             // _logger.LogInformation("🎯 Decoded Message from authorized client {ClientId}: {Message}", clientId, parsedMessage);
-                            _statisticsProcessor.EnqueueMessage(clientId,parsedMessage);
+                            StatisticsProcessor.EnqueueMessage(clientId,parsedMessage);
 
                             var jsonMessage = new
                             {
@@ -182,30 +176,30 @@ namespace Andean.WebsocketServer
                         }
                         else
                         {
-                            _logger.LogWarning("⚠️ Unknown message type: {Type}", incomingEvent.GameMessage.TypeUrl);
+                            Console.WriteLine("⚠️ Unknown message type: {Type}", incomingEvent.GameMessage.TypeUrl);
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "❌ Error processing message from {ClientId}", clientId);
+                        Console.Error.WriteLine("❌ WebSocket error from {0}: {1}", clientId, ex);
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ WebSocket error from {ClientId}", clientId);
+                Console.Error.WriteLine("❌ WebSocket error from {0}: {1}", clientId, ex);
             }
             finally
             {
                 await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-                _logger.LogInformation("🔌 WebSocket client {ClientId} disconnected.", clientId);
+                Console.WriteLine("🔌 WebSocket client {ClientId} disconnected.", clientId);
                 lock (_authLock)
                 {
                     if (clientId == _authorizedClientId)
                     {
                         _authorizedClient = null;
                         _authorizedClientId = null;
-                        _logger.LogInformation("🔄 Authorized client {ClientId} disconnected. Waiting for next Init event...", clientId);
+                        Console.WriteLine("🔄 Authorized client {ClientId} disconnected. Waiting for next Init event...", clientId);
                     }
                 }
             }

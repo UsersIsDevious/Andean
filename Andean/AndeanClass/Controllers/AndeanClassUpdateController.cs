@@ -7,14 +7,6 @@ namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
-        private readonly Request _request;
-
-        public AndeanClassUpdateController(
-            Request request
-            )
-        {
-            _request = request;
-        }
 
         public void Update()
         {
@@ -71,7 +63,7 @@ namespace AndeanClass.Controllers
                         
                     // カメラをプレイヤー名に基づいて切り替え
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                    await _request.ChangeCameraAsync("name", player.Name, cts.Token);
+                    await Request.ChangeCameraAsync("name", player.Name, cts.Token);
 
                     Console.WriteLine($"[GET PLAYER STATUS] Camera changed to Player ID: {player.NucleusHash}"); // デバッグ用ログ
                 }

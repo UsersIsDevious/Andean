@@ -11,20 +11,15 @@ namespace AndeanWebUI.Hubs
 {
     public partial class ControlPanelHub : Hub, IAndeanWebUI
     {
-        private readonly Request _request;
         private readonly AppConfig _config = ConfigService.Config;
         private readonly SystemShutdownService _shutdownService;
 
         private Dictionary<string, LobbyPlayerSection> lobbyPlayers = new Dictionary<string, LobbyPlayerSection>();
         private LobbySettings lobbySettings = new LobbySettings();
 
-        public ControlPanelHub(
-            SystemShutdownService shutdownService,
-            Request request
-            )
+        public ControlPanelHub(SystemShutdownService shutdownService)
         {
             _shutdownService = shutdownService;
-            _request = request;
         }
 
         // 全クライアントへ現在のステータスをブロードキャストする

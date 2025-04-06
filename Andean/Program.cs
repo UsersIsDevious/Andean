@@ -36,18 +36,6 @@ builder.Services.AddSignalR();
 // 🚀 TimestampService をシングルトンで登録
 builder.Services.AddSingleton<AndeanSystem, TimestampService>();
 
-// 🚀 WebSocket サーバーをシングルトンとして登録
-builder.Services.AddSingleton<WebSocketServer>();
-
-// 🚀 StatisticsProcessor サーバーをシングルトンとして登録
-builder.Services.AddSingleton<StatisticsProcessor>();
-
-//🚀  ClientManagementService をシングルトンとして登録
-builder.Services.AddSingleton<ClientManagementService>();
-
-// 🚀 LobbyRequestService をシングルトンで登録
-builder.Services.AddSingleton<Request>();
-
 // 🚀 SystemShutdownService をホストサービスとして登録
 builder.Services.AddSingleton<SystemShutdownService>();
 
@@ -98,8 +86,7 @@ app.MapHub<LiveViewHub>("/liveViewHub");
 // 🚀 WebSocket サーバーをバックグラウンドで起動
 try
 {
-    var webSocketServer = app.Services.GetRequiredService<WebSocketServer>();
-    Task.Run(() => webSocketServer.StartAsync());
+    Task.Run(() => WebSocketServer.StartAsync());
     logger.LogInformation("✅ WebSocket Server started successfully on ws://127.0.0.1:7777/ and ws://localhost:7777/");
 }
 catch (Exception ex)

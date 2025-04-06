@@ -26,25 +26,18 @@ namespace Andean.WebsocketServer.Controllers
         }
     }
 
-    public class StatisticsProcessor
+    public static class StatisticsProcessor
     {
         // クライアントIDと IMessage の組み合わせを保持するスレッドセーフなキュー
-        private readonly BlockingCollection<MessageWrapper> _queue = new BlockingCollection<MessageWrapper>();
+        private static readonly BlockingCollection<MessageWrapper> _queue = new BlockingCollection<MessageWrapper>();
 
-        private readonly ClientManagementService _clientManagement;
-
-        private readonly AppConfig _config = ConfigService.Config;
+        private static readonly AppConfig _config = ConfigService.Config;
 
         // ログ出力用ファイル名（サーバー起動時のタイムスタンプで固定）
-        private readonly string _logFileName;
+        private static readonly string _logFileName;
 
-        public StatisticsProcessor(
-            ClientManagementService clientManagement
-            )
+        static StatisticsProcessor()
         {
-           
-            _clientManagement = clientManagement;
-
             // サーバー起動時のタイムスタンプでログファイル名を決定（例: 20250222_132800_log.txt）
             _logFileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_log.json";
 
@@ -55,7 +48,7 @@ namespace Andean.WebsocketServer.Controllers
         /// <summary>
         /// 受信した IMessage とその送信元クライアント ID をキューに追加します。
         /// </summary>
-        public void EnqueueMessage(string clientId, IMessage message)
+        public static void EnqueueMessage(string clientId, IMessage message)
         {
             _queue.Add(new MessageWrapper(clientId, message));
 
@@ -76,7 +69,7 @@ namespace Andean.WebsocketServer.Controllers
         /// <summary>
         /// キュー内の IMessage を処理します（別スレッドで実行）。
         /// </summary>
-        private async void ProcessQueue()
+        private static async void ProcessQueue()
         {
             foreach (var wrapper in _queue.GetConsumingEnumerable())
             {
@@ -87,7 +80,7 @@ namespace Andean.WebsocketServer.Controllers
         /// <summary>
         /// 受信メッセージの型に応じた処理を行います。
         /// </summary>
-        private async Task ProcessMessage(string clientId, IMessage message)
+        private static async Task ProcessMessage(string clientId, IMessage message)
         {
 
             switch (message)
@@ -102,7 +95,7 @@ namespace Andean.WebsocketServer.Controllers
                         else
                         {
                             // Init メッセージの場合、クライアントを認定済みに設定
-                            _clientManagement.SetAuthorizedClient(clientId);
+                            ClientManagementService.SetAuthorizedClient(clientId);
                             await ControlPanelHubService.SetLiveAPIStatus("Connect","isLobby");
                             Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
                         }                        
