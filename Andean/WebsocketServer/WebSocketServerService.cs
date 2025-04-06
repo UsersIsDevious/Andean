@@ -30,7 +30,7 @@ namespace Andean.WebsocketServer
         public static async Task StartAsync()
         {
             _httpListener.Start();
-            Console.WriteLine("✅ WebSocket Server is listening on ws://127.0.0.1:{Port}/ and ws://localhost:{Port}/", Port, Port);
+            Console.WriteLine($"✅ WebSocket Server is listening on ws://127.0.0.1:{Port}/ and ws://localhost:{Port}/");
 
             while (true)
             {
@@ -94,7 +94,7 @@ namespace Andean.WebsocketServer
         private static async Task HandleClientAsync(WebSocket webSocket)
         {
             var clientId = Guid.NewGuid().ToString();
-            Console.WriteLine("📡 WebSocket client {ClientId} connected.", clientId);
+            Console.WriteLine($"📡 WebSocket client {clientId} connected.");
 
             var buffer = new byte[2048];
 
