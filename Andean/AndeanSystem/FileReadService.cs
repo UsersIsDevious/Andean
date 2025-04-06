@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Andean.Utilities
+namespace AndeanSystems
 {
     public static class FileReadService
     {

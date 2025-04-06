@@ -1,6 +1,6 @@
-﻿using Google.Protobuf;
+﻿using Rtech.Liveapi; // protoc により生成された名前空間
+using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using Rtech.Liveapi; // protoc により生成された名前空間
 
 namespace ApexLiveAPI.Message
 {

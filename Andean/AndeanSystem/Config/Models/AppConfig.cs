@@ -1,4 +1,4 @@
-﻿namespace Andean.Config
+﻿namespace AndeanSystems
 {
     /// <summary>
     /// ApexLegends 関連の設定

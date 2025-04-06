@@ -1,5 +1,5 @@
-﻿using Google.Protobuf;
-using Rtech.Liveapi; // Request, CustomMatch_CreateLobby, CustomMatch_JoinLobby, etc.
+﻿using Rtech.Liveapi; // Request, CustomMatch_CreateLobby, CustomMatch_JoinLobby, etc.
+using Google.Protobuf;
 using Andean.WebsocketServer;
 
 namespace ApexLiveAPI.Request
