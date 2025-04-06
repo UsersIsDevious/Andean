@@ -75,13 +75,13 @@ namespace Andean.Config
                     config.Penetrator = newSection as System.Collections.Generic.List<string>;
                     break;
                 case "output":
-                    config.Output = newSection as string;
+                    config.Output = (newSection as string)?.Trim('\"');
                     break;
                 case "language":
-                    config.Language = newSection as string;
+                    config.Language = (newSection as string)?.Trim('\"');
                     break;
                 case "log_dir":
-                    config.Log_Dir = newSection as string;
+                    config.Language = (newSection as string)?.Trim('\"');
                     break;
                 case "data_fps":
                     config.Data_Fps = Convert.ToInt32(newSection);

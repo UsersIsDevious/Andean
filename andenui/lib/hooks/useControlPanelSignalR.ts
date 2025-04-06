@@ -170,12 +170,14 @@ export const useControlPanelSignalR = () => {
             dataToSend = appConfigData.penetrator
           } else if (appConfigData.output !== undefined) {
             serverSectionKey = "output"
+            // Ensure we're not double-stringifying
             dataToSend = appConfigData.output
           } else if (appConfigData.language !== undefined) {
             serverSectionKey = "language"
             dataToSend = appConfigData.language
           } else if (appConfigData.log_Dir !== undefined) {
             serverSectionKey = "log_dir"
+            // Ensure we're not double-stringifying
             dataToSend = appConfigData.log_Dir
           } else if (appConfigData.data_Fps !== undefined) {
             serverSectionKey = "data_fps"
@@ -203,12 +205,13 @@ export const useControlPanelSignalR = () => {
         }
 
         // サーバーに送信
-        await connectionRef.current.invoke(
-          "UpdateConfig",
-          serverSectionKey,
-          JSON.stringify(dataToSend),
-          mode.toLowerCase(),
-        )
+        // If dataToSend is already a string and we're updating output or log_dir, don't stringify again
+        const dataToSendToServer =
+          typeof dataToSend === "string" && (serverSectionKey === "output" || serverSectionKey === "log_dir")
+            ? dataToSend
+            : JSON.stringify(dataToSend)
+
+        await connectionRef.current.invoke("UpdateConfig", serverSectionKey, dataToSendToServer, mode.toLowerCase())
       } catch (error) {
         console.error("❌ UpdateConfig Error:", error)
       }

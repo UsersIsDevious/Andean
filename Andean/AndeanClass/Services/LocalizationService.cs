@@ -1,17 +1,13 @@
-﻿using AndeanClass;
-using Andean.Utilities;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
+﻿using System.Linq;
 using Andean.Config;
-using System.Xml.XPath;
 
 namespace AndeanClass.Services
 {
     public static class LocalizationService
     {
         private static readonly object _lock = new object();
+
+       private static string directoryPath = "config/languages"; // localizeディレクトリのパス
 
         /// <summary>
         /// 前処理済みのローカライズデータ
@@ -23,7 +19,7 @@ namespace AndeanClass.Services
         {
             // 設定から言語コードを取得（存在しなければ "en" をデフォルトとする）
             string langCode = string.IsNullOrWhiteSpace(ConfigService.Config.Language) ? "en" : ConfigService.Config.Language;
-            string filePath = $"config/languages/{langCode}.json";
+            string filePath = $"{directoryPath}/{langCode}.json";
 
             var processor = new LocalizationDataProcessor(filePath);
             // 非同期メソッドを同期的に待機（ブロッキング）
@@ -217,6 +213,27 @@ namespace AndeanClass.Services
                 // エラーログ出力などを適宜実施
                 throw new System.Exception($"レジェンド '{legendName}' のレベル '{level}' アップグレード '{upgradeName}' : '{upgradeDesc}' のサイド取得中にエラーが発生しました: {ex.Message}", ex);
             }
+        }
+
+        public static List<string> GetSupportedLanguageCodes()
+        {
+
+            if (!Directory.Exists(directoryPath))
+            {
+                // ディレクトリが存在しない場合は空リストを返却
+                return new List<string>();
+            }
+
+            var files = Directory.GetFiles(directoryPath, "*.json");
+
+            var languageCodes = files
+                .Select(path => Path.GetFileNameWithoutExtension(path))
+                .Where(code => !string.IsNullOrWhiteSpace(code))
+                .Distinct()
+                .OrderBy(code => code)
+                .ToList();
+
+            return languageCodes;
         }
     }
 }

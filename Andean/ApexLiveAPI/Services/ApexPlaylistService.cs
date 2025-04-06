@@ -3,7 +3,7 @@ using Andean.Utilities;
 
 namespace ApexLiveAPI.Services
 {
-    public class ApexPlaylistService
+    public static class ApexPlaylistService
     {
 
         /// <summary>
@@ -11,7 +11,7 @@ namespace ApexLiveAPI.Services
         /// VDF 形式をパースして、ログ出力およびメタデータとして返します。
         /// </summary>
         /// <returns>パース結果のメタデータ</returns>
-        public async Task<Dictionary<string, object>> GetPlaylistMetadataAsync()
+        public static async Task<Dictionary<string, object>> GetPlaylistMetadataAsync()
         {
             // apexlegends.path と "r2/playlists_r5.txt" を組み合わせてファイルパスを作成
             string filePath = Path.Combine(ConfigService.Config.ApexLegends.Path, "r2", "playlists_r5.txt");

@@ -1,4 +1,5 @@
 ﻿using Andean.Config;
+using AndeanClass.Services;
 using AndeanWebUI.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
@@ -29,6 +30,7 @@ namespace AndeanWebUI.Services
         public static bool LobbyJoinButtonEnabled { get; set; } = false;
         public static bool LeaveLobbyButtonEnabled { get; set; } = false;
         public static bool GameStartButtonEnabled { get; set; } = true;
+        public static List<string> SupportedLanguages { get; set; } = LocalizationService.GetSupportedLanguageCodes();
         public static bool IsLobbyJoined { get; set; } = false;
         public static uint MaxTeamPlayer { get; set; } = 3;
         public static uint MaxTeam { get; set; } = 20;
@@ -55,7 +57,8 @@ namespace AndeanWebUI.Services
                         IsLobbyJoined,
                         MaxTeamPlayer,
                         MaxTeam,
-                        GameStatus
+                        GameStatus,
+                        SupportedLanguages
                     }
                 };
 
