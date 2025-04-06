@@ -18,44 +18,15 @@ namespace AndeanClass.Controllers
 
         public void Update()
         {
-            long unixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             if (_match.State == "Playing")
             {
                 GetPlayerStatus(_match).Wait();
 
-                // マッチの状態がPlayingの場合、パケットを更新する
-                if (_packet != null && (_packet.Data.Count + _packet.Events.Count) != 0 && _packet.T > 2)
-                {
-                    // packet.tが整数かどうかをチェック
-                    // if (_packet.T % 1 == 0)
-                    // {
-                    //     if (_packet.Events.Count != 0)
-                    //     {
-                    //         // 最初のイベントのtimestampから試合開始時刻を引く
-                    //         _packet.T = _packet.Events[0].Timestamp - _match.StartTimeStamp;
-                    //         CheckPacketData(_packet, _playerData);
-                    //         _match.AddPacketElement(_packet.T.ToString(), (JObject)_packet.ToJson());
-                    //     }
-                    //     else
-                    //     {
-                    //         Console.WriteLine("[UPDATE] Packet is skipped");
-                    //     }
-                    // }
-                    // else
-                    // {
-                    //     CheckPacketData(_packet, _playerData);
-                    //     _match.AddPacketElement(_packet.T.ToString(), (JObject)_packet.ToJson());
-                    // }
+                _updateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                    CheckPacketData(_packet, _playerData);
-                    _match.AddPacketElement(_packet.T.ToString(), (JObject)_packet.ToJson());
-                }
-
-                // 新たなPacketオブジェクトを生成
-                double time = unixTime - (long)_match.StartTimeStamp;
-                _packet = new Packet((time / 1000) - _match.StartTimeStamp);
+                // 新たなPacketオブジェクトを生成し、_packetListに追加
+                _packetList[_updateTime] = new Packet(_updateTime / 1000 - (long)_match.StartTimeStamp);
             }
-
         }
 
 
@@ -107,49 +78,6 @@ namespace AndeanClass.Controllers
             }
 
             Console.WriteLine("[GET PLAYER STATUS] End"); // デバッグ用ログ
-        }
-
-        /// <summary>
-        /// Packetのデータに含まれていないプレイヤーをチェックする
-        /// </summary>
-        /// <param name="packet">Packetクラスのインスタンス</param>
-        /// <param name="playerData">プレイヤーデータ（キー：プレイヤーID、値：Playerオブジェクト）</param>
-        /// <returns>正常に処理できた場合はtrue、例外発生時はfalse</returns>
-        public static bool CheckPacketData(Packet packet, Dictionary<string, EventPlayer> playerData)
-        {
-            try
-            {
-                // packet.Dataに含まれる各プレイヤーのIDをリストとして取得
-                var includedPlayers = packet.Data.Select(player => player.id).ToList();
-
-                // Dictionary内を変更するため、ToList()でキーと値のペアをコピーしてループ
-                foreach (var kvp in playerData.ToList())
-                {
-                    string playerId = kvp.Key;
-                    EventPlayer playerValue = kvp.Value;
-
-                    // packetに該当プレイヤーが含まれていない場合は追加
-                    if (!includedPlayers.Contains(playerId))
-                    {
-                        packet.AddData(playerValue);
-                    }
-                    else
-                    {
-                        // 含まれている場合は、packet.Dataから該当するプレイヤーを取得して更新
-                        var foundPlayer = packet.Data.FirstOrDefault(player => player.id == playerId);
-                        if (foundPlayer != null)
-                        {
-                            playerData[playerId] = foundPlayer;
-                        }
-                    }
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine("[CHECK PACKET DATA] Error: " + ex.Message);
-                return false;
-            }
         }
 
         /// <summary>

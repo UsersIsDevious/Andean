@@ -46,9 +46,9 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 
                 _match.AddEventElement(_event);
-                if (_packet != null)
+                if (_packetList.Count > 0)
                 {
-                    _packet.AddEvent(_event);
+                    _packetList[_updateTime].AddEvent(_event);
                 }
             }
         }
@@ -69,9 +69,9 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
-                if (_packet != null)
+                if (_packetList.Count > 0)
                 {
-                    _packet.AddEvent(_event);
+                    _packetList[_updateTime].AddEvent(_event);
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessPlayerUltimateCharged(Rtech.Liveapi.PlayerUltimateCharged Msg)
@@ -111,7 +111,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessPlayerUpgradeTierChanged(Rtech.Liveapi.PlayerUpgradeTierChanged Msg)
@@ -130,7 +130,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessPlayerDamaged(Rtech.Liveapi.PlayerDamaged Msg)
@@ -142,7 +142,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
                 Event _event;
-                string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
                 bool penetrator = LocalizationService.CheckShieldPenetrator(_weaponName);
                 uint _damageInflicted = Msg.DamageInflicted;
 
@@ -175,7 +175,7 @@ namespace AndeanClass.Controllers
 
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
       
@@ -190,7 +190,7 @@ namespace AndeanClass.Controllers
 
                 Event _event;
 
-                string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
 
                 //KillPointが入るplayer(Msg)
                 Rtech.Liveapi.Player AwardedTo = Msg.AwardedTo;
@@ -227,7 +227,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
       
@@ -241,7 +241,7 @@ namespace AndeanClass.Controllers
                 }
 
                 Event _event;
-                string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
 
                 // 攻撃者
                 Player _attacker;
@@ -277,7 +277,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
       
@@ -290,7 +290,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
                 Event _event;
-                string _weaponName = LocalizationService.GetOriginalKey("weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
 
                 //AssistantPointが入るplayer(Msg)
                 Rtech.Liveapi.Player Assistant = Msg.Assistant;
@@ -323,7 +323,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessGibraltarShieldAbsorbed(Rtech.Liveapi.GibraltarShieldAbsorbed Msg)
@@ -373,7 +373,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
       
@@ -423,7 +423,7 @@ namespace AndeanClass.Controllers
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
       
@@ -452,7 +452,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
       
@@ -477,7 +477,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessLegendUpgradeSelected(Rtech.Liveapi.LegendUpgradeSelected Msg)
@@ -506,7 +506,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
       
@@ -529,7 +529,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
       
@@ -550,7 +550,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessWarpGateUsed(Rtech.Liveapi.WarpGateUsed Msg)
@@ -570,7 +570,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessWeaponSwitched(Rtech.Liveapi.WeaponSwitched Msg)
@@ -591,9 +591,9 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                if(_packet != null)
+                if (_packetList.Count > 0)
                 {
-                    _packet.AddEvent(_event);
+                    _packetList[_updateTime].AddEvent(_event);
                 }
             }
         }
@@ -634,7 +634,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
 
@@ -662,7 +662,7 @@ namespace AndeanClass.Controllers
 
                 // イベントデータの追加
                 _match.AddEventElement(_event);
-                _packet.AddEvent(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
     }
