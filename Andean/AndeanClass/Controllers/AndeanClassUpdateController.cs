@@ -24,7 +24,7 @@ namespace AndeanClass.Controllers
                 GetPlayerStatus(_match).Wait();
 
                 // マッチの状態がPlayingの場合、パケットを更新する
-                if (_packetList.Count > 0 && (_packetList[^1 [true]].Data.Count + _packetList[^1].Events.Count) != 0 && _packetList[^1].T > 2)
+                if (_packetList.Count > 0 && (_packetList[^1].Data.Count + _packetList[^1].Events.Count) != 0 && _packetList[^1].T > 2)
                 {
                     // packet.tが整数かどうかをチェック
                     // if (_packetList[^1].T % 1 == 0)
