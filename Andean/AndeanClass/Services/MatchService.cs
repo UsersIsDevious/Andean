@@ -223,7 +223,7 @@ namespace AndeanClass.Services
 
             Event _event = new Event(matchStateEndMsg.Timestamp, matchStateEndMsg.Category, _eventData);
             match.AddEventElement(_event);
-            _packetList[^1].AddEvent(_event);
+            _packetList[_updateTime].AddEvent(_event);
         }
 
         public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg, CustomMatch match, List<uint> teamRanking)
@@ -255,7 +255,7 @@ namespace AndeanClass.Services
             };
             Event _event = new Event(squadEliminatedMsg.Timestamp, squadEliminatedMsg.Category, _eventData);
             match.AddEventElement(_event);
-            _packetList[^1].AddEvent(_event);
+            _packetList[_updateTime].AddEvent(_event);
         }
         public static void ProcessRingStartClosing(RingStartClosing ringStartClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
         {
@@ -303,10 +303,10 @@ namespace AndeanClass.Services
             match.AddEventElement(_event);
 
             // AndeanのPacketクラスに追加する
-            _packetList[^1].AddEvent(_event);
+            _packetList[_updateTime].AddEvent(_event);
 
             // リングイベントが発生した時間を記録する
-            ringEvents.Add((_packetList[^1].T.ToString(), _event));
+            ringEvents.Add((_packetList[_updateTime].T.ToString(), _event));
         }
 
         public static void ProcessRingFinishedClosing(RingFinishedClosing ringFinishedClosingMsg, CustomMatch match, List<(string, Event)> ringEvents)
@@ -342,10 +342,10 @@ namespace AndeanClass.Services
             match.AddEventElement(_event);
             
             // AndeanのPacketクラスに追加する
-            _packetList[^1].AddEvent(_event);
+            _packetList[_updateTime].AddEvent(_event);
 
             // リングイベントが発生した時間を記録する
-            ringEvents.Add((_packetList[^1].T.ToString(), _event));
+            ringEvents.Add((_packetList[_updateTime].T.ToString(), _event));
         }
     }
 }
