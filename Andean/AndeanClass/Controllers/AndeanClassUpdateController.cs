@@ -18,8 +18,12 @@ namespace AndeanClass.Controllers
 
         public void Update()
         {
+            Console.WriteLine("[UPDATE] Start"); // デバッグ用ログ
+
             if (_match.State == "Playing")
             {
+                Console.WriteLine("[UPDATE] Match is playing"); // デバッグ用ログ
+
                 GetPlayerStatus(_match).Wait();
 
                 _updateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
