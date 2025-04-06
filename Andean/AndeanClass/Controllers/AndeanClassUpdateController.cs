@@ -24,17 +24,17 @@ namespace AndeanClass.Controllers
                 GetPlayerStatus(_match).Wait();
 
                 // マッチの状態がPlayingの場合、パケットを更新する
-                if (_packetList.Count > 0 && (_packetList[-1].Data.Count + _packetList[-1].Events.Count) != 0 && _packetList[-1].T > 2)
+                if (_packetList.Count > 0 && (_packetList[^1 [true]].Data.Count + _packetList[^1].Events.Count) != 0 && _packetList[^1].T > 2)
                 {
                     // packet.tが整数かどうかをチェック
-                    // if (_packetList[-1].T % 1 == 0)
+                    // if (_packetList[^1].T % 1 == 0)
                     // {
-                    //     if (_packetList[-1].Events.Count != 0)
+                    //     if (_packetList[^1].Events.Count != 0)
                     //     {
                     //         // 最初のイベントのtimestampから試合開始時刻を引く
-                    //         _packetList[-1].T = _packetList[-1].Events[0].Timestamp - _match.StartTimeStamp;
-                    //         CheckPacketData(_packetList[-1], _playerData);
-                    //         _match.AddPacketElement(_packetList[-1].T.ToString(), (JObject)_packetList[-1].ToJson());
+                    //         _packetList[^1].T = _packetList[^1].Events[0].Timestamp - _match.StartTimeStamp;
+                    //         CheckPacketData(_packetList[^1], _playerData);
+                    //         _match.AddPacketElement(_packetList[^1].T.ToString(), (JObject)_packetList[^1].ToJson());
                     //     }
                     //     else
                     //     {
@@ -43,12 +43,12 @@ namespace AndeanClass.Controllers
                     // }
                     // else
                     // {
-                    //     CheckPacketData(_packetList[-1], _playerData);
-                    //     _match.AddPacketElement(_packetList[-1].T.ToString(), (JObject)_packetList[-1].ToJson());
+                    //     CheckPacketData(_packetList[^1], _playerData);
+                    //     _match.AddPacketElement(_packetList[^1].T.ToString(), (JObject)_packetList[^1].ToJson());
                     // }
 
-                    CheckPacketData(_packetList[-1], _playerData);
-                    _match.AddPacketElement(_packetList[-1].T.ToString(), (JObject)_packetList[-1].ToJson());
+                    CheckPacketData(_packetList[^1], _playerData);
+                    _match.AddPacketElement(_packetList[^1].T.ToString(), (JObject)_packetList[^1].ToJson());
                 }
 
                 // 新たなPacketオブジェクトを生成
