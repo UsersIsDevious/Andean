@@ -126,7 +126,7 @@ namespace Andean.WebsocketServer
                             {
                                 _authorizedClient = webSocket;
                                 _authorizedClientId = clientId;
-                                Console.WriteLine("✅ Client {ClientId} is set as the authorized client (Init received).", clientId);
+                                Console.WriteLine($"✅ Client {clientId} is set as the authorized client (Init received).");
                             }
                         }
 
@@ -176,30 +176,30 @@ namespace Andean.WebsocketServer
                         }
                         else
                         {
-                            Console.WriteLine("⚠️ Unknown message type: {Type}", incomingEvent.GameMessage.TypeUrl);
+                            Console.WriteLine($"⚠️ Unknown message type: {incomingEvent.GameMessage.TypeUrl}");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.Error.WriteLine("❌ WebSocket error from {0}: {1}", clientId, ex);
+                        Console.Error.WriteLine($"❌ WebSocket error from {clientId}: {ex}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("❌ WebSocket error from {0}: {1}", clientId, ex);
+                Console.Error.WriteLine($"❌ WebSocket error from {clientId}: {ex}");
             }
             finally
             {
                 await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-                Console.WriteLine("🔌 WebSocket client {ClientId} disconnected.", clientId);
+                Console.WriteLine($"🔌 WebSocket client {clientId} disconnected.");
                 lock (_authLock)
                 {
                     if (clientId == _authorizedClientId)
                     {
                         _authorizedClient = null;
                         _authorizedClientId = null;
-                        Console.WriteLine("🔄 Authorized client {ClientId} disconnected. Waiting for next Init event...", clientId);
+                        Console.WriteLine($"🔄 Authorized client {clientId} disconnected. Waiting for next Init event...");
                     }
                 }
             }
