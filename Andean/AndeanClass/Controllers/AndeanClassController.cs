@@ -19,7 +19,7 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// パケット情報
         /// </summary>
-        public static Packet _packet;
+        public static List<Packet> _packetList = new List<Packet>();
         /// <summary>
         /// ロビーかどうかのフラグ
         /// </summary>
