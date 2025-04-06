@@ -10,22 +10,16 @@ namespace AndeanClass.Controllers
 
         public override void Update()
         {
-            try
+            if (_match.State == "Playing")
             {
-                if (_match.State == "Playing")
-                {
-                    GetPlayerStatus(_match).Wait();
+                GetPlayerStatus(_match).Wait();
 
-                    _updateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                    // 新たなPacketオブジェクトを生成し、_packetListに追加
-                    _packetList[_updateTime] = new Packet(_updateTime / 1000 - (long)_match.StartTimeStamp);
-                }
-            }
-            catch (Exception ex)
-            {
-                // 例外内容をログ出力する
-                Console.WriteLine($"Updateで例外発生: {ex.Message}");
+                // 新たなPacketオブジェクトを生成し、_packetListに追加
+                _packetList[time] = new Packet(time / 1000 - (long)_match.StartTimeStamp);
+
+                _updateTime = time;
             }
         }
 
@@ -42,42 +36,31 @@ namespace AndeanClass.Controllers
         /// </remarks>
         public async Task GetPlayerStatus(CustomMatch match)
         {
-
-            Console.WriteLine("[GET PLAYER STATUS] Start"); // デバッグ用ログ
-
             // match.teams の全てのチームを列挙
             foreach (Team team in match.Teams.Values)
             {
                 // チームの最初のプレイヤーIDからプレイヤー情報を取得
                 Player player = match.GetPlayer(team.Players[0]);
 
-                Console.WriteLine($"[GET PLAYER STATUS] Team ID: {player.TeamId}, Player ID: {player.NucleusHash}"); // デバッグ用ログ
-
                 // チームにプレイヤーが存在しない、またはチームが壊滅していた場合次のチームへ
                 if (team.Players.Count == 0 || player.GetStatus() == "eliminated")
                 {
-                    Console.WriteLine($"[GET PLAYER STATUS] Team ID: {player.TeamId} is eliminated."); // デバッグ用ログ
                     continue;
-                }   
+                }
 
                 for (int i = 0; i < team.Players.Count; i++)
                 {
                     // プレイヤーの状態が "death"、またはオンラインでなければ次のメンバーへ
                     if (player.GetStatus() == "death" || !player.GetOnlineStatus())
                     {
-                        Console.WriteLine($"[GET PLAYER STATUS] Player ID: {player.NucleusHash} is dead or offline."); // デバッグ用ログ
                         continue;
                     }
-                        
+
                     // カメラをプレイヤー名に基づいて切り替え
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                    await Request.ChangeCameraAsync("name", player.Name, cts.Token);
-
-                    Console.WriteLine($"[GET PLAYER STATUS] Camera changed to Player ID: {player.NucleusHash}"); // デバッグ用ログ
+                    await Request.ChangeCameraAsync("name", player.Name, cts.Token, false);
                 }
             }
-
-            Console.WriteLine("[GET PLAYER STATUS] End"); // デバッグ用ログ
         }
 
         /// <summary>

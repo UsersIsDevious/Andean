@@ -6,6 +6,7 @@ using AndeanClass;
 using Newtonsoft.Json.Linq;
 using Rtech.Liveapi;
 using static AndeanClass.Controllers.AndeanClassController;
+using System.Text.Json;
 
 namespace AndeanClass.Services
 {
@@ -183,7 +184,7 @@ namespace AndeanClass.Services
                 }
 
                 // 更新内容を保存
-                await FileOutputService.WriteToFileAsync(config.Output, $"{_match.MatchName}", _match.ToString(), FileWriteMode.Overwrite);
+                await FileOutputService.WriteToFileAsync(config.Output, $"{_match.MatchName}", JsonSerializer.Serialize(_match, new JsonSerializerOptions{ WriteIndented = true }), FileWriteMode.Overwrite);
             }
         }
 
@@ -301,11 +302,13 @@ namespace AndeanClass.Services
             Event _event = new Event(ringStartClosingMsg.Timestamp, ringStartClosingMsg.Category, _eventData);
             _match.AddEventElement(_event);
 
+            Packet packet = _packetList[_updateTime];
+
             // AndeanのPacketクラスに追加する
-            _packetList[_updateTime].AddEvent(_event);
+            packet.AddEvent(_event);
 
             // リングイベントが発生した時間を記録する
-            _ringEvents.Add((_packetList[_updateTime].T.ToString(), _event));
+            _ringEvents.Add((packet.T.ToString(), _event));
         }
 
         public static void ProcessRingFinishedClosing(RingFinishedClosing ringFinishedClosingMsg)
@@ -339,12 +342,14 @@ namespace AndeanClass.Services
 
             Event _event = new Event(ringFinishedClosingMsg.Timestamp, ringFinishedClosingMsg.Category, _eventData);
             _match.AddEventElement(_event);
-            
+
+            Packet packet = _packetList[_updateTime];
+
             // AndeanのPacketクラスに追加する
-            _packetList[_updateTime].AddEvent(_event);
+            packet.AddEvent(_event);
 
             // リングイベントが発生した時間を記録する
-            _ringEvents.Add((_packetList[_updateTime].T.ToString(), _event));
+            _ringEvents.Add((packet.T.ToString(), _event));
         }
     }
 }

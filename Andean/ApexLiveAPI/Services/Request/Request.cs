@@ -10,9 +10,9 @@ namespace ApexLiveAPI.Request
         /// <summary>
         /// 共通のリクエスト送信処理
         /// </summary>
-        private static async Task<Response?> SendRequestAsync(Rtech.Liveapi.Request req, CancellationToken cancellationToken)
+        private static async Task<Response?> SendRequestAsync(Rtech.Liveapi.Request req, CancellationToken cancellationToken, bool ack = true)
         {
-            req.WithAck = true;
+            req.WithAck = ack;
             byte[] requestBytes = req.ToByteArray();
 
             try
@@ -33,7 +33,7 @@ namespace ApexLiveAPI.Request
         /// type: "poi" または "name"
         /// value: POI の場合は文字列でキー、name の場合はプレイヤー名
         /// </summary>
-        public static async Task<Response?> ChangeCameraAsync(string type, string value, CancellationToken cancellationToken)
+        public static async Task<Response?> ChangeCameraAsync(string type, string value, CancellationToken cancellationToken, bool ack = true)
         {
             var req = new Rtech.Liveapi.Request();
             var changeCamera = new ChangeCamera();
@@ -57,7 +57,7 @@ namespace ApexLiveAPI.Request
             }
 
             req.ChangeCam = changeCamera;
-            return await SendRequestAsync(req, cancellationToken);
+            return await SendRequestAsync(req, cancellationToken, ack);
         }
 
         /// <summary>
