@@ -109,7 +109,7 @@ namespace Andean.WebsocketServer
                     try
                     {
                         var incomingEvent = LiveAPIEvent.Parser.ParseFrom(buffer, 0, result.Count);
-                        Console.WriteLine("📩 Raw Protobuf message received: {MessageType}", incomingEvent.GameMessage?.TypeUrl);
+                        Console.WriteLine($"📩 Raw Protobuf message received: {incomingEvent.GameMessage?.TypeUrl}");
 
                         if (incomingEvent.GameMessage == null)
                         {
