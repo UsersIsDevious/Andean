@@ -11,7 +11,6 @@ namespace AndeanWebUI.Hubs
 {
     public partial class ControlPanelHub : Hub, IAndeanWebUI
     {
-        private readonly ApexPlaylistService _apexPlaylistService;
         private readonly Request _request;
         private readonly AppConfig _config = ConfigService.Config;
         private readonly SystemShutdownService _shutdownService;
@@ -20,12 +19,10 @@ namespace AndeanWebUI.Hubs
         private LobbySettings lobbySettings = new LobbySettings();
 
         public ControlPanelHub(
-            ApexPlaylistService apexPlaylistService,
             SystemShutdownService shutdownService,
             Request request
             )
         {
-            _apexPlaylistService = apexPlaylistService;
             _shutdownService = shutdownService;
             _request = request;
         }
@@ -55,7 +52,8 @@ namespace AndeanWebUI.Hubs
                     IsLobbyJoined = IsLobbyJoined,
                     MaxTeamPlayer = MaxTeamPlayer,
                     MaxTeam = MaxTeam,
-                    GameStatus = GameStatus
+                    GameStatus = GameStatus,
+                    SupportedLanguages = SupportedLanguages
                 }
             };
         }

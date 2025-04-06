@@ -7,6 +7,7 @@ using static AndeanWebUI.Services.ControlPanelHubService;
 using static Andean.Utilities.CommandExecutionService;
 using static Andean.Config.ConfigService;
 using System.Text.Json;
+using ApexLiveAPI.Services;
 
 namespace AndeanWebUI.Hubs
 {
@@ -25,7 +26,7 @@ namespace AndeanWebUI.Hubs
             {
                 var config = _config;
 
-                Dictionary<string, object> playlists_r5 = await _apexPlaylistService.GetPlaylistMetadataAsync();
+                Dictionary<string, object> playlists_r5 = await ApexPlaylistService.GetPlaylistMetadataAsync();
 
                 string command = "";
                 string option = $"{config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";

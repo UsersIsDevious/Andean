@@ -48,9 +48,6 @@ builder.Services.AddSingleton<ClientManagementService>();
 // 🚀 LobbyRequestService をシングルトンで登録
 builder.Services.AddSingleton<Request>();
 
-// 🚀 ApexPlaylistService をシングルトンで登録
-builder.Services.AddSingleton<ApexPlaylistService>();
-
 // 🚀 SystemShutdownService をホストサービスとして登録
 builder.Services.AddSingleton<SystemShutdownService>();
 

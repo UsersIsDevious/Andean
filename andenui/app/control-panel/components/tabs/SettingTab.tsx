@@ -5,6 +5,20 @@ import { useControlPanelContext } from "@/app/control-panel/hooks/useControlPane
 export default function SettingTab() {
   const { configData, updateConfig } = useControlPanelContext()
 
+  // Helper function to safely parse JSON strings
+  const tryParseJsonString = (value: string): string => {
+    try {
+      // If the value is a JSON string (starts and ends with quotes)
+      if (value.startsWith('"') && value.endsWith('"')) {
+        return JSON.parse(value)
+      }
+      return value
+    } catch (e) {
+      console.error("Error parsing JSON string:", e)
+      return value
+    }
+  }
+
   // Custom styles
   const cardStyle = {
     backgroundColor: "#111827", // gray-900
@@ -24,16 +38,63 @@ export default function SettingTab() {
 
   // Safe access to nested properties
   const apexLegendsPath = configData?.appConfig?.apexLegends?.path || ""
+  // Add game_Lancher property
+  const apexGameLauncher = configData?.appConfig?.apexLegends?.game_Lancher || "Steam"
   // 未使用変数を削除
   // const apexPort = configData?.appConfig?.apexLegends?.api_Port || ""
   // const apexApiOption = configData?.appConfig?.apexLegends?.api_Option || ""
   const apexOption = configData?.appConfig?.apexLegends?.option || ""
   const language = configData?.appConfig?.language || ""
   const dataFps = configData?.appConfig?.data_Fps || 60
-  const logDir = configData?.appConfig?.log_Dir || ""
-  const outputDir = configData?.appConfig?.output || ""
+  const logDir =
+    typeof configData?.appConfig?.log_Dir === "string"
+      ? tryParseJsonString(configData?.appConfig?.log_Dir)
+      : configData?.appConfig?.log_Dir || ""
+  const outputDir =
+    typeof configData?.appConfig?.output === "string"
+      ? tryParseJsonString(configData?.appConfig?.output)
+      : configData?.appConfig?.output || ""
   // 未使用変数を削除
   // const penetratorItems = configData?.appConfig?.penetrator || []
+
+  // Get supported languages from uiStatus
+  const supportedLanguages = configData?.uiStatus?.supportedLanguages || [
+    "en",
+    "ja",
+    "fr",
+    "de",
+    "es",
+    "it",
+    "ru",
+    "zh",
+  ]
+
+  // Language name mapping (since the API only provides codes)
+  const languageNames: Record<string, string> = {
+    en: "英語 (English)",
+    ja: "日本語 (Japanese)",
+    fr: "フランス語 (French)",
+    de: "ドイツ語 (German)",
+    es: "スペイン語 (Spanish)",
+    it: "イタリア語 (Italian)",
+    ru: "ロシア語 (Russian)",
+    zh: "中国語 (Chinese)",
+    ko: "韓国語 (Korean)",
+    pt: "ポルトガル語 (Portuguese)",
+    ar: "アラビア語 (Arabic)",
+    hi: "ヒンディー語 (Hindi)",
+    tr: "トルコ語 (Turkish)",
+    nl: "オランダ語 (Dutch)",
+    pl: "ポーランド語 (Polish)",
+    sv: "スウェーデン語 (Swedish)",
+    fi: "フィンランド語 (Finnish)",
+    da: "デンマーク語 (Danish)",
+    no: "ノルウェー語 (Norwegian)",
+    cs: "チェコ語 (Czech)",
+    hu: "ハンガリー語 (Hungarian)",
+    th: "タイ語 (Thai)",
+    vi: "ベトナム語 (Vietnamese)",
+  }
 
   return (
     <div className="space-y-6">
@@ -49,7 +110,7 @@ export default function SettingTab() {
         <div className="p-6 space-y-6">
           {/* Language */}
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-red-400">言語</h3>
+            <h3 className="text-lg font-semibold text-red-400">言語 (ISO 639)</h3>
             <select
               className="w-full h-10 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
               style={inputStyle}
@@ -57,9 +118,13 @@ export default function SettingTab() {
               onChange={(e) => updateConfig("appConfig", { language: e.target.value }, "overwrite")}
             >
               <option value="">言語を選択</option>
-              <option value="english">英語</option>
-              <option value="japanese">日本語</option>
+              {supportedLanguages.map((langCode) => (
+                <option key={langCode} value={langCode}>
+                  {languageNames[langCode] || langCode}
+                </option>
+              ))}
             </select>
+            <p className="text-xs text-gray-400">ISO 639 言語コード: {language}</p>
           </div>
 
           {/* Apex Legends Path */}
@@ -78,6 +143,27 @@ export default function SettingTab() {
               className="w-full h-10 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
               placeholder="Apex Legendsのパスを入力"
             />
+          </div>
+
+          {/* Apex Game Launcher */}
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-red-400">ゲームランチャー</h3>
+            <select
+              value={apexGameLauncher}
+              onChange={(e) =>
+                updateConfig(
+                  "appConfig",
+                  { apexLegends: { ...configData?.appConfig?.apexLegends, game_Lancher: e.target.value } },
+                  "overwrite",
+                )
+              }
+              style={inputStyle}
+              className="w-full h-10 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              <option value="Steam">Steam</option>
+              <option value="EA">EA App</option>
+            </select>
+            <p className="text-xs text-gray-400">Apex Legendsを起動するランチャーを選択</p>
           </div>
 
           {/* Apex Legends Option */}
