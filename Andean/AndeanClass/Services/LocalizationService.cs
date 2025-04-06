@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Andean.Config;
+using Andean.Utilities;
 
 namespace AndeanClass.Services
 {
@@ -7,7 +8,9 @@ namespace AndeanClass.Services
     {
         private static readonly object _lock = new object();
 
-       private static string directoryPath = "config/languages"; // localizeディレクトリのパス
+        private static string directoryPath = "config/languages"; // localizeディレクトリのパス
+
+        private static readonly AppConfig _config = ConfigService.Config;
 
         /// <summary>
         /// 前処理済みのローカライズデータ
@@ -103,7 +106,10 @@ namespace AndeanClass.Services
             catch (System.Exception ex)
             {
                 // エラーログ出力などを適宜実施
-                throw new System.Exception($"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}", ex);
+                // throw new System.Exception($"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}", ex);
+                // 非同期にファイルへ追記（ファイルは config.Log_Dir フォルダ配下に作成）
+                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "GetOriginalKey_Exception.json", $"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}{Environment.NewLine}", FileWriteMode.Append)).Wait();
+                return "Unknown";
             }
         }
 

@@ -19,14 +19,15 @@ namespace AndeanClass.Controllers
                     return;
                 }
 
+                Packet packet = _packetList[_updateTime];
+
                 var targetPlayerList = observerSwitchedMsg.TargetTeam;
                 Dictionary<string, int> keepedIds = new Dictionary<string, int>();
-
                 // _packetList[_updateTime].dataの各要素のidをキーとしてインデックスを保持する
-                for (int i = 0; i < _packetList[_updateTime].Data.Count; i++)
+                for (int i = 0; i < packet.Data.Count; i++)
                 {
                     // _packetList[_updateTime].data[i].idの型がstringであると仮定
-                    keepedIds[_packetList[_updateTime].Data[i].id] = i;
+                    keepedIds[packet.Data[i].id] = i;
                 }
 
                 for (int i = 0; i < targetPlayerList.Count; i++)
@@ -42,11 +43,11 @@ namespace AndeanClass.Controllers
                     // AndeanのPacketクラスに追加する
                     if (!keepedIds.ContainsKey(_msgTarget.NucleusHash))
                     {
-                        _packetList[_updateTime].AddData(data);
+                        packet.AddData(data);
                     }
                     else
                     {
-                        _packetList[_updateTime].UpdateData(keepedIds[_msgTarget.NucleusHash], data);
+                        packet.UpdateData(keepedIds[_msgTarget.NucleusHash], data);
                     }
                 }
             }
