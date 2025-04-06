@@ -16,7 +16,7 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// マッチ情報
         /// </summary>
-        public static CustomMatch _match;
+        public static CustomMatch _match = new CustomMatch("DefaultMatch");
         /// <summary>
         /// Update時点のunix時間を保持する変数
         /// </summary>

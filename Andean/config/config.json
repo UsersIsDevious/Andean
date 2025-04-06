@@ -1,7 +1,7 @@
 {
   "ApexLegends": {
     "Path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Apex Legends",
-    "Game_Lancher": "EA",
+    "Game_Lancher": "Steam",
     "Api_Port": "7777",
     "Api_Option": "\u002Bcl_liveapi_enabled 1",
     "Option": "\u002Bmiles_language english \u002Bcl_liveapi_ws_retry_count 20 \u002Bcl_liveapi_ws_retry_time 3 \u002Bcl_liveapi_ws_timeout 600"
@@ -10,7 +10,7 @@
     "Caustic Gas"
   ],
   "Output": "output",
-  "Language": "ja",
+  "Language": "en",
   "Log_Dir": "log",
   "Data_Fps": 60,
   "Score_Setting": {
