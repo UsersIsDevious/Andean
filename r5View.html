@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ゲームステータスビジュアライザー</title>
+  <style>
+    /* ベーススタイル */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+    .upload-area {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .upload-area h2 {
+      margin: 0 0 10px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin-top: 0;
+      font-size: 16px;
+      color: #333;
+    }
+    .card p {
+      margin: 5px 0;
+      color: #555;
+    }
+    .card .value {
+      color: #000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="upload-area">
+      <h2>JSONアップロード</h2>
+      <input type="file" id="jsonFile" accept=".json">
+    </div>
+    <div id="visualization"></div>
+  </div>
+  <script>
+    document.getElementById('jsonFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        try {
+          const jsonData = JSON.parse(event.target.result);
+          const vizDiv = document.getElementById('visualization');
+          vizDiv.innerHTML = '';
+          // 再帰的に JSON の内容をカードとして生成する関数
+          function createCards(data, parentKey = '') {
+            let html = '';
+            if (typeof data === 'object' && data !== null) {
+              for (let key in data) {
+                if (data.hasOwnProperty(key)) {
+                  const fullKey = parentKey ? parentKey + ' > ' + key : key;
+                  if (typeof data[key] === 'object' && data[key] !== null) {
+                    html += '<div class="card"><h3>' + fullKey + '</h3>';
+                    html += createCards(data[key], fullKey);
+                    html += '</div>';
+                  } else {
+                    html += '<div class="card"><h3>' + fullKey + '</h3>';
+                    html += '<p><span class="value">' + data[key] + '</span></p></div>';
+                  }
+                }
+              }
+            } else {
+              html += '<div class="card"><p>' + data + '</p></div>';
+            }
+            return html;
+          }
+          vizDiv.innerHTML = createCards(jsonData);
+        } catch(err) {
+          alert('JSON の解析に失敗しました: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>

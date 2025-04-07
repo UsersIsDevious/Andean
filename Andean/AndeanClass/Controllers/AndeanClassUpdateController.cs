@@ -57,7 +57,7 @@ namespace AndeanClass.Controllers
 
                     // カメラをプレイヤー名に基づいて切り替え
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                    await Request.ChangeCameraAsync("name", player.Name, cts.Token, false);
+                    Request.ChangeCameraAsync("name", player.Name, cts.Token, false);
                 }
             }
         }
