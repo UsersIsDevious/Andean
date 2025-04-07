@@ -1,22 +1,37 @@
-"use client";
+"use client"
 
-import { useLiveViewSignalR } from "@/lib/hooks/useLiveViewSignalR";
+import { useState, useEffect } from "react"
+import Header from "@/app/control-panel/components/ui/Header"
+import LiveView from "./components/LiveView"
 
 export default function LiveViewPage() {
-  const { messages } = useLiveViewSignalR();
+  const [mounted, setMounted] = useState(false)
+
+  // Client-side mounting effect
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Return null before client-side mounting
+  if (!mounted) {
+    return null
+  }
 
   return (
-    <main className="p-4 flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-4">Live View</h1>
+    <div className="min-h-screen bg-black text-white">
+      <Header />
 
-      <h1 className="text-2xl font-bold mt-6">リアルタイムデータ</h1>
-      <ul className="mt-4 space-y-2">
-        {messages.map((msg, index) => (
-          <li key={index} className="border p-2 rounded-lg">
-            {typeof msg === "object" ? JSON.stringify(msg, null, 2) : msg}
-          </li>
-        ))}
-      </ul>
-    </main>
-  );
+      <main className="px-[100px] py-6">
+        <div className="w-full mx-auto">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-red-400 mb-2">Apex Legends ライブビュー</h1>
+            <p className="text-gray-400">現在進行中のマッチのリアルタイムデータを表示します</p>
+          </div>
+
+          <LiveView />
+        </div>
+      </main>
+    </div>
+  )
 }
+
