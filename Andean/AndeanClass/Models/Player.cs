@@ -67,7 +67,12 @@ namespace AndeanClass
         public uint GibraltarShieldAbsorbed { get; set; }
         public uint BannerCollectedCount { get; set; }
         public bool CanRevive { get; set; }
-
+        public Dictionary<string, uint> TotalHealing { get; set; } = new Dictionary<string, uint>
+        {
+            { "Health", 0 },
+            { "Shield", 0 }
+        };
+        
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -438,6 +443,18 @@ namespace AndeanClass
             CanRevive = status;
             return this;
         }
+
+        /// <summary>
+        /// プレイヤーの合計回復量を増加させるメソッド
+        /// </summary>
+        /// <param name="healHealth">回復量</param>
+        /// <param name="rechargeShield">シールド回復量</param>
+        public void AddTotalPlayerHealing(uint healHealth, uint rechargeShield)
+        {
+            TotalHealing["Health"] += healHealth;
+            TotalHealing["Shield"] += rechargeShield;
+        }
+
         /// <summary>
         /// プレイヤーのレベルアップグレードする
         /// </summary>
