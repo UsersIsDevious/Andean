@@ -41,7 +41,7 @@ namespace AndeanClass.Services
         /// <exception cref="ArgumentException">未対応の type が指定された場合</exception>
         /// <exception cref="KeyNotFoundException">指定の value が見つからなかった場合</exception>
         /// <exception cref="Exception">その他のエラー発生時</exception>
-        public static string GetOriginalKey(string type, string value)
+        public static string? GetOriginalKey(string type, string value)
         {
             try
             {
@@ -106,8 +106,8 @@ namespace AndeanClass.Services
                 // エラーログ出力などを適宜実施
                 // throw new System.Exception($"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}", ex);
                 // 非同期にファイルへ追記（ファイルは config.Log_Dir フォルダ配下に作成）
-                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "GetOriginalKey_Exception.json", $"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}{Environment.NewLine}", FileWriteMode.Append)).Wait();
-                return "Unknown";
+                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "GetOriginalKey_Exception.txt", $"Type '{type}' と Value '{value}' のキー取得中にエラーが発生しました: {ex.Message}{Environment.NewLine}", FileWriteMode.Append)).Wait();
+                return null;
             }
         }
 

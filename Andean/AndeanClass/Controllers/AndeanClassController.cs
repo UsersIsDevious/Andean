@@ -20,11 +20,11 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// Update時点のunix時間を保持する変数
         /// </summary>
-        public static long _updateTime = 0;
+        public static double _updateTime = 0;
         /// <summary>
         /// パケット情報
         /// </summary>
-        public static Dictionary<long, Packet> _packetList = new Dictionary<long, Packet>();
+        public static Dictionary<double, Packet> _packetList = new Dictionary<double, Packet>();
         /// <summary>
         /// ロビーかどうかのフラグ
         /// </summary>
@@ -93,43 +93,6 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                // Postmatchの場合はロビーに戻る
-                if (gameStateChangedMsg.State == "Postmatch")
-                {
-                    _isLobby = true;
-
-                    foreach (var packet in _packetList.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value))
-                    {
-                        // パケットを更新する
-                        if ((packet.Data.Count + packet.Events.Count) != 0 && packet.T > 2)
-                        {
-                            // packet.tが整数かどうかをチェック
-                            // if (packet.T % 1 == 0)
-                            // {
-                            //     if (packet.Events.Count != 0)
-                            //     {
-                            //         // 最初のイベントのtimestampから試合開始時刻を引く
-                            //         packet.T = packet.Events[0].Timestamp - _match.StartTimeStamp;
-                            //         CheckPacketData(packet, _playerData);
-                            //         _match.AddPacketElement(packet.T.ToString(), (JObject)packet.ToJson());
-                            //     }
-                            //     else
-                            //     {
-                            //         Console.WriteLine("[UPDATE] Packet is skipped");
-                            //     }
-                            // }
-                            // else
-                            // {
-                            //     CheckPacketData(packet, _playerData);
-                            //     _match.AddPacketElement(packet.T.ToString(), (JObject)packet.ToJson());
-                            // }
-
-                            CheckPacketData(packet, _playerData);
-                            _match.AddPacketElement(packet.T.ToString(), (JObject)packet.ToJson());
-                        }
-                    }
-                }
-
                 UpdateGameStatus(gameStateChangedMsg);
             }
         }
@@ -184,49 +147,6 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
                 ProcessRingFinishedClosing(ringFinishedClosingMsg);
-            }
-        }
-
-        /// <summary>
-        /// Packetのデータに含まれていないプレイヤーをチェックする
-        /// </summary>
-        /// <param name="packet">Packetクラスのインスタンス</param>
-        /// <param name="playerData">プレイヤーデータ（キー：プレイヤーID、値：Playerオブジェクト）</param>
-        /// <returns>正常に処理できた場合はtrue、例外発生時はfalse</returns>
-        public static bool CheckPacketData(Packet packet, Dictionary<string, EventPlayer> playerData)
-        {
-            try
-            {
-                // packet.Dataに含まれる各プレイヤーのIDをリストとして取得
-                var includedPlayers = packet.Data.Select(player => player.id).ToList();
-
-                // Dictionary内を変更するため、ToList()でキーと値のペアをコピーしてループ
-                foreach (var kvp in playerData.ToList())
-                {
-                    string playerId = kvp.Key;
-                    EventPlayer playerValue = kvp.Value;
-
-                    // packetに該当プレイヤーが含まれていない場合は追加
-                    if (!includedPlayers.Contains(playerId))
-                    {
-                        packet.AddData(playerValue);
-                    }
-                    else
-                    {
-                        // 含まれている場合は、packet.Dataから該当するプレイヤーを取得して更新
-                        var foundPlayer = packet.Data.FirstOrDefault(player => player.id == playerId);
-                        if (foundPlayer != null)
-                        {
-                            playerData[playerId] = foundPlayer;
-                        }
-                    }
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine("[CHECK PACKET DATA] Error: " + ex.Message);
-                return false;
             }
         }
     }

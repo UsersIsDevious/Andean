@@ -2,8 +2,10 @@
 using Rtech.Liveapi;
 using System.Text.Json;
 using Newtonsoft.Json.Linq;
+using AndeanWebUI.Services;
 using AndeanClass.Services.Utilities;
 using static AndeanClass.Controllers.AndeanClassController;
+using Newtonsoft.Json;
 
 namespace AndeanClass.Services
 {
@@ -104,6 +106,9 @@ namespace AndeanClass.Services
             // _match の state を設定する
             _match.SetState(gameStateChangedMsg.State);
 
+            // ControlPanelHubService にゲーム状態を送信する
+            ControlPanelHubService.SetLiveAPIStatus("Playing", gameStateChangedMsg.State).Wait();
+
             if (gameStateChangedMsg.State == "Prematch")
             {
                 // teamRanking と _ringEvents を初期化
@@ -130,6 +135,43 @@ namespace AndeanClass.Services
 
             if (gameStateChangedMsg.State == "Postmatch")
             {
+                // ロビーに戻る
+                _isLobby = true;
+
+                ControlPanelHubService.SetLiveAPIStatus("LobbyJoin", "InLobby").Wait();
+
+                // Packetを確認し、整形して保存する
+                foreach (var packet in _packetList.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value))
+                {
+                    // パケットを更新する
+                    if ((packet.Data.Count + packet.Events.Count) != 0 && packet.T > 2)
+                    {
+                        // packet.tが整数かどうかをチェック
+                        // if (packet.T % 1 == 0)
+                        // {
+                        //     if (packet.Events.Count != 0)
+                        //     {
+                        //         // 最初のイベントのtimestampから試合開始時刻を引く
+                        //         packet.T = packet.Events[0].Timestamp - _match.StartTimeStamp;
+                        //         CheckPacketData(packet, _playerData);
+                        //         _match.AddPacketElement(packet.T.ToString(), (JObject)packet.ToJson());
+                        //     }
+                        //     else
+                        //     {
+                        //         Console.WriteLine("[UPDATE] Packet is skipped");
+                        //     }
+                        // }
+                        // else
+                        // {
+                        //     CheckPacketData(packet, _playerData);
+                        //     _match.AddPacketElement(packet.T.ToString(), (JObject)packet.ToJson());
+                        // }
+
+                        MatchUtilities.CheckPacketData(packet, _playerData);
+                        _match.AddPacketElement(packet.T.ToString(), packet.ToShortPacket());
+                    }
+                }
+
                 // _ringEvents を 2 つずつ処理する
                 for (int i = 0; i < _ringEvents.Count; i += 2)
                 {
@@ -145,11 +187,13 @@ namespace AndeanClass.Services
                             startRing.Data["Stage"] == endRing.Data["Stage"])
                         {
                             // matchBase.PacketLists[startRing_t].Events 内の "ringStartClosing" イベントを検索し、endCenter を設定
-                            if (_match.PacketLists.TryGetValue(startRing_t, out JObject? packet))
+                            if (_match.PacketLists.TryGetValue(startRing_t, out ShortPacket? packet))
                             {
-                                if (packet["Events"] != null)
+                                JObject? packetJson = (JObject?)JsonConvert.SerializeObject(packet);
+
+                                if (packetJson["Events"] != null)
                                 {
-                                    JToken? eventToken = packet["Events"]?.FirstOrDefault(e => (string)e["Category"] == "ringStartClosing");
+                                    JToken? eventToken = packetJson["Events"]?.FirstOrDefault(e => (string)e["Category"] == "ringStartClosing");
                                     if (eventToken != null)
                                     {
                                         // endRing.Data.Center のコピーを endCenter に設定（配列のコピー）
@@ -181,7 +225,7 @@ namespace AndeanClass.Services
                 }
 
                 // 更新内容を保存
-                await FileOutputService.WriteToFileAsync(config.Output, $"{_match.MatchName}", JsonSerializer.Serialize(_match, new JsonSerializerOptions{ WriteIndented = true }), FileWriteMode.Overwrite);
+                await FileOutputService.WriteToFileAsync(config.Output, $"{_match.MatchName}.json", System.Text.Json.JsonSerializer.Serialize(_match, new JsonSerializerOptions { WriteIndented = true }), FileWriteMode.Overwrite);
             }
         }
 

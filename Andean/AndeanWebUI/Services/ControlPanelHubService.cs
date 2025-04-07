@@ -104,11 +104,34 @@ namespace AndeanWebUI.Services
         public static async Task SetLiveAPIStatus(string type, string gameStatus)
         {
             GameStatus = gameStatus;
-            if (type == "Connect")
+            switch (type)
             {
-                IsLobbyJoined = true;
-                LobbyJoinButtonEnabled = true;
-                GameStartButtonEnabled = false;
+                case "Connect":
+                    LobbyJoinButtonEnabled = true;
+                    GameStartButtonEnabled = false;
+                    break;
+                case "Disconnect":
+                    LobbyJoinButtonEnabled = false;
+                    LeaveLobbyButtonEnabled = false;
+                    GameStartButtonEnabled = true;
+                    IsLobbyJoined = false;
+                    break;
+                case "LobbyJoin":
+                    LobbyJoinButtonEnabled = false;
+                    LeaveLobbyButtonEnabled = true;
+                    IsLobbyJoined = true;
+                    break;
+                case "LobbyLeave":
+                    LobbyJoinButtonEnabled = true;
+                    LeaveLobbyButtonEnabled = false;
+                    IsLobbyJoined = false;
+                    break;
+                case "Playing":
+                    LeaveLobbyButtonEnabled = false;
+                    IsLobbyJoined = false;
+                    break;
+                default:
+                    break;
             }
             await BroadcastStatusAsync();
         }

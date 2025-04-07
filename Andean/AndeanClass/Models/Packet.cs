@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AndeanClass;
+using Newtonsoft.Json.Linq;
 
 namespace AndeanClass
 {
@@ -44,19 +45,9 @@ namespace AndeanClass
         /// (各イベントは、timestamp、category、および data プロパティを含むオブジェクトに変換)
         /// </summary>
         /// <returns>JSON形式のオブジェクト</returns>
-        public object ToJson()
+        public ShortPacket ToShortPacket()
         {
-            return new
-            {
-                t = T,
-                data = Data,
-                events = Events.Select(e => new
-                {
-                    timestamp = e.Timestamp,
-                    category = e.Category,
-                    data = e.Data
-                }).ToList()
-            };
+            return new ShortPacket(T, Data, Events);
         }
 
         /// <summary>

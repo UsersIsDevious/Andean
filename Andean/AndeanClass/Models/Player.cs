@@ -143,6 +143,9 @@ namespace AndeanClass
         /// <param name="mapOffset">座標オフセット (要素数3のdouble配列)</param>
         public void UpdatePositionAndAngles(double x, double y, double z, double newAngles, double[] mapOffset)
         {
+            OriginalPos.X = x;
+            OriginalPos.Y = y;
+            OriginalPos.Z = z;
             Pos.UpdateValues(x, y, z, mapOffset);
             Angles = newAngles * -1 + 45;
         }

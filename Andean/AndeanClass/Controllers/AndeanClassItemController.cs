@@ -147,7 +147,7 @@ namespace AndeanClass.Controllers
 
                 string[]? _itemData = ItemUtilities.ReturnSplitBracketParts(_itemName);
                 string _itemLabel = (_itemData != null) ? _itemData[1] : _itemName;
-                string _itemId = ItemUtilities.ReturnItemId("Grenade", _itemLabel) ?? _itemLabel;
+                string _itemId = ItemUtilities.ReturnItemId("Item", _itemLabel) ?? _itemLabel;
 
                 if (_itemData == null || _itemData[0] != "Tactical")
                     _player.Inventory.AddOrUpdateItem(_itemId, -1, ItemUtilities.ReturnLevel(_itemName));

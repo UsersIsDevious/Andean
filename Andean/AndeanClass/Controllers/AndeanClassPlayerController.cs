@@ -20,7 +20,7 @@ namespace AndeanClass.Controllers
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
 
-                _eventData["character"] = LocalizationService.GetOriginalKey("legend_label", _player.Legend);
+                _eventData["character"] = LocalizationService.GetOriginalKey("legend_label", _player.Legend) ?? _player.Legend;
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
@@ -142,7 +142,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
                 Event _event;
-                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon) ?? Msg.Weapon;
                 bool penetrator = LocalizationService.CheckShieldPenetrator(_weaponName);
                 uint _damageInflicted = Msg.DamageInflicted;
 
@@ -190,7 +190,7 @@ namespace AndeanClass.Controllers
 
                 Event _event;
 
-                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon) ?? Msg.Weapon;
 
                 //KillPointが入るplayer(Msg)
                 Rtech.Liveapi.Player AwardedTo = Msg.AwardedTo;
@@ -241,7 +241,7 @@ namespace AndeanClass.Controllers
                 }
 
                 Event _event;
-                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon) ?? Msg.Weapon;
 
                 // 攻撃者
                 Player _attacker;
@@ -290,7 +290,7 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
                 Event _event;
-                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon);
+                string _weaponName = LocalizationService.GetOriginalKey("associate_weapons_label", Msg.Weapon) ?? Msg.Weapon;
 
                 //AssistantPointが入るplayer(Msg)
                 Rtech.Liveapi.Player Assistant = Msg.Assistant;

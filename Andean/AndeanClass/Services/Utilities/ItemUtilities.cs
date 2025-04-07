@@ -116,7 +116,7 @@ namespace AndeanClass.Services.Utilities
             }
             if (result == null)
             {
-                Console.WriteLine($"[GET ITEM ID] ID not found. NAME: {name}");
+                Console.WriteLine($"[GET ITEM OR WEAPON ID] ID not found. NAME: {name}");
                 return null;
             }
 

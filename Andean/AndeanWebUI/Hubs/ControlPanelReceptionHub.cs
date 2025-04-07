@@ -91,7 +91,6 @@ namespace AndeanWebUI.Hubs
         {
             // 更新モードの判定（小文字で統一）
             mode = mode.ToLowerInvariant();
-            Console.WriteLine("ここ来てる？1");
 
             // セクションの更新処理を実施
             // ここでは、更新内容は newData に JSON 形式の値が入っている前提とする
@@ -204,7 +203,7 @@ namespace AndeanWebUI.Hubs
             IsLobbyJoined = true;
 
             //@conecone　よろしく💛
-            //LastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
+            // LastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
             Console.WriteLine($"ControlPanelStateService.LobbyJoinButtonEnabled:{LobbyJoinButtonEnabled}");
             Console.WriteLine($"leaveLobbyButtonEnabled:{LeaveLobbyButtonEnabled}");
             await BroadcastStatus();

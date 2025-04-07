@@ -1,7 +1,7 @@
 {
   "playlists": {
     "version": "stable",
-    "versionNum": "8728955",
+    "versionNum": "8817871",
     "Gamemodes": {
       "defaults": {
         "vars": {
@@ -14,6 +14,7 @@
           "character_dummie": "hide",
           "disable_sonar_assist": "character_bloodhound",
           "fortify_v2": "1",
+          "perk_shield_breaker_highlight_duration": "2.0",
           "challenge_negative_value_check": "0",
           "ranked_level_requirement_0_base": "19",
           "ranked_playlist_lock_date_split1": "2025-03-25 09:30:00 -07:00",
@@ -198,13 +199,14 @@
           "custom_match_playlist_category_4_entry_4": "gg_core_s_pm",
           "custom_match_playlist_category_4_entry_5": "gg_monument_s_pm",
           "custom_match_playlist_category_4_entry_6": "gg_estates_s_pm",
-          "custom_match_playlist_category_5_count": "4",
+          "custom_match_playlist_category_5_count": "5",
           "custom_match_playlist_category_5_name": "#CONTROL_NAME",
           "custom_match_playlist_category_5_logo": "CONTROL",
           "custom_match_playlist_category_5_entry_0": "control_barometer_s_pm",
           "custom_match_playlist_category_5_entry_1": "control_siphon_s_pm",
           "custom_match_playlist_category_5_entry_2": "control_production_s_pm",
           "custom_match_playlist_category_5_entry_3": "control_labs_s_pm",
+          "custom_match_playlist_category_5_entry_4": "control_caustic_s_pm",
           "custom_match_playlist_category_6_count": "6",
           "custom_match_playlist_category_6_name": "#BTDM_NAME",
           "custom_match_playlist_category_6_logo": "BIGTDM",
@@ -568,6 +570,10 @@
           "allow_prestige_badges": "0",
           "hover_vehicles_enabled": "0",
           "is_shield_regen_mode": "0",
+          "mode_health_regen_active": "1",
+          "mode_health_regen_amount": "40.0",
+          "mode_health_regen_tick": "0.15",
+          "mode_health_regen_delay": "5.0",
           "auto_pickup_ordnance": "1",
           "mixtape_match_abandon_penalty": "1",
           "mixtape_abandon_penalty_time_1": "120",
@@ -2651,9 +2657,9 @@
           "deathfield_damagePercent_5": "0.25",
           "deathfield_damagePercent_6": "0.25",
           "deathfield_start_origin_offset_max": "5000.0",
-          "deathfield_circleDeviation_1": "1.2",
+          "deathfield_circleDeviation_1": "1.0",
           "deathfield_circleDeviation_2": "0.7",
-          "deathfield_circleDeviation_3": "1.5",
+          "deathfield_circleDeviation_3": "1.0",
           "deathfield_circleDeviation_4": "0.5",
           "deathfield_circleDeviation_5": "0.5",
           "deathfield_circleDeviation_6": "0.0"
@@ -2691,9 +2697,9 @@
           "deathfield_damagePercent_5": "0.25",
           "deathfield_damagePercent_6": "0.25",
           "deathfield_start_origin_offset_max": "5000.0",
-          "deathfield_circleDeviation_1": "1.2",
+          "deathfield_circleDeviation_1": "1.0",
           "deathfield_circleDeviation_2": "0.7",
-          "deathfield_circleDeviation_3": "1.5",
+          "deathfield_circleDeviation_3": "1.0",
           "deathfield_circleDeviation_4": "0.5",
           "deathfield_circleDeviation_5": "0.5",
           "deathfield_circleDeviation_6": "0.0"
@@ -4135,7 +4141,7 @@
         },
         "vars": {},
         "gamemodes": {
-          "freedm": {
+          "gungame": {
             "maps": {
               "mp_rr_freedm_skulltown": "1"
             }
@@ -4150,7 +4156,7 @@
         },
         "vars": {},
         "gamemodes": {
-          "freedm": {
+          "gungame": {
             "maps": {
               "mp_rr_divided_moon_mu1": "1"
             }
@@ -4167,7 +4173,7 @@
           "map_location": "gr_thunderdome"
         },
         "gamemodes": {
-          "freedm": {
+          "gungame": {
             "maps": {
               "mp_rr_thunderdome": "1"
             }
@@ -4182,7 +4188,7 @@
         },
         "vars": {},
         "gamemodes": {
-          "freedm": {
+          "gungame": {
             "maps": {
               "mp_rr_tropic_island_mu2": "1"
             }
