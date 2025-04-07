@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using System.Net.WebSockets;
+using System.Collections.Concurrent;
 using Rtech.Liveapi; // protoc により生成された型群
 using ApexLiveAPI.Message;
 using Andean.WebsocketServer.Controllers;
-
 
 namespace Andean.WebsocketServer
 {
@@ -12,19 +12,22 @@ namespace Andean.WebsocketServer
         private static readonly HttpListener _httpListener;
         private const int Port = 7777;
 
-        // 認定済みクライアントの情報（最初に Init イベントを送信したクライアントを記録）
+        // 認定済みクライアントの情報（最初の Init イベントで認定）
         private static string? _authorizedClientId = null;
         private static WebSocket? _authorizedClient = null;
         private static readonly object _authLock = new object();
 
-        // リクエスト送受信用の TaskCompletionSource とロック
-        private static TaskCompletionSource<byte[]>? _requestTcs = null;
-        private static readonly object _requestLock = new object();
+        // 送信処理専用のキューとワーカー
+        private static readonly BlockingCollection<OutgoingMessage> _sendQueue = new BlockingCollection<OutgoingMessage>();
 
-        static WebSocketServer() { 
+        static WebSocketServer()
+        {
             _httpListener = new HttpListener();
             _httpListener.Prefixes.Add($"http://127.0.0.1:{Port}/");
             _httpListener.Prefixes.Add($"http://localhost:{Port}/");
+
+            // 送信専用ワーカーを開始
+            Task.Factory.StartNew(ProcessSendQueue, TaskCreationOptions.LongRunning);
         }
 
         public static async Task StartAsync()
@@ -38,7 +41,7 @@ namespace Andean.WebsocketServer
                 if (context.Request.IsWebSocketRequest)
                 {
                     var wsContext = await context.AcceptWebSocketAsync(null);
-                    _ = HandleClientAsync(wsContext.WebSocket);
+                    _ = HandleClientAsync(wsContext.WebSocket);  // 受信専用ワーカーを起動
                 }
                 else
                 {
@@ -49,9 +52,9 @@ namespace Andean.WebsocketServer
         }
 
         /// <summary>
-        /// 認定済みクライアントを用いてリクエストを送信し、応答を受信する
+        /// 認定済みクライアントへメッセージを送信する（返答は不要、投げっぱなし）。
         /// </summary>
-        public static async Task<byte[]> SendRequestViaAuthorizedClientAsync(byte[] requestBytes, CancellationToken cancellationToken)
+        public static void SendMessageViaAuthorizedClient(byte[] messageBytes, CancellationToken cancellationToken)
         {
             WebSocket? client;
             lock (_authLock)
@@ -60,37 +63,17 @@ namespace Andean.WebsocketServer
             }
             if (client == null || client.State != WebSocketState.Open)
             {
-                throw new Exception("No authorized client is connected.");
+                Console.Error.WriteLine("No authorized client is connected.");
+                return;
             }
 
-            // 排他してリクエスト送信用 TCS を設定
-            lock (_requestLock)
-            {
-                if (_requestTcs != null)
-                    throw new InvalidOperationException("A request is already in progress.");
-                _requestTcs = new TaskCompletionSource<byte[]>();
-            }
-
-            try
-            {
-                // リクエスト送信
-                await client.SendAsync(new ArraySegment<byte>(requestBytes), WebSocketMessageType.Binary, true, cancellationToken);
-                // タイムアウト付きで応答を待機
-                using (var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
-                {
-                    cts.CancelAfter(TimeSpan.FromSeconds(10));
-                    return await _requestTcs.Task.WaitAsync(cts.Token);
-                }
-            }
-            finally
-            {
-                lock (_requestLock)
-                {
-                    _requestTcs = null;
-                }
-            }
+            var outgoingMessage = new OutgoingMessage(client, messageBytes, WebSocketMessageType.Binary, true, cancellationToken);
+            _sendQueue.Add(outgoingMessage);
         }
 
+        /// <summary>
+        /// クライアントからの受信処理を行うワーカー
+        /// </summary>
         private static async Task HandleClientAsync(WebSocket webSocket)
         {
             var clientId = Guid.NewGuid().ToString();
@@ -109,7 +92,6 @@ namespace Andean.WebsocketServer
                     try
                     {
                         var incomingEvent = LiveAPIEvent.Parser.ParseFrom(buffer, 0, result.Count);
-                        // Console.WriteLine($"📩 Raw Protobuf message received: {incomingEvent.GameMessage?.TypeUrl}");
 
                         if (incomingEvent.GameMessage == null)
                         {
@@ -119,7 +101,7 @@ namespace Andean.WebsocketServer
 
                         bool isInit = incomingEvent.GameMessage.TypeUrl.Equals("type.googleapis.com/rtech.liveapi.Init");
 
-                        // 認定済みクライアントの設定（最初の Init イベントで認定）
+                        // 初回 Init イベントにより認定済みクライアントを設定
                         lock (_authLock)
                         {
                             if (_authorizedClient == null && isInit)
@@ -130,49 +112,23 @@ namespace Andean.WebsocketServer
                             }
                         }
 
-                        // ここでリクエスト応答の待ち状態か確認
+                        // 認定済みクライアント以外は無視
                         bool isAuthorized;
                         lock (_authLock)
                         {
                             isAuthorized = clientId == _authorizedClientId;
                         }
-                        if (isAuthorized)
+                        if (!isAuthorized)
                         {
-                            bool handledAsResponse = false;
-                            // リクエスト送信待ちの場合、応答として TCS を完了させる
-                            lock (_requestLock)
-                            {
-                                if (_requestTcs != null)
-                                {
-                                    byte[] responseBytes = new byte[result.Count];
-                                    Array.Copy(buffer, responseBytes, result.Count);
-                                    _requestTcs.SetResult(responseBytes);
-                                    handledAsResponse = true;
-                                }
-                            }
-                            if (handledAsResponse)
-                                continue;
-                        }
-                        else
-                        {
-                            Console.WriteLine("⚠️ Client {ClientId} is not authorized. Ignoring message.", clientId);
+                            Console.WriteLine($"⚠️ Client {clientId} is not authorized. Ignoring message.");
                             continue;
                         }
 
-                        // 通常のイベントとして処理
+                        // 通常イベントとして処理（別途処理ワーカーへ委譲）
                         var parsedMessage = Message.ParseMessage(incomingEvent.GameMessage);
                         if (parsedMessage != null)
                         {
-                            // Console.WriteLine($"🎯 Decoded Message from authorized client {clientId}: {parsedMessage}");
-                            StatisticsProcessor.EnqueueMessage(clientId,parsedMessage);
-
-                            var jsonMessage = new
-                            {
-                                Type = incomingEvent.GameMessage.TypeUrl,
-                                Data = parsedMessage.ToString()
-                            };
-
-                            //await _hubContext.Clients.All.SendAsync("ReceiveMessage", jsonMessage);
+                            StatisticsProcessor.EnqueueMessage(clientId, parsedMessage);
                         }
                         else
                         {
@@ -203,6 +159,50 @@ namespace Andean.WebsocketServer
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 送信専用ワーカー。キューに追加されたメッセージを取り出して SendAsync で送信する。
+        /// 投げっぱなしのため、送信完了の待機は行いません。
+        /// </summary>
+        private static async void ProcessSendQueue()
+        {
+            foreach (var outgoingMessage in _sendQueue.GetConsumingEnumerable())
+            {
+                try
+                {
+                    await outgoingMessage.Client.SendAsync(
+                        new ArraySegment<byte>(outgoingMessage.Data),
+                        outgoingMessage.MessageType,
+                        outgoingMessage.EndOfMessage,
+                        outgoingMessage.CancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"❌ Send error: {ex}");
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 送信するメッセージを表すクラス
+    /// </summary>
+    public class OutgoingMessage
+    {
+        public WebSocket Client { get; }
+        public byte[] Data { get; }
+        public WebSocketMessageType MessageType { get; }
+        public bool EndOfMessage { get; }
+        public CancellationToken CancellationToken { get; }
+
+        public OutgoingMessage(WebSocket client, byte[] data, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
+        {
+            Client = client;
+            Data = data;
+            MessageType = messageType;
+            EndOfMessage = endOfMessage;
+            CancellationToken = cancellationToken;
         }
     }
 }
