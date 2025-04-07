@@ -11,7 +11,7 @@ namespace AndeanClass.Controllers
         {
             if (_match.State == "Playing")
             {
-                GetPlayerStatus(_match).Wait();
+                // GetPlayerStatus(_match).Wait();
 
                 long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
