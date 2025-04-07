@@ -202,7 +202,7 @@ namespace AndeanWebUI.Hubs
             IsLobbyJoined = true;
 
             //@conecone　よろしく💛
-            //LastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
+            // LastLobbyResponse = response != null ? response.ToString() : "Error or timeout in creating lobby.";
             Console.WriteLine($"ControlPanelStateService.LobbyJoinButtonEnabled:{LobbyJoinButtonEnabled}");
             Console.WriteLine($"leaveLobbyButtonEnabled:{LeaveLobbyButtonEnabled}");
             await BroadcastStatus();
