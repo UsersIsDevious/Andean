@@ -20,11 +20,11 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// Update時点のunix時間を保持する変数
         /// </summary>
-        public static long _updateTime = 0;
+        public static double _updateTime = 0;
         /// <summary>
         /// パケット情報
         /// </summary>
-        public static Dictionary<long, Packet> _packetList = new Dictionary<long, Packet>();
+        public static Dictionary<double, Packet> _packetList = new Dictionary<double, Packet>();
         /// <summary>
         /// ロビーかどうかのフラグ
         /// </summary>
