@@ -1,7 +1,8 @@
 "use client"
 
-import { Loader2, Power, Play } from "lucide-react"
+import { Loader2, Power, Play, BarChart2 } from "lucide-react"
 import { useControlPanelContext } from "@/app/control-panel/hooks/useControlPanelContext"
+import Link from "next/link"
 
 export default function SystemTab() {
   const {
@@ -165,6 +166,37 @@ export default function SystemTab() {
                 システムをシャットダウン
               </button>
             )}
+          </div>
+        </div>
+      </div>
+
+      {/* Live View Card - 別の行に移動 */}
+      <div style={cardStyle} className="rounded-lg overflow-hidden">
+        <div style={cardHeaderStyle} className="px-6 py-4">
+          <div className="flex items-center gap-2">
+            <BarChart2 className="h-5 w-5 text-red-500" />
+            <h2 className="text-xl font-bold text-red-400">ライブビュー</h2>
+          </div>
+          <p className="text-gray-400 text-sm mt-1">マッチのリアルタイムデータを表示</p>
+        </div>
+        <div className="p-6 space-y-4">
+          <Link href="/live-view" passHref>
+            <button
+              className="w-full py-3 px-4 rounded-md text-white font-medium flex items-center justify-center"
+              style={buttonStyle}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor)}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor)}
+            >
+              <BarChart2 className="mr-2 h-4 w-4" />
+              ライブビューを開く
+            </button>
+          </Link>
+
+          <div
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", borderColor: "#1f2937" }}
+            className="border rounded-md p-3 text-sm font-mono text-gray-300 h-20 overflow-auto"
+          >
+            マッチのリアルタイムデータを表示するページを開きます。チーム、プレイヤー、キルフィードなどの情報を確認できます。
           </div>
         </div>
       </div>
