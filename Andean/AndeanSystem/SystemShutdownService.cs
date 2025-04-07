@@ -1,17 +1,54 @@
 ﻿using AndeanWebUI.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AndeanSystems
 {
     public class SystemShutdownService
     {
-
         private readonly IEnumerable<IAndeanWebUI> _andeanwebui;
 
         public SystemShutdownService(IEnumerable<IAndeanWebUI> andeanwebui)
         {
             _andeanwebui = andeanwebui;
+            RegisterShutdownEvents();
         }
 
+        /// <summary>
+        /// プロセス終了時や未処理例外発生時にShutdown処理を実行するためのイベントハンドラーを登録
+        /// </summary>
+        private void RegisterShutdownEvents()
+        {
+            // プロセス終了時（通常の終了や強制終了時）に実行
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
+            {
+                try
+                {
+                    Console.WriteLine("[SystemShutdownService] ProcessExit イベントを検知しました。");
+                    ShutdownAsync(new ShutdownOptions { LogShutdown = true }).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[SystemShutdownService] ProcessExit イベント中にエラーが発生しました: {ex.Message}");
+                }
+            };
+
+            // 未処理例外発生時に実行
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                try
+                {
+                    Console.WriteLine("[SystemShutdownService] UnhandledException イベントを検知しました。");
+                    ShutdownAsync(new ShutdownOptions { LogShutdown = true }).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[SystemShutdownService] UnhandledException イベント中にエラーが発生しました: {ex.Message}");
+                }
+            };
+        }
 
         /// <summary>
         /// シャットダウン時に任意のオプションを設定可能なオプションクラス
@@ -50,19 +87,17 @@ namespace AndeanSystems
                 await Task.Delay(options.DelaySeconds * 1000, cancellationToken);
             }
 
-            // 終了前のクリーンアップ処理をここに実装（例: ログ保存、リソース解放など）
+            // 終了前のクリーンアップ処理（例: ログ保存、リソース解放など）
             if (options.LogShutdown)
             {
-                Console.WriteLine("[SystemShutdownService] クリーンアップ処理完了。システムを終了します。");
+                Console.WriteLine("[SystemShutdownService] クリーンアップ処理完了。各ハブに Shutdown 通知を送信します。");
             }
-            // ここで各ハブに Shutdown 通知を送る
+            // 各ハブに Shutdown 通知を送る
             foreach (var andeanwebui in _andeanwebui)
             {
                 await andeanwebui.NotifyShutdown();
             }
 
-            
-            // ここでは例として、Console.WriteLine で終了メッセージを表示
             Console.WriteLine("System shutdown executed.");
             // プログラムを終了する（0は正常終了を意味します）
             Environment.Exit(0);
