@@ -6,20 +6,22 @@ using System.Threading.Tasks;
 
 namespace AndeanWebUI.Services
 {
-    public class LiveViewHubUpdateService : AndeanSystem
+    // SignalRへの送信処理をstaticなヘルパークラスに切り出す
+    public static class LiveViewHubUpdateHelper
     {
-        private readonly IHubContext<LiveViewHub> _hubContext;
+        private static IHubContext<LiveViewHub>? _hubContext;
 
-        public LiveViewHubUpdateService(IHubContext<LiveViewHub> hubContext)
+        public static void Init(IHubContext<LiveViewHub> hubContext)
         {
             _hubContext = hubContext;
         }
 
-        // この関数は60FPS(約16ms毎)で呼ばれると仮定
-        public override async void Update()
+        public static async Task SendMatchDataUpdate()
         {
-            // マッチ情報をクライアントに送信
-            await _hubContext.Clients.All.SendAsync("ReceiveMatchData", AndeanClassController._match);
+            if (_hubContext != null)
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveMatchData", AndeanClassController._match);
+            }
         }
     }
 }

@@ -9,20 +9,19 @@ namespace AndeanWebUI.Hubs
     public partial class ControlPanelHub : Hub, IAndeanWebUI
     {
         private readonly AppConfig _config = ConfigService.Config;
-        private readonly SystemShutdownService _shutdownService;
 
         private Dictionary<string, LobbyPlayerSection> lobbyPlayers = new Dictionary<string, LobbyPlayerSection>();
         private LobbySettings lobbySettings = new LobbySettings();
-
-        public ControlPanelHub(SystemShutdownService shutdownService)
-        {
-            _shutdownService = shutdownService;
-        }
 
         // 全クライアントへ現在のステータスをブロードキャストする
         private async Task BroadcastStatus()
         {
             await Clients.All.SendAsync("ReceiveStatus", GetCurrentStatus());
+        }
+
+        // クライアント切断時に登録解除
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
         }
 
         // 現在の全ステータスを集約して返す（UI状態も含む）
@@ -84,6 +83,7 @@ namespace AndeanWebUI.Hubs
 
         public async Task NotifyShutdown(string message = "System is shutting down.")
         {
+            Console.WriteLine("シャッドダウンを送信");
             await Clients.All.SendAsync("ShutdownNotification", message);
         }
 
