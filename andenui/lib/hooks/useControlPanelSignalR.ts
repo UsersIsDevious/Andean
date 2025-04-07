@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import * as signalR from "@microsoft/signalr"
 import type { ConfigData, CSVTeamData, AppConfig } from "@/lib/types"
 
-const CONTROL_PANEL_HUB_URL = "https://localhost:7109/ControlPanelHub"
+const CONTROL_PANEL_HUB_URL = "https://localhost:7109/controlPanelHub"
 
 export const useControlPanelSignalR = () => {
   const [isConnected, setIsConnected] = useState(false)

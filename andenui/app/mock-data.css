@@ -1,0 +1,14 @@
+/* このファイルはモックデータのスタイルを含みます */
+.mock-data-notice {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #f87171;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 9999;
+  border: 1px solid #b91c1c;
+}
+
