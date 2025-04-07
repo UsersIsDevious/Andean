@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import * as signalR from "@microsoft/signalr";
 
-const LIVE_VIEW_HUB_URL = "https://localhost:7109/LiveViewHub";
+const LIVE_VIEW_HUB_URL = "https://localhost:7109/liveViewHub";
 
 export function useLiveViewSignalR() {
     //const [connection, setConnection] = useState<signalR.HubConnection | null>(null);

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 using static AndeanWebUI.Services.ControlPanelHubService;
 using static AndeanSystems.CommandExecutionService;
 using static AndeanSystems.ConfigService;
+using static AndeanSystems.SystemShutdownService;
 
 
 namespace AndeanWebUI.Hubs
@@ -174,7 +175,7 @@ namespace AndeanWebUI.Hubs
             Console.WriteLine("Shutdown command received from client.");
 
             // 実際のシャットダウン処理を実行するメソッドを呼び出す
-            await _shutdownService.ShutdownAsync(new SystemShutdownService.ShutdownOptions { DelaySeconds = 3 });
+            await ShutdownAsync();
         }
 
         // ロビー作成時に取得した結果を状態として保持し、全クライアントへブロードキャスト

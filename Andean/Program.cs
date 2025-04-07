@@ -5,6 +5,7 @@ using AndeanWebUI.Services;
 using Andean.WebsocketServer;
 using AndeanClass.Controllers;
 using Microsoft.AspNetCore.SignalR;
+using Andean.AndeanWebUI.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,13 +28,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
-
 // 🚀 TimestampService をシングルトンで登録
 builder.Services.AddSingleton<AndeanSystem, TimestampService>();
 
 
-// 🚀 SystemShutdownService をホストサービスとして登録
-builder.Services.AddSingleton<SystemShutdownService>();
 
 // 🚀 CORS 設定: localhost:3000 からのリクエストを許可
 builder.Services.AddCors(options =>
@@ -73,10 +71,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 // 🚀 SignalR のエンドポイントを4つに分割
-app.MapHub<ControlPanelHub>("/controlPanelHub");       // コントロールパネル用
+app.MapHub<ControlPanelHub>("/ControlPanelHub");       // コントロールパネル用
 app.MapHub<OverlayHub>("/overlayHub");                 // オーバーレイ用
 app.MapHub<OverlayControlPanelHub>("/overlayControlPanelHub"); // オーバーレイコントロールパネル用
-app.MapHub<LiveViewHub>("/liveViewHub");
+app.MapHub<LiveViewHub>("/LiveViewHub");
 
 
 // 🚀 WebSocket サーバーをバックグラウンドで起動
@@ -112,5 +110,6 @@ ControlPanelHubService.Init(hubContext);
 // UpdateManagerのループを開始
 UpdateManager.StartLoop();
 new AndeanClassUpdateController();
+new HubUpdate();
 
 app.Run();
