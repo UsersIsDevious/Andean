@@ -181,7 +181,7 @@ namespace AndeanClass.Services
                 }
 
                 // 更新内容を保存
-                await FileOutputService.WriteToFileAsync(config.Output, $"{_match.MatchName}", JsonSerializer.Serialize(_match, new JsonSerializerOptions{ WriteIndented = true }), FileWriteMode.Overwrite);
+                await FileOutputService.WriteToFileAsync(config.Output, $"{_match.MatchName}.json", JsonSerializer.Serialize(_match, new JsonSerializerOptions{ WriteIndented = true }), FileWriteMode.Overwrite);
             }
         }
 
