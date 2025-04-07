@@ -32,11 +32,5 @@
             Category = category;
             Data = data;
         }
-        public Event(ulong timestamp, string category, EventPlayer data)
-        {
-            Timestamp = timestamp;
-            Category = category;
-            Data = data.Get();
-        }
     }
 }

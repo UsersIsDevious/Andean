@@ -45,19 +45,9 @@ namespace AndeanClass
         /// (各イベントは、timestamp、category、および data プロパティを含むオブジェクトに変換)
         /// </summary>
         /// <returns>JSON形式のオブジェクト</returns>
-        public JObject ToJson()
+        public ShortPacket ToShortPacket()
         {
-            return JObject.FromObject(new
-            {
-                t = T,
-                data = Data,
-                events = Events.Select(e => new
-                {
-                    timestamp = e.Timestamp,
-                    category = e.Category,
-                    data = e.Data
-                }).ToList()
-            });
+            return new ShortPacket(T, Data, Events);
         }
 
         /// <summary>

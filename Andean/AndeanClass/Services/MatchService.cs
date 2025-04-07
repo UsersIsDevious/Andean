@@ -4,6 +4,7 @@ using System.Text.Json;
 using Newtonsoft.Json.Linq;
 using AndeanClass.Services.Utilities;
 using static AndeanClass.Controllers.AndeanClassController;
+using Newtonsoft.Json;
 
 namespace AndeanClass.Services
 {
@@ -145,11 +146,13 @@ namespace AndeanClass.Services
                             startRing.Data["Stage"] == endRing.Data["Stage"])
                         {
                             // matchBase.PacketLists[startRing_t].Events 内の "ringStartClosing" イベントを検索し、endCenter を設定
-                            if (_match.PacketLists.TryGetValue(startRing_t, out JObject? packet))
+                            if (_match.PacketLists.TryGetValue(startRing_t, out ShortPacket? packet))
                             {
-                                if (packet["Events"] != null)
+                                JObject? packetJson = (JObject?)JsonConvert.SerializeObject(packet);
+
+                                if (packetJson["Events"] != null)
                                 {
-                                    JToken? eventToken = packet["Events"]?.FirstOrDefault(e => (string)e["Category"] == "ringStartClosing");
+                                    JToken? eventToken = packetJson["Events"]?.FirstOrDefault(e => (string)e["Category"] == "ringStartClosing");
                                     if (eventToken != null)
                                     {
                                         // endRing.Data.Center のコピーを endCenter に設定（配列のコピー）
@@ -181,7 +184,7 @@ namespace AndeanClass.Services
                 }
 
                 // 更新内容を保存
-                await FileOutputService.WriteToFileAsync(config.Output, $"{_match.MatchName}.json", JsonSerializer.Serialize(_match, new JsonSerializerOptions{ WriteIndented = true }), FileWriteMode.Overwrite);
+                await FileOutputService.WriteToFileAsync(config.Output, $"{_match.MatchName}.json", System.Text.Json.JsonSerializer.Serialize(_match, new JsonSerializerOptions{ WriteIndented = true }), FileWriteMode.Overwrite);
             }
         }
 

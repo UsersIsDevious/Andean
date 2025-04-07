@@ -125,7 +125,7 @@ namespace AndeanClass.Controllers
                             // }
 
                             CheckPacketData(packet, _playerData);
-                            _match.AddPacketElement(packet.T.ToString(), packet.ToJson());
+                            _match.AddPacketElement(packet.T.ToString(), packet.ToShortPacket());
                         }
                     }
                 }

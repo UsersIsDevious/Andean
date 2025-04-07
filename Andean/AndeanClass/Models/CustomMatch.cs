@@ -108,7 +108,7 @@ namespace AndeanClass
         /// <summary>
         /// パケットリスト（キーは時間、値は Packet インスタンス）
         /// </summary>
-        public Dictionary<string, JObject> PacketLists { get; set; }
+        public Dictionary<string, ShortPacket> PacketLists { get; set; }
 
         /// <summary>
         /// リングデータのリスト（各要素は Ring クラスのインスタンス）
@@ -150,7 +150,7 @@ namespace AndeanClass
             ServerId = "";
             StartingLoadout = new Inventory();
             EventLists = new List<Event>();
-            PacketLists = new Dictionary<string, JObject>();
+            PacketLists = new Dictionary<string, ShortPacket>();
             Rings = new List<Ring>();
             MapOffset = new double[] { 0, 0, 1 };
             ScoreSettings = new Dictionary<string, object>();
@@ -203,7 +203,7 @@ namespace AndeanClass
         /// </summary>
         /// <param name="time">キーとなる時間（文字列）</param>
         /// <param name="packet">追加する Packet インスタンス</param>
-        public void AddPacketElement(string time, JObject packet)
+        public void AddPacketElement(string time, ShortPacket packet)
         {
             PacketLists[time] = packet;
         }
