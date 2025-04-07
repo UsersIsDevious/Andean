@@ -47,17 +47,19 @@ namespace AndeanClass
         /// <returns>JSON形式のオブジェクト</returns>
         public JObject ToJson()
         {
-            return JObject.FromObject(new
+            var json = new JObject
             {
-                t = T,
-                data = Data,
-                events = Events.Select(e => new
-                {
-                    timestamp = e.Timestamp,
-                    category = e.Category,
-                    data = e.Data
-                }).ToList()
-            });
+                ["t"] = T,
+                ["data"] = JArray.FromObject(Data),
+                ["events"] = new JArray(Events.Select(e =>
+                    new JObject
+                    {
+                        ["timestamp"] = e.Timestamp,
+                        ["category"] = e.Category,
+                        ["data"] = JToken.FromObject(e.Data)
+                    }))
+            };
+            return json;
         }
 
         /// <summary>

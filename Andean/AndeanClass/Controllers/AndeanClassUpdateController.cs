@@ -16,7 +16,7 @@ namespace AndeanClass.Controllers
                 long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
                 // 新たなPacketオブジェクトを生成し、_packetListに追加
-                _packetList[time] = new Packet(time / 1000 - (long)_match.StartTimeStamp);
+                _packetList[time] = new Packet((double)time / 1000 - _match.StartTimeStamp);
 
                 _updateTime = time;
             }
