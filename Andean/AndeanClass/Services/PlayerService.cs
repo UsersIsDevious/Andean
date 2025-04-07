@@ -88,7 +88,7 @@
             _player.SetTeamName(player.TeamName);
             _player.SetSquadIndex((int)player.SquadIndex);
 
-            var character = LocalizationService.GetOriginalKey("legend_label", player.Character);
+            var character = LocalizationService.GetOriginalKey("legend_label", player.Character) ?? player.Character;
             _player.UpdateLegend(character, player.Skin);
 
             // 必要に応じて、他のプロパティも同様に更新可能
