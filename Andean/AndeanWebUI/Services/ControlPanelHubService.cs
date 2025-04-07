@@ -126,6 +126,10 @@ namespace AndeanWebUI.Services
                     LeaveLobbyButtonEnabled = false;
                     IsLobbyJoined = false;
                     break;
+                case "Playing":
+                    LeaveLobbyButtonEnabled = false;
+                    IsLobbyJoined = false;
+                    break;
                 default:
                     break;
             }

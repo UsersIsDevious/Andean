@@ -97,7 +97,7 @@ namespace Andean.WebsocketServer.Controllers
                         {
                             // Init メッセージの場合、クライアントを認定済みに設定
                             ClientManagementService.SetAuthorizedClient(clientId);
-                            await ControlPanelHubService.SetLiveAPIStatus("Connect","isLobby");
+                            await ControlPanelHubService.SetLiveAPIStatus("Connect", "GameLaunched");
                             Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
                         }                        
                         break;

@@ -71,10 +71,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 // 🚀 SignalR のエンドポイントを4つに分割
-app.MapHub<ControlPanelHub>("/ControlPanelHub");       // コントロールパネル用
+app.MapHub<ControlPanelHub>("/controlPanelHub");       // コントロールパネル用
 app.MapHub<OverlayHub>("/overlayHub");                 // オーバーレイ用
 app.MapHub<OverlayControlPanelHub>("/overlayControlPanelHub"); // オーバーレイコントロールパネル用
-app.MapHub<LiveViewHub>("/LiveViewHub");
+app.MapHub<LiveViewHub>("/liveViewHub");
 
 
 // 🚀 WebSocket サーバーをバックグラウンドで起動
