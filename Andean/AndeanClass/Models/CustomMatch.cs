@@ -454,7 +454,7 @@ namespace AndeanClass
             }
             else
             {
-                Console.WriteLine($"Player with nucleusHash {nucleusHash} not found.");
+                // Console.WriteLine($"Player with nucleusHash {nucleusHash} not found.");
                 return null;
             }
         }

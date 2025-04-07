@@ -90,7 +90,6 @@ namespace AndeanWebUI.Hubs
         {
             // 更新モードの判定（小文字で統一）
             mode = mode.ToLowerInvariant();
-            Console.WriteLine("ここ来てる？1");
 
             // セクションの更新処理を実施
             // ここでは、更新内容は newData に JSON 形式の値が入っている前提とする

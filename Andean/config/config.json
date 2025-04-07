@@ -4,7 +4,7 @@
     "Game_Lancher": "Steam",
     "Api_Port": "7777",
     "Api_Option": "\u002Bcl_liveapi_enabled 1",
-    "Option": "\u002Bmiles_language english \u002Bcl_liveapi_ws_retry_count 20 \u002Bcl_liveapi_ws_retry_time 3 \u002Bcl_liveapi_ws_timeout 600"
+    "Option": "\u002Bmiles_language english \u002Bcl_liveapi_ws_retry_count 60 \u002Bcl_liveapi_ws_retry_time 3 \u002Bcl_liveapi_ws_timeout 600"
   },
   "Penetrator": [
     "Caustic Gas"
