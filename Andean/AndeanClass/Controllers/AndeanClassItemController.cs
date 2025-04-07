@@ -143,11 +143,23 @@ namespace AndeanClass.Controllers
 
                 Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
 
+                string _itemName = Msg.LinkedEntity;
+
+                string[]? _itemData = ItemUtilities.ReturnSplitBracketParts(_itemName);
+                string _itemLabel = (_itemData != null) ? _itemData[1] : _itemName;
+                string _itemId = ItemUtilities.ReturnItemId("Grenade", _itemLabel) ?? _itemLabel;
+
+                if (_itemData == null || _itemData[0] != "Tactical")
+                    _player.Inventory.AddOrUpdateItem(_itemId, -1, ItemUtilities.ReturnLevel(_itemName));
+                
+                _player.AddGrenadeUseCount(_itemId);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
+                _eventData["linkedentity"] = _itemId;
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessBlackMarketAction(Rtech.Liveapi.BlackMarketAction Msg)
@@ -161,12 +173,27 @@ namespace AndeanClass.Controllers
 
                 Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
 
+                string _itemName = Msg.Item;
+
+                // アイテムラベルとレベルを配列で取得
+                string[]? _itemData = ItemUtilities.ReturnSplitBracketParts(_itemName);
+                // アイテムラベルを取得
+                // アイテムラベルがnullの場合は、分割前のアイテム名をそのまま使用
+                string _itemLabel = (_itemData != null) ? _itemData[0] : _itemName;
+                // アイテムor武器のIDを取得
+                string[]? _item = ItemUtilities.ReturnItemorWeaponId(_itemLabel);
+
+                string itemId = (_item != null) ? _item[1] : _itemLabel;
+
+                _player.AddBlackMarketUseCount(itemId);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
 
+                _eventData["item"] = itemId;
+
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
 
@@ -178,14 +205,14 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
-                Player player = CreateOrUpdatePlayer(_match, Msg.Player);
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
 
                 string AmmoType = Msg.AmmoType;
                 uint AmountUsed = Msg.AmountUsed;
 
-                player.Inventory.AddOrUpdateItem(AmmoType, -(AmountUsed), ItemUtilities.ReturnLevel(AmmoType));
+                _player.Inventory.AddOrUpdateItem(AmmoType, -(AmountUsed), ItemUtilities.ReturnLevel(AmmoType));
 
-                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(player).Get();
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
 
                 _eventData["ammotype"] = AmmoType;
                 _eventData["amountused"] = AmountUsed;
@@ -195,6 +222,7 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
     }
