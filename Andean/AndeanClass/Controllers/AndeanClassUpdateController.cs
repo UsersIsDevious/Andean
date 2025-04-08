@@ -26,7 +26,7 @@ namespace AndeanClass.Controllers
             }
             else
             {
-                if (now - lastPollTime > 3000)
+                if (ControlPanelHubService.IsLaunched && now - lastPollTime > 3000)
                 {
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
                     Request.GetLobbyPlayersAsync(cts.Token);

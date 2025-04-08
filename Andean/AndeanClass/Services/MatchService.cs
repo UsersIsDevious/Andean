@@ -217,8 +217,8 @@ namespace AndeanClass.Services
                 // 必要に応じて ranks をソート（ここでは昇順と仮定）
                 for (int i = 0; i < _teamRanking.Count; i++)
                 {
-                    Team team = _match.GetTeam(_teamRanking[i]);
-                    team.SetRank((uint)(_teamRanking.Count - i));
+                    Team? team = _match.GetTeam(_teamRanking[i]);
+                    team?.SetRank((uint)(_teamRanking.Count - i));
                 }
 
                 // 更新内容を保存
@@ -270,7 +270,12 @@ namespace AndeanClass.Services
 
             var _MsgPlayers = squadEliminatedMsg.Players;
             var _teamId = _MsgPlayers[0].TeamId;
-            Team _team = _match.GetTeam(_teamId);
+            Team? _team = _match.GetTeam(_teamId);
+            if (_team == null)
+            {
+                Console.WriteLine($"[ERROR] Team {_teamId} not found in match data.");
+                return;
+            }
 
             foreach (var msg_player in _MsgPlayers)
             {

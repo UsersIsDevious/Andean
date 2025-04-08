@@ -8,6 +8,7 @@ using static AndeanWebUI.Services.ControlPanelHubService;
 using static AndeanSystems.CommandExecutionService;
 using static AndeanSystems.ConfigService;
 using static AndeanSystems.SystemShutdownService;
+using Newtonsoft.Json.Linq;
 
 
 namespace AndeanWebUI.Hubs
@@ -27,7 +28,7 @@ namespace AndeanWebUI.Hubs
             {
                 var config = _config;
 
-                Dictionary<string, object> playlists_r5 = await ApexPlaylistService.GetPlaylistMetadataAsync();
+                JObject playlists_r5 = await ApexPlaylistService.GetPlaylistMetadataAsync();
 
                 string command = "";
                 string option = $"{config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";
@@ -179,7 +180,7 @@ namespace AndeanWebUI.Hubs
         }
 
         // ロビー作成時に取得した結果を状態として保持し、全クライアントへブロードキャスト
-        public async Task joinLobby(string lobbyInfo = null)
+        public async Task joinLobby(string? lobbyInfo = null)
         {
             // リクエスト受信確認を即座に送信
             await Clients.Caller.SendAsync("RequestReceived", "JoinLobby", "リクエストを受信しました");
