@@ -48,11 +48,11 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// CSVデータ
         /// </summary>
-        public static CsvData _csvData = new CsvData();
+        public static CsvData? _csvData;
         /// <summary>
         /// ロビー関連メッセージを保持する変数
         /// </summary>
-        public static Dictionary<string, object> _waitMessages = new Dictionary<string, object>();
+        public static Dictionary<string, JObject> _waitMessages = new Dictionary<string, JObject>();
 
 
         public static void InitializeMatch(Init initMsg)
