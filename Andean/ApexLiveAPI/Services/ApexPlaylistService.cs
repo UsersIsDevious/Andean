@@ -1,16 +1,19 @@
-﻿using AndeanSystems;
+﻿using Andean.ApexLiveAPI.Services;
+using AndeanSystems;
+using Newtonsoft.Json.Linq;
 
 namespace ApexLiveAPI.Services
 {
     public static class ApexPlaylistService
     {
+        public static PlaylistResult? PlaylistsData { get; private set; }
 
         /// <summary>
         /// 設定ファイルに指定された apexlegends.path 配下の r2/playlists_r5.txt を読み込み、
         /// VDF 形式をパースして、ログ出力およびメタデータとして返します。
         /// </summary>
         /// <returns>パース結果のメタデータ</returns>
-        public static async Task<Dictionary<string, object>> GetPlaylistMetadataAsync()
+        public static async Task<JObject> GetPlaylistMetadataAsync()
         {
             // apexlegends.path と "r2/playlists_r5.txt" を組み合わせてファイルパスを作成
             string filePath = Path.Combine(ConfigService.Config.ApexLegends.Path, "r2", "playlists_r5.txt");
@@ -19,7 +22,9 @@ namespace ApexLiveAPI.Services
             string fileContent = await FileReadService.ReadFileAsync(filePath);
 
             // VDF 形式の内容をパースして Dictionary として取得
-            Dictionary<string, object> playlists_r5 = await VdfParser.ParseVdf(fileContent);
+            JObject playlists_r5 = await VdfParser.ParseVdf(fileContent);
+
+            PlaylistsData = ApexPlaylistExtractor.GeneratePlaylistData(playlists_r5);
 
             return playlists_r5;
         }

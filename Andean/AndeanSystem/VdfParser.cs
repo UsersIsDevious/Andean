@@ -3,20 +3,21 @@ using Newtonsoft.Json;
 using System.Text.Json;
 using System.Text.Unicode;
 using System.Text.Encodings.Web;
+using Newtonsoft.Json.Linq;
 
 namespace AndeanSystems
 {
     public static class VdfParser
     {
 
-        public static Dictionary<string, object> Playlists_r5 { get; private set; } = new Dictionary<string, object>();
+        public static JObject Playlists_r5 { get; private set; } = new JObject();
 
         /// <summary>
         /// VDF形式の文字列をパースして、ネストされたDictionaryを返します。
         /// </summary>
         /// <param name="content">VDF形式のテキスト</param>
         /// <returns>解析結果のDictionary</returns>
-        public static async Task<Dictionary<string, object>> ParseVdf(string content)
+        public static async Task<JObject> ParseVdf(string content)
         {
             try
             {
@@ -50,8 +51,8 @@ namespace AndeanSystems
 
                 await FileOutputService.WriteToFileAsync("output", "playlists_r5.json", json, FileWriteMode.Overwrite);
 
-                // JSON 文字列を Dictionary に変換する
-                return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                // JSON文字列を JObject に変換する
+                return JObject.Parse(json);
             }
             catch (Exception ex)
             {
