@@ -62,9 +62,9 @@ export const useControlPanelSignalR = () => {
           }
         })
 
-        newConnection.on("NotifyShutdown", (message) => {
+        newConnection.on("ShutdownNotification", (message) => {
           if (isMounted) {
-            console.log("🛑 Received Shutdown Notification:", message)
+            console.log("🛑 Received Shutdown ShutdownNotification:", message)
             alert("System is shutting down. This page will close.")
             window.close() // 🔹 ページを閉じる
           }
@@ -153,6 +153,32 @@ export const useControlPanelSignalR = () => {
       try {
         console.log(`🔧 Updating config: ${sectionKey}`)
 
+        // 特別なケース: uiStatus.isMatchmaking の更新がカウントダウン終了時に行われる場合
+        // サーバーにリクエストを送らずにクライアント側の状態だけを更新
+        if (
+          sectionKey === "uiStatus" &&
+          typeof newData === "object" &&
+          newData !== null &&
+          "isMatchmaking" in newData &&
+          newData.isMatchmaking === false
+        ) {
+          console.log("🔧 Updating isMatchmaking locally without server request")
+
+          // クライアント側の状態を更新 - 非同期で実行
+          setTimeout(() => {
+            setConfigData((prev) => {
+              if (!prev) return prev
+              return {
+                ...prev,
+                [sectionKey]: newData,
+              }
+            })
+          }, 0)
+
+          return
+        }
+
+        // 通常のケース: サーバーにリクエストを送信
         // サーバー側が期待するセクションキーに変換
         let serverSectionKey: string = sectionKey as string
         let dataToSend = newData
@@ -400,11 +426,36 @@ export const useControlPanelSignalR = () => {
     }
   }
 
+  // setMatchmaking メソッドを修正
   const setMatchmaking = async (matchmaking: boolean) => {
     if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending setMatchmaking request...", matchmaking)
-        await connectionRef.current.invoke("setMatchmaking", matchmaking)
+
+        // 非同期で実行
+        setTimeout(async () => {
+          try {
+            await connectionRef.current?.invoke("setMatchmaking", matchmaking)
+          } catch (innerError) {
+            console.error("❌ setMatchmaking Inner Error:", innerError)
+          }
+        }, 0)
+
+        // キャンセル時は即座にローカルで状態を更新
+        if (!matchmaking) {
+          setTimeout(() => {
+            setConfigData((prev) => {
+              if (!prev) return prev
+              return {
+                ...prev,
+                uiStatus: {
+                  ...prev.uiStatus,
+                  isMatchmaking: false,
+                },
+              }
+            })
+          }, 0)
+        }
       } catch (error) {
         console.error("❌ setMatchmaking Error:", error)
       }
@@ -452,4 +503,3 @@ export const useControlPanelSignalR = () => {
     isConnected,
   }
 }
-

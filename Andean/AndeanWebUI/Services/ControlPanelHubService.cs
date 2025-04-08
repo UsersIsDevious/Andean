@@ -27,6 +27,7 @@ namespace AndeanWebUI.Services
         public static bool LobbyJoinButtonEnabled { get; set; } = false;
         public static bool LeaveLobbyButtonEnabled { get; set; } = false;
         public static bool GameStartButtonEnabled { get; set; } = true;
+        public static bool IsMatchmaking { get; set; } = false;
         public static List<string> SupportedLanguages { get; set; } = LocalizationService.GetSupportedLanguageCodes();
         public static bool IsLobbyJoined { get; set; } = false;
         public static uint MaxTeamPlayer { get; set; } = 3;
@@ -37,7 +38,7 @@ namespace AndeanWebUI.Services
 
         public static async Task BroadcastStatusAsync()
         {
-            if (_hubContext != null)
+            if (_hubContext != null)    
             {
                 var status = new
                 {
@@ -55,7 +56,8 @@ namespace AndeanWebUI.Services
                         MaxTeamPlayer,
                         MaxTeam,
                         GameStatus,
-                        SupportedLanguages
+                        SupportedLanguages,
+                        IsMatchmaking,
                     }
                 };
 

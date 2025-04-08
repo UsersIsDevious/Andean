@@ -1,4 +1,5 @@
-﻿using AndeanSystems;
+﻿using System;
+using AndeanSystems;
 using System.Text.Json;
 using AndeanWebUI.Models;
 using ApexLiveAPI.Request;
@@ -278,9 +279,15 @@ namespace AndeanWebUI.Hubs
         }
         public async Task setMatchmaking(bool matchmaking)
         {
+            if(matchmaking){
+                IsMatchmaking = true;
+                await BroadcastStatus();
+                IsMatchmaking = false;
+            }else{
+                await BroadcastStatus();
+            }
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.SetMatchmakingAsync(matchmaking, cts.Token);
-            await BroadcastStatus();
+            await Request.SetMatchmakingAsync(matchmaking, cts.Token);
         }
         public async Task pauseToggle(double preTimer = 0)
         {

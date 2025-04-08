@@ -46,6 +46,7 @@ interface ControlPanelContextType {
   isLobbyLoading: boolean
   isApexLoading: boolean
   poiOptions: POIOption[]
+  // isMatchmakingLoading: boolean // 追加: マッチメイキング中のローディング状態
 
   // アクション
   setActiveTab: (tab: string) => void
@@ -80,7 +81,8 @@ interface ControlPanelContextType {
     mode: "overwrite" | "append" | "jsonAppend",
   ) => Promise<void>
   getAllPlayers: () => { id: string; name: string; teamId: string; teamName: string }[]
-  setShowShutdownConfirm: (show: boolean) => void // 追加: シャットダウン確認ダイアログの表示状態を設定する関数
+  setShowShutdownConfirm: (show: boolean) => void
+  setMatchmaking: (matchmaking: boolean) => Promise<void> // 追加: マッチメイキング設定関数
 }
 
 // コンテキストの作成
@@ -106,7 +108,16 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
     changeCamera: signalRChangeCamera,
     setSettings,
     pauseToggle: signalRPauseToggle,
+    setMatchmaking: signalRSetMatchmaking, // SignalR フックから setMatchmaking を取得
   } = useControlPanelSignalR()
+
+  // クライアントサイドでのみレンダリングするための状態
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Client-side mounting effect
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // UI state
   const [activeTab, setActiveTab] = useState("system")
@@ -124,6 +135,7 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
   // Lobby state
   const [lobbyCode, setLobbyCode] = useState("")
   const [isLeavingLobby, setIsLeavingLobby] = useState(false)
+  // const [isMatchmakingLoading, setIsMatchmakingLoading] = useState(false) // 追加: マッチメイキング中のローディング状態
 
   // Team state
   const [editingTeam, setEditingTeam] = useState<string | null>(null)
@@ -430,11 +442,43 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
     await signalRUpdateConfig(sectionKey, newData, mode)
   }
 
+  // setMatchmaking 関数を修正して、本番環境でも正しく動作するようにします
+  const setMatchmaking = async (matchmaking: boolean) => {
+    if (!configData?.uiStatus?.isLobbyJoined) return
+
+    try {
+      // マッチメイキング状態を設定
+      await signalRSetMatchmaking(matchmaking)
+
+      // キャンセル時は即座にローディング状態を解除（サーバーからの応答を待たずに）
+      if (!matchmaking) {
+        // ローカルでUIStatusを更新（サーバーからの応答を待たずに即座に反映）
+        if (configData && configData.uiStatus) {
+          const updatedUIStatus = {
+            ...configData.uiStatus,
+            isMatchmaking: false,
+          }
+
+          // 更新されたUIStatusをconfigDataに反映
+          const updatedConfigData = {
+            ...configData,
+            uiStatus: updatedUIStatus,
+          }
+
+          // 状態を更新
+          signalRUpdateConfig("uiStatus", updatedUIStatus, "overwrite")
+        }
+      }
+    } catch (error) {
+      console.error("マッチメイキング設定エラー:", error)
+    }
+  }
+
   // コンテキスト値の作成
   const contextValue: ControlPanelContextType = {
     // 状態
     activeTab,
-    isLoading,
+    isLoading: isLoading || !isMounted, // isMountedがfalseの場合もローディング中とみなす
     contextMenu,
     showTeamSelector,
     playerToMove,
@@ -460,6 +504,7 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
     isLobbyLoading,
     isApexLoading,
     poiOptions,
+    // isMatchmakingLoading, // 追加: マッチメイキング中のローディング状態
 
     // アクション
     setActiveTab,
@@ -490,9 +535,14 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
     pauseToggle,
     updateConfig,
     getAllPlayers,
-    setShowShutdownConfirm, // 追加: コンテキスト値に関数を追加
+    setShowShutdownConfirm,
+    setMatchmaking, // 追加: マッチメイキング設定関数
+  }
+
+  // サーバーサイドレンダリング時には最小限のコンテキストを提供
+  if (!isMounted) {
+    return <ControlPanelContext.Provider value={contextValue}>{children}</ControlPanelContext.Provider>
   }
 
   return <ControlPanelContext.Provider value={contextValue}>{children}</ControlPanelContext.Provider>
 }
-

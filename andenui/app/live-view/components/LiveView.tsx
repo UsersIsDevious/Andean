@@ -33,6 +33,7 @@ export default function LiveView() {
     }
   }, [matchData])
 
+  // サーバーサイドレンダリング時には何も表示しない
   if (!mounted) {
     return null
   }

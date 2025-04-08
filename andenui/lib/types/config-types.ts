@@ -29,6 +29,7 @@ export interface UIStatus {
   gameStartButtonEnabled: boolean
   leaveLobbyButtonEnabled: boolean
   isLobbyJoined: boolean
+  isMatchmaking?: boolean // 追加: マッチメイキング中かどうかを示すフラグ
   maxTeamPlayer?: number
   maxTeam?: number
   gameStatus?: string
@@ -80,4 +81,3 @@ export interface ConfigPlayer {
   id: string
   name: string
 }
-

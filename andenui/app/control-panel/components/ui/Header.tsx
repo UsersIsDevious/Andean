@@ -1,9 +1,23 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Settings } from "lucide-react"
 import type { CSSProperties } from "react"
 
 export default function Header() {
+  // クライアントサイドでのみレンダリングするための状態
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Client-side mounting effect
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // サーバーサイドレンダリング時には何も表示しない
+  if (!isMounted) {
+    return null
+  }
+
   // Custom styles
   const headerStyle: CSSProperties = {
     borderBottom: "1px solid rgba(139, 0, 0, 0.3)",
@@ -36,4 +50,3 @@ export default function Header() {
     </header>
   )
 }
-

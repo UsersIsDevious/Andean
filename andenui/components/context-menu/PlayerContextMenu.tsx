@@ -1,5 +1,6 @@
 "use client"
-import { useEffect, useRef } from "react"
+
+import { useEffect, useRef, useState } from "react"
 
 interface PlayerContextMenuProps {
   x: number
@@ -19,6 +20,13 @@ const PlayerContextMenu = ({
   playerName = "プレイヤー", // Default to "プレイヤー" if not provided
 }: PlayerContextMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null)
+  // クライアントサイドでのみレンダリングするための状態
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Client-side mounting effect
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -32,6 +40,11 @@ const PlayerContextMenu = ({
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [onClose])
+
+  // サーバーサイドレンダリング時には何も表示しない
+  if (!isMounted) {
+    return null
+  }
 
   // Adjust position to ensure menu stays within viewport
   const adjustedX = Math.min(x, window.innerWidth - (menuRef.current?.offsetWidth || 200))
@@ -71,4 +84,3 @@ const PlayerContextMenu = ({
 }
 
 export default PlayerContextMenu
-
