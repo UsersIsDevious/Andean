@@ -172,21 +172,7 @@ namespace AndeanClass
         /// <param name="ring">追加する Ring インスタンス</param>
         public void AddRingElement(Ring ring)
         {
-            // ※必要に応じて最大要素数を超えた場合、先頭要素を削除する処理も検討できます。
             Rings.Add(ring);
-
-            switch (ring.Category)
-            {
-                case "ringStartClosing":
-                    State = $"RingStartClosing_Stage_{ring.Stage}";
-                    break;
-                case "ringFinishedClosing":
-                    State = $"RingFinishedClosing_Stage_{ring.Stage}";
-                    break;
-                default:
-                    Console.WriteLine("[CustomMatch.AddRingElement] Received unknown message");
-                    break;
-            }
         }
 
         /// <summary>

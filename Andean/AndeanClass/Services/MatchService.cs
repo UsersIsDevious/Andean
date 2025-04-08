@@ -302,28 +302,15 @@ namespace AndeanClass.Services
         {
             ArgumentNullException.ThrowIfNull(_match);
 
-            // AndeanのRingクラスに追加する
-            var rings = _match.Rings;
-            if (rings.Count == 0)
-            {
-                _match.AddRingElement(new Ring(
-                    ringStartClosingMsg.Timestamp,
-                    ringStartClosingMsg.Category,
-                    ringStartClosingMsg.Stage,
-                    ringStartClosingMsg.Center,
-                    ringStartClosingMsg.CurrentRadius,
-                    ringStartClosingMsg.ShrinkDuration,
-                    _match.MapOffset
-                ));
-            }
-            rings[rings.Count - 1].UpdateRing(
+            _match.AddRingElement(new Ring(
                 ringStartClosingMsg.Timestamp,
                 ringStartClosingMsg.Category,
+                ringStartClosingMsg.Stage,
+                ringStartClosingMsg.Center,
                 ringStartClosingMsg.CurrentRadius,
                 ringStartClosingMsg.ShrinkDuration,
-                ringStartClosingMsg.EndRadius,
                 _match.MapOffset
-            );
+            ));
 
             // AndeanのEventクラスに追加する
 
