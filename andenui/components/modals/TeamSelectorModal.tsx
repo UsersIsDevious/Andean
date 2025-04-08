@@ -1,4 +1,6 @@
 "use client"
+
+import { useState, useEffect } from "react"
 import { X, Info } from "lucide-react"
 import { getTeamColor } from "@/lib/utils/team-utils"
 import type { TeamData } from "@/lib/types"
@@ -20,6 +22,19 @@ export default function TeamSelectorModal({
   playerName = "プレイヤー",
   maxTeamPlayer = 3,
 }: TeamSelectorModalProps) {
+  // クライアントサイドでのみレンダリングするための状態
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Client-side mounting effect
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // サーバーサイドレンダリング時には何も表示しない
+  if (!isMounted) {
+    return null
+  }
+
   const sourceTeam = teamData[sourceTeamId]
 
   return (
@@ -127,4 +142,3 @@ export default function TeamSelectorModal({
     </div>
   )
 }
-

@@ -89,15 +89,15 @@ catch (Exception ex)
 }
 
 
-// アプリケーション起動後、ブラウザで指定URLを自動的に開く
-Task.Run(async () =>
-{
-    // サーバーが起動するまで数秒待機（必要に応じて調整）
-    await Task.Delay(1000);
-    // 開きたいURLを指定（）
-    var url = "https://localhost:7109/";
-    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-});
+//// アプリケーション起動後、ブラウザで指定URLを自動的に開く
+//Task.Run(async () =>
+//{
+//    // サーバーが起動するまで数秒待機（必要に応じて調整）
+//    await Task.Delay(1000);
+//    // 開きたいURLを指定（）
+//    var url = "https://localhost:7109/";
+//    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+//});
 
 
 

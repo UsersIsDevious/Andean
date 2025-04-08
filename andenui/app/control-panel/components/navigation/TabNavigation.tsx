@@ -1,4 +1,6 @@
 "use client"
+
+import { useState, useEffect } from "react"
 import { Settings, Play, Sliders, Server } from "lucide-react"
 
 interface TabNavigationProps {
@@ -7,6 +9,19 @@ interface TabNavigationProps {
 }
 
 export default function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
+  // クライアントサイドでのみレンダリングするための状態
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Client-side mounting effect
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // サーバーサイドレンダリング時には何も表示しない
+  if (!isMounted) {
+    return null
+  }
+
   const activeTabStyle = {
     backgroundColor: "rgba(139, 0, 0, 0.2)",
     color: "#f87171", // red-400
@@ -78,4 +93,3 @@ export default function TabNavigation({ activeTab, onTabChange }: TabNavigationP
     </div>
   )
 }
-

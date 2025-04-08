@@ -1,11 +1,11 @@
 import type React from "react"
-import "./globals.css"
 import type { Metadata } from "next"
+import "./globals.css"
+import ClientLayout from "./ClientLayout"
 
 export const metadata: Metadata = {
   title: "Apex Control Panel",
   description: "Control panel for Apex Legends",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -13,13 +13,5 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  )
+  return <ClientLayout>{children}</ClientLayout>
 }
-
-
-
-import './globals.css'
