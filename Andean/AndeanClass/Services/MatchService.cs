@@ -135,9 +135,6 @@ namespace AndeanClass.Services
 
             if (gameStateChangedMsg.State == "Postmatch")
             {
-                // ロビーに戻る
-                _isLobby = true;
-
                 ControlPanelHubService.SetLiveAPIStatus("LobbyJoin", "InLobby").Wait();
 
                 // Packetを確認し、整形して保存する

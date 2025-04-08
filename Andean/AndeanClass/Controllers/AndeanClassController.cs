@@ -26,10 +26,6 @@ namespace AndeanClass.Controllers
         /// </summary>
         public static Dictionary<double, Packet> _packetList = new Dictionary<double, Packet>();
         /// <summary>
-        /// ロビーかどうかのフラグ
-        /// </summary>
-        public static bool _isLobby = true;
-        /// <summary>
         /// プレイヤー情報を保持する変数
         /// </summary>
         public static Dictionary<string, EventPlayer> _playerData = new Dictionary<string, EventPlayer>();
@@ -64,8 +60,6 @@ namespace AndeanClass.Controllers
             lock (_lock)
             {
                 CreateCustomMatch(initMsg);
-                // マッチが初期化されたらロビーから抜ける
-                _isLobby = false;
             }
         }
 
