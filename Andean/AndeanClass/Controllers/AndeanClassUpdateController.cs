@@ -16,7 +16,8 @@ namespace AndeanClass.Controllers
 
             if (ControlPanelHubService.IsMatch == true)
             {
-                GetPlayerStatus(_match);
+                if (ControlPanelHubService.ObserverSwitchEnabled)
+                    GetPlayerStatus(_match);
 
                 // 新たなPacketオブジェクトを生成し、_packetListに追加
                 _packetList[now] = new Packet((double)now / 1000 - _match.StartTimeStamp);
@@ -51,10 +52,9 @@ namespace AndeanClass.Controllers
             foreach (Team team in match.Teams.Values)
             {
                 // チームの最初のプレイヤーIDからプレイヤー情報を取得
-                Player player = match.GetPlayer(team.Players[0]);
-
-                // チームにプレイヤーが存在しない、またはチームが壊滅していた場合次のチームへ
-                if (team.Players.Count == 0 || player.GetStatus() == "eliminated")
+                Player? player = match.GetPlayer(team.Players[0]);
+                // チームにプレイヤーが存在しない、またはプレイヤー情報が取得できなかった場合、またはチームが壊滅していた場合次のチームへ
+                if (team.Players.Count == 0 || player == null || player.GetStatus() == "eliminated")
                 {
                     continue;
                 }

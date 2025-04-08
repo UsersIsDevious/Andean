@@ -33,6 +33,7 @@ namespace AndeanWebUI.Services
         public static uint MaxTeamPlayer { get; set; } = 3;
         public static uint MaxTeam { get; set; } = 20;
         public static string GameStatus { get; set; } = "NoSignal";
+        public static bool ObserverSwitchEnabled { get; set; } = true;
 
 
 

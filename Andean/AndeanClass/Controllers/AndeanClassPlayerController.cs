@@ -164,11 +164,19 @@ namespace AndeanClass.Controllers
 
                 // 攻撃者側の処理
                 _attacker.AddDamageDealt(_damageInflicted, _weaponName, _victim.NucleusHash, _victim.Legend);
-                _match.GetTeam(_attacker.TeamId).AddTotalDamageDealt(_damageInflicted);
+                var attackerTeam = _match.GetTeam(_attacker.TeamId);
+                if (attackerTeam != null)
+                {
+                    attackerTeam.AddTotalDamageDealt(_damageInflicted);
+                }
 
                 // 被害者側の処理
                 _victim.AddDamageReceived(_damageInflicted, _weaponName, _attacker.NucleusHash, _attacker.Legend, LocalizationService.CheckShieldPenetrator(_weaponName));
-                _match.GetTeam(_victim.TeamId).AddTotalDamageReceived(_damageInflicted);
+                var victimTeam = _match.GetTeam(_victim.TeamId);
+                if (victimTeam != null)
+                {
+                    victimTeam.AddTotalDamageReceived(_damageInflicted);
+                }
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_attacker, _victim, _weaponName);
                 _eventData["damageinflicted"] = _damageInflicted;
@@ -218,7 +226,11 @@ namespace AndeanClass.Controllers
 
                 // 攻撃者側の処理
                 _awardedto.SetKills(_weaponName, _victim.NucleusHash, _victim.Legend);
-                _match.GetTeam(_awardedto.TeamId).AddTotalKills();
+                var awardedTeam = _match.GetTeam(_awardedto.TeamId);
+                if (awardedTeam != null)
+                {
+                    awardedTeam.AddTotalKills();
+                }
 
                 // 被害者側の処理
                 _victim.SetKillsReceived(_weaponName, _awardedto.NucleusHash, _awardedto.Legend);
@@ -266,7 +278,11 @@ namespace AndeanClass.Controllers
 
                 // 攻撃者側の処理
                 _attacker.SetDowns(_weaponName, _victim.NucleusHash, _victim.Legend);
-                _match.GetTeam(_attacker.TeamId).AddTotalDowns();
+                var attackerTeam = _match.GetTeam(_attacker.TeamId);
+                if (attackerTeam != null)
+                {
+                    attackerTeam.AddTotalDowns();
+                }
 
                 // 被害者側の処理
                 _victim.SetDownsReceived(_weaponName, _attacker.NucleusHash, _attacker.Legend);
@@ -313,7 +329,11 @@ namespace AndeanClass.Controllers
 
                 // 攻撃者側の処理
                 _assistant.SetKillAssists(_weaponName, _victim.NucleusHash, _victim.Legend);
-                _match.GetTeam(_assistant.TeamId).AddTotalKillAssists();
+                var assistantTeam = _match.GetTeam(_assistant.TeamId);
+                if (assistantTeam != null)
+                {
+                    assistantTeam.AddTotalKillAssists();
+                }
 
                 // 被害者側の処理
                 _victim.SetKillAssistsReceived(_weaponName, _assistant.NucleusHash, _assistant.Legend);
@@ -366,8 +386,16 @@ namespace AndeanClass.Controllers
                 _attacker.AddDamageDealt(Msg.DamageInflicted, "Unknown by GibraltarShieldAbsorbed", _victim.NucleusHash, _victim.Legend);
 
                 // チームの合計に加算
-                _match.GetTeam(_attacker.TeamId).AddTotalDamageDealt(Msg.DamageInflicted);
-                _match.GetTeam(_victim.TeamId).AddTotalDamageReceived(Msg.DamageInflicted);
+                var attackerTeam = _match.GetTeam(_attacker.TeamId);
+                if (attackerTeam != null)
+                {
+                    attackerTeam.AddTotalDamageDealt(Msg.DamageInflicted);
+                }
+                var victimTeam = _match.GetTeam(_victim.TeamId);
+                if (victimTeam != null)
+                {
+                    victimTeam.AddTotalDamageReceived(Msg.DamageInflicted);
+                }
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_attacker, _victim);
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
@@ -416,8 +444,16 @@ namespace AndeanClass.Controllers
                 _attacker.AddDamageDealt(Msg.DamageInflicted, "Unknown by RevenantForgedShadowDamaged", _victim.NucleusHash, _victim.Legend);
 
                 // チームの合計に加算
-                _match.GetTeam(_attacker.TeamId).AddTotalDamageDealt(Msg.DamageInflicted);
-                _match.GetTeam(_victim.TeamId).AddTotalDamageReceived(Msg.DamageInflicted);
+                var attackerTeam = _match.GetTeam(_attacker.TeamId);
+                if (attackerTeam != null)
+                {
+                    attackerTeam.AddTotalDamageDealt(Msg.DamageInflicted);
+                }
+                var victimTeam = _match.GetTeam(_victim.TeamId);
+                if (victimTeam != null)
+                {
+                    victimTeam.AddTotalDamageReceived(Msg.DamageInflicted);
+                }
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForInteraction(_attacker, _victim);
                 _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
@@ -444,7 +480,7 @@ namespace AndeanClass.Controllers
                     Player _respawnPlayer = CreateOrUpdatePlayer(_match, RespawnPlayer);
                     _respawnPlayer.SetStatus("alive");
                     _respawnedTeammates.Add(EventService.CreateEventDataForPlayer(_respawnPlayer).Get());
-                    _match.GetTeam(_respawnPlayer.TeamId).AddTotalRespawns();
+                    _match.GetTeam(_respawnPlayer.TeamId)?.AddTotalRespawns();
                 }
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
@@ -470,7 +506,7 @@ namespace AndeanClass.Controllers
 
                 _revived.SetStatus("alive");
                 _revived.SetCanRevive(false);
-                _match.GetTeam(_revived.TeamId).AddTotalRevives();
+                _match.GetTeam(_revived.TeamId)?.AddTotalRevives();
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
                 _eventData["revived"] = EventService.CreateEventDataForPlayer(_revived).Get();
