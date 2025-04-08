@@ -8,7 +8,7 @@ namespace Andean.AndeanWebUI.Services
     {
         public override async void Update()
         {
-            if (AndeanClassController._match.State == "Playing")
+            if (ControlPanelHubService.IsMatch == true)
             {
                 await LiveViewHubService.SendMatchDataUpdate();
             }
