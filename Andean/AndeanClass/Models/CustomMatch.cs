@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace AndeanClass
 {
@@ -117,7 +118,7 @@ namespace AndeanClass
         /// <summary>
         /// パケットリスト（キーは時間、値は Packet インスタンス）
         /// </summary>
-        public Dictionary<string, Packet> PacketLists { get; set; }
+        public Dictionary<string, ShortPacket> PacketLists { get; set; }
 
         /// <summary>
         /// リングデータのリスト（各要素は Ring クラスのインスタンス）
@@ -159,7 +160,7 @@ namespace AndeanClass
             ServerId = "";
             StartingLoadout = new Inventory();
             EventLists = new List<Event>();
-            PacketLists = new Dictionary<string, Packet>();
+            PacketLists = new Dictionary<string, ShortPacket>();
             Rings = new List<Ring>();
             MapOffset = new double[] { 0, 0, 1 };
             ScoreSettings = new Dictionary<string, object>();
@@ -212,7 +213,7 @@ namespace AndeanClass
         /// </summary>
         /// <param name="time">キーとなる時間（文字列）</param>
         /// <param name="packet">追加する Packet インスタンス</param>
-        public void AddPacketElement(string time, Packet packet)
+        public void AddPacketElement(string time, ShortPacket packet)
         {
             PacketLists[time] = packet;
         }
@@ -476,7 +477,7 @@ namespace AndeanClass
             }
             else
             {
-                Console.WriteLine($"Player with nucleusHash {nucleusHash} not found.");
+                // Console.WriteLine($"Player with nucleusHash {nucleusHash} not found.");
                 return null;
             }
         }

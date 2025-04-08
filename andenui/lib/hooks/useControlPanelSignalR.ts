@@ -1,262 +1,455 @@
-import { useState, useEffect } from "react";
-import * as signalR from "@microsoft/signalr";
+"use client"
 
-const CONTROL_PANEL_HUB_URL = "https://localhost:7109/ControlPanelHub";
+import { useState, useEffect, useRef } from "react"
+import * as signalR from "@microsoft/signalr"
+import type { ConfigData, CSVTeamData, AppConfig } from "@/lib/types"
 
-// 設定データの型定義
-interface ApexLegendsConfig {
-    path: string;
-    api_Port: string;
-    api_Option: string;
-    option: string;
-}
+const CONTROL_PANEL_HUB_URL = "https://localhost:7109/controlPanelHub"
 
-interface ScoreSettingConfig {
-    kill_Point: number;
-    max_Kill: number;
-    rank_Points: number[];
-}
+export const useControlPanelSignalR = () => {
+  const [isConnected, setIsConnected] = useState(false)
+  const [configData, setConfigData] = useState<ConfigData | null>(null)
+  const [lobbyResponse, setLobbyResponse] = useState<string | null>(null)
+  const [apexResponse, setApexResponse] = useState<string | null>(null)
+  const [isLobbyLoading, setIsLobbyLoading] = useState(false)
+  const [isApexLoading, setIsApexLoading] = useState(false)
 
-interface AppConfig {
-    apexLegends: ApexLegendsConfig;
-    penetrator: string[];
-    output: string;
-    language: string;
-    log_Dir: string;
-    data_Fps: number;
-    score_Setting: ScoreSettingConfig;
-}
+  // connectionをuseRefで保持して、コンポーネントのレンダリング間で一貫性を保つ
+  const connectionRef = useRef<signalR.HubConnection | null>(null)
 
-interface ConfigData {
-    sharedData: string;
-    selectedDataKeys: string[];
-    appConfig: AppConfig;
-    lastLobbyResponse: string;
-    lastApexResponse: string;
-}
+  useEffect(() => {
+    let isMounted = true
 
-// CSV データの型定義
-interface CSVTeamData {
-    TEAM: number;
-    NAME: string;
-    IMG_URL: string;
-    MEMBER_NUM: number;
-    MEMBERS: string[];
-}
-
-export function useControlPanelSignalR() {
-    const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
-    const [configData, setConfigData] = useState<ConfigData | null>(null);
-    const [lobbyResponse, setLobbyResponse] = useState<string | null>(null);
-    const [apexResponse, setApexResponse] = useState<string | null>(null);
-    const [isLobbyLoading, setIsLobbyLoading] = useState(false);
-    //const [messages, setMessages] = useState<string[]>([]);
-    const [isApexLoading, setIsApexLoading] = useState(false);
-
-    useEffect(() => {
+    const startConnection = async () => {
+      try {
         const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl(CONTROL_PANEL_HUB_URL, {
-                withCredentials: false,
-                skipNegotiation: true,
-                transport: signalR.HttpTransportType.WebSockets,
-            })
-            .withAutomaticReconnect()
-            .configureLogging(signalR.LogLevel.Information)
-            .build();
+          .withUrl(CONTROL_PANEL_HUB_URL, {
+            withCredentials: false,
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets,
+          })
+          .withAutomaticReconnect()
+          .configureLogging(signalR.LogLevel.Information)
+          .build()
 
-        newConnection.start()
-            .then(() => {
-                console.log("✅ Connected to ControlPanelHub");
-                setIsConnected(true);
-            })
-            .catch(err => console.error("❌ ControlPanelHub Connection Error:", err));
+        // イベントハンドラを設定
+        newConnection.on("LobbyResponse", (response) => {
+          if (isMounted) {
+            console.log("📩 Received Lobby Response:", response)
+            setLobbyResponse(response)
+            setIsLobbyLoading(false)
+          }
+        })
 
-        newConnection.on("LobbyResponse", response => {
-            console.log("📩 Received Lobby Response:", response);
-            setLobbyResponse(response);
-            setIsLobbyLoading(false);
-        });
+        newConnection.on("ApexResponse", (response) => {
+          if (isMounted) {
+            console.log("📩 Received Apex Response:", response)
+            setApexResponse(response)
+            setIsApexLoading(false)
+          }
+        })
 
-        newConnection.on("ApexResponse", response => {
-            console.log("📩 Received Apex Response:", response);
-            setApexResponse(response);
-            setIsApexLoading(false);
-        });
+        newConnection.on("ReceiveStatus", (response) => {
+          if (isMounted) {
+            console.log("📩 Received Config Data:", response)
+            setConfigData(response)
+          }
+        })
 
-        newConnection.on("ReceiveStatus", response => {
-            console.log("📩 Received Config Data:", response);
-            setConfigData(response);
-        });
-        newConnection.on("ReceiveMessage", message => {
-            console.log("📩 Received Message:", message);
-            //setMessages(prevMessages => [...prevMessages, message]);
-        });
-        newConnection.on("NotifyShutdown", message => {
-            console.log("🛑 Received Shutdown Notification:", message);
-            alert("System is shutting down. This page will close.");
-            window.close(); // 🔹 ページを閉じる
-        });
+        newConnection.on("ReceiveMessage", (message) => {
+          if (isMounted) {
+            console.log("📩 Received Message:", message)
+          }
+        })
 
-        setConnection(newConnection);
+        newConnection.on("NotifyShutdown", (message) => {
+          if (isMounted) {
+            console.log("🛑 Received Shutdown Notification:", message)
+            alert("System is shutting down. This page will close.")
+            window.close() // 🔹 ページを閉じる
+          }
+        })
 
-        return () => {
-            newConnection.stop()
-                .then(() => console.log("🛑 Disconnected from ControlPanelHub"))
-                .catch(err => console.error("❌ Error stopping SignalR connection:", err));
-        };
-    }, []);
+        newConnection.on("ConfigUpdateResponse", (response) => {
+          if (isMounted) {
+            console.log("📩 Received Config Update Response:", response)
+          }
+        })
 
-    const createLobby = async () => {
-        if (connection && isConnected) {
-            try {
-                console.log("🛠️ Sending CreateLobby request...");
-                setIsLobbyLoading(true);
-                await connection.invoke("CreateLobby");
-            } catch (error) {
-                console.error("❌ CreateLobby Error:", error);
-                setIsLobbyLoading(false);
+        // 接続を開始
+        await newConnection.start()
+
+        if (isMounted) {
+          console.log("✅ Connected to ControlPanelHub")
+          connectionRef.current = newConnection
+          setIsConnected(true)
+        } else {
+          // コンポーネントがアンマウントされていた場合は接続を停止
+          await newConnection.stop()
+          console.log("🛑 Connection stopped due to component unmount")
+        }
+      } catch (err) {
+        console.error("❌ ControlPanelHub Connection Error:", err)
+      }
+    }
+
+    startConnection()
+
+    // クリーンアップ関数
+    return () => {
+      isMounted = false
+
+      const stopConnection = async () => {
+        if (connectionRef.current) {
+          try {
+            await connectionRef.current.stop()
+            console.log("🛑 Disconnected from ControlPanelHub")
+          } catch (err) {
+            console.error("❌ Error stopping SignalR connection:", err)
+          }
+          connectionRef.current = null
+        }
+      }
+
+      stopConnection()
+    }
+  }, [])
+
+  const startApex = async () => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🏆 Sending StartApex request...")
+        setIsApexLoading(true)
+        await connectionRef.current.invoke("StartApex")
+      } catch (error) {
+        console.error("❌ StartApex Error:", error)
+        setIsApexLoading(false)
+      }
+    } else {
+      console.warn("⚠️ Connection not established. Cannot send StartApex request.")
+    }
+  }
+
+  const readCSV = async (jsonData: CSVTeamData[]) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("📤 Sending CSV data to readCSV...")
+        await connectionRef.current.invoke("readCSV", jsonData)
+      } catch (error) {
+        console.error("❌ readCSV Error:", error)
+      }
+    } else {
+      console.warn("⚠️ Connection not established. Cannot send CSV data.")
+    }
+  }
+
+  // updateConfig メソッドを修正して、サーバー側が期待するセクションキーに変換する
+  const updateConfig = async (
+    sectionKey: keyof ConfigData,
+    newData: unknown,
+    mode: "overwrite" | "append" | "jsonAppend",
+  ) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log(`🔧 Updating config: ${sectionKey}`)
+
+        // サーバー側が期待するセクションキーに変換
+        let serverSectionKey: string = sectionKey as string
+        let dataToSend = newData
+
+        // appConfig セクションの場合は、具体的なサブセクションに変換
+        if (sectionKey === "appConfig") {
+          // appConfig の中の特定のプロパティを更新する場合
+          const appConfigData = newData as Partial<AppConfig>
+
+          if (appConfigData.apexLegends) {
+            serverSectionKey = "apexlegends"
+            dataToSend = appConfigData.apexLegends
+          } else if (appConfigData.penetrator !== undefined) {
+            serverSectionKey = "penetrator"
+            dataToSend = appConfigData.penetrator
+          } else if (appConfigData.output !== undefined) {
+            serverSectionKey = "output"
+            // Ensure we're not double-stringifying
+            dataToSend = appConfigData.output
+          } else if (appConfigData.language !== undefined) {
+            serverSectionKey = "language"
+            dataToSend = appConfigData.language
+          } else if (appConfigData.log_Dir !== undefined) {
+            serverSectionKey = "log_dir"
+            // Ensure we're not double-stringifying
+            dataToSend = appConfigData.log_Dir
+          } else if (appConfigData.data_Fps !== undefined) {
+            serverSectionKey = "data_fps"
+            dataToSend = appConfigData.data_Fps
+          } else if (appConfigData.score_Setting) {
+            serverSectionKey = "score_setting"
+
+            // If we're updating score settings with rank_Points
+            if (appConfigData.score_Setting.rank_Points) {
+              // Ensure the array has enough elements for all teams
+              const maxTeam = configData?.uiStatus?.maxTeam || 20
+              const rankPoints = [...appConfigData.score_Setting.rank_Points]
+
+              // Fill with zeros if needed
+              while (rankPoints.length < maxTeam) {
+                rankPoints.push(0)
+              }
+
+              // Update the data to send
+              appConfigData.score_Setting.rank_Points = rankPoints
             }
-        } else {
-            console.warn("⚠️ Connection not established. Cannot send CreateLobby request.");
-        }
-    };
-    const startApex = async () => {
-        if (connection && isConnected) {
-            try {
-                console.log("🏆 Sending StartApex request...");
-                setIsApexLoading(true);
-                await connection.invoke("StartApex");
-            } catch (error) {
-                console.error("❌ StartApex Error:", error);
-                setIsApexLoading(false);
-            }
-        } else {
-            console.warn("⚠️ Connection not established. Cannot send StartApex request.");
-        }
-    };
-    const updateConfig = async (sectionKey: keyof ConfigData, newData: unknown, mode: "overwrite" | "append" | "jsonAppend") => {
-        if (connection && isConnected) {
-            try {
-                console.log(`🔧 Updating config: ${sectionKey}`);
-                await connection.invoke("UpdateConfig", sectionKey, JSON.stringify(newData), mode);
-            } catch (error) {
-                console.error("❌ UpdateConfig Error:", error);
-            }
-        } else {
-            console.warn("⚠️ Connection not established. Cannot update config.");
-        }
-    };
-    const readCSV = async (jsonData: CSVTeamData[]) => {
-        if (connection && isConnected) {
-            try {
-                console.log("📤 Sending CSV data to readCSV...");
-                await connection.invoke("readCSV", jsonData);
-            } catch (error) {
-                console.error("❌ readCSV Error:", error);
-            }
-        } else {
-            console.warn("⚠️ Connection not established. Cannot send CSV data.");
-        }
-    };
-    const shutdownSystem = async () => {
-        if (connection && isConnected) {
-            try {
-                console.log("🛑 Sending Shutdown request...");
-                await connection.invoke("Shutdown");
-            } catch (error) {
-                console.error("❌ Shutdown Error:", error);
-            }
-        } else {
-            console.warn("⚠️ Connection not established. Cannot send Shutdown request.");
-        }
-    };
-    const changeCamera = async (cameraId: string) => {
-        if (connection && isConnected) {
-          try {
-            console.log("🛠️ Sending change_camera request...", cameraId);
-            await connection.invoke("change_camera", cameraId);
-          } catch (error) {
-            console.error("❌ change_camera Error:", error);
-          }
-        } else {
-          console.warn("⚠️ Connection not established. Cannot send change_camera request.");
-        }
-      };
-      const leaveLobbySignalR = async () => {
-        if (connection && isConnected) {
-          try {
-            console.log("🛠️ Sending leave_lobby request...");
-            await connection.invoke("leave_lobby");
-          } catch (error) {
-            console.error("❌ leave_lobby Error:", error);
-          }
-        } else {
-          console.warn("⚠️ Connection not established. Cannot send leave_lobby request.");
-        }
-      };
-      const setReady = async (ready: boolean) => {
-        if (connection && isConnected) {
-          try {
-            console.log("🛠️ Sending set_ready request...", ready);
-            await connection.invoke("set_ready", ready);
-          } catch (error) {
-            console.error("❌ set_ready Error:", error);
-          }
-        } else {
-          console.warn("⚠️ Connection not established. Cannot send set_ready request.");
-        }
-      };
-      const setMatchmaking = async (matchmaking: boolean) => {
-        if (connection && isConnected) {
-          try {
-            console.log("🛠️ Sending set_matchmaking request...", matchmaking);
-            await connection.invoke("set_matchmaking", matchmaking);
-          } catch (error) {
-            console.error("❌ set_matchmaking Error:", error);
-          }
-        } else {
-          console.warn("⚠️ Connection not established. Cannot send set_matchmaking request.");
-        }
-      };
-      const setTeamName = async (teamId: string, newName: string) => {
-        if (connection && isConnected) {
-          try {
-            console.log("🛠️ Sending set_team_name request...", teamId, newName);
-            await connection.invoke("set_team_name", teamId, newName);
-          } catch (error) {
-            console.error("❌ set_team_name Error:", error);
-          }
-        } else {
-          console.warn("⚠️ Connection not established. Cannot send set_team_name request.");
-        }
-      };
-      const setSpawnPoint = async (teamId: string, spawnPoint: number) => {
-        if (connection && isConnected) {
-          try {
-            console.log("🛠️ Sending set_spawn_point request...", teamId, spawnPoint);
-            await connection.invoke("set_spawn_point", teamId, spawnPoint);
-          } catch (error) {
-            console.error("❌ set_spawn_point Error:", error);
-          }
-        } else {
-          console.warn("⚠️ Connection not established. Cannot send set_spawn_point request.");
-        }
-      };
-      const setEndRingExclusion = async (exclude: boolean) => {
-        if (connection && isConnected) {
-          try {
-            console.log("🛠️ Sending set_end_ring_exclusion request...", exclude);
-            await connection.invoke("set_end_ring_exclusion", exclude);
-          } catch (error) {
-            console.error("❌ set_end_ring_exclusion Error:", error);
-          }
-        } else {
-          console.warn("⚠️ Connection not established. Cannot send set_end_ring_exclusion request.");
-        }
-      };
-    
-    
 
-    return { createLobby, startApex, updateConfig, readCSV, shutdownSystem, lobbyResponse, apexResponse, configData, isLobbyLoading, isApexLoading, isConnected};
+            dataToSend = appConfigData.score_Setting
+          }
+        }
+
+        // サーバーに送信
+        // If dataToSend is already a string and we're updating output or log_dir, don't stringify again
+        const dataToSendToServer =
+          typeof dataToSend === "string" && (serverSectionKey === "output" || serverSectionKey === "log_dir")
+            ? dataToSend
+            : JSON.stringify(dataToSend)
+
+        await connectionRef.current.invoke("UpdateConfig", serverSectionKey, dataToSendToServer, mode.toLowerCase())
+      } catch (error) {
+        console.error("❌ UpdateConfig Error:", error)
+      }
+    } else {
+      console.warn("⚠️ Connection not established. Cannot update config.")
+    }
+  }
+
+  const shutdown = async () => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛑 Sending Shutdown request...")
+        await connectionRef.current.invoke("Shutdown")
+      } catch (error) {
+        console.error("❌ Shutdown Error:", error)
+      }
+    } else {
+      console.warn("⚠️ Connection not established. Cannot send Shutdown request.")
+    }
+  }
+
+  const joinLobby = async (lobbyCode?: string) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending joinLobby request...", lobbyCode ? `with code: ${lobbyCode}` : "without code")
+        setIsLobbyLoading(true)
+        // 引数がある場合はそのまま渡し、ない場合は null を渡す
+        await connectionRef.current.invoke("joinLobby", lobbyCode ?? null)
+      } catch (error) {
+        console.error("❌ joinLobby Error:", error)
+        setIsLobbyLoading(false)
+      }
+    } else {
+      console.warn("⚠️ Connection not established. Cannot send joinLobby request.")
+    }
+  }
+
+  const setReady = async (ready: boolean) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending set_ready request...", ready)
+        await connectionRef.current.invoke("set_ready", ready)
+      } catch (error) {
+        console.error("❌ set_ready Error:", error)
+      }
+    } else {
+      console.warn("⚠️ Connection not established. Cannot send set_ready request.")
+    }
+  }
+
+  const setTeam = async (teamId: number, targetHardwareName: string, targetNucleushash: string) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending setTeam request...", teamId, targetHardwareName, targetNucleushash)
+        await connectionRef.current.invoke("setTeam", teamId, targetHardwareName, targetNucleushash)
+      } catch (error) {
+        console.error("❌ setTeam Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。setTeamリクエストを送信できません。")
+    }
+  }
+
+  const setTeamName = async (teamId: number, teamName: string) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending setTeamName request...", teamId, teamName)
+        await connectionRef.current.invoke("setTeamName", teamId, teamName)
+      } catch (error) {
+        console.error("❌ setTeamName Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。setTeamNameリクエストを送信できません。")
+    }
+  }
+
+  const setSpawnPoint = async (teamId: number, spawnPoint: number) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending setSpawnPoint request...", teamId, spawnPoint)
+        await connectionRef.current.invoke("setSpawnPoint", teamId, spawnPoint)
+      } catch (error) {
+        console.error("❌ setSpawnPoint Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。setSpawnPointリクエストを送信できません。")
+    }
+  }
+
+  const changeCamera = async (type: string, value: string) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending changeCamera request...", type, value)
+        await connectionRef.current.invoke("changeCamera", type, value)
+      } catch (error) {
+        console.error("❌ changeCamera Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。changeCameraリクエストを送信できません。")
+    }
+  }
+
+  const sendChat = async (message: string) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending sendChat request...", message)
+        await connectionRef.current.invoke("sendChat", message)
+      } catch (error) {
+        console.error("❌ sendChat Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。sendChatリクエストを送信できません。")
+    }
+  }
+
+  const kickPlayer = async (targetHardwareName: string, targetNucleushash: string) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending kickPlayer request...", targetHardwareName, targetNucleushash)
+        await connectionRef.current.invoke("kickPlayer", targetHardwareName, targetNucleushash)
+      } catch (error) {
+        console.error("❌ kickPlayer Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。kickPlayerリクエストを送信できません。")
+    }
+  }
+
+  const setSettings = async (
+    matchName: string,
+    adminChat: boolean,
+    teamRename: boolean,
+    selfAssign: boolean,
+    aimAssist: boolean,
+    anonMode: boolean,
+  ) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log(
+          "🛠️ Sending setSettings request...",
+          matchName,
+          adminChat,
+          teamRename,
+          selfAssign,
+          aimAssist,
+          anonMode,
+        )
+        await connectionRef.current.invoke(
+          "setSettings",
+          matchName,
+          adminChat,
+          teamRename,
+          selfAssign,
+          aimAssist,
+          anonMode,
+        )
+      } catch (error) {
+        console.error("❌ setSettings Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。setSettingsリクエストを送信できません。")
+    }
+  }
+  const leaveLobby = async () => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending leaveLobby request...")
+        await connectionRef.current.invoke("leaveLobby")
+      } catch (error) {
+        console.error("❌ leaveLobby Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。leaveLobbyリクエストを送信できません。")
+    }
+  }
+  const setEndRingExclusion = async (exclusion: number) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending setEndRingExclusion request...", exclusion)
+        await connectionRef.current.invoke("setEndRingExclusion", exclusion)
+      } catch (error) {
+        console.error("❌ setEndRingExclusion Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。setEndRingExclusionリクエストを送信できません。")
+    }
+  }
+
+  const setMatchmaking = async (matchmaking: boolean) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending setMatchmaking request...", matchmaking)
+        await connectionRef.current.invoke("setMatchmaking", matchmaking)
+      } catch (error) {
+        console.error("❌ setMatchmaking Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。setMatchmakingリクエストを送信できません。")
+    }
+  }
+
+  const pauseToggle = async (preTimer = 0) => {
+    if (connectionRef.current && isConnected) {
+      try {
+        console.log("🛠️ Sending pauseToggle request...", preTimer)
+        await connectionRef.current.invoke("pauseToggle", preTimer)
+      } catch (error) {
+        console.error("❌ pauseToggle Error:", error)
+      }
+    } else {
+      console.warn("⚠️ 接続が確立されていません。pauseToggleリクエストを送信できません。")
+    }
+  }
+
+  return {
+    startApex,
+    readCSV,
+    updateConfig,
+    shutdown,
+    joinLobby,
+    leaveLobby,
+    setReady,
+    setTeam,
+    setTeamName,
+    setSpawnPoint,
+    changeCamera,
+    sendChat,
+    kickPlayer,
+    setSettings,
+    setEndRingExclusion,
+    setMatchmaking,
+    pauseToggle,
+    lobbyResponse,
+    apexResponse,
+    configData,
+    isLobbyLoading,
+    isApexLoading,
+    isConnected,
+  }
 }
+

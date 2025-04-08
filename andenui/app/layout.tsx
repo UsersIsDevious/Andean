@@ -1,17 +1,25 @@
-import { Providers } from "./providers";
+import type React from "react"
+import "./globals.css"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Apex Control Panel",
+  description: "Control panel for Apex Legends",
+    generator: 'v0.dev'
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en">
-      <body>
-        <Providers>
-          {children}
-        </Providers>
-      </body>
+      <body>{children}</body>
     </html>
-  );
+  )
 }
+
+
+
+import './globals.css'

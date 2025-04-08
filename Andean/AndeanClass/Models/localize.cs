@@ -1,7 +1,4 @@
-﻿using Andean.Utilities;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using AndeanSystems;
 using System.Text;
 using System.Text.Json;
 
@@ -62,11 +59,16 @@ namespace AndeanClass
             // JSON全体をDictionary<string, JsonElement>として読み込む
             var rawData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonContent);
             var model = new LocalizedDataModel();
+            
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
 
             // "item" はそのまま読み込む
             if (rawData.ContainsKey("item"))
             {
-                model.Item = JsonSerializer.Deserialize<Dictionary<string, string>>(rawData["item"].GetRawText());
+                model.Item = JsonSerializer.Deserialize<Dictionary<string, string>>(rawData["item"].GetRawText(), options);
             }
             else
             {
@@ -76,7 +78,7 @@ namespace AndeanClass
             // "legends_label" はそのまま読み込む
             if (rawData.ContainsKey("legends_label"))
             {
-                model.Legends = JsonSerializer.Deserialize<Dictionary<string, Legend>>(rawData["legends_label"].GetRawText());
+                model.Legends = JsonSerializer.Deserialize<Dictionary<string, Legend>>(rawData["legends_label"].GetRawText(), options);
             }
             else
             {
@@ -86,7 +88,7 @@ namespace AndeanClass
             // "weapons_label" のキーと値を入れ替える
             if (rawData.ContainsKey("weapons_label"))
             {
-                var originalWeapons = JsonSerializer.Deserialize<Dictionary<string, string>>(rawData["weapons_label"].GetRawText());
+                var originalWeapons = JsonSerializer.Deserialize<Dictionary<string, string>>(rawData["weapons_label"].GetRawText(), options);
                 model.WeaponsLabelSwapped = SwapDictionary(originalWeapons);
             }
             else
@@ -97,7 +99,7 @@ namespace AndeanClass
             // "associate_weapons_label" のキーと値を入れ替える
             if (rawData.ContainsKey("associate_weapons_label"))
             {
-                var originalAssociateWeapons = JsonSerializer.Deserialize<Dictionary<string, string>>(rawData["associate_weapons_label"].GetRawText());
+                var originalAssociateWeapons = JsonSerializer.Deserialize<Dictionary<string, string>>(rawData["associate_weapons_label"].GetRawText(), options);
                 model.AssociateWeaponsLabelSwapped = SwapDictionary(originalAssociateWeapons);
             }
             else
@@ -108,7 +110,7 @@ namespace AndeanClass
             // "items_label" のキーと値を入れ替える
             if (rawData.ContainsKey("items_label"))
             {
-                var originalItemsLabel = JsonSerializer.Deserialize<Dictionary<string, string>>(rawData["items_label"].GetRawText());
+                var originalItemsLabel = JsonSerializer.Deserialize<Dictionary<string, string>>(rawData["items_label"].GetRawText(), options);
                 model.ItemsLabelSwapped = SwapDictionary(originalItemsLabel);
             }
             else

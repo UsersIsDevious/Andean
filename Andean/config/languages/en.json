@@ -39,14 +39,14 @@
     "mp_weapon_bow": "Bocek",
     "mp_weapon_car": "C.A.R.",
     "mp_weapon_defender": "Charge Rifle",
-    "mp_weapon_esaw": "Devotion LMG",
+    "mp_weapon_esaw": "Devotion",
     "mp_weapon_shotgun": "EVA-8",
     "mp_weapon_g2": "G7 Scout",
-    "mp_weapon_energy_ar": "HAVOC Rifle",
+    "mp_weapon_energy_ar": "HAVOC",
     "mp_weapon_hemlok": "Hemlok",
-    "mp_weapon_sniper": "Kraber .50-Cal Sniper",
+    "mp_weapon_sniper": "Kraber",
     "mp_weapon_lstar": "L-STAR",
-    "mp_weapon_dmr": "Longbow DMR",
+    "mp_weapon_dmr": "Longbow",
     "mp_weapon_lmg": "Spitfire",
     "mp_weapon_mastiff": "Mastiff",
     "mp_weapon_shotgun_pistol": "Mozambique",
@@ -57,14 +57,13 @@
     "mp_weapon_rspn101": "R-301",
     "mp_weapon_r97": "R-99",
     "mp_weapon_autopistol": "RE-45",
-    "mp_weapon_dragon_lmg": "Rampage LMG",
+    "mp_weapon_dragon_lmg": "Rampage",
     "mp_weapon_sentinel": "Sentinel",
     "mp_weapon_doubletake": "Triple Take",
     "mp_weapon_vinson": "Flatline",
-    "mp_weapon_volt_smg": "Volt SMG",
+    "mp_weapon_volt_smg": "Volt",
     "mp_weapon_wingman": "Wingman",
     "mp_weapon_melee_survival": "Melee",
-    "Buster Sword R5 Melee": "Buster Sword R5 Melee",
     "Bleed Out": "Bleed Out",
     "Fall": "Fall",
     "The Ring": "The Ring",
@@ -73,7 +72,29 @@
     "mp_weapon_thermite_grenade": "Thermite Grenade",
     "mp_weapon_frag_grenade": "Frag Grenade",
     "Knuckle Cluster": "Knuckle Cluster",
-    "The Motherlode": "The Motherlode"
+    "The Motherlode": "The Motherlode",
+    "Caustic Gas": "Caustic Gas",
+    "Burn": "Burn",
+    "Riot Drill": "Riot Drill",
+    "Wrecking Ball": "Wrecking Ball",
+    "Perimeter Security": "Perimeter Security",
+    "Mobile Minigun \"Sheila\"": "Mobile Minigun \"Sheila\"",
+    "Piercing Spikes": "Piercing Spikes",
+    "Energy Barricade": "Energy Barricade",
+    "Rolling Thunder": "Rolling Thunder",
+    "Castle Wall": "Castle Wall",
+    "Sniper's Mark": "Sniper's Mark",
+    "Missile Swarm": "Missile Swarm",
+    "Defensive Bombardment": "Defensive Bombardment",
+    "Drone EMP": "Drone EMP",
+    "Arc Snare": "Arc Snare",
+    "Whistler": "Whistler",
+    "Weapon Overheat": "Weapon Overheat",
+    "Smoke Launcher": "Smoke Launcher",
+    "Prowler Attack": "Prowler Attack",
+    "Spider Attack": "Spider Spit Attack",
+    "Cargo Bot Explosion": "Cargo Bot Explosion",
+    "Power Sword": "Power Sword"
   },
   "items_label": {
     "mp_ability_void_ring": "Heat Shield",
@@ -83,16 +104,19 @@
     "mp_weapon_thermite_grenade": "Thermite Grenade",
     "mp_weapon_frag_grenade": "Frag Grenade",
     "Knuckle Cluster": "Knuckle Cluster",
+    "Nox Grenade": "Nox Grenade",
+    "Defensive Bombardment": "Defensive Bombardment",
     "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT": "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT",
     "Rolling Thunder": "Rolling Thunder",
-    "Shield Cell": "Shield Cell",
-    "Shield Battery": "Shield Battery",
-    "Syringe": "Syringe",
-    "Med Kit": "Med Kit",
-    "Phoenix Kit": "Phoenix Kit",
-    "Ultimate Accelerant": "Ultimate Accelerant",
+    "health_pickup_combo_small": "Shield Cell",
+    "health_pickup_combo_large": "Shield Battery",
+    "health_pickup_health_small": "Syringe",
+    "health_pickup_health_large": "Med Kit",
+    "health_pickup_combo_full": "Phoenix Kit",
+    "health_pickup_ultimate": "Ultimate Accelerant",
     "Helmet": "Helmet",
     "Body Shield": "Body Shield",
+    "Shield Core": "Shield Core",
     "Knockdown Shield": "Knockdown Shield",
     "Backpack": "Backpack",
     "bullet": "Heavy Rounds",
@@ -100,10 +124,22 @@
     "shotgun": "Shotgun Shells",
     "sniper": "Sniper Ammo",
     "energy": "Energy Ammo",
+    "Extended Energy Mag": "Extended Energy Mag",
+    "Extended Sniper Mag": "Extended Sniper Mag",
+    "Extended Light Mag": "Extended Light Mag",
+    "Extended Heavy Mag": "Extended Heavy Mag",
     "Shotgun Bolt": "Shotgun Bolt",
+    "Barrel Stabilizer": "Barrel Stabilizer",
     "Standard Stock": "Standard Stock",
+    "Sniper Stock": "Sniper Stock",
+    "Laser Sight": "Laser Sight",
+    "1x HCOG 'CLASSIC'": "1x HCOG 'CLASSIC'",
     "1x-2x VARIABLE HOLO": "1x-2x VARIABLE HOLO",
-    "2x HCOG 'BRUISER'": "2x HCOG 'BRUISER'"
+    "2x HCOG 'BRUISER'": "2x HCOG 'BRUISER'",
+    "3x HCOG 'RANGER'": "3x HCOG 'RANGER'",
+    "2x-4x VARIABLE AOG": "2x-4x VARIABLE AOG",
+    "4x-8x VARIABLE SNIPER": "4x-8x VARIABLE SNIPER",
+    "Gun Shield Generator": "Gun Shield Generator"
   },
   "legends_label": {
     "Bloodhound": {
@@ -143,7 +179,7 @@
         "1": {
           "left": {
             "name": "Big Bruddah",
-            "description": "Increase Ult radius by 20%."
+            "description": "Increase Ult radius by 20%%."
           },
           "right": {
             "name": "Fast Shotties",
@@ -153,7 +189,7 @@
         "2": {
           "left": {
             "name": "Baby Bubble",
-            "description": "Reduce Tactical size and cooldown by 25%."
+            "description": "Reduce Tactical size and cooldown by 25%%."
           },
           "right": {
             "name": "Bubble Bunker",
@@ -166,7 +202,7 @@
       "name": "Lifeline",
       "passive": "Combat Glide",
       "tactical": "D.O.C. Heal Drone",
-      "ultimate": "Halo Shield",
+      "ultimate": "D.O.C. Halo",
       "upgrade": {
         "1": {
           "left": {
@@ -181,7 +217,7 @@
         "2": {
           "left": {
             "name": "Enhanced Radio",
-            "description": "Increased distance you can assign D.O.C. by 50%"
+            "description": "Increased distance you can assign D.O.C. by 50%%"
           },
           "right": {
             "name": "Tactical Cooldown+",
@@ -222,7 +258,7 @@
       "name": "Wraith",
       "passive": "Voices from the Void",
       "tactical": "Into the Void",
-      "ultimate": "Dimensional Rift",
+      "ultimate": "Rift Portals",
       "upgrade": {
         "1": {
           "left": {
@@ -237,7 +273,7 @@
         "2": {
           "left": {
             "name": "Fast Phase",
-            "description": "Reduce Tactical wind-up by 20%"
+            "description": "Reduce Tactical wind-up by 20%%."
           },
           "right": {
             "name": "Tactical Cooldown",
@@ -278,12 +314,12 @@
       "name": "Caustic",
       "passive": "Nox Vision",
       "tactical": "Nox Gas Trap",
-      "ultimate": "Nox Gas Grenade",
+      "ultimate": "Nox Grenade",
       "upgrade": {
         "1": {
           "left": {
             "name": "Parabolic Force",
-            "description": "Increase Tactical throw range by 75%."
+            "description": "Increase Tactical throw range by 75%%."
           },
           "right": {
             "name": "Residual Toxins",
@@ -293,7 +329,7 @@
         "2": {
           "left": {
             "name": "Particle Diffuser",
-            "description": "Increase Ultimate area of effect by 50%."
+            "description": "Increase Ultimate area of effect by 50%%."
           },
           "right": {
             "name": "Breathe It In",
@@ -395,7 +431,7 @@
         "1": {
           "left": {
             "name": "Network Expansion",
-            "description": "Increase Neurolink and EMP range by 25%."
+            "description": "Increase Neurolink and EMP range by 25%%."
           },
           "right": {
             "name": "Off The Grid",
@@ -409,7 +445,7 @@
           },
           "right": {
             "name": "Hackathon",
-            "description": "Speed up drone recharge rate and gain a speed boost when it explodes [EMP or destroyed]."
+            "description": "Speed up drone recharge rate and gain a speed boost when it explodes (EMP or destroyed)."
           }
         }
       }
@@ -474,7 +510,7 @@
       "name": "Rampart",
       "passive": "Modded Loader",
       "tactical": "Amped Cover",
-      "ultimate": "Emplaced Minigun 'Sheila'",
+      "ultimate": "Mobile Minigun \"Sheila\"",
       "upgrade": {
         "1": {
           "left": {
@@ -489,7 +525,7 @@
         "2": {
           "left": {
             "name": "Ramped Up",
-            "description": "Improved Mobile Sheila handling and spin-up time by 20%."
+            "description": "Improved Mobile Sheila handling and spin-up time by 20%%."
           },
           "right": {
             "name": "Amped Reloads",
@@ -595,7 +631,7 @@
           },
           "right": {
             "name": "Ultimate Cooldown",
-            "description": "Reduce Ultimate cooldown by 20%."
+            "description": "Reduce Ultimate cooldown by 20%%."
           }
         },
         "2": {
@@ -605,7 +641,7 @@
           },
           "right": {
             "name": "Split Focus",
-            "description": "Gain a Focus of Attention charge; Reduce silence duration by 50%"
+            "description": "Gain a Focus of Attention charge; Reduce silence duration by 50%%."
           }
         }
       }
@@ -657,11 +693,11 @@
         "2": {
           "left": {
             "name": "Drillslinger",
-            "description": "Gain a Riot Drill charge Reduce active duration by 25%."
+            "description": "Gain a Riot Drill charge Reduce active duration by 25%%."
           },
           "right": {
             "name": "Big Drill",
-            "description": "Increase depth and width of Tactical by 50%."
+            "description": "Increase depth and width of Tactical by 50%%."
           }
         }
       }
@@ -763,7 +799,7 @@
           },
           "right": {
             "name": "Bigger Jam",
-            "description": "Each Ultimate jammer's damage radius increased by 10%."
+            "description": "Each Ultimate jammer's damage radius increased by 10%%."
           }
         },
         "2": {

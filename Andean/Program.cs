@@ -1,26 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Andean.ApexLiveAPI.Request;
-using Andean.ApexLiveAPI.Services;
-using Andean.WebsocketServer;
-using Andean.WebsocketServer.Controllers;
-using AndeanClass.Controllers;
-using Andean.AndeanClass.Services;
-using Andean.WebsocketServer.Services;
-using Andean.AndeanWebUI.Hubs;
-using Andean.Utilities;
-using Andean.Config;
+﻿using AndeanSystems;
+using AndeanWebUI.Hubs;
 using System.Diagnostics;
-using AndeanSystem;
+using AndeanWebUI.Services;
+using Andean.WebsocketServer;
+using AndeanClass.Controllers;
+using Microsoft.AspNetCore.SignalR;
+using Andean.AndeanWebUI.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ✅ カスタム設定ファイル `config/config.json` を読み込み
-builder.Configuration.AddJsonFile("config/config.json", optional: true, reloadOnChange: true);
+//builder.Configuration.AddJsonFile("config/config.json", optional: true, reloadOnChange: true);
 
 // ✅ DI (依存性注入) に `CustomSettings` を登録
 builder.Services.Configure<AppConfig>(builder.Configuration);
@@ -37,34 +28,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
-
-
-// 🚀 ConfigService をシングルトンで登録
-builder.Services.AddSingleton<ConfigService>();
-
 // 🚀 TimestampService をシングルトンで登録
-builder.Services.AddSingleton<AndeanSystem.AndeanSystem, TimestampService>();
-
-// 🚀 WebSocket サーバーをシングルトンとして登録
-builder.Services.AddSingleton<WebSocketServer>();
-
-// 🚀 StatisticsProcessor サーバーをシングルトンとして登録
-builder.Services.AddSingleton<StatisticsProcessor>();
-
-//🚀  ClientManagementService をシングルトンとして登録
-builder.Services.AddSingleton<ClientManagementService>();
-
-// 🚀 LobbyRequestService をシングルトンで登録
-builder.Services.AddSingleton<Request>();
-
-// 🚀 AndeanClassController をシングルトンで登録
-builder.Services.AddSingleton<AndeanClassController>();
-
-// ☆ UpdateManager をホストサービスとして登録
-builder.Services.AddHostedService<UpdateManager>();
-
-// 🚀 SystemShutdownService をホストサービスとして登録
-builder.Services.AddSingleton<SystemShutdownService>();
+builder.Services.AddSingleton<AndeanSystem, TimestampService>();
 
 // 🚀 CORS 設定: localhost:3000 からのリクエストを許可
 builder.Services.AddCors(options =>
@@ -113,8 +78,7 @@ app.MapHub<LiveViewHub>("/liveViewHub");
 // 🚀 WebSocket サーバーをバックグラウンドで起動
 try
 {
-    var webSocketServer = app.Services.GetRequiredService<WebSocketServer>();
-    Task.Run(() => webSocketServer.StartAsync());
+    Task.Run(() => WebSocketServer.StartAsync());
     logger.LogInformation("✅ WebSocket Server started successfully on ws://127.0.0.1:7777/ and ws://localhost:7777/");
 }
 catch (Exception ex)
@@ -134,6 +98,18 @@ Task.Run(async () =>
 });
 
 
+
 logger.LogInformation("🚀 Application started successfully.");
+
+// SignalR HubContext の注入
+var hubContext_ControlPanel = app.Services.GetRequiredService<IHubContext<ControlPanelHub>>();
+ControlPanelHubService.Init(hubContext_ControlPanel);
+var hubContext_LiveView = app.Services.GetRequiredService<IHubContext<LiveViewHub>>();
+LiveViewHubService.Init(hubContext_LiveView);
+
+// UpdateManagerのループを開始
+UpdateManager.StartLoop();
+new AndeanClassUpdateController();
+new HubUpdate();
 
 app.Run();

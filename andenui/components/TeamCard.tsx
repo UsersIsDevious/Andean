@@ -1,19 +1,12 @@
 "use client"
 
+import type React from "react"
+import { useState } from "react"
+
 import { Edit, Save, X } from "lucide-react"
-
-interface Player {
-  index: number
-  id: string
-  name: string
-}
-
-interface Team {
-  name: string
-  logoUrl: string
-  spawnPoint: number
-  players: Player[]
-}
+import PlayerSlot from "@/components/players/PlayerSlot"
+import { getTeamColor } from "@/lib/utils/team-utils"
+import type { Team } from "@/lib/types"
 
 interface TeamCardProps {
   teamId: string
@@ -24,6 +17,8 @@ interface TeamCardProps {
   saveTeamName: (teamId: string) => void
   cancelEditingTeam: () => void
   setEditedTeamName: (name: string) => void
+  onPlayerRightClick: (e: React.MouseEvent, playerId: string, teamId: string) => void
+  maxTeamPlayer?: number // 追加: チーム当たりの最大プレイヤー数
 }
 
 export default function TeamCard({
@@ -35,39 +30,12 @@ export default function TeamCard({
   saveTeamName,
   cancelEditingTeam,
   setEditedTeamName,
+  onPlayerRightClick,
+  maxTeamPlayer = 3, // デフォルト値は3
 }: TeamCardProps) {
-  // チームカラーの取得
-  const getTeamColor = (id: number): string => {
-    const colors: { [key: number]: string } = {
-      2: "rgb(6, 131, 149)",
-      3: "rgb(27, 71, 105)",
-      4: "rgb(31, 84, 205)",
-      5: "rgb(68, 42, 96)",
-      6: "rgb(110, 44, 111)",
-      7: "rgb(173, 45, 119)",
-      8: "rgb(176, 28, 81)",
-      9: "rgb(195, 0, 11)",
-      10: "rgb(197, 67, 32)",
-      11: "rgb(120, 30, 19)",
-      12: "rgb(159, 59, 13)",
-      13: "rgb(119, 75, 0)",
-      14: "rgb(204, 121, 19)",
-      15: "rgb(150, 125, 0)",
-      16: "rgb(133, 147, 10)",
-      17: "rgb(73, 88, 3)",
-      18: "rgb(112, 151, 67)",
-      19: "rgb(57, 137, 52)",
-      20: "rgb(47, 90, 26)",
-      21: "rgb(0, 116, 88)",
-    }
-    return colors[id] || "rgb(31, 41, 55)" // デフォルトはグレー
-  }
-
   const teamNumber = Number.parseInt(teamId)
   const teamColor = getTeamColor(teamNumber)
-
-  // TeamCardコンポーネントをよりコンパクトにします
-  // カードのパディングとマージンを調整
+  const [isHovered, setIsHovered] = useState(false)
 
   // カードスタイル
   const cardStyle = {
@@ -85,25 +53,23 @@ export default function TeamCard({
     color: "#e5e7eb",
   }
 
-  // プレースホルダーメンバーの生成（最低3人分）
-  const placeholderMembers = [0, 1, 2].map((idx) => {
-    const player = team.players[idx]
-    return (
-      <div key={`placeholder-${idx}`} className="flex items-center bg-black/30 p-1 rounded text-xs">
-        <div className="w-4 h-4 flex items-center justify-center bg-gray-800 rounded-full mr-1">
-          <span className="text-xs text-gray-400">{idx + 1}</span>
-        </div>
-        {player ? (
-          <span className="text-gray-300 truncate">{player.name}</span>
-        ) : (
-          <span className="text-gray-500 italic text-xs">Empty slot</span>
-        )}
-      </div>
-    )
-  })
+  // プレースホルダーメンバーの生成（常にmaxTeamPlayer人分表示）
+  const placeholderMembers = Array.from({ length: maxTeamPlayer }).map((_, idx) => (
+    <PlayerSlot
+      key={`placeholder-${idx}`}
+      index={idx}
+      player={team.players[idx] || null}
+      onRightClick={team.players[idx] ? (e) => onPlayerRightClick(e, team.players[idx].id, teamId) : undefined}
+    />
+  ))
 
   return (
-    <div style={cardStyle} className="rounded-md overflow-hidden">
+    <div
+      style={cardStyle}
+      className="rounded-md overflow-hidden"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="p-2 bg-gray-900/80 border-b border-gray-800 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <div className="w-5 h-5 flex items-center justify-center rounded-full" style={{ backgroundColor: teamColor }}>
@@ -117,6 +83,14 @@ export default function TeamCard({
               style={inputStyle}
               className="w-full h-6 px-2 py-0.5 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 text-xs"
               onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  saveTeamName(teamId)
+                } else if (e.key === "Escape") {
+                  cancelEditingTeam()
+                }
+              }}
+              autoFocus
             />
           ) : (
             <span className="font-medium text-white text-xs">{team.name}</span>
@@ -128,17 +102,23 @@ export default function TeamCard({
               <button
                 onClick={() => saveTeamName(teamId)}
                 className="p-0.5 rounded-full bg-green-900/30 hover:bg-green-900/50"
+                title="チーム名を保存"
               >
                 <Save className="h-3 w-3 text-green-400" />
               </button>
-              <button onClick={cancelEditingTeam} className="p-0.5 rounded-full bg-red-900/30 hover:bg-red-900/50">
+              <button
+                onClick={cancelEditingTeam}
+                className="p-0.5 rounded-full bg-red-900/30 hover:bg-red-900/50"
+                title="編集をキャンセル"
+              >
                 <X className="h-3 w-3 text-red-400" />
               </button>
             </>
           ) : (
             <button
               onClick={() => startEditingTeam(teamId, team.name)}
-              className="p-0.5 rounded-full bg-gray-800/50 hover:bg-gray-800"
+              className={`p-0.5 rounded-full ${isHovered ? "bg-gray-800" : "bg-gray-800/50"} hover:bg-gray-800`}
+              title="チーム名を編集"
             >
               <Edit className="h-3 w-3 text-gray-400" />
             </button>

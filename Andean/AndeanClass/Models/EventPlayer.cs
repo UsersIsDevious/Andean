@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Andean.AndeanClass.Models
+namespace AndeanClass
 {   
     public class EventPlayer
     {

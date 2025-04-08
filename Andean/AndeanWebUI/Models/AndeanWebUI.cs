@@ -1,4 +1,4 @@
-﻿namespace Andean.AndeanWebUI.Models
+﻿namespace AndeanWebUI.Models
 {
     public interface IAndeanWebUI
     {

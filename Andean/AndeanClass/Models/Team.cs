@@ -78,7 +78,11 @@ namespace AndeanClass
         /// <summary>
         /// チームの合計回復量
         /// </summary>
-        public double TotalHealing { get; set; }
+        public Dictionary<string, uint> TotalHealing { get; set; } = new Dictionary<string, uint>
+        {
+            { "Health", 0 },
+            { "Shield", 0 }
+        };
 
         /// <summary>
         /// チームの合計リバイブ数
@@ -110,7 +114,6 @@ namespace AndeanClass
             TotalKillAssists = 0;
             TotalDamageDealt = 0;
             TotalDamageRecived = 0;
-            TotalHealing = 0;
             TotalRevives = 0;
             TotalRespawns = 0;
         }
@@ -267,10 +270,12 @@ namespace AndeanClass
         /// <summary>
         /// チームの合計回復量を増加させるメソッド
         /// </summary>
-        /// <param name="amount">増加させる回復量</param>
-        public void AddTotalHealing(double amount)
+        /// <param name="healHealth">回復量（HP）</param>
+        /// <param name="rechargeShield">回復量（シールド）</param>
+        public void AddTotalTeamHealing(uint healHealth, uint rechargeShield)
         {
-            TotalHealing += amount;
+            TotalHealing["Health"] += healHealth;
+            TotalHealing["Shield"] += rechargeShield;
         }
 
         /// <summary>

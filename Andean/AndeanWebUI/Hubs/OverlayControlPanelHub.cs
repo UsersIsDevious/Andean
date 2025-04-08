@@ -1,20 +1,13 @@
-﻿using Andean.WebsocketServer.Controllers;
+﻿using AndeanWebUI.Models;
 using Microsoft.AspNetCore.SignalR;
-using Andean.AndeanWebUI.Models;
 
-namespace Andean.AndeanWebUI.Hubs
+namespace AndeanWebUI.Hubs
 {
     public class OverlayControlPanelHub : Hub, IAndeanWebUI
     {
-        private readonly StatisticsProcessor _statisticsProcessor;
 
         // 現在選択されているデータ（全クライアント共通）
         private static List<string> selectedDataKeys = new List<string>();
-
-        public OverlayControlPanelHub(StatisticsProcessor statisticsProcessor)
-        {
-            _statisticsProcessor = statisticsProcessor;
-        }
 
         public override async Task OnConnectedAsync()
         {

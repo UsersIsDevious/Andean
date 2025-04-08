@@ -1,18 +1,59 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Andean.AndeanWebUI.Models;
+﻿using Andean.AndeanWebUI.Services;
 
-namespace AndeanSystem
+namespace AndeanSystems
 {
-    public class SystemShutdownService
+    public static class SystemShutdownService
     {
+        private static IHostApplicationLifetime? _hostApplicationLifetime;
+        // シャットダウン処理が開始されたかどうかを示すフラグ
+        private static bool _shutdownInitiated = false;
 
-        private readonly IEnumerable<IAndeanWebUI> _andeanwebui;
-
-        public SystemShutdownService(IEnumerable<IAndeanWebUI> andeanwebui)
+        /// <summary>
+        /// IHostApplicationLifetime を初期化します（ASP.NET Core 環境などで利用）
+        /// </summary>
+        public static void Init(IHostApplicationLifetime hostApplicationLifetime)
         {
-            _andeanwebui = andeanwebui;
+            _hostApplicationLifetime = hostApplicationLifetime;
         }
 
+        static SystemShutdownService()
+        {
+            RegisterShutdownEvents();
+        }
+
+        /// <summary>
+        /// プロセス終了時や未処理例外発生時に ShutdownAsync を呼び出すイベントハンドラーを登録
+        /// </summary>
+        private static void RegisterShutdownEvents()
+        {
+            // プロセス終了時のイベントハンドラー
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
+            {
+                try
+                {
+                    Console.WriteLine("[SystemShutdownService] ProcessExit イベントを検知しました。");
+                    ShutdownAsync(new ShutdownOptions { LogShutdown = true }).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[SystemShutdownService] ProcessExit イベント中にエラーが発生しました: {ex.Message}");
+                }
+            };
+
+            // 未処理例外発生時のイベントハンドラー
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                try
+                {
+                    Console.WriteLine("[SystemShutdownService] UnhandledException イベントを検知しました。");
+                    ShutdownAsync(new ShutdownOptions { LogShutdown = true }).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[SystemShutdownService] UnhandledException イベント中にエラーが発生しました: {ex.Message}");
+                }
+            };
+        }
 
         /// <summary>
         /// シャットダウン時に任意のオプションを設定可能なオプションクラス
@@ -27,17 +68,20 @@ namespace AndeanSystem
             /// ログ出力を有効にするかどうか（デフォルト true）
             /// </summary>
             public bool LogShutdown { get; set; } = true;
-            // 他に必要なオプションを追加可能
         }
 
         /// <summary>
         /// システムを非同期に終了します。オプションに応じた処理が行われます。
         /// </summary>
-        /// <param name="options">シャットダウンオプション</param>
-        /// <param name="cancellationToken">キャンセル用のトークン</param>
-        /// <returns></returns>
-        public async Task ShutdownAsync(ShutdownOptions options = null, CancellationToken cancellationToken = default)
+        public static async Task ShutdownAsync(ShutdownOptions options = null, CancellationToken cancellationToken = default)
         {
+            // すでにシャットダウン処理が開始されている場合は処理をスキップ
+            if (_shutdownInitiated)
+            {
+                return;
+            }
+            _shutdownInitiated = true;
+
             options ??= new ShutdownOptions();
 
             if (options.LogShutdown)
@@ -51,22 +95,24 @@ namespace AndeanSystem
                 await Task.Delay(options.DelaySeconds * 1000, cancellationToken);
             }
 
-            // 終了前のクリーンアップ処理をここに実装（例: ログ保存、リソース解放など）
             if (options.LogShutdown)
             {
-                Console.WriteLine("[SystemShutdownService] クリーンアップ処理完了。システムを終了します。");
+                Console.WriteLine("[SystemShutdownService] シャットダウン通知を中継サービス経由で送信します。");
             }
-            // ここで各ハブに Shutdown 通知を送る
-            foreach (var andeanwebui in _andeanwebui)
-            {
-                await andeanwebui.NotifyShutdown();
-            }
+            // 中継サービス経由で各ハブにシャットダウン通知を送信
+            await ShutdownNotificationRelayService.NotifyShutdown();
 
-            
-            // ここでは例として、Console.WriteLine で終了メッセージを表示
             Console.WriteLine("System shutdown executed.");
-            // プログラムを終了する（0は正常終了を意味します）
-            Environment.Exit(0);
+
+            // ASP.NET Core などのホスト環境の場合はホストの停止を行う
+            if (_hostApplicationLifetime != null)
+            {
+                _hostApplicationLifetime.StopApplication();
+            }
+            else
+            {
+                Environment.Exit(0);
+            }
         }
     }
 }

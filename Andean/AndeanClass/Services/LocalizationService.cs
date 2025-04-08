@@ -1,17 +1,14 @@
-﻿using AndeanClass;
-using Andean.Utilities;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
-using Andean.Config;
-using System.Xml.XPath;
+﻿using AndeanSystems;
 
 namespace AndeanClass.Services
 {
     public static class LocalizationService
     {
         private static readonly object _lock = new object();
+
+        private static string directoryPath = "config/languages"; // localizeディレクトリのパス
+
+        private static readonly AppConfig _config = ConfigService.Config;
 
         /// <summary>
         /// 前処理済みのローカライズデータ
@@ -22,12 +19,16 @@ namespace AndeanClass.Services
         static LocalizationService()
         {
             // 設定から言語コードを取得（存在しなければ "en" をデフォルトとする）
-            string langCode = ConfigService.Config.Language ?? "en";
-            string filePath = $"config/languages/{langCode}.json";
+            string langCode = string.IsNullOrWhiteSpace(ConfigService.Config.Language) ? "en" : ConfigService.Config.Language;
+            string filePath = $"{directoryPath}/{langCode}.json";
 
             var processor = new LocalizationDataProcessor(filePath);
             // 非同期メソッドを同期的に待機（ブロッキング）
             LocalizedData = processor.ProcessAsync().GetAwaiter().GetResult();
+            //Console.WriteLine(JsonSerializer.Serialize(LocalizedData, new JsonSerializerOptions
+            //{
+            //    WriteIndented = true // ← 見やすい整形
+            //}));
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace AndeanClass.Services
         /// <exception cref="ArgumentException">未対応の type が指定された場合</exception>
         /// <exception cref="KeyNotFoundException">指定の value が見つからなかった場合</exception>
         /// <exception cref="Exception">その他のエラー発生時</exception>
-        public static string GetOriginalKey(string type, string value)
+        public static string? GetOriginalKey(string type, string value)
         {
             try
             {
@@ -103,7 +104,10 @@ namespace AndeanClass.Services
             catch (System.Exception ex)
             {
                 // エラーログ出力などを適宜実施
-                throw new System.Exception($"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}", ex);
+                // throw new System.Exception($"type '{type}' と value '{value}' のキー取得中にエラーが発生しました: {ex.Message}", ex);
+                // 非同期にファイルへ追記（ファイルは config.Log_Dir フォルダ配下に作成）
+                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "GetOriginalKey_Exception.txt", $"Type '{type}' と Value '{value}' のキー取得中にエラーが発生しました: {ex.Message}{Environment.NewLine}", FileWriteMode.Append)).Wait();
+                return null;
             }
         }
 
@@ -213,6 +217,27 @@ namespace AndeanClass.Services
                 // エラーログ出力などを適宜実施
                 throw new System.Exception($"レジェンド '{legendName}' のレベル '{level}' アップグレード '{upgradeName}' : '{upgradeDesc}' のサイド取得中にエラーが発生しました: {ex.Message}", ex);
             }
+        }
+
+        public static List<string> GetSupportedLanguageCodes()
+        {
+
+            if (!Directory.Exists(directoryPath))
+            {
+                // ディレクトリが存在しない場合は空リストを返却
+                return new List<string>();
+            }
+
+            var files = Directory.GetFiles(directoryPath, "*.json");
+
+            var languageCodes = files
+                .Select(path => Path.GetFileNameWithoutExtension(path))
+                .Where(code => !string.IsNullOrWhiteSpace(code))
+                .Distinct()
+                .OrderBy(code => code)
+                .ToList();
+
+            return languageCodes;
         }
     }
 }

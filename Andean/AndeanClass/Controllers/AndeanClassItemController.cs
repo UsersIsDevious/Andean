@@ -1,11 +1,13 @@
-﻿using Andean.AndeanClass.Services.Utilities;
-using AndeanClass.Services;
+﻿using AndeanClass.Services;
+using AndeanClass.Services.Utilities;
+using static AndeanClass.Services.PlayerService;
+
 
 namespace AndeanClass.Controllers
 {
-    public partial class AndeanClassController
+    public static partial class AndeanClassController
     {
-        public void ProcessArenasItemSelected(Rtech.Liveapi.ArenasItemSelected Msg)
+        public static void ProcessArenasItemSelected(Rtech.Liveapi.ArenasItemSelected Msg)
         {
             lock (_lock)
             {
@@ -15,7 +17,7 @@ namespace AndeanClass.Controllers
                 }
             }
         }
-        public void ProcessArenasItemDeselected(Rtech.Liveapi.ArenasItemDeselected Msg)
+        public static void ProcessArenasItemDeselected(Rtech.Liveapi.ArenasItemDeselected Msg)
         {
             lock (_lock)
             {
@@ -25,7 +27,7 @@ namespace AndeanClass.Controllers
                 }
             }
         }
-        public void ProcessInventoryPickUp(Rtech.Liveapi.InventoryPickUp Msg)
+        public static void ProcessInventoryPickUp(Rtech.Liveapi.InventoryPickUp Msg)
         {
             lock (_lock)
             {
@@ -34,16 +36,133 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
+
+                string _itemName = Msg.Item;
+                int quantity = Msg.Quantity;
+
+                Dictionary<string, object> eventData = ItemUtilities.InventoryOperation(_player, _itemName, quantity);
+                Event _event = new Event(Msg.Timestamp, Msg.Category, eventData);
+
+                _match.AddEventElement(_event);
+                _packetList[_updateTime].AddEvent(_event);
+            }
+        }
+        public static void ProcessInventoryDrop(Rtech.Liveapi.InventoryDrop Msg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
+
+                string _itemName = Msg.Item;
+                int quantity = -Msg.Quantity;
+
+                Dictionary<string, object> eventData = ItemUtilities.InventoryOperation(_player, _itemName, quantity);
+                eventData["extradataList"] = Msg.ExtraData;
+                Event _event = new Event(Msg.Timestamp, Msg.Category, eventData);
+
+                _match.AddEventElement(_event);
+                _packetList[_updateTime].AddEvent(_event);
+            }
+        }
+        public static void ProcessInventoryUse(Rtech.Liveapi.InventoryUse Msg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
+
+                string _itemName = Msg.Item;
+                int quantity = -Msg.Quantity;
+
+                // アイテムラベルとレベルを配列で取得
+                string[]? _itemData = ItemUtilities.ReturnSplitBracketParts(_itemName);
+                // アイテムラベルを取得
+                // アイテムラベルがnullの場合は、分割前のアイテム名をそのまま使用
+                string _itemLabel = (_itemData != null) ? _itemData[0] : _itemName;
+                // アイテムor武器のIDを取得
+                string? _itemId = ItemUtilities.ReturnItemId("Item", _itemLabel);
+
+                uint healHealth = 0;
+                uint rechargeShield = 0;
+
+                if (_itemId != null)
+                {
+                    uint healthShortage = _player.MaxHealth - _player.CurrentHealth;
+                    uint shieldShortage = _player.ShieldMaxHealth - _player.ShieldHealth;
+                    switch (_itemId)
+                    {
+                        case "health_pickup_combo_small":
+                            healHealth = (25 < shieldShortage)? 25 : shieldShortage;
+                            break;
+                        case "health_pickup_combo_large":
+                            rechargeShield = shieldShortage;
+                            break;
+                        case "health_pickup_health_small":
+                            healHealth = (25 < healthShortage) ? 25 : healthShortage;
+                            break;
+                        case "health_pickup_health_large":
+                            rechargeShield = healthShortage;
+                            break;
+                        case "health_pickup_combo_full":
+                            healHealth = healthShortage;
+                            rechargeShield = shieldShortage;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                _player.UpdateHealthAndShields(_player.CurrentHealth + healHealth, _player.MaxHealth, _player.ShieldHealth + rechargeShield, _player.ShieldMaxHealth);
+                _player.AddTotalPlayerHealing(healHealth, rechargeShield);
+                _match.GetTeam(_player.TeamId).AddTotalTeamHealing(healHealth, rechargeShield);
+
+                Dictionary<string, object> eventData = ItemUtilities.InventoryOperation(_player, _itemName, quantity);
+                Event _event = new Event(Msg.Timestamp, Msg.Category, eventData);
+
+                _match.AddEventElement(_event);
+                _packetList[_updateTime].AddEvent(_event);
+            }
+        }
+        public static void ProcessGrenadeThrown(Rtech.Liveapi.GrenadeThrown Msg)
+        {
+            lock (_lock)
+            {
+                if (_match == null)
+                {
+                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
+                }
+
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
+
+                string _itemName = Msg.LinkedEntity;
+
+                string[]? _itemData = ItemUtilities.ReturnSplitBracketParts(_itemName);
+                string _itemLabel = (_itemData != null) ? _itemData[1] : _itemName;
+                string _itemId = ItemUtilities.ReturnItemId("Item", _itemLabel) ?? _itemLabel;
+
+                if (_itemData == null || _itemData[0] != "Tactical")
+                    _player.Inventory.AddOrUpdateItem(_itemId, -1, ItemUtilities.ReturnLevel(_itemName));
                 
+                _player.AddGrenadeUseCount(_itemId);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
-                
+                _eventData["linkedentity"] = _itemId;
+
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
-        public void ProcessInventoryDrop(Rtech.Liveapi.InventoryDrop Msg)
+        public static void ProcessBlackMarketAction(Rtech.Liveapi.BlackMarketAction Msg)
         {
             lock (_lock)
             {
@@ -52,16 +171,33 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
 
+                string _itemName = Msg.Item;
+
+                // アイテムラベルとレベルを配列で取得
+                string[]? _itemData = ItemUtilities.ReturnSplitBracketParts(_itemName);
+                // アイテムラベルを取得
+                // アイテムラベルがnullの場合は、分割前のアイテム名をそのまま使用
+                string _itemLabel = (_itemData != null) ? _itemData[0] : _itemName;
+                // アイテムor武器のIDを取得
+                string[]? _item = ItemUtilities.ReturnItemorWeaponId(_itemLabel);
+
+                string itemId = (_item != null) ? _item[1] : _itemLabel;
+
+                _player.AddBlackMarketUseCount(itemId);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
 
+                _eventData["item"] = itemId;
+
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
-        public void ProcessInventoryUse(Rtech.Liveapi.InventoryUse Msg)
+
+        public static void ProcessAmmoUsed(Rtech.Liveapi.AmmoUsed Msg)
         {
             lock (_lock)
             {
@@ -69,70 +205,14 @@ namespace AndeanClass.Controllers
                 {
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
-
-                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
-
-
-                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
-
-                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
-                _match.AddEventElement(_event);
-            }
-        }
-        public void ProcessGrenadeThrown(Rtech.Liveapi.GrenadeThrown Msg)
-        {
-            lock (_lock)
-            {
-                if (_match == null)
-                {
-                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
-                }
-
-                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
-
-
-                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
-
-                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
-                _match.AddEventElement(_event);
-            }
-        }
-        public void ProcessBlackMarketAction(Rtech.Liveapi.BlackMarketAction Msg)
-        {
-            lock (_lock)
-            {
-                if (_match == null)
-                {
-                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
-                }
-
-                Player _player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
-
-
-                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
-
-                Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
-                _match.AddEventElement(_event);
-
-            }
-        }
-
-        public void ProcessAmmoUsed(Rtech.Liveapi.AmmoUsed Msg)
-        {
-            lock (_lock)
-            {
-                if (_match == null)
-                {
-                    throw new InvalidOperationException("CustomMatchが初期化されていません。");
-                }
-                Player player = PlayerService.CreateOrUpdatePlayer(_match, Msg.Player);
+                Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
 
                 string AmmoType = Msg.AmmoType;
                 uint AmountUsed = Msg.AmountUsed;
 
-                player.Inventory.AddOrUpdateItem(AmmoType, -(AmountUsed), ItemUtilities.ReturnLevel(AmmoType));
+                _player.Inventory.AddOrUpdateItem(AmmoType, -(AmountUsed), ItemUtilities.ReturnLevel(AmmoType));
 
-                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(player).Get();
+                Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
 
                 _eventData["ammotype"] = AmmoType;
                 _eventData["amountused"] = AmountUsed;
@@ -142,6 +222,7 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
+                _packetList[_updateTime].AddEvent(_event);
             }
         }
     }

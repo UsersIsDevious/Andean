@@ -1,6 +1,4 @@
-﻿using Andean.AndeanClass.Models;
-
-namespace AndeanClass
+﻿namespace AndeanClass
 {
     /// <summary>
     /// Eventに関するクラス
@@ -33,12 +31,6 @@ namespace AndeanClass
             Timestamp = timestamp;
             Category = category;
             Data = data;
-        }
-        public Event(ulong timestamp, string category, EventPlayer data)
-        {
-            Timestamp = timestamp;
-            Category = category;
-            Data = data.Get();
         }
     }
 }

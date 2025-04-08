@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using Google.Protobuf;
 using Rtech.Liveapi;
-using Andean.AndeanClass.Services;
 using Andean.WebsocketServer.Services;
-using Andean.Utilities;
+using AndeanSystems;
 using AndeanClass.Controllers;
+using AndeanWebUI.Services;
+using static AndeanClass.Controllers.AndeanClassController;
+using Newtonsoft.Json;
 
 namespace Andean.WebsocketServer.Controllers
 {
@@ -25,28 +25,20 @@ namespace Andean.WebsocketServer.Controllers
         }
     }
 
-    public class StatisticsProcessor
+    public static class StatisticsProcessor
     {
         // クライアントIDと IMessage の組み合わせを保持するスレッドセーフなキュー
-        private readonly BlockingCollection<MessageWrapper> _queue = new BlockingCollection<MessageWrapper>();
+        private static readonly BlockingCollection<MessageWrapper> _queue = new BlockingCollection<MessageWrapper>();
 
-        private readonly ClientManagementService _clientManagement;
-        private readonly AndeanClassController _andeanClassController;
+        private static readonly AppConfig _config = ConfigService.Config;
 
         // ログ出力用ファイル名（サーバー起動時のタイムスタンプで固定）
-        private readonly string _logFileName;
+        private static readonly string _logFileName;
 
-        public StatisticsProcessor(
-            AndeanClassController andeanClassController,
-            ClientManagementService clientManagement)
+        static StatisticsProcessor()
         {
-
-            _andeanClassController = andeanClassController;
-           
-            _clientManagement = clientManagement;
-
             // サーバー起動時のタイムスタンプでログファイル名を決定（例: 20250222_132800_log.txt）
-            _logFileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_log.txt";
+            _logFileName = DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_log.json";
 
             // 別スレッドでキュー処理を開始
             Task.Factory.StartNew(ProcessQueue, TaskCreationOptions.LongRunning);
@@ -55,32 +47,41 @@ namespace Andean.WebsocketServer.Controllers
         /// <summary>
         /// 受信した IMessage とその送信元クライアント ID をキューに追加します。
         /// </summary>
-        public void EnqueueMessage(string clientId, IMessage message)
+        public static void EnqueueMessage(string clientId, IMessage message)
         {
             _queue.Add(new MessageWrapper(clientId, message));
 
-            // ログ出力用の文字列を作成
-            string logContent = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Client: {clientId}, MessageType: {message.GetType().Name}, Content: {message}{Environment.NewLine}";
+            if (message is ObserverSwitched) return; // ObserverSwitched メッセージはログに出力しない
+
+            var data = new
+            {
+                Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                Client = clientId,
+                MessageType = message.GetType().Name,
+                Content = message
+            };
+
+            string logContent = JsonConvert.SerializeObject(data);
 
             // 非同期にファイルへ追記（ファイルは ./output フォルダ配下に作成）
-            Task.Run(() => FileOutputService.WriteToFileAsync("./output", _logFileName, logContent, FileWriteMode.Append));
+            Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, _logFileName, logContent, FileWriteMode.JsonAppend));
         }
 
         /// <summary>
         /// キュー内の IMessage を処理します（別スレッドで実行）。
         /// </summary>
-        private void ProcessQueue()
+        private static async void ProcessQueue()
         {
             foreach (var wrapper in _queue.GetConsumingEnumerable())
             {
-                ProcessMessage(wrapper.ClientId, wrapper.Message);
+                await ProcessMessage(wrapper.ClientId, wrapper.Message);
             }
         }
 
         /// <summary>
         /// 受信メッセージの型に応じた処理を行います。
         /// </summary>
-        private void ProcessMessage(string clientId, IMessage message)
+        private static async Task ProcessMessage(string clientId, IMessage message)
         {
 
             switch (message)
@@ -90,12 +91,13 @@ namespace Andean.WebsocketServer.Controllers
                         if (string.IsNullOrEmpty(initMsg.Platform))
                         {
                             // マッチ初期化の処理はマッチサービスへ委譲
-                            _andeanClassController.InitializeMatch(initMsg);
+                            AndeanClassController.InitializeMatch(initMsg);
                         }
                         else
                         {
                             // Init メッセージの場合、クライアントを認定済みに設定
-                            _clientManagement.SetAuthorizedClient(clientId);
+                            ClientManagementService.SetAuthorizedClient(clientId);
+                            await ControlPanelHubService.SetLiveAPIStatus("Connect", "GameLaunched");
                             Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
                         }                        
                         break;
@@ -137,7 +139,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg:
                     {
-                        _andeanClassController.ProcessCustomMatch_LobbyPlayers(customMatch_LobbyPlayersMsg);
+                        ProcessCustomMatch_LobbyPlayers(customMatch_LobbyPlayersMsg);
                         break;
                     }
                 case RequestStatus requestStatusMsg:
@@ -152,92 +154,92 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case MatchSetup matchSetupMsg:
                     {
-                        _andeanClassController.ProcessMatchSetup(matchSetupMsg);
+                        ProcessMatchSetup(matchSetupMsg);
                         break;
                     }
                 case GameStateChanged gameStateChangedMsg:
                     {
-                        _andeanClassController.ProcessGameStatus(gameStateChangedMsg);
+                        ProcessGameStatus(gameStateChangedMsg);
                         break;
                     }
                 case CharacterSelected characterSelectedMsg:
                     {
-                        _andeanClassController.ProcessCharacterSelected(characterSelectedMsg);
+                        ProcessCharacterSelected(characterSelectedMsg);
                         break;
                     }
                 case MatchStateEnd matchStateEndMsg:
                     {
-                        _andeanClassController.ProcessMatchEnd(matchStateEndMsg);
+                        ProcessMatchEnd(matchStateEndMsg);
                         break;
                     }
                 case RingStartClosing ringStartClosingMsg:
                     {
-                        _andeanClassController.ProcessRingStart(ringStartClosingMsg);
+                        ProcessRingStart(ringStartClosingMsg);
                         break;
                     }
                 case RingFinishedClosing ringFinishedClosingMsg:
                     {
-                        _andeanClassController.ProcessRingFinished(ringFinishedClosingMsg);
+                        ProcessRingFinished(ringFinishedClosingMsg);
                         break;
                     }
                 case PlayerConnected playerConnectedMsg:
                     {
-                        _andeanClassController.ProcessPlayerConnected(playerConnectedMsg);
+                        ProcessPlayerConnected(playerConnectedMsg);
                         break;
                     }
                 case PlayerDisconnected playerDisconnectedMsg:
                     {
-                        _andeanClassController.ProcessPlayerDisconnected(playerDisconnectedMsg);
+                        ProcessPlayerDisconnected(playerDisconnectedMsg);
                         break;
                     }
                 case PlayerStatChanged playerStatChangedMsg:
                     {
-                        _andeanClassController.ProcessPlayerStatChanged(playerStatChangedMsg);
+                        ProcessPlayerStatChanged(playerStatChangedMsg);
                         break;
                     }
                 case PlayerUltimateCharged playerUltimateChargedMsg:
                     {
-                        _andeanClassController.ProcessPlayerUltimateCharged(playerUltimateChargedMsg);
+                        ProcessPlayerUltimateCharged(playerUltimateChargedMsg);
                         break;
                     }
                 case PlayerUpgradeTierChanged playerUpgradeTierChangedMsg:
                     {
-                        _andeanClassController.ProcessPlayerUpgradeTierChanged(playerUpgradeTierChangedMsg);
+                        ProcessPlayerUpgradeTierChanged(playerUpgradeTierChangedMsg);
                         break;
                     }
                 case PlayerDamaged playerDamagedMsg:
                     {
-                        _andeanClassController.ProcessPlayerDamaged(playerDamagedMsg);
+                        ProcessPlayerDamaged(playerDamagedMsg);
                         break;
                     }
                 case PlayerKilled playerKilledMsg:
                     {
-                        _andeanClassController.ProcessPlayerKilled(playerKilledMsg);
+                        ProcessPlayerKilled(playerKilledMsg);
                         break;
                     }
                 case PlayerDowned playerDownedMsg:
                     {
-                        _andeanClassController.ProcessPlayerDowned(playerDownedMsg);
+                        ProcessPlayerDowned(playerDownedMsg);
                         break;
                     }
                 case PlayerAssist playerAssistMsg:
                     {
-                        _andeanClassController.ProcessPlayerAssist(playerAssistMsg);
+                        ProcessPlayerAssist(playerAssistMsg);
                         break;
                     }
                 case SquadEliminated squadEliminatedMsg:
                     {
-                        _andeanClassController.ProcessSquadEliminated(squadEliminatedMsg);
+                        ProcessSquadEliminated(squadEliminatedMsg);
                         break;
                     }
                 case GibraltarShieldAbsorbed gibraltarShieldAbsorbedMsg:
                     {
-                        _andeanClassController.ProcessGibraltarShieldAbsorbed(gibraltarShieldAbsorbedMsg);
+                        ProcessGibraltarShieldAbsorbed(gibraltarShieldAbsorbedMsg);
                         break;
                     }
                 case RevenantForgedShadowDamaged revenantForgedShadowDamagedMsg:
                     {
-                        _andeanClassController.ProcessRevenantForgedShadowDamaged(revenantForgedShadowDamagedMsg);
+                        ProcessRevenantForgedShadowDamaged(revenantForgedShadowDamagedMsg);
                         break;
                     }
                 case ChangeCamera changeCameraMsg:
@@ -256,92 +258,92 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case PlayerRespawnTeam playerRespawnTeamMsg:
                     {
-                        _andeanClassController.ProcessPlayerRespawnTeam(playerRespawnTeamMsg);
+                        ProcessPlayerRespawnTeam(playerRespawnTeamMsg);
                         break;
                     }
                 case PlayerRevive playerReviveMsg:
                     {
-                        _andeanClassController.ProcessPlayerRevive(playerReviveMsg);
+                        ProcessPlayerRevive(playerReviveMsg);
                         break;
                     }
                 case ArenasItemSelected arenasItemSelectedMsg:
                     {
-                        _andeanClassController.ProcessArenasItemSelected(arenasItemSelectedMsg);
+                        ProcessArenasItemSelected(arenasItemSelectedMsg);
                         break;
                     }
                 case ArenasItemDeselected arenasItemDeselectedMsg:
                     {
-                        _andeanClassController.ProcessArenasItemDeselected(arenasItemDeselectedMsg);
+                        ProcessArenasItemDeselected(arenasItemDeselectedMsg);
                         break;
                     }
                 case InventoryPickUp inventoryPickUpMsg:
                     {
-                        _andeanClassController.ProcessInventoryPickUp(inventoryPickUpMsg);
+                        ProcessInventoryPickUp(inventoryPickUpMsg);
                         break;
                     }
                 case InventoryDrop inventoryDropMsg:
                     {
-                        _andeanClassController.ProcessInventoryDrop(inventoryDropMsg);
+                        ProcessInventoryDrop(inventoryDropMsg);
                         break;
                     }
                 case InventoryUse inventoryUseMsg:
                     {
-                        _andeanClassController.ProcessInventoryUse(inventoryUseMsg);
+                        ProcessInventoryUse(inventoryUseMsg);
                         break;
                     }
                 case BannerCollected bannerCollectedMsg:
                     {
-                        _andeanClassController.ProcessBannerCollected(bannerCollectedMsg);
+                        ProcessBannerCollected(bannerCollectedMsg);
                         break;
                     }
                 case PlayerAbilityUsed playerAbilityUsedMsg:
                     {
-                        _andeanClassController.ProcessPlayerAbilityUsed(playerAbilityUsedMsg);
+                        ProcessPlayerAbilityUsed(playerAbilityUsedMsg);
                         break;
                     }
                 case LegendUpgradeSelected legendUpgradeSelectedMsg:
                     {
-                        _andeanClassController.ProcessLegendUpgradeSelected(legendUpgradeSelectedMsg);
+                        ProcessLegendUpgradeSelected(legendUpgradeSelectedMsg);
                         break;
                     }
                 case ZiplineUsed ziplineUsedMsg:
                     {
-                        _andeanClassController.ProcessZiplineUsed(ziplineUsedMsg);
+                        ProcessZiplineUsed(ziplineUsedMsg);
                         break;
                     }
                 case GrenadeThrown grenadeThrownMsg:
                     {
-                        _andeanClassController.ProcessGrenadeThrown(grenadeThrownMsg);
+                        ProcessGrenadeThrown(grenadeThrownMsg);
                         break;
                     }
                 case BlackMarketAction blackMarketActionMsg:
                     {
-                        _andeanClassController.ProcessBlackMarketAction(blackMarketActionMsg);
+                        ProcessBlackMarketAction(blackMarketActionMsg);
                         break;
                     }
                 case WraithPortal wraithPortalMsg:
                     {
-                        _andeanClassController.ProcessWraithPortal(wraithPortalMsg);
+                        ProcessWraithPortal(wraithPortalMsg);
                         break;
                     }
                 case WarpGateUsed warpGateUsedMsg:
                     {
-                        _andeanClassController.ProcessWarpGateUsed(warpGateUsedMsg);
+                        ProcessWarpGateUsed(warpGateUsedMsg);
                         break;
                     }
                 case AmmoUsed ammoUsedMsg:
                     {
-                        _andeanClassController.ProcessAmmoUsed(ammoUsedMsg);
+                        ProcessAmmoUsed(ammoUsedMsg);
                         break;
                     }
                 case WeaponSwitched weaponSwitchedMsg:
                     {
-                        _andeanClassController.ProcessWeaponSwitched(weaponSwitchedMsg);
+                        ProcessWeaponSwitched(weaponSwitchedMsg);
                         break;
                     }
                 case ObserverSwitched observerSwitchedMsg:
                     {
-                        _andeanClassController.ProcessObserverSwitched(observerSwitchedMsg);
+                        ProcessObserverSwitched(observerSwitchedMsg);
                         break;
                     }
                 case ObserverAnnotation observerAnnotationMsg:

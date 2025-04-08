@@ -1,13 +1,11 @@
-using Andean.ApexLiveAPI.Services;
-using Newtonsoft.Json.Linq;
 using Rtech.Liveapi;
 using System.Text.Json;
 
 namespace AndeanClass.Controllers
 {
-    public partial class AndeanClassController
+    public static partial class AndeanClassController
     {
-        public void ProcessCustomMatch_LobbyPlayers(CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg)
+        public static void ProcessCustomMatch_LobbyPlayers(CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg)
         {
             lock (_lock)
             {

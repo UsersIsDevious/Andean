@@ -1,8 +1,7 @@
-﻿using Andean.Config;
-using Andean.Utilities;
-using Newtonsoft.Json.Linq;
+using AndeanSystems;
 
-namespace Andean.ApexLiveAPI.Services
+
+namespace ApexLiveAPI.Services
 {
     public static class ApexPlaylistService
     {

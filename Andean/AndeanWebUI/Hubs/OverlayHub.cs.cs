@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
-using Andean.AndeanWebUI.Models;
+﻿using AndeanWebUI.Models;
+using Microsoft.AspNetCore.SignalR;
 
-namespace Andean.AndeanWebUI.Hubs
+namespace AndeanWebUI.Hubs
 {
     public class OverlayHub : Hub, IAndeanWebUI
     {
