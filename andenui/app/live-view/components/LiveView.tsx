@@ -7,7 +7,8 @@ import TeamStandings from "./TeamStandings"
 import KillFeed from "./KillFeed"
 import PlayerDetails from "./PlayerDetails"
 import RawDataViewer from "./RawDataViewer"
-// import { useLiveViewSignalR } from "@/lib/hooks/useLiveViewSignalRMock" // 開発用モック
+import MapView from "./MapView" // 新しく追加したMapViewコンポーネント
+//import { useLiveViewSignalR } from "@/lib/hooks/useLiveViewSignalRMock" // 開発用モック
 import { useLiveViewSignalR } from "@/lib/hooks/useLiveViewSignalR" // 本番用
 
 export default function LiveView() {
@@ -64,6 +65,9 @@ export default function LiveView() {
   return (
     <div className="space-y-6">
       <MatchOverview matchData={matchData} />
+
+      {/* マップビューを追加 */}
+      <MapView matchData={matchData} onPlayerSelect={(playerId) => setSelectedPlayer(playerId)} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
