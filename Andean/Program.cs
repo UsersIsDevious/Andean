@@ -104,8 +104,10 @@ Task.Run(async () =>
 logger.LogInformation("🚀 Application started successfully.");
 
 // SignalR HubContext の注入
-var hubContext = app.Services.GetRequiredService<IHubContext<ControlPanelHub>>();
-ControlPanelHubService.Init(hubContext);
+var hubContext_ControlPanel = app.Services.GetRequiredService<IHubContext<ControlPanelHub>>();
+ControlPanelHubService.Init(hubContext_ControlPanel);
+var hubContext_LiveView = app.Services.GetRequiredService<IHubContext<LiveViewHub>>();
+LiveViewHubService.Init(hubContext_LiveView);
 
 // UpdateManagerのループを開始
 UpdateManager.StartLoop();
