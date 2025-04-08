@@ -8,14 +8,12 @@ namespace AndeanClass.Controllers
 {
     public static partial class AndeanClassController
     {
-        public static LobbyInfo LobbyInfo { get; set; } = new LobbyInfo();
-
         public static void ProcessCustomMatch_LobbyPlayers(CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg)
         {
             lock (_lock)
             {
                 // 情報が更新されていない場合は何もしない
-                if (LobbyInfo.IsUpdateNeededLobbyPlayers(customMatch_LobbyPlayersMsg)) return;
+                if (LobbyData.IsUpdateNeededLobbyPlayers(customMatch_LobbyPlayersMsg)) return;
 
                 // ロビーIDの設定
                 _lobby.LobbyId = customMatch_LobbyPlayersMsg.PlayerToken;
@@ -109,7 +107,7 @@ namespace AndeanClass.Controllers
                 }
 
                 // LobbyInfoがnullの場合は何もしない
-                if (LobbyInfo == null) return;
+                if (LobbyData == null) return;
 
                 // ロビー情報の初期化
                 Dictionary<string, LobbyPlayersInfo> data = new Dictionary<string, LobbyPlayersInfo>();
@@ -138,7 +136,7 @@ namespace AndeanClass.Controllers
                     data[teamId.ToString()] = new LobbyPlayersInfo(teamName, logoUrl, spawnPoint, players);
                 }
 
-                LobbyInfo.SetLobbyInfo(data);
+                LobbyData.SetLobbyInfo(data);
             }
         }
 
@@ -146,7 +144,7 @@ namespace AndeanClass.Controllers
         {
             lock (_lock)
             {
-                if (LobbyInfo.IsUpdateNeededMatchSettings(customMatch_SetSettingsMsg)) return;
+                if (LobbyData.IsUpdateNeededMatchSettings(customMatch_SetSettingsMsg)) return;
 
                 LobbySettings lobbySettings = new LobbySettings(customMatch_SetSettingsMsg);
 

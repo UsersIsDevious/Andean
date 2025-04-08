@@ -7,9 +7,6 @@ namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
-
-        private long lastPollTime = 0;
-
         public override void Update()
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -26,11 +23,12 @@ namespace AndeanClass.Controllers
             }
             else
             {
-                if (ControlPanelHubService.IsLaunched && now - lastPollTime > 3000)
+                if (ControlPanelHubService.IsLaunched && now - LobbyData.LastPollTime > 3000)
                 {
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
                     Request.GetLobbyPlayersAsync(cts.Token);
                     Request.GetMatchSettingsAsync(cts.Token);
+                    Console.WriteLine($"[AndeanClassUpdateController] Polling for lobby players and match settings at {now} ms.");
                 }
             }
         }

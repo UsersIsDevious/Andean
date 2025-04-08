@@ -49,7 +49,10 @@ namespace AndeanClass.Controllers
         /// CSVデータ
         /// </summary>
         public static CsvData? _csvData;
-
+        /// <summary>
+        /// ロビー情報
+        /// </summary>
+        public static LobbyInfo LobbyData { get; set; } = new LobbyInfo();
 
         public static void InitializeMatch(Init initMsg)
         {
