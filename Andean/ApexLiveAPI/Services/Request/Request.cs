@@ -10,7 +10,7 @@ namespace ApexLiveAPI.Request
         /// <summary>
         /// 共通のリクエスト送信処理
         /// </summary>
-        private static void SendRequestAsync(Rtech.Liveapi.Request req, CancellationToken cancellationToken, bool ack = true)
+        private static Task SendRequestAsync(Rtech.Liveapi.Request req, CancellationToken cancellationToken, bool ack = true)
         {
             req.WithAck = ack;
             byte[] requestBytes = req.ToByteArray();
@@ -24,6 +24,7 @@ namespace ApexLiveAPI.Request
             {
                 Console.Error.WriteLine("Error sending request via authorized WebSocket client", ex);
             }
+            return Task.CompletedTask;
         }
 
 
@@ -32,7 +33,7 @@ namespace ApexLiveAPI.Request
         /// type: "poi" または "name"
         /// value: POI の場合は文字列でキー、name の場合はプレイヤー名
         /// </summary>
-        public static void ChangeCameraAsync(string type, string value, CancellationToken cancellationToken, bool ack = true)
+        public static Task ChangeCameraAsync(string type, string value, CancellationToken cancellationToken, bool ack = true)
         {
             var req = new Rtech.Liveapi.Request();
             var changeCamera = new ChangeCamera();
@@ -57,13 +58,14 @@ namespace ApexLiveAPI.Request
 
             req.ChangeCam = changeCamera;
             SendRequestAsync(req, cancellationToken, ack);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// ポーズ切り替えリクエストを送信
         /// preTimer: ポーズ前のタイマー値
         /// </summary>
-        public static void PauseToggleAsync(double preTimer, CancellationToken cancellationToken)
+        public static Task PauseToggleAsync(double preTimer, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var pauseToggle = new PauseToggle
@@ -72,46 +74,50 @@ namespace ApexLiveAPI.Request
             };
             req.PauseToggle = pauseToggle;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// カスタムマッチロビー作成リクエストを送信
         /// </summary>
-        public static void CreateLobbyAsync(CancellationToken cancellationToken)
+        public static Task CreateLobbyAsync(CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var createLobby = new CustomMatch_CreateLobby();
             req.CustomMatchCreateLobby = createLobby;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// カスタムマッチロビー参加リクエストを送信
         /// token: ロビー参加トークン
         /// </summary>
-        public static void JoinLobbyAsync(string token, CancellationToken cancellationToken)
+        public static Task JoinLobbyAsync(string token, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var joinLobby = new CustomMatch_JoinLobby();
             joinLobby.RoleToken = token;
             req.CustomMatchJoinLobby = joinLobby;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// カスタムマッチロビー退出リクエストを送信
         /// </summary>
-        public static void LeaveLobbyAsync(CancellationToken cancellationToken)
+        public static Task LeaveLobbyAsync(CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var leaveLobby = new CustomMatch_LeaveLobby();
             req.CustomMatchLeaveLobby = leaveLobby;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
         /// <summary>
         /// 試合の準備完了状態を設定するリクエスト
         /// </summary>
-        public static void SetReadyAsync(bool ready, CancellationToken cancellationToken)
+        public static Task SetReadyAsync(bool ready, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var setReady = new CustomMatch_SetReady
@@ -120,12 +126,13 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetReady = setReady;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// マッチメイキングの有効/無効を設定するリクエスト
         /// </summary>
-        public static void SetMatchmakingAsync(bool matchmaking, CancellationToken cancellationToken)
+        public static Task SetMatchmakingAsync(bool matchmaking, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var setMatchmaking = new CustomMatch_SetMatchmaking
@@ -134,12 +141,13 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetMatchmaking = setMatchmaking;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// チームを設定するリクエスト
         /// </summary>
-        public static void SetTeamAsync(int teamId, string targetHardwareName, string targetNucleushash, CancellationToken cancellationToken)
+        public static Task SetTeamAsync(int teamId, string targetHardwareName, string targetNucleushash, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var setTeam = new CustomMatch_SetTeam
@@ -150,12 +158,13 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetTeam = setTeam;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// プレイヤーをキックするリクエスト
         /// </summary>
-        public static void KickPlayerAsync(string targetHardwareName, string targetNucleushash, CancellationToken cancellationToken)
+        public static Task KickPlayerAsync(string targetHardwareName, string targetNucleushash, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var kickPlayer = new CustomMatch_KickPlayer
@@ -165,12 +174,13 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchKickPlayer = kickPlayer;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// 試合設定を適用するリクエスト
         /// </summary>
-        public static void SetSettingsAsync(string playlistName, bool adminChat, bool teamRename, bool selfAssign, bool aimAssist, bool anonMode, CancellationToken cancellationToken)
+        public static Task SetSettingsAsync(string playlistName, bool adminChat, bool teamRename, bool selfAssign, bool aimAssist, bool anonMode, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var setSettings = new CustomMatch_SetSettings
@@ -184,12 +194,13 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetSettings = setSettings;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// チャットメッセージを送信するリクエスト
         /// </summary>
-        public static void SendChatAsync(string message, CancellationToken cancellationToken)
+        public static Task SendChatAsync(string message, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var sendChat = new CustomMatch_SendChat
@@ -198,23 +209,25 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSendChat = sendChat;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// ロビープレイヤー情報を取得するリクエスト
         /// </summary>
-        public static void GetLobbyPlayersAsync(CancellationToken cancellationToken)
+        public static Task GetLobbyPlayersAsync(CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var getLobbyPlayers = new CustomMatch_GetLobbyPlayers();
             req.CustomMatchGetLobbyPlayers = getLobbyPlayers;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// チーム名を設定するリクエスト
         /// </summary>
-        public static void SetTeamNameAsync(int teamId, string teamName, CancellationToken cancellationToken)
+        public static Task SetTeamNameAsync(int teamId, string teamName, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var setTeamName = new CustomMatch_SetTeamName
@@ -224,23 +237,25 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetTeamName = setTeamName;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// 試合設定を取得するリクエスト
         /// </summary>
-        public static void GetMatchSettingsAsync(CancellationToken cancellationToken)
+        public static Task GetMatchSettingsAsync(CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var getSettings = new CustomMatch_GetSettings();
             req.CustomMatchGetSettings = getSettings;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// スポーンポイントを設定するリクエスト
         /// </summary>
-        public static void SetSpawnPointAsync(int teamId, int spawnPoint, CancellationToken cancellationToken)
+        public static Task SetSpawnPointAsync(int teamId, int spawnPoint, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var setSpawnPoint = new CustomMatch_SetSpawnPoint
@@ -250,12 +265,13 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetSpawnPoint = setSpawnPoint;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// エンドリング除外を設定するリクエスト
         /// </summary>
-        public static void SetEndRingExclusionAsync(int exclusion, CancellationToken cancellationToken)
+        public static Task SetEndRingExclusionAsync(int exclusion, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
             var endRingExclusion = new CustomMatch_SetEndRingExclusion
@@ -264,6 +280,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetEndRingExclusion = endRingExclusion;
             SendRequestAsync(req, cancellationToken);
+            return Task.CompletedTask;
         }
     }
 }
