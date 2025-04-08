@@ -14,11 +14,6 @@ namespace AndeanClass
         public string LobbyId { get; set; } = string.Empty;
 
         /// <summary>
-        /// 最後に情報を取得した時間（Unix時間, ミリ秒）
-        /// </summary>
-        public long LastPollTime { get; set; } = 0;
-
-        /// <summary>
         /// 最後にロビープレイヤー情報を取得した時間（Unix時間, ミリ秒）
         /// </summary>
         public long LobbyPlayersLastPollTime { get; set; } = 0;
@@ -68,7 +63,6 @@ namespace AndeanClass
         )
         {
             LobbyId = lobbyId;
-            LastPollTime = lastPollTime;
             LobbyPlayersLastPollTime = lobbyPlayersLastPollTime;
             MatchSettingsLastPollTime = matchSettingsLastPollTime;
             MatchSettingsResponse = matchSettingsResponse;
@@ -87,7 +81,6 @@ namespace AndeanClass
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             LobbyPlayersLastPollTime = now;
-            LastPollTime = now;
 
             if (LobbyPlayersResponse == null || LobbyPlayersResponse != newLobbyInfo)
             {
@@ -108,7 +101,6 @@ namespace AndeanClass
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             MatchSettingsLastPollTime = now;
-            LastPollTime = now;
 
             if (MatchSettingsResponse == null || MatchSettingsResponse != newMatchSettings)
             {

@@ -193,6 +193,8 @@ namespace AndeanClass.Controllers
                         }
                     }
                 }
+
+                LobbyData.SetMatchSettings(lobbySettings);
             }
         }
     }

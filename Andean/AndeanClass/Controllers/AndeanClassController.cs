@@ -53,6 +53,10 @@ namespace AndeanClass.Controllers
         /// ロビー情報
         /// </summary>
         public static LobbyInfo LobbyData { get; set; } = new LobbyInfo();
+        /// <summary>
+        /// ロビー情報を取得した時間
+        /// </summary>
+        public static long LastPollTime = 0;
 
         public static void InitializeMatch(Init initMsg)
         {
