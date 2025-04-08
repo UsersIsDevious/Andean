@@ -2,6 +2,7 @@
 using Andean.Config;
 using AndeanClass.Services;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 
 namespace AndeanClass.Controllers
 {
@@ -49,7 +50,7 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// ロビー関連メッセージを保持する変数
         /// </summary>
-        private Dictionary<string, object> _waitMessages = new Dictionary<string, object>();
+        private Dictionary<string, JObject> _waitMessages = new Dictionary<string, JObject>();
 
 
 
