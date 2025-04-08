@@ -7,6 +7,8 @@ using AndeanClass.Controllers;
 using AndeanWebUI.Services;
 using static AndeanClass.Controllers.AndeanClassController;
 using Newtonsoft.Json;
+using ApexLiveAPI.Message;
+using Newtonsoft.Json.Linq;
 
 namespace Andean.WebsocketServer.Controllers
 {
@@ -51,7 +53,7 @@ namespace Andean.WebsocketServer.Controllers
         {
             _queue.Add(new MessageWrapper(clientId, message));
 
-            if (message is ObserverSwitched) return; // ObserverSwitched メッセージはログに出力しない
+            if (message is ObserverSwitched or Response or CustomMatch_LobbyPlayers or CustomMatch_SetSettings) return; // ObserverSwitched メッセージはログに出力しない
 
             var data = new
             {
@@ -99,7 +101,7 @@ namespace Andean.WebsocketServer.Controllers
                             ClientManagementService.SetAuthorizedClient(clientId);
                             await ControlPanelHubService.SetLiveAPIStatus("Connect", "GameLaunched");
                             Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
-                        }                        
+                        }
                         break;
                     }
                 case Rtech.Liveapi.Vector3 vector3Msg:
@@ -149,7 +151,11 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case Response responseMsg:
                     {
-                        // 今のところ何もイベント発生しない
+                        if (responseMsg.Result.ToString() == "type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings")
+                        {
+                            var customMatch_SetSettingsMsg = responseMsg.Result.Unpack<CustomMatch_SetSettings>();
+                            ProcessCustomMatch_SetSettings(customMatch_SetSettingsMsg);
+                        }
                         break;
                     }
                 case MatchSetup matchSetupMsg:
@@ -254,6 +260,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_SetSettings customMatch_SetSettingsMsg:
                     {
+                        // 現状何も処理しない
                         break;
                     }
                 case PlayerRespawnTeam playerRespawnTeamMsg:

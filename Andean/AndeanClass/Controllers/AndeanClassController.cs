@@ -50,10 +50,13 @@ namespace AndeanClass.Controllers
         /// </summary>
         public static CsvData? _csvData;
         /// <summary>
-        /// ロビー関連メッセージを保持する変数
+        /// ロビー情報
         /// </summary>
-        public static Dictionary<string, JObject> _waitMessages = new Dictionary<string, JObject>();
-
+        public static LobbyInfo LobbyData { get; set; } = new LobbyInfo();
+        /// <summary>
+        /// ロビー情報を取得した時間
+        /// </summary>
+        public static long LastPollTime = 0;
 
         public static void InitializeMatch(Init initMsg)
         {

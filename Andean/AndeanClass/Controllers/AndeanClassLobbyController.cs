@@ -12,6 +12,9 @@ namespace AndeanClass.Controllers
         {
             lock (_lock)
             {
+                // 情報が更新されていない場合は何もしない
+                if (LobbyData.IsUpdateNeededLobbyPlayers(customMatch_LobbyPlayersMsg)) return;
+
                 // ロビーIDの設定
                 _lobby.LobbyId = customMatch_LobbyPlayersMsg.PlayerToken;
 
@@ -36,14 +39,15 @@ namespace AndeanClass.Controllers
                     team.SetSpawnPoint(msg_team.SpawnPoint);
 
                     if (csvData != null
-                        && csvData.ContainsKey(teamId)
-                        && csvData[teamId] != null
-                        && !string.IsNullOrEmpty(csvData[teamId].TeamName)
-                        && csvData[teamId].TeamName != teamName
-                        && (copyCSVData != null && !copyCSVData.ContainsKey(teamId)))
+                        && csvData.TryGetValue(teamId, out CsvDataElement? value)
+                        && value != null
+                        && !string.IsNullOrEmpty(value.TeamName)
+                        && value.TeamName != teamName
+                        && copyCSVData != null
+                        && !copyCSVData.ContainsKey(teamId))
                     {
                         var deserialized = JsonSerializer.Deserialize<CsvDataElement>(
-                            JsonSerializer.Serialize(csvData[teamId])
+                            JsonSerializer.Serialize(value)
                         );
                         if (deserialized != null)
                         {
@@ -102,8 +106,13 @@ namespace AndeanClass.Controllers
                     }
                 }
 
+                // LobbyInfoがnullの場合は何もしない
+                if (LobbyData == null) return;
+
+                // ロビー情報の初期化
+                Dictionary<string, LobbyPlayersInfo> data = new Dictionary<string, LobbyPlayersInfo>();
+
                 // ロビー情報データの作成
-                JObject data = new JObject();
                 foreach (var teamEntry in _lobby.Teams)
                 {
                     var teamId = teamEntry.Key;
@@ -113,7 +122,7 @@ namespace AndeanClass.Controllers
                     var teamName = team.TeamName;
                     var logoUrl = team.TeamImg;
                     var spawnPoint = team.SpawnPoint;
-                    var players = new List<object>();
+                    var players = new List<LobbyPlayer>();
 
                     for (int i = 0; i < team.Players.Count; i++)
                     {
@@ -121,24 +130,13 @@ namespace AndeanClass.Controllers
                         if (player == null)
                             continue;
 
-                        players.Add(new
-                        {
-                            index = i,
-                            id = player.NucleusHash,
-                            name = player.Name
-                        });
+                        players.Add(new LobbyPlayer(i, player.NucleusHash, player.Name));
                     }
 
-                    data[teamId.ToString()] = new JObject
-                    {
-                        ["name"] = teamName,
-                        ["logoUrl"] = logoUrl,
-                        ["spawnPoint"] = spawnPoint,
-                        ["players"] = new JArray(players)
-                    };
+                    data[teamId.ToString()] = new LobbyPlayersInfo(teamName, logoUrl, spawnPoint, players);
                 }
 
-                _waitMessages["CustomMatch_LobbyPlayers"] = data;
+                LobbyData.SetLobbyInfo(data);
             }
         }
 
@@ -146,6 +144,10 @@ namespace AndeanClass.Controllers
         {
             lock (_lock)
             {
+                if (LobbyData.IsUpdateNeededMatchSettings(customMatch_SetSettingsMsg)) return;
+
+                LobbySettings lobbySettings = new LobbySettings(customMatch_SetSettingsMsg);
+
                 // プレイリスト名を取得
                 var playlistName = customMatch_SetSettingsMsg.PlaylistName;
                 if (string.IsNullOrEmpty(playlistName))
@@ -160,11 +162,6 @@ namespace AndeanClass.Controllers
                     Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} not found in PlaylistsData");
                     return;
                 }
-
-                JObject data = new JObject
-                {
-                    ["playlistName"] = playlistName,
-                };
                 
                 foreach (var category in playlist_r5.Categories)
                 {
@@ -172,27 +169,32 @@ namespace AndeanClass.Controllers
                     {
                         if (entry.Key == playlistName)
                         {
-                            // 各設定情報を取得
-                            data["maxPlayers"] = entry.Value.MaxPlayers;
-                            data["maxTeams"] = entry.Value.MaxTeams;
-                            data["mapName"] = entry.Value.MapName;
-                            data["map"] = entry.Value.Map;
+                            lobbySettings.SetSettings(
+                                uint.TryParse(entry.Value.MaxPlayers, out var maxPlayers) ? maxPlayers : 60,
+                                uint.TryParse(entry.Value.MaxTeams, out var maxTeams) ? maxTeams : 20,
+                                category.Key ?? "",
+                                entry.Value.Map ?? ""
+                            );
 
                             // ロビー情報を更新
                             _lobby.SetPlaylistInfo(
                                 playlistName,
-                                uint.TryParse(entry.Value.MaxPlayers, out var maxPlayers) ? maxPlayers : 60,
-                                uint.TryParse(entry.Value.MaxTeams, out var maxTeams) ? maxTeams : 20,
-                                category.Key,
+                                maxPlayers,
+                                maxTeams,
+                                category.Key ?? "",
                                 entry.Value.Map ?? "",
-                                entry.Value.MapName ?? ""
+                                entry.Value.MapName ?? "",
+                                customMatch_SetSettingsMsg.AdminChat,
+                                customMatch_SetSettingsMsg.TeamRename,
+                                customMatch_SetSettingsMsg.SelfAssign,
+                                customMatch_SetSettingsMsg.AimAssist,
+                                customMatch_SetSettingsMsg.AnonMode
                             );
                         }
                     }
                 }
 
-                // 待ち受けメッセージに設定情報を追加
-                _waitMessages["CustomMatch_SetSettings"] = data;
+                LobbyData.SetMatchSettings(lobbySettings);
             }
         }
     }

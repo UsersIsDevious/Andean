@@ -123,7 +123,11 @@ namespace AndeanClass.Controllers
                 }
                 _player.UpdateHealthAndShields(_player.CurrentHealth + healHealth, _player.MaxHealth, _player.ShieldHealth + rechargeShield, _player.ShieldMaxHealth);
                 _player.AddTotalPlayerHealing(healHealth, rechargeShield);
-                _match.GetTeam(_player.TeamId).AddTotalTeamHealing(healHealth, rechargeShield);
+                var team = _match.GetTeam(_player.TeamId);
+                if (team != null)
+                {
+                    team.AddTotalTeamHealing(healHealth, rechargeShield);
+                }
 
                 Dictionary<string, object> eventData = ItemUtilities.InventoryOperation(_player, _itemName, quantity);
                 Event _event = new Event(Msg.Timestamp, Msg.Category, eventData);

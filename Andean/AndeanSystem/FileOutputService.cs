@@ -178,7 +178,7 @@ namespace AndeanSystems
             new ConcurrentDictionary<string, WriteBatch>();
 
         // バッチのチャンクサイズおよびタイムアウト（必要に応じて調整）
-        private const int DefaultChunkSize = 10;
+        private const int DefaultChunkSize = 100;
         private static readonly TimeSpan DefaultMaxDelay = TimeSpan.FromSeconds(5);
 
         /// <summary>
