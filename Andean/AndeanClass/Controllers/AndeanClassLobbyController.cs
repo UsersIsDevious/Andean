@@ -134,7 +134,7 @@ namespace AndeanClass.Controllers
                         ["name"] = teamName,
                         ["logoUrl"] = logoUrl,
                         ["spawnPoint"] = spawnPoint,
-                        ["players"] = new JArray(players)
+                        ["players"] = JArray.FromObject(players)
                     };
                 }
 
