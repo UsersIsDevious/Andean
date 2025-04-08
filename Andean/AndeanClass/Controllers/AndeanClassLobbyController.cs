@@ -23,8 +23,8 @@ namespace AndeanClass.Controllers
                 _lobby.Players = new Dictionary<string, Player>();
 
                 // CSVデータの取得
-                var csvData = _csvData.Original.Teams;
-                var copyCSVData = _csvData.Copy.Teams;
+                Dictionary<string, CsvDataElement>? csvData = _csvData?.Original.Teams;
+                Dictionary<string, CsvDataElement>? copyCSVData = _csvData?.Copy.Teams;
 
                 // チームリストの処理
                 for (int i = 0; i < customMatch_LobbyPlayersMsg.Teams.Count; i++)
@@ -40,7 +40,7 @@ namespace AndeanClass.Controllers
                         && csvData[teamId] != null
                         && !string.IsNullOrEmpty(csvData[teamId].TeamName)
                         && csvData[teamId].TeamName != teamName
-                        && !copyCSVData.ContainsKey(teamId))
+                        && (copyCSVData != null && !copyCSVData.ContainsKey(teamId)))
                     {
                         var deserialized = JsonSerializer.Deserialize<CsvDataElement>(
                             JsonSerializer.Serialize(csvData[teamId])
@@ -83,7 +83,7 @@ namespace AndeanClass.Controllers
                         {
                             foreach (var playerName in csvEntry.Players)
                             {
-                                if (playerNames.ContainsKey(playerName) && playerNames[playerName].TeamId != uint.Parse(teamId) && !copyCSVData.ContainsKey(teamId))
+                                if (playerNames.ContainsKey(playerName) && playerNames[playerName].TeamId != uint.Parse(teamId) && copyCSVData != null && !copyCSVData.ContainsKey(teamId))
                                 {
                                     var deserialized = JsonSerializer.Deserialize<CsvDataElement>(
                                         JsonSerializer.Serialize(csvEntry)
@@ -103,7 +103,7 @@ namespace AndeanClass.Controllers
                 }
 
                 // ロビー情報データの作成
-                var data = new Dictionary<string, object>();
+                JObject data = new JObject();
                 foreach (var teamEntry in _lobby.Teams)
                 {
                     var teamId = teamEntry.Key;
@@ -129,12 +129,12 @@ namespace AndeanClass.Controllers
                         });
                     }
 
-                    data[teamId.ToString()] = new
+                    data[teamId.ToString()] = new JObject
                     {
-                        name = teamName,
-                        logoUrl = logoUrl,
-                        spawnPoint = spawnPoint,
-                        players = players
+                        ["name"] = teamName,
+                        ["logoUrl"] = logoUrl,
+                        ["spawnPoint"] = spawnPoint,
+                        ["players"] = new JArray(players)
                     };
                 }
 
