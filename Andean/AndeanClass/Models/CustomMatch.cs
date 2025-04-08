@@ -90,6 +90,21 @@ namespace AndeanClass
         public Datacenter Datacenter { get; set; }
 
         /// <summary>
+        /// 管理者チャット設定
+        /// </summary>
+        public bool AdminChat { get; set; }
+
+        /// <summary>
+        /// チーム名変更の許可
+        /// </summary>
+        public bool TeamRename { get; set; }
+
+        /// <summary>
+        /// チーム変更の許可
+        /// </summary>
+        public bool SelfAssign { get; set; }
+
+        /// <summary>
         /// エイムアシスト設定
         /// </summary>
         public bool Aimassist { get; set; }
@@ -97,7 +112,7 @@ namespace AndeanClass
         /// <summary>
         /// 匿名モード設定
         /// </summary>
-        public bool AnonymousMode { get; set; }
+        public bool AnonMode { get; set; }
 
         /// <summary>
         /// サーバーID
@@ -157,7 +172,7 @@ namespace AndeanClass
             PlaylistDesc = "";
             Datacenter = new Datacenter();
             Aimassist = true;
-            AnonymousMode = false;
+            AnonMode = false;
             ServerId = "";
             StartingLoadout = new Inventory();
             EventLists = new List<Event>();
@@ -223,7 +238,6 @@ namespace AndeanClass
             else
             {
                 Players[player.NucleusHash] = player;
-                Console.WriteLine($"{player.Name} has joined the match.");
 
                 // チームにプレイヤーを追加
                 if (!Teams.ContainsKey(player.TeamId))
@@ -305,7 +319,7 @@ namespace AndeanClass
         /// <summary>
         /// Playlistの情報を更新する
         /// </summary>
-        public void SetPlaylistInfo(string playlistName, uint maxPlayers, uint maxTeams, string mapType, string mapId, string mapName)
+        public void SetPlaylistInfo(string playlistName, uint maxPlayers, uint maxTeams, string mapType, string mapId, string mapName, bool adminChat, bool teamRename, bool selfAssign, bool aimAssist, bool anonMode)
         {
             PlaylistName = playlistName;
             MaxPlayers = maxPlayers;
@@ -313,6 +327,11 @@ namespace AndeanClass
             MapType = mapType;
             MapId = mapId;
             MapName = mapName;
+            AdminChat = adminChat;
+            TeamRename = teamRename;
+            SelfAssign = selfAssign;
+            Aimassist = aimAssist;
+            AnonMode = anonMode;
         }
 
         /// <summary>
@@ -388,7 +407,7 @@ namespace AndeanClass
             PlaylistName = playlistName;
             PlaylistDesc = playlistDesc;
             Aimassist = aimassist;
-            AnonymousMode = anonymousMode;
+            AnonMode = anonymousMode;
             ServerId = serverId;
 
             switch (mapId)
@@ -505,7 +524,7 @@ namespace AndeanClass
                 playlistDesc = PlaylistDesc,
                 datacenter = Datacenter.GetStatus(),
                 aimassist = Aimassist,
-                anonymousMode = AnonymousMode,
+                anonymousMode = AnonMode,
                 serverId = ServerId,
                 startingLoadout = StartingLoadout,
                 maxPlayers = MaxPlayers,

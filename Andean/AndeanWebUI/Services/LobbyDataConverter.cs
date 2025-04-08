@@ -35,9 +35,9 @@ namespace AndeanWebUI.Services
         }
 
         // CustomMatch からロビー設定に変換する例
-        public static LobbySettings ConvertLobbySettings(CustomMatch customMatch)
+        public static Models.LobbySettings ConvertLobbySettings(CustomMatch customMatch)
         {
-            var settings = new LobbySettings
+            var settings = new Models.LobbySettings
             {
                 //PlaylistName = customMatch.PlaylistName,
                 //AdminChat = customMatch.AdminChat,

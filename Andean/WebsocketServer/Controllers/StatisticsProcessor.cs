@@ -254,6 +254,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_SetSettings customMatch_SetSettingsMsg:
                     {
+                        ProcessCustomMatch_SetSettings(customMatch_SetSettingsMsg);
                         break;
                     }
                 case PlayerRespawnTeam playerRespawnTeamMsg:
