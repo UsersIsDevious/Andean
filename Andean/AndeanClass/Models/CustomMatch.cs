@@ -42,12 +42,12 @@ namespace AndeanClass
         /// <summary>
         /// 最大プレイヤー数
         /// </summary>
-        public uint MaxPlayers { get; set; }
+        public int MaxPlayers { get; set; }
 
         /// <summary>
         /// 最大チーム数
         /// </summary>
-        public uint MaxTeams { get; set; }
+        public int MaxTeams { get; set; }
 
         /// <summary>
         /// 現在の状態（gameStateChanged 等）
@@ -55,9 +55,19 @@ namespace AndeanClass
         public string State { get; set; }
 
         /// <summary>
+        /// マップタイプ
+        /// </summary>
+        public string MapType { get; set; }
+
+        /// <summary>
         /// マップ名
         /// </summary>
         public string MapName { get; set; }
+
+        /// <summary>
+        /// マップID
+        /// </summary>
+        public string MapId { get; set; }
 
         /// <summary>
         /// ロビーID
@@ -305,6 +315,19 @@ namespace AndeanClass
         }
 
         /// <summary>
+        /// Playlistの情報を更新する
+        /// </summary>
+        public void SetPlaylistInfo(string playlistName, int maxPlayers, int maxTeams, string mapType, string mapId, string mapName)
+        {
+            PlaylistName = playlistName;
+            MaxPlayers = maxPlayers;
+            MaxTeams = maxTeams;
+            MapType = mapType;
+            MapId = mapId;
+            MapName = mapName;
+        }
+
+        /// <summary>
         /// プレイリスト名に応じて最大プレイヤー数とチーム数を設定する
         /// </summary>
         /// <param name="name">プレイリスト名</param>
@@ -365,22 +388,22 @@ namespace AndeanClass
         /// <summary>
         /// マッチセットアップ情報を設定する
         /// </summary>
-        /// <param name="mapName">マップ名</param>
+        /// <param name="map">マップ名</param>
         /// <param name="playlistName">プレイリスト名</param>
         /// <param name="playlistDesc">プレイリストの説明</param>
         /// <param name="aimassist">エイムアシスト設定</param>
         /// <param name="anonymousMode">匿名モード設定</param>
         /// <param name="serverId">サーバーID</param>
-        public void SetMatchSetup(string mapName, string playlistName, string playlistDesc, bool aimassist, bool anonymousMode, string serverId)
+        public void SetMatchSetup(string mapId, string playlistName, string playlistDesc, bool aimassist, bool anonymousMode, string serverId)
         {
-            MapName = mapName;
+            MapId = mapId;
             PlaylistName = playlistName;
             PlaylistDesc = playlistDesc;
             Aimassist = aimassist;
             AnonymousMode = anonymousMode;
             ServerId = serverId;
 
-            switch (mapName)
+            switch (mapId)
             {
                 case "mp_rr_canyonlands_hu":
                     MapOffset = new double[] { -3419, -2926, 20 };
@@ -487,7 +510,9 @@ namespace AndeanClass
                 startTimeStamp = StartTimeStamp,
                 endTimeStamp = EndTimeStamp,
                 gameState = State,
+                mapType = MapType,
                 mapName = MapName,
+                mapId = MapId,
                 playlistName = PlaylistName,
                 playlistDesc = PlaylistDesc,
                 datacenter = Datacenter.GetStatus(),

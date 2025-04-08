@@ -57,9 +57,6 @@ builder.Services.AddSingleton<ClientManagementService>();
 // 🚀 LobbyRequestService をシングルトンで登録
 builder.Services.AddSingleton<Request>();
 
-// 🚀 ApexPlaylistService をシングルトンで登録
-builder.Services.AddSingleton<ApexPlaylistService>();
-
 // 🚀 AndeanClassController をシングルトンで登録
 builder.Services.AddSingleton<AndeanClassController>();
 

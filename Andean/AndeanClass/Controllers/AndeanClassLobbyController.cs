@@ -1,9 +1,7 @@
-using Andean.AndeanClass.Services.Utilities;
-using AndeanClass.Services;
+using Andean.ApexLiveAPI.Services;
+using Newtonsoft.Json.Linq;
 using Rtech.Liveapi;
 using System.Text.Json;
-using Andean.Utilities;
-using Newtonsoft.Json.Linq;
 
 namespace AndeanClass.Controllers
 {
@@ -104,11 +102,13 @@ namespace AndeanClass.Controllers
                 }
 
                 // ロビー情報データの作成
-                var data = new Dictionary<string, object>();
+                JObject data = new JObject{};
                 foreach (var teamEntry in _lobby.Teams)
                 {
                     var teamId = teamEntry.Key;
                     var team = _lobby.GetTeam(teamId);
+                    if (team == null)
+                        continue;
                     var teamName = team.TeamName;
                     var logoUrl = team.TeamImg;
                     var spawnPoint = team.SpawnPoint;
@@ -128,12 +128,12 @@ namespace AndeanClass.Controllers
                         });
                     }
 
-                    data[teamId.ToString()] = new
+                    data[teamId.ToString()] = new JObject
                     {
-                        name = teamName,
-                        logoUrl = logoUrl,
-                        spawnPoint = spawnPoint,
-                        players = players
+                        ["name"] = teamName,
+                        ["logoUrl"] = logoUrl,
+                        ["spawnPoint"] = spawnPoint,
+                        ["players"] = new JArray(players)
                     };
                 }
 
@@ -153,104 +153,45 @@ namespace AndeanClass.Controllers
                     return;
                 }
 
-                JToken playlists = VdfParser.Playlists_r5["playlists"]["Playlists"];
-                if (playlists[playlistName] == null)
+                PlaylistResult? playlist_r5 = ApexPlaylistService.PlaylistsData;
+                if (playlist_r5 == null)
                 {
-                    Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} does not exist");
+                    Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} not found in PlaylistsData");
                     return;
                 }
 
-                var playlist = playlists[playlistName];
-
-                // inherit の取得
-                if (playlist == null || playlist["inherit"] == null)
+                JObject data = new JObject
                 {
-                    Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} does not have inherit");
-                    return;
-                }
+                    ["playlistName"] = playlistName,
+                };
                 
-                string inherit = playlist["inherit"].ToString();
-
-                // 現在のプレイリストに max_teams が存在しない場合、継承元を辿る
-                if (playlist["vars"]["max_teams"] == null)
+                foreach (var category in playlist_r5.Categories)
                 {
-                    // playlists にはキーが存在する前提で、継承チェーンを辿る
-                    while (playlists[inherit] != null &&
-                           playlists[inherit]["vars"] != null &&
-                           playlists[inherit]["vars"]["max_teams"] != null)
+                    foreach (var entry in category.Value.Entries)
                     {
-                        inherit = playlists[inherit]["inherit"].ToString();
-                        if (playlists["inherit"] == null)
+                        if (entry.Key == playlistName)
                         {
-                            Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} does not have max_teams");
-                            break;
+                            // 各設定情報を取得
+                            data["maxPlayers"] = entry.Value.MaxPlayers;
+                            data["maxTeams"] = entry.Value.MaxTeams;
+                            data["mapName"] = entry.Value.MapName;
+                            data["map"] = entry.Value.Map;
+
+                            // ロビー情報を更新
+                            _lobby.SetPlaylistInfo(
+                                playlistName,
+                                int.TryParse(entry.Value.MaxPlayers, out var maxPlayers) ? maxPlayers : 60,
+                                int.TryParse(entry.Value.MaxTeams, out var maxTeams) ? maxTeams : 20,
+                                category.Key,
+                                entry.Value.Map ?? "",
+                                entry.Value.MapName ?? ""
+                            );
                         }
                     }
                 }
 
-                // 継承先のプレイリスト（基本プレイリスト）を取得
-                var basePlaylist = playlists[inherit];
-                var maxTeams = basePlaylist["vars"]["max_teams"];
-                var maxPlayers = basePlaylist["vars"]["max_players"];
-
-                // basePlaylist.include 内から "map" を含むキーを探す
-                string mapName = "";
-                foreach (var key in basePlaylist.include.Keys)
-                {
-                    if (key.Contains("map"))
-                    {
-                        mapName = key;
-                    }
-                }
-
-                // プレイリスト内の Includes から map オブジェクトを取得
-                object mapObj = null;
-                if (playlists_r5.playlists.Includes.ContainsKey(mapName))
-                {
-                    mapObj = playlists_r5.playlists.Includes[mapName];
-                }
-
-                string map = null;
-                if (mapObj != null)
-                {
-                    // mapObj.gamemodes.survival.maps が Dictionary<string, object> であると仮定
-                    var maps = mapObj.gamemodes.survival.maps as Dictionary<string, object>;
-                    if (maps != null && maps.Count > 0)
-                    {
-                        map = maps.Keys.First();
-                    }
-                }
-
-                // gamemodeVars から、値が playlistName と一致するキーを取得
-                string gamemodeKey = gamemodeVars.FirstOrDefault(kvp => kvp.Value == playlistName).Key;
-
-                // 正規表現で gamemodeKey 内の数字部分を抽出
-                var matchResult = Regex.Match(gamemodeKey, @"\D*(\d+)");
-                string gamemodeNum = matchResult.Success ? matchResult.Groups[1].Value : "";
-
-                // キーを組み立てて gamemode を取得
-                string keyName = $"custom_match_playlist_category_{gamemodeNum}_name";
-                string gamemode = gamemodeVars.ContainsKey(keyName) ? gamemodeVars[keyName] : "";
-                if (gamemode.Contains("#"))
-                {
-                    gamemode = gamemode.Replace("#", "");
-                }
-
-                // customMatch_SetSettingsMsg を data として利用し、各設定情報を追加
-                // ※ customMatch_SetSettingsMsg は Dictionary<string, object> または dynamic であると仮定
-                var data = customMatch_SetSettingsMsg;
-                data["maxPlayers"] = maxPlayers;
-                data["maxTeams"] = maxTeams;
-                data["gamemode"] = gamemode;
-                data["map"] = map;
-
                 // 待ち受けメッセージに設定情報を追加
-                waitMessages["CustomMatch_SetSettings"] = data;
-
-                // ロビー情報を更新
-                lobby.maxPlayers = maxPlayers;
-                lobby.maxTeams = maxTeams;
-                lobby.mapName = map;
+                _waitMessages["CustomMatch_SetSettings"] = data;
             }
         }
     }

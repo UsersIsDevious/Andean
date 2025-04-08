@@ -13,12 +13,12 @@ using Andean.AndeanWebUI.Services;
 using Andean.ApexLiveAPI.Message;
 using AndeanClass;
 using AndeanSystem;
+using Newtonsoft.Json.Linq;
 
 namespace Andean.AndeanWebUI.Hubs
 {
     public class ControlPanelHub : Hub ,IAndeanWebUI
     {
-        private readonly ApexPlaylistService _apexPlaylistService;
         private readonly StatisticsProcessor _statisticsProcessor;
         private readonly Request _lobbyRequestService;
         private readonly AppConfig _config = ConfigService.Config;
@@ -35,7 +35,6 @@ namespace Andean.AndeanWebUI.Hubs
         private static string lastApexResponse = "";
 
         public ControlPanelHub(
-            ApexPlaylistService apexPlaylistService,
             StatisticsProcessor statisticsProcessor,
             Request lobbyRequestService,
             IOptionsMonitor<AppConfig> configOptions,
@@ -43,7 +42,6 @@ namespace Andean.AndeanWebUI.Hubs
             SystemShutdownService shutdownService
             )
         {
-            _apexPlaylistService = apexPlaylistService;
             _statisticsProcessor = statisticsProcessor;
             _lobbyRequestService = lobbyRequestService;
             _shutdownService = shutdownService;
@@ -131,7 +129,7 @@ namespace Andean.AndeanWebUI.Hubs
             {
                 var config = _config;
 
-                Dictionary<string, object> playlists_r5 = await _apexPlaylistService.GetPlaylistMetadataAsync();
+                JObject playlists_r5 = await ApexPlaylistService.GetPlaylistMetadataAsync();
 
                 string command = "";
                 string option = $"{config.ApexLegends.Api_Option} {config.ApexLegends.Option} +cl_liveapi_ws_servers \"ws://127.0.0.1:{config.ApexLegends.Api_Port}\"";
