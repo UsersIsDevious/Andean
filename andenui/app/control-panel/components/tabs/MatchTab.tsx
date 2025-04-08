@@ -25,7 +25,9 @@ export default function MatchTab() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [countdown, setCountdown] = useState(0)
 
-  // カウントダウンタイマーの効果を修正
+  // Improve the countdown timer logic to ensure it properly resets isMatchmaking
+  // Modify the useEffect for countdown to ensure it properly handles state
+
   useEffect(() => {
     if (countdown <= 0) return
 
@@ -33,22 +35,11 @@ export default function MatchTab() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer)
-          // カウントダウンが0になったら、setTimeout を使って非同期に処理を行う
-          // これによりレンダリングサイクルの外で状態更新が行われる
-          setTimeout(() => {
-            if (configData && configData.uiStatus && configData.uiStatus.isMatchmaking) {
-              // 直接configDataを更新するのではなく、updateConfigを使用して
-              // クライアント側の状態だけを更新する
-              updateConfig(
-                "uiStatus",
-                {
-                  ...configData.uiStatus,
-                  isMatchmaking: false,
-                },
-                "overwrite",
-              )
-            }
-          }, 0)
+          // When countdown reaches zero, set isMatchmaking to false
+          // This will happen locally without sending a request to the server
+          if (configData?.uiStatus?.isMatchmaking) {
+            setMatchmaking(false)
+          }
           return 0
         }
         return prev - 1
@@ -56,20 +47,19 @@ export default function MatchTab() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [countdown, configData, updateConfig])
+  }, [countdown, configData, setMatchmaking])
 
-  // isMatchmaking の変更を監視して、カウントダウンを自動的に開始する
-  // この部分は変更なし
+  // Also ensure the isMatchmaking effect properly handles state changes
   useEffect(() => {
     const isMatchmaking = configData?.uiStatus?.isMatchmaking || false
 
-    // isMatchmaking が true になり、かつカウントダウンが開始されていない場合
+    // Start countdown when isMatchmaking becomes true
     if (isMatchmaking && countdown === 0) {
       console.log("マッチメイキングが開始されました。カウントダウンを開始します。")
       setCountdown(5)
     }
 
-    // isMatchmaking が false になった場合、カウントダウンをリセット
+    // Reset countdown if isMatchmaking becomes false externally
     if (!isMatchmaking && countdown > 0) {
       console.log("マッチメイキングがキャンセルされました。カウントダウンをリセットします。")
       setCountdown(0)

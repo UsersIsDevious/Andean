@@ -460,10 +460,10 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
           }
 
           // 更新されたUIStatusをconfigDataに反映
-          const updatedConfigData = {
-            ...configData,
-            uiStatus: updatedUIStatus,
-          }
+          // const updatedConfigData = {
+          //   ...configData,
+          //   uiStatus: updatedUIStatus,
+          // }
 
           // 状態を更新
           signalRUpdateConfig("uiStatus", updatedUIStatus, "overwrite")

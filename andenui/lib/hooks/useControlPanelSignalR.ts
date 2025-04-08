@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import * as signalR from "@microsoft/signalr"
-import type { ConfigData, CSVTeamData, AppConfig } from "@/lib/types"
+import type { ConfigData, CSVTeamData, AppConfig, UIStatus } from "@/lib/types"
 
 const CONTROL_PANEL_HUB_URL = "https://localhost:7109/controlPanelHub"
 
@@ -168,6 +168,19 @@ export const useControlPanelSignalR = () => {
           setTimeout(() => {
             setConfigData((prev) => {
               if (!prev) return prev
+
+              // If we're updating uiStatus, merge with existing uiStatus instead of replacing it
+              if (sectionKey === "uiStatus") {
+                return {
+                  ...prev,
+                  uiStatus: {
+                    ...prev.uiStatus,
+                    ...(newData as Partial<UIStatus>),
+                  } as UIStatus, // Add this type assertion
+                }
+              }
+
+              // For other sections, replace the entire section
               return {
                 ...prev,
                 [sectionKey]: newData,
@@ -451,7 +464,7 @@ export const useControlPanelSignalR = () => {
                 uiStatus: {
                   ...prev.uiStatus,
                   isMatchmaking: false,
-                },
+                } as UIStatus, // Add this type assertion
               }
             })
           }, 0)

@@ -21,12 +21,20 @@ const getMapImageUrl = (mapName: string): string => {
 // プレイヤーの座標を処理する関数（Y座標を反転）
 const getPlayerPosition = (player: Player): [number, number] => {
   if (!player.position) return [0, 0]
-  return [player.position.x-2048, player.position.y-2048]
+  return [player.position.x, -player.position.y]
+}
+
+// Define a type for our view state to ensure consistency
+interface MapViewState {
+  target: [number, number, number]
+  zoom: number
+  minZoom: number
+  maxZoom: number
 }
 
 export default function MapView({ matchData, onPlayerSelect }: MapViewProps) {
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [viewState, setViewState] = useState({
+  // Properly type the viewState with explicit tuple for target
+  const [viewState, setViewState] = useState<MapViewState>({
     target: [0, 0, 0],
     zoom: 0,
     minZoom: -5,
@@ -39,6 +47,8 @@ export default function MapView({ matchData, onPlayerSelect }: MapViewProps) {
     return getMapImageUrl(matchData.mapName)
   }, [matchData])
 
+  const [imageLoaded, setImageLoaded] = useState(false)
+
   // 画像の読み込みを確認
   useEffect(() => {
     if (!mapImageUrl) return
@@ -48,8 +58,8 @@ export default function MapView({ matchData, onPlayerSelect }: MapViewProps) {
     img.onload = () => {
       setImageLoaded(true)
     }
-    img.onerror = (e) => {
-      console.error("Failed to load map image:", e)
+    img.onerror = () => {
+      console.error("Failed to load map image")
     }
     img.src = mapImageUrl
   }, [mapImageUrl])
@@ -79,9 +89,9 @@ export default function MapView({ matchData, onPlayerSelect }: MapViewProps) {
     const ring = matchData.ring
     return [
       {
-        center: [ring.currentCenter.x, -ring.currentCenter.y], // リングのY座標も反転
+        center: [ring.currentCenter.x, -ring.currentCenter.y] as [number, number], // リングのY座標も反転、明示的にタプルとして型付け
         radius: ring.currentRadius,
-        color: [255, 255, 255, 100], // 白色、半透明
+        color: [255, 255, 255, 100] as [number, number, number, number], // 白色、半透明
       },
     ]
   }, [matchData])
@@ -96,28 +106,30 @@ export default function MapView({ matchData, onPlayerSelect }: MapViewProps) {
         new BitmapLayer({
           id: "background-image",
           image: mapImageUrl,
-          bounds: [-2048, -2048, 2048, 2048], // 座標系を調整
+          bounds: [-2048, 2048, 2048, 2048], // 座標系を調整
           opacity: 1,
         }),
       )
     }
 
     // リングレイヤー
-    layerArray.push(
-      new ScatterplotLayer({
-        id: "ring",
-        data: ringData,
-        pickable: false,
-        stroked: true,
-        filled: true,
-        opacity: 0.3,
-        getPosition: (d) => d.center,
-        getRadius: (d) => d.radius,
-        getFillColor: (d) => d.color,
-        getLineColor: [255, 255, 255, 200],
-        lineWidthMinPixels: 2,
-      }),
-    )
+    if (ringData.length > 0) {
+      layerArray.push(
+        new ScatterplotLayer({
+          id: "ring",
+          data: ringData,
+          pickable: false,
+          stroked: true,
+          filled: true,
+          opacity: 0.3,
+          getPosition: (d) => d.center,
+          getRadius: (d) => d.radius,
+          getFillColor: (d) => d.color,
+          getLineColor: [255, 255, 255, 200] as [number, number, number, number],
+          lineWidthMinPixels: 2,
+        }),
+      )
+    }
 
     // プレイヤーレイヤー
     layerArray.push(
@@ -134,25 +146,8 @@ export default function MapView({ matchData, onPlayerSelect }: MapViewProps) {
         lineWidthMinPixels: 1, // 線の幅も細く
         getPosition: (d) => d.position,
         getRadius: (d) => d.radius,
-        getFillColor: (d) => {
-          // 文字列の色コードをRGBA配列に変換
-          try {
-            const colorStr = d.color.toString()
-            const rgbMatch = colorStr.match(/rgb$(\d+),\s*(\d+),\s*(\d+)$/)
-            if (rgbMatch) {
-              return [
-                Number.parseInt(rgbMatch[1], 10),
-                Number.parseInt(rgbMatch[2], 10),
-                Number.parseInt(rgbMatch[3], 10),
-                200,
-              ]
-            }
-            return [255, 0, 0, 200] // デフォルト色
-          } catch (e) {
-            return [255, 0, 0, 200] // エラー時のデフォルト色
-          }
-        },
-        getLineColor: (d) => [255, 255, 255, 200],
+        getFillColor: () => [255, 0, 0, 200] as [number, number, number, number],
+        getLineColor: () => [255, 255, 255, 200] as [number, number, number, number],
         onClick: (info) => {
           if (info.object && onPlayerSelect) {
             onPlayerSelect(info.object.id)
@@ -170,6 +165,25 @@ export default function MapView({ matchData, onPlayerSelect }: MapViewProps) {
         <p className="text-gray-400">マップデータを読み込み中...</p>
       </div>
     )
+  }
+
+  // Helper function to ensure target is a valid 3D tuple
+  const ensureValidTarget = (
+    target: [number, number, number] | [number, number] | number[] | undefined,
+  ): [number, number, number] => {
+    if (!target || !Array.isArray(target)) {
+      return [0, 0, 0]
+    }
+
+    if (target.length === 3) {
+      return [target[0], target[1], target[2]]
+    }
+
+    if (target.length === 2) {
+      return [target[0], target[1], 0]
+    }
+
+    return [0, 0, 0]
   }
 
   return (
@@ -193,7 +207,15 @@ export default function MapView({ matchData, onPlayerSelect }: MapViewProps) {
           }
           controller={true}
           viewState={viewState}
-          onViewStateChange={(evt) => setViewState(evt.viewState)}
+          onViewStateChange={(evt) => {
+            // Create a new view state with the correct types
+            const newViewState: MapViewState = {
+              ...viewState,
+              ...evt.viewState,
+              target: ensureValidTarget(evt.viewState.target),
+            }
+            setViewState(newViewState)
+          }}
           layers={layers}
           getTooltip={({ object }) => object && `${object.name} (${object.legend})`}
         />
