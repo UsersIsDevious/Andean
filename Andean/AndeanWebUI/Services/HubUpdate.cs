@@ -10,7 +10,7 @@ namespace Andean.AndeanWebUI.Services
         {
             if (AndeanClassController._match.State == "Playing")
             {
-                await LiveViewHubUpdateHelper.SendMatchDataUpdate();
+                await LiveViewHubService.SendMatchDataUpdate();
             }
         }
     }

@@ -215,8 +215,11 @@ export interface KillFeedEntry {
 }
 
 // 生データから表示用データへの変換関数
-export function convertRawMatchData(rawData: RawCustomMatch[]): CustomMatch {
-  if (!rawData || rawData.length === 0) {
+export function convertRawMatchData(rawData: RawCustomMatch[] | RawCustomMatch): CustomMatch {
+  // 配列でない場合は配列に変換
+  const dataArray = Array.isArray(rawData) ? rawData : [rawData]
+
+  if (!dataArray || dataArray.length === 0) {
     return {
       matchId: "unknown",
       gameState: "NotStarted",
@@ -237,11 +240,11 @@ export function convertRawMatchData(rawData: RawCustomMatch[]): CustomMatch {
         currentTimestamp: 0,
       },
       killFeed: [],
-      rawData: rawData[0],
+      rawData: dataArray[0],
     }
   }
 
-  const data = rawData[0]
+  const data = dataArray[0]
 
   // チームデータの変換
   const teams: Team[] = Object.entries(data.teams).map(([teamId, teamData]) => {
@@ -323,6 +326,10 @@ export function convertRawMatchData(rawData: RawCustomMatch[]): CustomMatch {
     currentTimestamp: 0,
   }
 
+  // 現在の時刻から経過時間を計算
+  const currentTime = Math.floor(Date.now() / 1000)
+  const elapsedTime = data.startTimeStamp ? Math.max(0, currentTime - data.startTimeStamp) : 0
+
   return {
     matchId: data.serverId || "unknown",
     matchName: data.matchName,
@@ -332,7 +339,7 @@ export function convertRawMatchData(rawData: RawCustomMatch[]): CustomMatch {
     playlistDesc: data.playlistDesc,
     remainingTeams,
     remainingPlayers,
-    elapsedTime: 0, // サンプルデータには経過時間がないので0を設定
+    elapsedTime: elapsedTime, // 経過時間を計算
     startTimeStamp: data.startTimeStamp,
     endTimeStamp: data.endTimeStamp,
     teams,
@@ -349,4 +356,3 @@ export function convertRawMatchData(rawData: RawCustomMatch[]): CustomMatch {
     rawData: data, // 生データを保存
   }
 }
-

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AndeanWebUI.Services
 {
     // SignalRへの送信処理をstaticなヘルパークラスに切り出す
-    public static class LiveViewHubUpdateHelper
+    public static class LiveViewHubService
     {
         private static IHubContext<LiveViewHub>? _hubContext;
 

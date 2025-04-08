@@ -1,48 +1,36 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import { Loader2 } from "lucide-react"
 import MatchOverview from "./MatchOverview"
 import TeamStandings from "./TeamStandings"
 import KillFeed from "./KillFeed"
 import PlayerDetails from "./PlayerDetails"
-import RawDataViewer from "./RawDataViewer" // 新しいコンポーネントをインポート
+import RawDataViewer from "./RawDataViewer"
 // import { useLiveViewSignalR } from "@/lib/hooks/useLiveViewSignalRMock" // 開発用モック
 import { useLiveViewSignalR } from "@/lib/hooks/useLiveViewSignalR" // 本番用
-import type { CustomMatch } from "@/lib/types/match-types"
 
 export default function LiveView() {
-  const { isConnected } = useLiveViewSignalR()
-  // モックデータを作成
-  const matchData = useMemo(() => {
-    return {
-      matchId: "mock-match",
-      gameState: "InProgress",
-      mapName: "Olympus",
-      remainingTeams: 10,
-      remainingPlayers: 25,
-      elapsedTime: 360,
-      teams: [],
-      ring: {
-        currentStage: 1,
-        nextStage: 2,
-        currentRadius: 1000,
-        nextRadius: 500,
-        currentCenter: { x: 0, y: 0 },
-        nextCenter: { x: 0, y: 0 },
-        closingStartTime: 0,
-        closingEndTime: 0,
-        currentTimestamp: 0,
-      },
-      killFeed: [],
-    } as CustomMatch
-  }, [])
-  const [mounted, setMounted] = useState(false)
+  const { isConnected, matchData } = useLiveViewSignalR()
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
+  const [waitingTime, setWaitingTime] = useState(0)
 
+  // マウント状態を追跡
   useEffect(() => {
     setMounted(true)
+    return () => setMounted(false)
   }, [])
+
+  // 待機時間を追跡
+  useEffect(() => {
+    if (!matchData) {
+      const timer = setInterval(() => {
+        setWaitingTime((prev) => prev + 1)
+      }, 1000)
+      return () => clearInterval(timer)
+    }
+  }, [matchData])
 
   if (!mounted) {
     return null
@@ -55,6 +43,20 @@ export default function LiveView() {
           <Loader2 className="h-12 w-12 text-red-500 animate-spin" />
           <p className="text-xl text-gray-400">ライブビューに接続中...</p>
         </div>
+      </div>
+    )
+  }
+
+  if (!matchData) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-12">
+        <Loader2 className="h-12 w-12 text-red-500 animate-spin" />
+        <p className="text-xl text-gray-400">マッチデータを待機中... ({waitingTime}秒)</p>
+        <p className="text-sm text-gray-500">
+          サーバーからデータが送信されるまでお待ちください。
+          <br />
+          マッチが開始されていない場合は、データが表示されません。
+        </p>
       </div>
     )
   }
@@ -84,4 +86,3 @@ export default function LiveView() {
     </div>
   )
 }
-
