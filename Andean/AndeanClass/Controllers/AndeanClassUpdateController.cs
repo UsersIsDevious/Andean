@@ -1,4 +1,5 @@
 ﻿using AndeanSystems;
+using AndeanWebUI.Services;
 using ApexLiveAPI.Request;
 using static AndeanClass.Controllers.AndeanClassController;
 
@@ -7,18 +8,29 @@ namespace AndeanClass.Controllers
     public class AndeanClassUpdateController : AndeanSystem
     {
 
+        private long lastPollTime = 0;
+
         public override void Update()
         {
-            if (_match.State == "Playing")
-            {
-                GetPlayerStatus(_match).Wait();
+            long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                long time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            if (ControlPanelHubService.IsMatch == true)
+            {
+                GetPlayerStatus(_match);
 
                 // 新たなPacketオブジェクトを生成し、_packetListに追加
-                _packetList[time] = new Packet((double)time / 1000 - _match.StartTimeStamp);
+                _packetList[now] = new Packet((double)now / 1000 - _match.StartTimeStamp);
 
-                _updateTime = time;
+                _updateTime = now;
+            }
+            else
+            {
+                if (now - lastPollTime > 3000)
+                {
+                    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                    Request.GetLobbyPlayersAsync(cts.Token);
+                    Request.GetMatchSettingsAsync(cts.Token);
+                }
             }
         }
 
@@ -33,7 +45,7 @@ namespace AndeanClass.Controllers
         /// プレイヤーが "death" またはオンラインでない場合は、次のプレイヤーへスキップする。
         /// チームが壊滅している場合は、次のチームへスキップする。
         /// </remarks>
-        public async Task GetPlayerStatus(CustomMatch match)
+        public void GetPlayerStatus(CustomMatch match)
         {
             // match.teams の全てのチームを列挙
             foreach (Team team in match.Teams.Values)

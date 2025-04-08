@@ -29,6 +29,7 @@ namespace AndeanWebUI.Services
         public static bool GameStartButtonEnabled { get; set; } = true;
         public static List<string> SupportedLanguages { get; set; } = LocalizationService.GetSupportedLanguageCodes();
         public static bool IsLobbyJoined { get; set; } = false;
+        public static bool IsMatch { get; set; } = false;
         public static uint MaxTeamPlayer { get; set; } = 3;
         public static uint MaxTeam { get; set; } = 20;
         public static string GameStatus { get; set; } = "NoSignal";
@@ -115,6 +116,7 @@ namespace AndeanWebUI.Services
                     LeaveLobbyButtonEnabled = false;
                     GameStartButtonEnabled = true;
                     IsLobbyJoined = false;
+                    IsMatch = false;
                     break;
                 case "LobbyJoin":
                     LobbyJoinButtonEnabled = false;
@@ -129,6 +131,7 @@ namespace AndeanWebUI.Services
                 case "Playing":
                     LeaveLobbyButtonEnabled = false;
                     IsLobbyJoined = false;
+                    IsMatch = true;
                     break;
                 default:
                     break;
