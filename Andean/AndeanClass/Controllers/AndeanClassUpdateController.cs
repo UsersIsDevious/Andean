@@ -29,7 +29,6 @@ namespace AndeanClass.Controllers
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
                     Request.GetLobbyPlayersAsync(cts.Token);
                     Request.GetMatchSettingsAsync(cts.Token);
-                    Console.WriteLine($"[AndeanClassUpdateController] Polling for lobby players and match settings at {now} ms.");
                 }
             }
         }
