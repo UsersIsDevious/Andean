@@ -206,7 +206,7 @@ namespace ApexLiveAPI.Request
         public static void GetLobbyPlayersAsync(CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var getLobbyPlayers = new CustomMatch_LobbyPlayers();
+            var getLobbyPlayers = new CustomMatch_GetLobbyPlayers();
             req.CustomMatchGetLobbyPlayers = getLobbyPlayers;
             SendRequestAsync(req, cancellationToken);
         }
