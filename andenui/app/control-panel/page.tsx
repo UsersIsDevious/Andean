@@ -31,6 +31,19 @@ const ControlPanelContent = () => {
     teamData,
   } = useControlPanelContext()
 
+  // クライアントサイドでのみレンダリングするための状態
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Client-side mounting effect
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // サーバーサイドレンダリング時には何も表示しない
+  if (!isMounted) {
+    return null
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -95,15 +108,18 @@ const ControlPanelContent = () => {
 
 // メインページコンポーネント
 export default function ControlPanelPage() {
-  const [mounted, setMounted] = useState(false)
+  // クライアントサイドでのみレンダリングするための状態
+  const [isMounted, setIsMounted] = useState(false)
 
   // Client-side mounting effect
   useEffect(() => {
-    setMounted(true)
+    setIsMounted(true)
   }, [])
 
-  // Return null before client-side mounting
-  if (!mounted) return null
+  // サーバーサイドレンダリング時には何も表示しない
+  if (!isMounted) {
+    return null
+  }
 
   return (
     <ControlPanelProvider>
@@ -111,4 +127,3 @@ export default function ControlPanelPage() {
     </ControlPanelProvider>
   )
 }
-

@@ -1,7 +1,7 @@
 "use client"
 
-import { Loader2, Server, Upload } from "lucide-react"
-import { useRef } from "react"
+import { Loader2, Server, Upload, Play } from "lucide-react"
+import { useRef, useState, useEffect } from "react"
 import { useControlPanelContext } from "@/app/control-panel/hooks/useControlPanelContext"
 
 export default function MatchTab() {
@@ -19,9 +19,52 @@ export default function MatchTab() {
     csvResponse,
     pauseToggle,
     updateConfig,
+    setMatchmaking,
   } = useControlPanelContext()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [countdown, setCountdown] = useState(0)
+
+  // Improve the countdown timer logic to ensure it properly resets isMatchmaking
+  // Modify the useEffect for countdown to ensure it properly handles state
+
+  useEffect(() => {
+    if (countdown <= 0) return
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          // When countdown reaches zero, set isMatchmaking to false
+          // This will happen locally without sending a request to the server
+          if (configData?.uiStatus?.isMatchmaking) {
+            setMatchmaking(false)
+          }
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [countdown, configData, setMatchmaking])
+
+  // Also ensure the isMatchmaking effect properly handles state changes
+  useEffect(() => {
+    const isMatchmaking = configData?.uiStatus?.isMatchmaking || false
+
+    // Start countdown when isMatchmaking becomes true
+    if (isMatchmaking && countdown === 0) {
+      console.log("マッチメイキングが開始されました。カウントダウンを開始します。")
+      setCountdown(5)
+    }
+
+    // Reset countdown if isMatchmaking becomes false externally
+    if (!isMatchmaking && countdown > 0) {
+      console.log("マッチメイキングがキャンセルされました。カウントダウンをリセットします。")
+      setCountdown(0)
+    }
+  }, [configData?.uiStatus?.isMatchmaking, countdown])
 
   // Custom styles
   const cardStyle = {
@@ -63,9 +106,8 @@ export default function MatchTab() {
     gameStatus: "NotStarted", // ゲームステータスのデフォルト値
   }
 
-  // Safe access to nested properties
-  const killPoint = configData?.appConfig?.score_Setting?.kill_Point || 1
-  const maxKill = configData?.appConfig?.score_Setting?.max_Kill || 10
+  // UIStatus から isMatchmaking を取得
+  const isMatchmaking = configData?.uiStatus?.isMatchmaking || false
 
   return (
     <div className="space-y-6">
@@ -262,6 +304,66 @@ export default function MatchTab() {
             </div>
           </div>
 
+          {/* マッチ開始ボタン - 新しく追加 */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-red-400">マッチ開始</h3>
+
+            {isMatchmaking ? (
+              <div className="bg-red-900/20 border border-red-900/30 rounded-md p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-white font-medium">
+                    マッチ開始まであと <span className="text-red-400 font-bold text-lg">{countdown}</span> 秒
+                  </span>
+                  <button
+                    onClick={() => {
+                      setMatchmaking(false)
+                      setCountdown(0)
+                    }}
+                    className="py-2 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-md"
+                  >
+                    キャンセル
+                  </button>
+                </div>
+                <div className="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-red-600 h-full transition-all duration-1000 ease-linear"
+                    style={{ width: `${(countdown / 5) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setCountdown(5)
+                  setMatchmaking(true)
+                }}
+                disabled={!uiStatus.isLobbyJoined || uiStatus.gameStatus === "Running"}
+                className="w-full py-3 px-4 rounded-md text-white font-medium flex items-center justify-center"
+                style={!uiStatus.isLobbyJoined || uiStatus.gameStatus === "Running" ? disabledButtonStyle : buttonStyle}
+                onMouseOver={(e) =>
+                  uiStatus.isLobbyJoined &&
+                  uiStatus.gameStatus !== "Running" &&
+                  (e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor)
+                }
+                onMouseOut={(e) =>
+                  uiStatus.isLobbyJoined &&
+                  uiStatus.gameStatus !== "Running" &&
+                  (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor)
+                }
+              >
+                <Play className="mr-2 h-4 w-4" />
+                マッチを開始
+              </button>
+            )}
+            <p className="text-xs text-gray-400">
+              注意: マッチを開始すると、現在のロビー設定でゲームが開始されます。
+              <br />
+              すべてのプレイヤーが準備完了していることを確認してください。
+              <br />
+              開始後5秒以内であればキャンセルできます。
+            </p>
+          </div>
+
           {/* Pause Control */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-red-400">一時停止コントロール</h3>
@@ -321,7 +423,7 @@ export default function MatchTab() {
               <h3 className="text-lg font-semibold text-red-400">キルポイント</h3>
               <input
                 type="number"
-                value={killPoint}
+                value={configData?.appConfig?.score_Setting?.kill_Point || 1}
                 onChange={(e) =>
                   updateConfig(
                     "appConfig",
@@ -346,7 +448,7 @@ export default function MatchTab() {
               <h3 className="text-lg font-semibold text-red-400">最大キルポイント</h3>
               <input
                 type="number"
-                value={maxKill}
+                value={configData?.appConfig?.score_Setting?.max_Kill || 10}
                 onChange={(e) =>
                   updateConfig(
                     "appConfig",
@@ -418,4 +520,3 @@ export default function MatchTab() {
     </div>
   )
 }
-

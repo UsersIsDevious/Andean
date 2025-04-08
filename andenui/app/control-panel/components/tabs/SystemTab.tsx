@@ -15,6 +15,8 @@ export default function SystemTab() {
     isShuttingDown,
     showShutdownConfirm,
     setShowShutdownConfirm,
+    setMatchmaking,
+    setActiveTab,
   } = useControlPanelContext()
 
   // Custom styles
@@ -170,6 +172,48 @@ export default function SystemTab() {
         </div>
       </div>
 
+      {/* マッチメイキング状態カード */}
+      {configData?.uiStatus?.isLobbyJoined && (
+        <div style={cardStyle} className="rounded-lg overflow-hidden">
+          <div style={cardHeaderStyle} className="px-6 py-4">
+            <div className="flex items-center gap-2">
+              <Play className="h-5 w-5 text-red-500" />
+              <h2 className="text-xl font-bold text-red-400">マッチステータス</h2>
+            </div>
+            <p className="text-gray-400 text-sm mt-1">現在のマッチメイキング状態</p>
+          </div>
+          <div className="p-6 space-y-4">
+            {configData?.uiStatus?.isMatchmaking ? (
+              <div className="bg-red-900/20 border border-red-900/30 rounded-md p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-white font-medium">マッチ開始処理中</span>
+                  <button
+                    onClick={() => setMatchmaking(false)}
+                    className="py-2 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-md"
+                  >
+                    キャンセル
+                  </button>
+                </div>
+                <p className="text-sm text-gray-300 mt-2">マッチタブでカウントダウンの詳細を確認できます</p>
+              </div>
+            ) : (
+              <div className="bg-black/50 border border-gray-800 rounded-md p-4 text-center">
+                <p className="text-gray-400">マッチメイキングは開始されていません</p>
+                <button
+                  onClick={() => setActiveTab("match")}
+                  className="mt-2 py-2 px-4 rounded-md text-white font-medium"
+                  style={buttonStyle}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor)}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor)}
+                >
+                  マッチタブへ移動
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Live View Card - 別の行に移動 */}
       <div style={cardStyle} className="rounded-lg overflow-hidden">
         <div style={cardHeaderStyle} className="px-6 py-4">
@@ -203,4 +247,3 @@ export default function SystemTab() {
     </div>
   )
 }
-

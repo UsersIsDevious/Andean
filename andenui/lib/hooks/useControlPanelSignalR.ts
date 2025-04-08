@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import * as signalR from "@microsoft/signalr"
-import type { ConfigData, CSVTeamData, AppConfig } from "@/lib/types"
+import type { ConfigData, CSVTeamData, AppConfig, UIStatus } from "@/lib/types"
 
 const CONTROL_PANEL_HUB_URL = "https://localhost:7109/controlPanelHub"
 
@@ -62,9 +62,9 @@ export const useControlPanelSignalR = () => {
           }
         })
 
-        newConnection.on("NotifyShutdown", (message) => {
+        newConnection.on("ShutdownNotification", (message) => {
           if (isMounted) {
-            console.log("🛑 Received Shutdown Notification:", message)
+            console.log("🛑 Received Shutdown ShutdownNotification:", message)
             alert("System is shutting down. This page will close.")
             window.close() // 🔹 ページを閉じる
           }
@@ -153,6 +153,45 @@ export const useControlPanelSignalR = () => {
       try {
         console.log(`🔧 Updating config: ${sectionKey}`)
 
+        // 特別なケース: uiStatus.isMatchmaking の更新がカウントダウン終了時に行われる場合
+        // サーバーにリクエストを送らずにクライアント側の状態だけを更新
+        if (
+          sectionKey === "uiStatus" &&
+          typeof newData === "object" &&
+          newData !== null &&
+          "isMatchmaking" in newData &&
+          newData.isMatchmaking === false
+        ) {
+          console.log("🔧 Updating isMatchmaking locally without server request")
+
+          // クライアント側の状態を更新 - 非同期で実行
+          setTimeout(() => {
+            setConfigData((prev) => {
+              if (!prev) return prev
+
+              // If we're updating uiStatus, merge with existing uiStatus instead of replacing it
+              if (sectionKey === "uiStatus") {
+                return {
+                  ...prev,
+                  uiStatus: {
+                    ...prev.uiStatus,
+                    ...(newData as Partial<UIStatus>),
+                  } as UIStatus, // Add this type assertion
+                }
+              }
+
+              // For other sections, replace the entire section
+              return {
+                ...prev,
+                [sectionKey]: newData,
+              }
+            })
+          }, 0)
+
+          return
+        }
+
+        // 通常のケース: サーバーにリクエストを送信
         // サーバー側が期待するセクションキーに変換
         let serverSectionKey: string = sectionKey as string
         let dataToSend = newData
@@ -400,11 +439,36 @@ export const useControlPanelSignalR = () => {
     }
   }
 
+  // setMatchmaking メソッドを修正
   const setMatchmaking = async (matchmaking: boolean) => {
     if (connectionRef.current && isConnected) {
       try {
         console.log("🛠️ Sending setMatchmaking request...", matchmaking)
-        await connectionRef.current.invoke("setMatchmaking", matchmaking)
+
+        // 非同期で実行
+        setTimeout(async () => {
+          try {
+            await connectionRef.current?.invoke("setMatchmaking", matchmaking)
+          } catch (innerError) {
+            console.error("❌ setMatchmaking Inner Error:", innerError)
+          }
+        }, 0)
+
+        // キャンセル時は即座にローカルで状態を更新
+        if (!matchmaking) {
+          setTimeout(() => {
+            setConfigData((prev) => {
+              if (!prev) return prev
+              return {
+                ...prev,
+                uiStatus: {
+                  ...prev.uiStatus,
+                  isMatchmaking: false,
+                } as UIStatus, // Add this type assertion
+              }
+            })
+          }, 0)
+        }
       } catch (error) {
         console.error("❌ setMatchmaking Error:", error)
       }
@@ -452,4 +516,3 @@ export const useControlPanelSignalR = () => {
     isConnected,
   }
 }
-

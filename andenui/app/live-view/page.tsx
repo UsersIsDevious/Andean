@@ -5,15 +5,16 @@ import Header from "@/app/control-panel/components/ui/Header"
 import LiveView from "./components/LiveView"
 
 export default function LiveViewPage() {
-  const [mounted, setMounted] = useState(false)
+  // クライアントサイドでのみレンダリングするための状態
+  const [isMounted, setIsMounted] = useState(false)
 
   // Client-side mounting effect
   useEffect(() => {
-    setMounted(true)
+    setIsMounted(true)
   }, [])
 
-  // Return null before client-side mounting
-  if (!mounted) {
+  // サーバーサイドレンダリング時には何も表示しない
+  if (!isMounted) {
     return null
   }
 
@@ -34,4 +35,3 @@ export default function LiveViewPage() {
     </div>
   )
 }
-
