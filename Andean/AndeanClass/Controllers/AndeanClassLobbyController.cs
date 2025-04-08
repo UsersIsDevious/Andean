@@ -1,3 +1,6 @@
+using Andean.ApexLiveAPI.Services;
+using ApexLiveAPI.Services;
+using Newtonsoft.Json.Linq;
 using Rtech.Liveapi;
 using System.Text.Json;
 
@@ -105,6 +108,8 @@ namespace AndeanClass.Controllers
                 {
                     var teamId = teamEntry.Key;
                     var team = _lobby.GetTeam(teamId);
+                    if (team == null)
+                        continue;
                     var teamName = team.TeamName;
                     var logoUrl = team.TeamImg;
                     var spawnPoint = team.SpawnPoint;
@@ -134,6 +139,60 @@ namespace AndeanClass.Controllers
                 }
 
                 _waitMessages["CustomMatch_LobbyPlayers"] = data;
+            }
+        }
+
+        public static void ProcessCustomMatch_SetSettings(CustomMatch_SetSettings customMatch_SetSettingsMsg)
+        {
+            lock (_lock)
+            {
+                // プレイリスト名を取得
+                var playlistName = customMatch_SetSettingsMsg.PlaylistName;
+                if (string.IsNullOrEmpty(playlistName))
+                {
+                    Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} does not exist");
+                    return;
+                }
+
+                PlaylistResult? playlist_r5 = ApexPlaylistService.PlaylistsData;
+                if (playlist_r5 == null)
+                {
+                    Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} not found in PlaylistsData");
+                    return;
+                }
+
+                JObject data = new JObject
+                {
+                    ["playlistName"] = playlistName,
+                };
+                
+                foreach (var category in playlist_r5.Categories)
+                {
+                    foreach (var entry in category.Value.Entries)
+                    {
+                        if (entry.Key == playlistName)
+                        {
+                            // 各設定情報を取得
+                            data["maxPlayers"] = entry.Value.MaxPlayers;
+                            data["maxTeams"] = entry.Value.MaxTeams;
+                            data["mapName"] = entry.Value.MapName;
+                            data["map"] = entry.Value.Map;
+
+                            // ロビー情報を更新
+                            _lobby.SetPlaylistInfo(
+                                playlistName,
+                                uint.TryParse(entry.Value.MaxPlayers, out var maxPlayers) ? maxPlayers : 60,
+                                uint.TryParse(entry.Value.MaxTeams, out var maxTeams) ? maxTeams : 20,
+                                category.Key,
+                                entry.Value.Map ?? "",
+                                entry.Value.MapName ?? ""
+                            );
+                        }
+                    }
+                }
+
+                // 待ち受けメッセージに設定情報を追加
+                _waitMessages["CustomMatch_SetSettings"] = data;
             }
         }
     }
