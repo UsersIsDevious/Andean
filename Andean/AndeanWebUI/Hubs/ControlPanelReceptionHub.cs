@@ -85,8 +85,6 @@ namespace AndeanWebUI.Hubs
                 Dictionary<string, CsvDataElement> teams = new Dictionary<string, CsvDataElement>();
                 foreach (var teamData in teamDatas)
                 {
-                    Console.WriteLine($"Team: {teamData.TEAM}, Name: {teamData.NAME}, ImgUrl: {teamData.IMG_URL}, Members: {teamData.MEMBERS}");
-
                     teams[teamData.TEAM.ToString()] = new CsvDataElement(
                         teamData.NAME.ToString(),
                         teamData.IMG_URL.ToString(),
@@ -95,8 +93,10 @@ namespace AndeanWebUI.Hubs
                 }
                 AndeanClassController.LobbyData.CsvData = new CsvData(new CsvDataTeam(teams));
 
-                Console.WriteLine("CSV data received and processed.");
-                Console.WriteLine($"CSV data: {AndeanClassController.LobbyData.CsvData}");
+                // Console.WriteLine($"CSV data: {System.Text.Json.JsonSerializer.Serialize(AndeanClassController.LobbyData.CsvData, new JsonSerializerOptions
+                // {
+                //     WriteIndented = true // ← 見やすい整形
+                // })}");
             }
             catch (Newtonsoft.Json.JsonException ex)
             {
