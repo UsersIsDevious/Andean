@@ -58,7 +58,7 @@ namespace ApexLiveAPI.Request
 
             req.ChangeCam = changeCamera;
             SendRequestAsync(req, cancellationToken, ack);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace ApexLiveAPI.Request
             };
             req.PauseToggle = pauseToggle;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace ApexLiveAPI.Request
             var createLobby = new CustomMatch_CreateLobby();
             req.CustomMatchCreateLobby = createLobby;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace ApexLiveAPI.Request
             joinLobby.RoleToken = token;
             req.CustomMatchJoinLobby = joinLobby;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace ApexLiveAPI.Request
             var leaveLobby = new CustomMatch_LeaveLobby();
             req.CustomMatchLeaveLobby = leaveLobby;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
         /// <summary>
         /// 試合の準備完了状態を設定するリクエスト
@@ -126,7 +126,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetReady = setReady;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetMatchmaking = setMatchmaking;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetTeam = setTeam;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchKickPlayer = kickPlayer;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetSettings = setSettings;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSendChat = sendChat;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace ApexLiveAPI.Request
             var getLobbyPlayers = new CustomMatch_GetLobbyPlayers();
             req.CustomMatchGetLobbyPlayers = getLobbyPlayers;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetTeamName = setTeamName;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace ApexLiveAPI.Request
             var getSettings = new CustomMatch_GetSettings();
             req.CustomMatchGetSettings = getSettings;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetSpawnPoint = setSpawnPoint;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace ApexLiveAPI.Request
             };
             req.CustomMatchSetEndRingExclusion = endRingExclusion;
             SendRequestAsync(req, cancellationToken);
-            return Task.CompletedTask;
+            return;
         }
     }
 }
