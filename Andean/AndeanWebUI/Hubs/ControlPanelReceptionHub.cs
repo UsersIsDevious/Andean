@@ -10,6 +10,9 @@ using static AndeanSystems.CommandExecutionService;
 using static AndeanSystems.ConfigService;
 using static AndeanSystems.SystemShutdownService;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using AndeanClass;
+using AndeanClass.Controllers;
 
 
 namespace AndeanWebUI.Hubs
@@ -69,18 +72,40 @@ namespace AndeanWebUI.Hubs
         /// クライアントから送信された JSON（CSV データを含む）を受け取り、ログ出力や必要な処理を行います。
         /// </summary>
         /// <param name="jsonData">CSV データを含む JSON</param>
-        public async Task ReadCSV(object jsonData)
+        public void ReadCSV(object jsonData)
         {
             // jsonData を文字列に変換
             string jsonString = jsonData?.ToString() ?? string.Empty;
-            Console.WriteLine($"[ReadCSV] Received CSV JSON data: {jsonString}");
 
-            // 必要に応じて、ここで CSV パースや変換処理を行い、メタデータとして利用することができます。
-            // 例：VdfParser を利用して処理する場合など
-            // var parsedData = VdfParser.ParseVdf(jsonString);
+            // dynamic型としてJSON文字列をデシリアライズ
+            dynamic teamDatas = JsonConvert.DeserializeObject<dynamic>(jsonString);
 
-            // 今回は、受け取った内容をそのままクライアントに確認用のレスポンスとして返す
-            await Clients.Caller.SendAsync("CSVReadResponse", "CSV data received: " + jsonString);
+            try
+            {
+                Dictionary<string, CsvDataElement> teams = new Dictionary<string, CsvDataElement>();
+                foreach (var teamData in teamDatas)
+                {
+                    Console.WriteLine($"Team: {teamData.TEAM}, Name: {teamData.NAME}, ImgUrl: {teamData.IMG_URL}, Members: {teamData.MEMBERS}");
+
+                    teams[teamData.TEAM.ToString()] = new CsvDataElement(
+                        teamData.NAME.ToString(),
+                        teamData.IMG_URL.ToString(),
+                        teamData.MEMBERS.ToObject<List<string>>() ?? new List<string>()
+                    );
+                }
+                AndeanClassController.LobbyData.CsvData = new CsvData(new CsvDataTeam(teams));
+
+                Console.WriteLine("CSV data received and processed.");
+                Console.WriteLine($"CSV data: {AndeanClassController.LobbyData.CsvData}");
+            }
+            catch (Newtonsoft.Json.JsonException ex)
+            {
+                Console.WriteLine($"Error deserializing JSON: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -106,7 +131,7 @@ namespace AndeanWebUI.Hubs
                             {
                                 PropertyNameCaseInsensitive = true
                             };
-                            var newApex = JsonSerializer.Deserialize<ApexLegendsConfig>(newData, options);
+                            var newApex = System.Text.Json.JsonSerializer.Deserialize<ApexLegendsConfig>(newData, options);
                             if (newApex != null)
                             {
                                 // mode に応じた更新方法は、ConfigService.UpdateConfigSectionAsync 内で処理することも可能
@@ -120,7 +145,7 @@ namespace AndeanWebUI.Hubs
                             {
                                 PropertyNameCaseInsensitive = true
                             };
-                            var newPenetrator = JsonSerializer.Deserialize<List<string>>(newData, options);
+                            var newPenetrator = System.Text.Json.JsonSerializer.Deserialize<List<string>>(newData, options);
                             if (newPenetrator != null)
                             {
                                 await UpdateConfigSectionAsync("penetrator", newPenetrator);
@@ -147,7 +172,7 @@ namespace AndeanWebUI.Hubs
                                 PropertyNameCaseInsensitive = true
                             };
 
-                            var newScore = JsonSerializer.Deserialize<ScoreSettingConfig>(newData, options);
+                            var newScore = System.Text.Json.JsonSerializer.Deserialize<ScoreSettingConfig>(newData, options);
                             if (newScore != null)
                             {
                                 await UpdateConfigSectionAsync("score_setting", newScore);
@@ -198,7 +223,7 @@ namespace AndeanWebUI.Hubs
             {
                 Request.CreateLobbyAsync(cts.Token);
             }
-            
+
 
             LobbyJoinButtonEnabled = false;
             LeaveLobbyButtonEnabled = true;
@@ -280,11 +305,14 @@ namespace AndeanWebUI.Hubs
         }
         public async Task setMatchmaking(bool matchmaking)
         {
-            if(matchmaking){
+            if (matchmaking)
+            {
                 IsMatchmaking = true;
                 await BroadcastStatus();
                 IsMatchmaking = false;
-            }else{
+            }
+            else
+            {
                 await BroadcastStatus();
             }
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
