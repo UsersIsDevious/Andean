@@ -2,11 +2,8 @@
 using AndeanSystems;
 using AndeanWebUI.Services;
 using ApexLiveAPI.Request;
-<<<<<<< Updated upstream
 using Microsoft.Extensions.WebEncoders.Testing;
-=======
 using System.Threading.Tasks;
->>>>>>> Stashed changes
 using static AndeanClass.Controllers.AndeanClassController;
 
 namespace AndeanClass.Controllers
@@ -22,7 +19,7 @@ namespace AndeanClass.Controllers
             if (ControlPanelHubService.IsMatch == true)
             {
                 if (ControlPanelHubService.ObserverSwitchEnabled)
-                    GetPlayerStatus(_match);
+                    GetPlayerStatus(_match).Wait();
 
                 // 新たなPacketオブジェクトを生成し、_packetListに追加
                 _packetList[now] = new Packet((double)now / 1000 - _match.StartTimeStamp);
@@ -96,11 +93,7 @@ namespace AndeanClass.Controllers
 
                     // カメラをプレイヤー名に基づいて切り替え
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-<<<<<<< Updated upstream
-                    Request.ChangeCameraAsync("name", player.Name, cts.Token, false).Wait();
-=======
                     await Request.ChangeCameraAsync("name", StringPool.Get(player.Name), cts.Token, false);
->>>>>>> Stashed changes
                 }
             }
         }
