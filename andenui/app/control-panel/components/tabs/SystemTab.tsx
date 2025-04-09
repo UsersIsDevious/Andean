@@ -3,12 +3,10 @@
 import { Loader2, Power, Play, BarChart2 } from "lucide-react"
 import { useControlPanelContext } from "@/app/control-panel/hooks/useControlPanelContext"
 import Link from "next/link"
-import { useEffect } from "react"
 
 export default function SystemTab() {
   const {
     startApex,
-    apexResponse,
     isApexLoading,
     configData,
     handleShutdown,
@@ -16,17 +14,7 @@ export default function SystemTab() {
     isShuttingDown,
     showShutdownConfirm,
     setShowShutdownConfirm,
-    setIsApexLoading,
   } = useControlPanelContext()
-
-  // Get UI status from configData
-  const uiStatus = configData?.uiStatus || {
-    lobbyJoinButtonEnabled: true,
-    gameStartButtonEnabled: false,
-    leaveLobbyButtonEnabled: false,
-    isLobbyJoined: false,
-    gameStatus: "NotStarted", // ゲームステータスのデフォルト値
-  }
 
   // Custom styles
   const cardStyle = {
@@ -53,12 +41,14 @@ export default function SystemTab() {
     color: "white",
   }
 
-  useEffect(() => {
-    // When configData is updated with a lastApexResponse, stop the loading animation
-    if (configData?.lastApexResponse && isApexLoading) {
-      setIsApexLoading(false)
-    }
-  }, [configData?.lastApexResponse, isApexLoading, setIsApexLoading])
+  // Get UI status from configData
+  const uiStatus = configData?.uiStatus || {
+    lobbyJoinButtonEnabled: true,
+    gameStartButtonEnabled: false,
+    leaveLobbyButtonEnabled: false,
+    isLobbyJoined: false,
+    gameStatus: "NotStarted", // ゲームステータスのデフォルト値
+  }
 
   return (
     <div className="space-y-6">
@@ -106,7 +96,7 @@ export default function SystemTab() {
               style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", borderColor: "#1f2937" }}
               className="border rounded-md p-3 text-sm font-mono text-gray-300 h-20 overflow-auto"
             >
-              {configData?.lastApexResponse ? configData.lastApexResponse : "レスポンスなし"}
+              {configData?.lastApexResponse ? JSON.stringify(configData.lastApexResponse, null, 2) : "レスポンスなし"}
             </div>
           </div>
         </div>

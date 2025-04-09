@@ -1,32 +1,32 @@
-﻿using Rtech.Liveapi; // Request, CustomMatch_CreateLobby, CustomMatch_JoinLobby, etc.
+﻿using Rtech.Liveapi;
 using Google.Protobuf;
 using Andean.WebsocketServer;
+using AndeanSystems; // StringPool用
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ApexLiveAPI.Request
 {
     public static class Request
     {
-
         /// <summary>
         /// 共通のリクエスト送信処理
         /// </summary>
-        private static Task SendRequestAsync(Rtech.Liveapi.Request req, CancellationToken cancellationToken, bool ack = true)
+        private static async Task SendRequestAsync(Rtech.Liveapi.Request req, CancellationToken cancellationToken, bool ack = true)
         {
             req.WithAck = ack;
             byte[] requestBytes = req.ToByteArray();
 
             try
             {
-                // 返答待ちではなく、単に送信キューに追加して送信する
                 WebSocketServer.SendMessageViaAuthorizedClient(requestBytes, cancellationToken);
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("Error sending request via authorized WebSocket client", ex);
+                Console.Error.WriteLine($"[WebSocketError] {ex}");
             }
-            return Task.CompletedTask;
         }
-
 
         /// <summary>
         /// カメラ変更リクエストを送信
@@ -40,25 +40,22 @@ namespace ApexLiveAPI.Request
 
             if (type.Equals("poi", StringComparison.OrdinalIgnoreCase))
             {
-                // ここで PlayerOfInterest 型の値を取得
                 if (Enum.TryParse<PlayerOfInterest>(value, true, out var poiValue))
                 {
-                    // changeCamera.Poi の型が Rtech.Liveapi.PlayerOfInterest と仮定
                     changeCamera.Poi = poiValue;
                 }
                 else
                 {
-                    Console.WriteLine(value, "Invalid POI value: {Value}");
+                    Console.WriteLine($"Invalid POI value: {value}");
                 }
             }
             else if (type.Equals("name", StringComparison.OrdinalIgnoreCase))
             {
-                changeCamera.Name = value;
+                changeCamera.Name = StringPool.Get(value);
             }
 
             req.ChangeCam = changeCamera;
-            SendRequestAsync(req, cancellationToken, ack);
-            return;
+            await SendRequestAsync(req, cancellationToken, ack);
         }
 
         /// <summary>
@@ -68,13 +65,11 @@ namespace ApexLiveAPI.Request
         public static async Task PauseToggleAsync(double preTimer, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var pauseToggle = new PauseToggle
+            req.PauseToggle = new PauseToggle
             {
                 PreTimer = (float)preTimer
             };
-            req.PauseToggle = pauseToggle;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -83,10 +78,8 @@ namespace ApexLiveAPI.Request
         public static async Task CreateLobbyAsync(CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var createLobby = new CustomMatch_CreateLobby();
-            req.CustomMatchCreateLobby = createLobby;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            req.CustomMatchCreateLobby = new CustomMatch_CreateLobby();
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -96,11 +89,11 @@ namespace ApexLiveAPI.Request
         public static async Task JoinLobbyAsync(string token, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var joinLobby = new CustomMatch_JoinLobby();
-            joinLobby.RoleToken = token;
-            req.CustomMatchJoinLobby = joinLobby;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            req.CustomMatchJoinLobby = new CustomMatch_JoinLobby
+            {
+                RoleToken = StringPool.Get(token)
+            };
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -109,24 +102,21 @@ namespace ApexLiveAPI.Request
         public static async Task LeaveLobbyAsync(CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var leaveLobby = new CustomMatch_LeaveLobby();
-            req.CustomMatchLeaveLobby = leaveLobby;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            req.CustomMatchLeaveLobby = new CustomMatch_LeaveLobby();
+            await SendRequestAsync(req, cancellationToken);
         }
+
         /// <summary>
         /// 試合の準備完了状態を設定するリクエスト
         /// </summary>
         public static async Task SetReadyAsync(bool ready, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var setReady = new CustomMatch_SetReady
+            req.CustomMatchSetReady = new CustomMatch_SetReady
             {
-                IsReady = ready // 自動生成コードのプロパティに合わせる
+                IsReady = ready
             };
-            req.CustomMatchSetReady = setReady;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -135,13 +125,11 @@ namespace ApexLiveAPI.Request
         public static async Task SetMatchmakingAsync(bool matchmaking, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var setMatchmaking = new CustomMatch_SetMatchmaking
+            req.CustomMatchSetMatchmaking = new CustomMatch_SetMatchmaking
             {
                 Enabled = matchmaking
             };
-            req.CustomMatchSetMatchmaking = setMatchmaking;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -150,15 +138,13 @@ namespace ApexLiveAPI.Request
         public static async Task SetTeamAsync(int teamId, string targetHardwareName, string targetNucleushash, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var setTeam = new CustomMatch_SetTeam
+            req.CustomMatchSetTeam = new CustomMatch_SetTeam
             {
                 TeamId = teamId,
-                TargetHardwareName = targetHardwareName,
-                TargetNucleusHash = targetNucleushash
+                TargetHardwareName = StringPool.Get(targetHardwareName),
+                TargetNucleusHash = StringPool.Get(targetNucleushash)
             };
-            req.CustomMatchSetTeam = setTeam;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -167,14 +153,12 @@ namespace ApexLiveAPI.Request
         public static async Task KickPlayerAsync(string targetHardwareName, string targetNucleushash, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var kickPlayer = new CustomMatch_KickPlayer
+            req.CustomMatchKickPlayer = new CustomMatch_KickPlayer
             {
-                TargetHardwareName = targetHardwareName,
-                TargetNucleusHash = targetNucleushash
+                TargetHardwareName = StringPool.Get(targetHardwareName),
+                TargetNucleusHash = StringPool.Get(targetNucleushash)
             };
-            req.CustomMatchKickPlayer = kickPlayer;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -183,18 +167,16 @@ namespace ApexLiveAPI.Request
         public static async Task SetSettingsAsync(string playlistName, bool adminChat, bool teamRename, bool selfAssign, bool aimAssist, bool anonMode, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var setSettings = new CustomMatch_SetSettings
+            req.CustomMatchSetSettings = new CustomMatch_SetSettings
             {
-                PlaylistName = playlistName,
+                PlaylistName = StringPool.Get(playlistName),
                 AdminChat = adminChat,
                 TeamRename = teamRename,
                 SelfAssign = selfAssign,
                 AimAssist = aimAssist,
                 AnonMode = anonMode
             };
-            req.CustomMatchSetSettings = setSettings;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -203,13 +185,11 @@ namespace ApexLiveAPI.Request
         public static async Task SendChatAsync(string message, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var sendChat = new CustomMatch_SendChat
+            req.CustomMatchSendChat = new CustomMatch_SendChat
             {
-                Text = message
+                Text = StringPool.Get(message)
             };
-            req.CustomMatchSendChat = sendChat;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -218,10 +198,8 @@ namespace ApexLiveAPI.Request
         public static async Task GetLobbyPlayersAsync(CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var getLobbyPlayers = new CustomMatch_GetLobbyPlayers();
-            req.CustomMatchGetLobbyPlayers = getLobbyPlayers;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            req.CustomMatchGetLobbyPlayers = new CustomMatch_GetLobbyPlayers();
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -230,14 +208,12 @@ namespace ApexLiveAPI.Request
         public static async Task SetTeamNameAsync(int teamId, string teamName, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var setTeamName = new CustomMatch_SetTeamName
+            req.CustomMatchSetTeamName = new CustomMatch_SetTeamName
             {
                 TeamId = teamId,
-                TeamName = teamName
+                TeamName = StringPool.Get(teamName)
             };
-            req.CustomMatchSetTeamName = setTeamName;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -246,10 +222,8 @@ namespace ApexLiveAPI.Request
         public static async Task GetMatchSettingsAsync(CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var getSettings = new CustomMatch_GetSettings();
-            req.CustomMatchGetSettings = getSettings;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            req.CustomMatchGetSettings = new CustomMatch_GetSettings();
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -258,14 +232,12 @@ namespace ApexLiveAPI.Request
         public static async Task SetSpawnPointAsync(int teamId, int spawnPoint, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var setSpawnPoint = new CustomMatch_SetSpawnPoint
+            req.CustomMatchSetSpawnPoint = new CustomMatch_SetSpawnPoint
             {
                 TeamId = teamId,
                 SpawnPoint = spawnPoint
             };
-            req.CustomMatchSetSpawnPoint = setSpawnPoint;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
 
         /// <summary>
@@ -274,13 +246,11 @@ namespace ApexLiveAPI.Request
         public static async Task SetEndRingExclusionAsync(int exclusion, CancellationToken cancellationToken)
         {
             var req = new Rtech.Liveapi.Request();
-            var endRingExclusion = new CustomMatch_SetEndRingExclusion
+            req.CustomMatchSetEndRingExclusion = new CustomMatch_SetEndRingExclusion
             {
                 SectionToExclude = (MapRegion)exclusion
             };
-            req.CustomMatchSetEndRingExclusion = endRingExclusion;
-            SendRequestAsync(req, cancellationToken);
-            return;
+            await SendRequestAsync(req, cancellationToken);
         }
     }
 }
