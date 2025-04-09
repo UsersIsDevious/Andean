@@ -85,7 +85,7 @@ namespace AndeanWebUI.Hubs
                 Dictionary<string, CsvDataElement> teams = new Dictionary<string, CsvDataElement>();
                 foreach (var teamData in teamDatas)
                 {
-                    teams[teamData.TEAM.ToString()] = new CsvDataElement(
+                    teams[(teamData.TEAM + 1).ToString()] = new CsvDataElement(
                         teamData.NAME.ToString(),
                         teamData.IMG_URL.ToString(),
                         teamData.MEMBERS.ToObject<List<string>>() ?? new List<string>()

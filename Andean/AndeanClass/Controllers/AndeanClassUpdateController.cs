@@ -1,12 +1,16 @@
-﻿using AndeanSystems;
+﻿using System.Text.Json;
+using AndeanSystems;
 using AndeanWebUI.Services;
 using ApexLiveAPI.Request;
+using Microsoft.Extensions.WebEncoders.Testing;
 using static AndeanClass.Controllers.AndeanClassController;
 
 namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
+        private static long test = 0;
+
         public override void Update()
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -23,14 +27,30 @@ namespace AndeanClass.Controllers
             }
             else
             {
-                if (ControlPanelHubService.IsLaunched && now - LobbyData.LastRequestTime > 500)
+                if (ControlPanelHubService.IsLaunched)
                 {
-                    LobbyData.LastRequestTime = now;
-                    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                    Request.GetLobbyPlayersAsync(cts.Token).Wait();
-                    Request.GetMatchSettingsAsync(cts.Token).Wait();
+                    if (now - LobbyData.LastRequestTime > 3000)
+                    {
+                        LobbyData.LastRequestTime = now;
+                        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                        Request.GetLobbyPlayersAsync(cts.Token).Wait();
+                        Request.GetMatchSettingsAsync(cts.Token).Wait();
+                        ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
+                    }
 
-                    if (LobbyData.LobbyPlayersLastPollTime - now > 3000 && LobbyData.MatchSettingsLastPollTime - now > 3000)
+                    if (now - LobbyData.LastCsvApplyTime > 100)
+                    {
+                        LobbyData.LastCsvApplyTime = now;
+                        if (LobbyData.CsvData?.Diff.Teams.Count > 0)
+                        {
+                            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                            Request.GetLobbyPlayersAsync(cts.Token).Wait();
+                            Request.GetMatchSettingsAsync(cts.Token).Wait();
+                            ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
+                        }
+                    }
+
+                    if (LobbyData.LobbyPlayersLastPollTime - now > 10000 && LobbyData.MatchSettingsLastPollTime - now > 10000)
                     {
                         ControlPanelHubService.SetLiveAPIStatus("LobbyLeave", "Waiting for JoinLobby").Wait();
                     }
@@ -75,6 +95,74 @@ namespace AndeanClass.Controllers
                     Request.ChangeCameraAsync("name", player.Name, cts.Token, false).Wait();
                 }
             }
+        }
+
+        /// <summary>
+        /// lobbyにCSVデータを反映する
+        /// </summary>
+        /// <param name="diff">LobbyPlayersとCSVデータの差を格納した（キー：teamId、値：CSVData）</param>
+        public static async Task<bool> ApplyCSVDataAsync(Dictionary<string, CsvDataElement> diff)
+        {
+            bool alreadyRequested = false;
+
+            if (diff == null || diff.Count == 0)
+            {
+                Console.WriteLine("[ApplyCSVData] No differences found.");
+                return false;
+            }
+
+            var teamCsv = diff.FirstOrDefault();
+
+            if (!int.TryParse(teamCsv.Key, out int teamId))
+            {
+                Console.WriteLine($"[ApplyCSVData] Invalid teamId: {teamCsv.Key}");
+                return false;
+            }
+            string csvTeamName = teamCsv.Value.TeamName;
+
+            if (LobbyData.LobbyPlayersResponse?.Teams[teamId].Name != csvTeamName)
+            {
+                // チーム名の更新（using ブロックと例外処理付き）
+                try
+                {
+                    using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250)))
+                    {
+                        await Request.SetTeamNameAsync(teamId, csvTeamName, cts.Token);
+                        alreadyRequested = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ApplyCSVData] Error setting team name for team {teamId}: {ex.Message}");
+                }
+            }
+
+            // CSVデータに登録されている各プレイヤーに対するチーム更新処理
+            foreach (var playerName in teamCsv.Value.Players)
+            {
+                if (!LobbyData.PlayerNames.TryGetValue(playerName, out Player? player))
+                {
+                    Console.WriteLine($"[ApplyCSVData] Player not found: {playerName}");
+                    continue;
+                }
+
+                if (alreadyRequested) break;
+
+                try
+                {
+                    using (var cts2 = new CancellationTokenSource(TimeSpan.FromMilliseconds(250)))
+                    {
+                        alreadyRequested = true;
+                        await Request.SetTeamAsync(teamId, player.HardwareName, player.NucleusHash, cts2.Token);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ApplyCSVData] Error setting team for player {playerName} in team {teamId}: {ex.Message}");
+                }
+            }
+            
+            return true;
         }
     }
 }

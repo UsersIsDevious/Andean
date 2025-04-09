@@ -26,14 +26,18 @@ namespace AndeanClass.Controllers
                     // 必要に応じて処理中断の検討（ここではログ出力後、継続）
                 }
 
+                // チームのリネーム状況を保存
+                Dictionary<string, bool> teamRename = new Dictionary<string, bool>();
+
                 // ロビーID、チーム情報、プレイヤー情報の初期化
                 _lobby.LobbyId = customMatch_LobbyPlayersMsg.PlayerToken;
                 _lobby.Teams = new Dictionary<uint, Team>();
                 _lobby.Players = new Dictionary<string, Player>();
+                LobbyData.PlayerNames = new Dictionary<string, Player>();
 
                 // CSVデータの取得
                 var csvData = LobbyData.CsvData?.Original.Teams;
-                var diffCSVData = LobbyData.CsvData?.Copy.Teams;
+                var diffCSVData = LobbyData.CsvData?.Diff.Teams;
 
                 // --- 1. チーム情報の処理 ---
                 foreach (var msg_team in customMatch_LobbyPlayersMsg.Teams)
@@ -52,6 +56,7 @@ namespace AndeanClass.Controllers
                         !string.IsNullOrEmpty(csvEntry.TeamName))
                     {
                         bool difference = csvEntry.TeamName != teamName;
+                        teamRename[teamId] = difference;
                         UpdateCopyCsvData(diffCSVData, teamId, csvEntry, difference);
                     }
                 }
@@ -64,12 +69,16 @@ namespace AndeanClass.Controllers
                     Player player = new Player(playerName, teamId, msg_player.NucleusHash, msg_player.HardwareName);
                     _lobby.AddPlayer(player);
 
-                    // 重複チェック：既に存在する場合はログ出力後に上書き
-                    if (LobbyData.PlayerNames.Remove(playerName))
+                    // 重複チェック：既に存在する場合はログ出力
+                    if (LobbyData.PlayerNames.ContainsKey(playerName))
                     {
                         Console.WriteLine($"[APPLY CSV DATA] Duplicate player name: {playerName}");
+                        LobbyData.PlayerNames.Remove(playerName);
                     }
-                    LobbyData.PlayerNames[playerName] = player;
+                    else
+                    {
+                        LobbyData.PlayerNames[playerName] = player;
+                    }
                 }
 
                 // --- 3. CSV内プレイヤー情報の処理 ---
@@ -82,41 +91,54 @@ namespace AndeanClass.Controllers
                         if (csvEntry == null || csvEntry.Players == null)
                             continue;
 
+                        Dictionary<string, string> alreadySetPlayers = new Dictionary<string, string>();
+
                         // CSV内のプレイヤー情報と現在のロビー内のデータを比較して差分を判定
                         bool differenceFound = false;
                         foreach (var playerName in csvEntry.Players)
                         {
-                            // ロビーに存在しない、またはチームIDが異なる場合は差分があると判断
-                            if (!LobbyData.PlayerNames.TryGetValue(playerName, out var lobbyPlayer) ||
-                                lobbyPlayer.TeamId != uint.Parse(teamId))
+                            if (LobbyData.PlayerNames.TryGetValue(playerName, out Player? LobbyPlayer) && LobbyPlayer != null)
                             {
-                                differenceFound = true;
-                                break;
+                                if (LobbyPlayer == null)
+                                {
+                                    Console.WriteLine($"[APPLY CSV DATA] Player not found in lobby: {playerName}");
+                                }
+                                else if (LobbyPlayer.TeamId.ToString() == "0" && LobbyPlayer.TeamId.ToString() != teamId)
+                                {
+                                    differenceFound = true;
+                                }
+                                else
+                                {
+                                    alreadySetPlayers[teamId] = LobbyPlayer.Name;
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"[APPLY CSV DATA] Player not found in CSV: {playerName}");
                             }
                         }
-                        UpdateCopyCsvData(diffCSVData, teamId, csvEntry, differenceFound);
+                        if (teamRename.TryGetValue(teamId, out bool renameNeeded) && renameNeeded)
+                        {
+                            differenceFound = true;
+                        }
+                        var returnCSVData = UpdateCopyCsvData(diffCSVData, teamId, csvEntry, differenceFound);
+
+                        foreach (var setPlayer in alreadySetPlayers)
+                        {
+                            string teamId_str = setPlayer.Key;
+                            string alreadySetPlayerName = setPlayer.Value;
+
+                            if (returnCSVData != null && returnCSVData.TryGetValue(teamId_str, out CsvDataElement? diffEntry) && diffEntry != null)
+                                diffEntry.Players.Remove(alreadySetPlayerName);
+                        }
                     }
                 }
 
-                // --- 4. CSVデータの変更を適用 ---
-                bool csvDataChanged = false;
-                if (diffCSVData != null)
-                {
-                    try
-                    {
-                        csvDataChanged = ApplyCSVDataAsync(diffCSVData).Result;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[ProcessCustomMatch] Error applying CSV data: {ex.Message}");
-                    }
-                }
-
-                // --- 5. LobbyData のチェックと更新不要判定 ---
-                if (LobbyData == null || !LobbyData.IsUpdateNeededLobbyPlayers(customMatch_LobbyPlayersMsg) || !csvDataChanged)
+                // --- 4. LobbyData のチェックと更新不要判定 ---
+                if (LobbyData == null || !LobbyData.IsUpdateNeededLobbyPlayers(customMatch_LobbyPlayersMsg))
                     return;
 
-                // --- 6. ロビー情報の生成 ---
+                // --- 5. ロビー情報の生成 ---
                 Dictionary<string, LobbyPlayersInfo> data = new Dictionary<string, LobbyPlayersInfo>();
                 foreach (var teamEntry in _lobby.Teams)
                 {
@@ -148,10 +170,13 @@ namespace AndeanClass.Controllers
         /// <param name="teamId">対象のチームID（文字列）</param>
         /// <param name="csvEntry">比較対象のCSVデータエントリ</param>
         /// <param name="differenceFound">差分が存在する場合は true、一致している場合は false</param>
-        private static void UpdateCopyCsvData(Dictionary<string, CsvDataElement>? copyCSVData, string teamId, CsvDataElement csvEntry, bool differenceFound)
+        private static Dictionary<string, CsvDataElement>? UpdateCopyCsvData(Dictionary<string, CsvDataElement>? copyCSVData, string teamId, CsvDataElement csvEntry, bool differenceFound)
         {
             if (copyCSVData == null)
-                return;
+            {
+                Console.WriteLine("[UpdateCopyCsvData] CopyCSVData is null.");
+                return null;
+            }
 
             if (differenceFound)
             {
@@ -162,12 +187,16 @@ namespace AndeanClass.Controllers
                     if (clonedCsv != null)
                         copyCSVData[teamId] = clonedCsv;
                 }
+
+                return copyCSVData;
             }
             else
             {
                 // 一致している場合、既に登録されていれば削除
                 if (copyCSVData.ContainsKey(teamId))
                     copyCSVData.Remove(teamId);
+
+                return copyCSVData;
             }
         }
 
@@ -180,66 +209,6 @@ namespace AndeanClass.Controllers
         {
             var serialized = JsonSerializer.Serialize(element);
             return JsonSerializer.Deserialize<CsvDataElement>(serialized);
-        }
-
-        /// <summary>
-        /// lobbyにCSVデータを反映する
-        /// </summary>
-        /// <param name="diff">LobbyPlayersとCSVデータの差を格納した（キー：teamId、値：CSVData）</param>
-        public static async Task<bool> ApplyCSVDataAsync(Dictionary<string, CsvDataElement> diff)
-        {
-            if (diff == null || diff.Count == 0)
-            {
-                Console.WriteLine("[ApplyCSVData] No differences found.");
-                return false;
-            }
-
-            foreach (var teamCsv in diff)
-            {
-                if (!int.TryParse(teamCsv.Key, out int teamId))
-                {
-                    Console.WriteLine($"[ApplyCSVData] Invalid teamId: {teamCsv.Key}");
-                    continue;
-                }
-                string csvTeamName = teamCsv.Value.TeamName;
-
-                // チーム名の更新（using ブロックと例外処理付き）
-                try
-                {
-                    using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
-                    {
-                        await ApexLiveAPI.Request.Request.SetTeamNameAsync(teamId, csvTeamName, cts.Token);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"[ApplyCSVData] Error setting team name for team {teamId}: {ex.Message}");
-                }
-
-                // CSVデータに登録されている各プレイヤーに対するチーム更新処理
-                foreach (var playerName in teamCsv.Value.Players)
-                {
-                    if (!LobbyData.PlayerNames.TryGetValue(playerName, out Player? player))
-                    {
-                        Console.WriteLine($"[ApplyCSVData] Player not found: {playerName}");
-                        continue;
-                    }
-
-                    try
-                    {
-                        using (var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
-                        {
-                            await ApexLiveAPI.Request.Request.SetTeamAsync(teamId, player.HardwareName, player.NucleusHash, cts2.Token);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[ApplyCSVData] Error setting team for player {playerName} in team {teamId}: {ex.Message}");
-                    }
-                }
-            }
-
-            return true;
         }
 
         public static void ProcessCustomMatch_SetSettings(CustomMatch_SetSettings customMatch_SetSettingsMsg)

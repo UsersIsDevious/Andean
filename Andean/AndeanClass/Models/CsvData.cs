@@ -15,7 +15,7 @@ namespace AndeanClass
         /// CSVデータのコピーを保持する辞書
         /// </summary>
         /// <remarks>オリジナルのデータを変更せずに、コピーを操作するために使用される</remarks>
-        public CsvDataTeam Copy { get; set; }
+        public CsvDataTeam Diff { get; set; }
 
         /// <summary>
         /// コンストラクタ
@@ -24,7 +24,7 @@ namespace AndeanClass
         public CsvData(CsvDataTeam original)
         {
             Original = original;
-            Copy = new CsvDataTeam(original.Teams.ToDictionary(
+            Diff = new CsvDataTeam(original.Teams.ToDictionary(
                 kvp => kvp.Key,
                 kvp => new CsvDataElement(kvp.Value.TeamName, kvp.Value.LogoUrl, new List<string>(kvp.Value.Players))
             ));

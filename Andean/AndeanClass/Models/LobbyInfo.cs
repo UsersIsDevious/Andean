@@ -19,6 +19,11 @@ namespace AndeanClass
         public long LastRequestTime { get; set; } = 0;
 
         /// <summary>
+        /// CSVを適用した最後の時間（Unix時間, ミリ秒）
+        /// </summary>
+        public long LastCsvApplyTime { get; set; } = 0;
+
+        /// <summary>
         /// 最後にロビープレイヤー情報を取得した時間（Unix時間, ミリ秒）
         /// </summary>
         public long LobbyPlayersLastPollTime { get; set; } = 0;
@@ -64,7 +69,8 @@ namespace AndeanClass
         /// <param name="lobbyId">ロビーのID</param>
         /// <param name="csvData">CSVデータ</param>
         /// <param name="playerNames">プレイヤー名のリスト</param>
-        /// <param name="lastPollTime">ロビー情報リクエストを最後に送信した時間</param>
+        /// <param name="LastRequestTime">ロビー情報リクエストを最後に送信した時間</param>
+        /// <param name="lastCsvApplyTime">CSVを適用した最後の時間</param>
         /// <param name="lobbyPlayersLastPollTime">最後にロビープレイヤー情報を取得した時間</param>
         /// <param name="matchSettingsLastPollTime">最後にロビー設定情報を取得した時間</param>
         /// <param name="matchSettingsResponse">CustomMatch_GetMatchSettingsAsyncのレスポンス</param>
@@ -75,7 +81,8 @@ namespace AndeanClass
             string lobbyId = "",
             CsvData? csvData = null,
             Dictionary<string, Player>? playerNames = null,
-            long lastPollTime = 0,
+            long lastRequestTime = 0,
+            long lastCsvApplyTime = 0,
             long lobbyPlayersLastPollTime = 0,
             long matchSettingsLastPollTime = 0,
             CustomMatch_SetSettings? matchSettingsResponse = null,
@@ -87,7 +94,8 @@ namespace AndeanClass
             LobbyId = lobbyId;
             CsvData = csvData;
             PlayerNames = playerNames ?? new Dictionary<string, Player>();
-            LastRequestTime = lastPollTime;
+            LastRequestTime = lastRequestTime;
+            LastCsvApplyTime = lastCsvApplyTime;
             LobbyPlayersLastPollTime = lobbyPlayersLastPollTime;
             MatchSettingsLastPollTime = matchSettingsLastPollTime;
             MatchSettingsResponse = matchSettingsResponse;

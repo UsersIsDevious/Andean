@@ -53,7 +53,7 @@ namespace Andean.WebsocketServer.Controllers
         {
             _queue.Add(new MessageWrapper(clientId, message));
 
-            if (message is ObserverSwitched or Response or CustomMatch_LobbyPlayers or CustomMatch_SetSettings) return; // ObserverSwitched メッセージはログに出力しない
+            if (message is ObserverSwitched or Response or CustomMatch_SetSettings) return; // ObserverSwitched メッセージはログに出力しない
 
             var data = new
             {
@@ -151,7 +151,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case Response responseMsg:
                     {
-                        if (responseMsg.Result.ToString() == "type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings")
+                        if (responseMsg.Result != null && responseMsg.Result.ToString() == "type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings")
                         {
                             CustomMatch_SetSettings customMatch_SetSettingsMsg = responseMsg.Result.Unpack<CustomMatch_SetSettings>();
                             ProcessCustomMatch_SetSettings(customMatch_SetSettingsMsg);
