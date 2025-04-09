@@ -3,8 +3,11 @@
 import { useState, useEffect, useRef } from "react"
 import * as signalR from "@microsoft/signalr"
 import type { ConfigData, CSVTeamData, AppConfig, UIStatus } from "@/lib/types"
+// Update the CONTROL_PANEL_HUB_URL to use the utility function
+import { getSignalRHubUrl } from "@/lib/utils/signalr-utils"
 
-const CONTROL_PANEL_HUB_URL = "https://localhost:7109/controlPanelHub"
+// Replace the hardcoded URL with the dynamic one
+const CONTROL_PANEL_HUB_URL = getSignalRHubUrl("controlPanelHub")
 
 export const useControlPanelSignalR = () => {
   const [isConnected, setIsConnected] = useState(false)

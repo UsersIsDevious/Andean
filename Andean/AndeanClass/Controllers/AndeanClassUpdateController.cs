@@ -2,7 +2,11 @@
 using AndeanSystems;
 using AndeanWebUI.Services;
 using ApexLiveAPI.Request;
+<<<<<<< Updated upstream
 using Microsoft.Extensions.WebEncoders.Testing;
+=======
+using System.Threading.Tasks;
+>>>>>>> Stashed changes
 using static AndeanClass.Controllers.AndeanClassController;
 
 namespace AndeanClass.Controllers
@@ -69,7 +73,7 @@ namespace AndeanClass.Controllers
         /// プレイヤーが "death" またはオンラインでない場合は、次のプレイヤーへスキップする。
         /// チームが壊滅している場合は、次のチームへスキップする。
         /// </remarks>
-        public void GetPlayerStatus(CustomMatch match)
+        public async Task GetPlayerStatus(CustomMatch match)
         {
             // match.teams の全てのチームを列挙
             foreach (Team team in match.Teams.Values)
@@ -92,7 +96,11 @@ namespace AndeanClass.Controllers
 
                     // カメラをプレイヤー名に基づいて切り替え
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+<<<<<<< Updated upstream
                     Request.ChangeCameraAsync("name", player.Name, cts.Token, false).Wait();
+=======
+                    await Request.ChangeCameraAsync("name", StringPool.Get(player.Name), cts.Token, false);
+>>>>>>> Stashed changes
                 }
             }
         }

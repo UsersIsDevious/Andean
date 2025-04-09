@@ -37,6 +37,8 @@ namespace Andean.WebsocketServer.Controllers
         // ログ出力用ファイル名（サーバー起動時のタイムスタンプで固定）
         private static readonly string _logFileName;
 
+        private static readonly string CustomMatchSetSettingsType = StringPool.Get("type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings");
+
         static StatisticsProcessor()
         {
             // サーバー起動時のタイムスタンプでログファイル名を決定（例: 20250222_132800_log.txt）
@@ -58,8 +60,8 @@ namespace Andean.WebsocketServer.Controllers
             var data = new
             {
                 Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                Client = clientId,
-                MessageType = message.GetType().Name,
+                Client = StringPool.Get(clientId),
+                MessageType = StringPool.Get(message.GetType().Name),
                 Content = message
             };
 
@@ -151,7 +153,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case Response responseMsg:
                     {
-                        if (responseMsg.Result != null && responseMsg.Result.ToString() == "type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings")
+                        if (responseMsg.Result != null && StringPool.Get(responseMsg.Result.ToString()) == CustomMatchSetSettingsType)
                         {
                             CustomMatch_SetSettings customMatch_SetSettingsMsg = responseMsg.Result.Unpack<CustomMatch_SetSettings>();
                             ProcessCustomMatch_SetSettings(customMatch_SetSettingsMsg);

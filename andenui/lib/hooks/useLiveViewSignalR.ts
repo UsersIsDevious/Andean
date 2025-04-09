@@ -4,9 +4,10 @@ import { useState, useEffect, useRef } from "react"
 import * as signalR from "@microsoft/signalr"
 import type { CustomMatch, RawCustomMatch } from "@/lib/types/match-types"
 import { convertRawMatchData } from "@/lib/types/match-types"
+import { getSignalRHubUrl } from "@/lib/utils/signalr-utils"
 
 // URLを修正 - サーバー側のハブ名と完全に一致させる
-const LIVE_VIEW_HUB_URL = "https://localhost:7109/liveViewHub"
+const LIVE_VIEW_HUB_URL = getSignalRHubUrl("LiveViewHub")
 
 export const useLiveViewSignalR = () => {
   const [isConnected, setIsConnected] = useState(false)
