@@ -64,6 +64,7 @@ namespace Andean.WebsocketServer
             }
             if (client == null || client.State != WebSocketState.Open)
             {
+                ControlPanelHubService.SetLiveAPIStatus("Disconnect", "Disconnected from Apex Legends.").Wait();
                 Console.Error.WriteLine("No authorized client is connected.");
                 return;
             }
