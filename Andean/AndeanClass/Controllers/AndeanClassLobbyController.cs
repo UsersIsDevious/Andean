@@ -153,7 +153,7 @@ namespace AndeanClass.Controllers
                         var player = _lobby.GetPlayer(team.Players[i]);
                         if (player != null)
                         {
-                            players.Add(new LobbyPlayer(i, player.NucleusHash, player.Name));
+                            players.Add(new LobbyPlayer(i, player.NucleusHash, player.HardwareName, player.Name));
                         }
                     }
                     data[teamId.ToString()] = new LobbyPlayersInfo(team.TeamName, team.TeamImg, team.SpawnPoint, players);
@@ -218,7 +218,7 @@ namespace AndeanClass.Controllers
                 // 情報が来た時点でロビーにいるとみなす
                 ControlPanelHubService.SetLiveAPIStatus("LobbyJoin", "InLobby").Wait();
 
-                // 情報が更新されていない場合は何もしない
+                // 情報を更新
                 LobbyData.IsUpdateNeededMatchSettings(customMatch_SetSettingsMsg);
 
                 LobbySettings lobbySettings = new LobbySettings(customMatch_SetSettingsMsg);
