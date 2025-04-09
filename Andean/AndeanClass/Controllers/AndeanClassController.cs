@@ -54,7 +54,7 @@ namespace AndeanClass.Controllers
         /// </summary>
         public static LobbyInfo LobbyData { get; set; } = new LobbyInfo();
         /// <summary>
-        /// ロビー情報を取得した時間
+        /// ロビー情報リクエストを最後に送信した時間
         /// </summary>
         public static long LastPollTime = 0;
 
