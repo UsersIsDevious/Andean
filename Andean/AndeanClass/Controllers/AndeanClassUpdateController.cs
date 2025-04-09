@@ -23,12 +23,17 @@ namespace AndeanClass.Controllers
             }
             else
             {
-                if (ControlPanelHubService.IsLaunched && now - LastPollTime > 3000)
+                if (ControlPanelHubService.IsLaunched && now - LastPollTime > 500)
                 {
                     LastPollTime = now;
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
                     Request.GetLobbyPlayersAsync(cts.Token);
                     Request.GetMatchSettingsAsync(cts.Token);
+
+                    if (LobbyData.LobbyPlayersLastPollTime - now > 3000 && LobbyData.MatchSettingsLastPollTime - now > 3000)
+                    {
+                        ControlPanelHubService.SetLiveAPIStatus("LobbyLeave", "Waiting for JoinLobby").Wait();
+                    }
                 }
             }
         }

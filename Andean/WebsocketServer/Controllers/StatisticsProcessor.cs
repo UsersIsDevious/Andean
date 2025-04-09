@@ -153,7 +153,7 @@ namespace Andean.WebsocketServer.Controllers
                     {
                         if (responseMsg.Result.ToString() == "type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings")
                         {
-                            var customMatch_SetSettingsMsg = responseMsg.Result.Unpack<CustomMatch_SetSettings>();
+                            CustomMatch_SetSettings customMatch_SetSettingsMsg = responseMsg.Result.Unpack<CustomMatch_SetSettings>();
                             ProcessCustomMatch_SetSettings(customMatch_SetSettingsMsg);
                         }
                         break;
