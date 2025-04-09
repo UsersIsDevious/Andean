@@ -39,9 +39,6 @@ namespace AndeanWebUI.Services
         public static string GameStatus { get; set; } = "NoSignal";
         public static bool ObserverSwitchEnabled { get; set; } = true;
 
-        public static Dictionary<string, LobbyPlayersInfo> teamData { get; set; } = LobbyData.ControlHubLobbyPlayers;
-        public static LobbySettings lobbySettings { get; set; } = LobbyData.ControlHubMatchSettings;
-
 
 public static async Task BroadcastStatusAsync()
         {
@@ -54,8 +51,8 @@ public static async Task BroadcastStatusAsync()
                     AppConfig = _config,
                     LastLobbyResponse = LastLobbyResponse,
                     LastApexResponse = LastApexResponse,
-                    teamData = teamData,
-                    lobbySettings = lobbySettings,
+                    teamData = LobbyData.ControlHubLobbyPlayers,
+                    lobbySettings = LobbyData.ControlHubMatchSettings,
                     UIStatus = new
                     {
                         LobbyJoinButtonEnabled,

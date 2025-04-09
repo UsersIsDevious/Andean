@@ -3,6 +3,7 @@ using AndeanSystems;
 using AndeanWebUI.Models;
 using AndeanWebUI.Services;
 using static AndeanWebUI.Services.ControlPanelHubService;
+using static AndeanClass.Controllers.AndeanClassController;
 
 namespace AndeanWebUI.Hubs
 {
@@ -35,8 +36,8 @@ namespace AndeanWebUI.Hubs
                 AppConfig = _config,
                 LastLobbyResponse = LastLobbyResponse,
                 LastApexResponse = LastApexResponse,
-                teamData = teamData,
-                lobbySettings = lobbySettings,
+                teamData = LobbyData.ControlHubLobbyPlayers,
+                lobbySettings = LobbyData.ControlHubMatchSettings,
                 UIStatus = new
                 {
                     LobbyJoinButtonEnabled = LobbyJoinButtonEnabled,
