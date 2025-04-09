@@ -54,6 +54,8 @@ public static async Task BroadcastStatusAsync()
                     AppConfig = _config,
                     LastLobbyResponse = LastLobbyResponse,
                     LastApexResponse = LastApexResponse,
+                    teamData = teamData,
+                    lobbySettings = lobbySettings,
                     UIStatus = new
                     {
                         LobbyJoinButtonEnabled,
@@ -65,9 +67,6 @@ public static async Task BroadcastStatusAsync()
                         GameStatus,
                         SupportedLanguages,
                         IsMatchmaking,
-                        teamData,
-                        lobbySettings
-
                     }
                 };
 

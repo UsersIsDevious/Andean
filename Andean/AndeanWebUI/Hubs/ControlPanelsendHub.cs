@@ -35,6 +35,8 @@ namespace AndeanWebUI.Hubs
                 AppConfig = _config,
                 LastLobbyResponse = LastLobbyResponse,
                 LastApexResponse = LastApexResponse,
+                teamData = teamData,
+                lobbySettings = lobbySettings,
                 UIStatus = new
                 {
                     LobbyJoinButtonEnabled = LobbyJoinButtonEnabled,
@@ -45,9 +47,7 @@ namespace AndeanWebUI.Hubs
                     MaxTeam = MaxTeam,
                     GameStatus = GameStatus,
                     SupportedLanguages = SupportedLanguages,
-                    IsMatchmaking = IsMatchmaking,
-                    teamData = teamData,
-                    lobbySettings = lobbySettings
+                    IsMatchmaking = IsMatchmaking
                 }
             };
         }
