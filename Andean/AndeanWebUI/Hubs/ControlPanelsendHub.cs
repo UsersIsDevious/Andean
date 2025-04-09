@@ -45,7 +45,9 @@ namespace AndeanWebUI.Hubs
                     MaxTeam = MaxTeam,
                     GameStatus = GameStatus,
                     SupportedLanguages = SupportedLanguages,
-                    IsMatchmaking = IsMatchmaking
+                    IsMatchmaking = IsMatchmaking,
+                    teamData = teamData,
+                    lobbySettings = lobbySettings
                 }
             };
         }

@@ -2,6 +2,8 @@
 using AndeanWebUI.Hubs;
 using AndeanClass.Services;
 using Microsoft.AspNetCore.SignalR;
+using AndeanClass;
+using static AndeanClass.Controllers.AndeanClassController;
 
 namespace AndeanWebUI.Services
 {
@@ -37,9 +39,11 @@ namespace AndeanWebUI.Services
         public static string GameStatus { get; set; } = "NoSignal";
         public static bool ObserverSwitchEnabled { get; set; } = true;
 
+        public static Dictionary<string, LobbyPlayersInfo> teamData { get; set; } = LobbyData.ControlHubLobbyPlayers;
+        public static LobbySettings lobbySettings { get; set; } = LobbyData.ControlHubMatchSettings;
 
 
-        public static async Task BroadcastStatusAsync()
+public static async Task BroadcastStatusAsync()
         {
             if (_hubContext != null)    
             {
@@ -61,6 +65,9 @@ namespace AndeanWebUI.Services
                         GameStatus,
                         SupportedLanguages,
                         IsMatchmaking,
+                        teamData,
+                        lobbySettings
+
                     }
                 };
 
