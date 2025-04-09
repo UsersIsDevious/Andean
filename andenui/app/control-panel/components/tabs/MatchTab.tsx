@@ -134,21 +134,19 @@ export default function MatchTab() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => joinLobby(lobbyCode || undefined)}
-                disabled={isLobbyLoading || !uiStatus.lobbyJoinButtonEnabled}
+                disabled={!uiStatus.lobbyJoinButtonEnabled}
                 className="w-full py-3 px-4 rounded-md text-white font-medium flex items-center justify-center"
-                style={isLobbyLoading || !uiStatus.lobbyJoinButtonEnabled ? disabledButtonStyle : buttonStyle}
+                style={!uiStatus.lobbyJoinButtonEnabled ? disabledButtonStyle : buttonStyle}
                 onMouseOver={(e) =>
-                  !isLobbyLoading &&
                   uiStatus.lobbyJoinButtonEnabled &&
                   (e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor)
                 }
                 onMouseOut={(e) =>
-                  !isLobbyLoading &&
                   uiStatus.lobbyJoinButtonEnabled &&
                   (e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor)
                 }
               >
-                {isLobbyLoading ? (
+                {isLobbyLoading && uiStatus.lobbyJoinButtonEnabled ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ロビー参加中...

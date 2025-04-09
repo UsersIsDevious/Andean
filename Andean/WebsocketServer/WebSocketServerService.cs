@@ -5,6 +5,7 @@ using Rtech.Liveapi; // protoc により生成された型群
 using ApexLiveAPI.Message;
 using Andean.WebsocketServer.Controllers;
 using AndeanWebUI.Services;
+using AndeanSystems; // StringPool を使うため
 
 namespace Andean.WebsocketServer
 {
@@ -13,13 +14,11 @@ namespace Andean.WebsocketServer
         private static readonly HttpListener _httpListener;
         private const int Port = 7777;
 
-        // 認定済みクライアントの情報（最初の Init イベントで認定）
         private static string? _authorizedClientId = null;
         private static WebSocket? _authorizedClient = null;
         private static readonly object _authLock = new object();
 
-        // 送信処理専用のキューとワーカー
-        private static readonly BlockingCollection<OutgoingMessage> _sendQueue = new BlockingCollection<OutgoingMessage>();
+        private static readonly BlockingCollection<OutgoingMessage> _sendQueue = new();
 
         static WebSocketServer()
         {
@@ -27,7 +26,6 @@ namespace Andean.WebsocketServer
             _httpListener.Prefixes.Add($"http://127.0.0.1:{Port}/");
             _httpListener.Prefixes.Add($"http://localhost:{Port}/");
 
-            // 送信専用ワーカーを開始
             Task.Factory.StartNew(ProcessSendQueue, TaskCreationOptions.LongRunning);
         }
 
@@ -42,7 +40,7 @@ namespace Andean.WebsocketServer
                 if (context.Request.IsWebSocketRequest)
                 {
                     var wsContext = await context.AcceptWebSocketAsync(null);
-                    _ = HandleClientAsync(wsContext.WebSocket);  // 受信専用ワーカーを起動
+                    _ = HandleClientAsync(wsContext.WebSocket);
                 }
                 else
                 {
@@ -52,32 +50,9 @@ namespace Andean.WebsocketServer
             }
         }
 
-        /// <summary>
-        /// 認定済みクライアントへメッセージを送信する（返答は不要、投げっぱなし）。
-        /// </summary>
-        public static void SendMessageViaAuthorizedClient(byte[] messageBytes, CancellationToken cancellationToken)
-        {
-            WebSocket? client;
-            lock (_authLock)
-            {
-                client = _authorizedClient;
-            }
-            if (client == null || client.State != WebSocketState.Open)
-            {
-                Console.Error.WriteLine("No authorized client is connected.");
-                return;
-            }
-
-            var outgoingMessage = new OutgoingMessage(client, messageBytes, WebSocketMessageType.Binary, true, cancellationToken);
-            _sendQueue.Add(outgoingMessage);
-        }
-
-        /// <summary>
-        /// クライアントからの受信処理を行うワーカー
-        /// </summary>
         private static async Task HandleClientAsync(WebSocket webSocket)
         {
-            var clientId = Guid.NewGuid().ToString();
+            var clientId = StringPool.Get(Guid.NewGuid().ToString());
             Console.WriteLine($"📡 WebSocket client {clientId} connected.");
 
             var buffer = new byte[2048];
@@ -100,9 +75,9 @@ namespace Andean.WebsocketServer
                             continue;
                         }
 
-                        bool isInit = incomingEvent.GameMessage.TypeUrl.Equals("type.googleapis.com/rtech.liveapi.Init");
+                        string typeUrl = StringPool.Get(incomingEvent.GameMessage.TypeUrl);
+                        bool isInit = typeUrl.Equals("type.googleapis.com/rtech.liveapi.Init");
 
-                        // 初回 Init イベントにより認定済みクライアントを設定
                         lock (_authLock)
                         {
                             if (_authorizedClient == null && isInit)
@@ -113,19 +88,18 @@ namespace Andean.WebsocketServer
                             }
                         }
 
-                        // 認定済みクライアント以外は無視
                         bool isAuthorized;
                         lock (_authLock)
                         {
                             isAuthorized = clientId == _authorizedClientId;
                         }
+
                         if (!isAuthorized)
                         {
                             Console.WriteLine($"⚠️ Client {clientId} is not authorized. Ignoring message.");
                             continue;
                         }
 
-                        // 通常イベントとして処理（別途処理ワーカーへ委譲）
                         var parsedMessage = Message.ParseMessage(incomingEvent.GameMessage);
                         if (parsedMessage != null)
                         {
@@ -133,7 +107,7 @@ namespace Andean.WebsocketServer
                         }
                         else
                         {
-                            Console.WriteLine($"⚠️ Unknown message type: {incomingEvent.GameMessage.TypeUrl}");
+                            Console.WriteLine($"⚠️ Unknown message type: {typeUrl}");
                         }
                     }
                     catch (Exception ex)
@@ -150,6 +124,7 @@ namespace Andean.WebsocketServer
             {
                 await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
                 Console.WriteLine($"🔌 WebSocket client {clientId} disconnected.");
+
                 lock (_authLock)
                 {
                     if (clientId == _authorizedClientId)
@@ -162,11 +137,27 @@ namespace Andean.WebsocketServer
                 }
             }
         }
-
         /// <summary>
-        /// 送信専用ワーカー。キューに追加されたメッセージを取り出して SendAsync で送信する。
-        /// 投げっぱなしのため、送信完了の待機は行いません。
+        /// 認定済みクライアントへメッセージを送信する（返答は不要、投げっぱなし）。
         /// </summary>
+        public static void SendMessageViaAuthorizedClient(byte[] messageBytes, CancellationToken cancellationToken)
+        {
+            WebSocket? client;
+            lock (_authLock)
+            {
+                client = _authorizedClient;
+            }
+
+            if (client == null || client.State != WebSocketState.Open)
+            {
+                Console.Error.WriteLine("No authorized client is connected.");
+                return;
+            }
+
+            var outgoingMessage = new OutgoingMessage(client, messageBytes, WebSocketMessageType.Binary, true, cancellationToken);
+            _sendQueue.Add(outgoingMessage);
+        }
+
         private static async void ProcessSendQueue()
         {
             foreach (var outgoingMessage in _sendQueue.GetConsumingEnumerable())
@@ -187,9 +178,6 @@ namespace Andean.WebsocketServer
         }
     }
 
-    /// <summary>
-    /// 送信するメッセージを表すクラス
-    /// </summary>
     public class OutgoingMessage
     {
         public WebSocket Client { get; }
