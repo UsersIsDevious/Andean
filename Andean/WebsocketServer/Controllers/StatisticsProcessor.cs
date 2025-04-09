@@ -151,7 +151,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case Response responseMsg:
                     {
-                        if (responseMsg.Result.ToString() == "type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings")
+                        if (responseMsg.Result != null && responseMsg.Result.ToString() == "type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings")
                         {
                             CustomMatch_SetSettings customMatch_SetSettingsMsg = responseMsg.Result.Unpack<CustomMatch_SetSettings>();
                             ProcessCustomMatch_SetSettings(customMatch_SetSettingsMsg);
