@@ -120,6 +120,8 @@ namespace AndeanWebUI.Services
                     LobbyJoinButtonEnabled = false;
                     LeaveLobbyButtonEnabled = false;
                     GameStartButtonEnabled = true;
+                    IsLaunched = false;
+                    IsMatchmaking = false;
                     IsLobbyJoined = false;
                     IsMatch = false;
                     break;

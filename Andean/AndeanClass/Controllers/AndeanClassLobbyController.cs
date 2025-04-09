@@ -1,4 +1,5 @@
 using Andean.ApexLiveAPI.Services;
+using AndeanWebUI.Services;
 using ApexLiveAPI.Services;
 using Newtonsoft.Json.Linq;
 using Rtech.Liveapi;
@@ -12,6 +13,9 @@ namespace AndeanClass.Controllers
         {
             lock (_lock)
             {
+                // 情報が来た時点でロビーにいるとみなす
+                ControlPanelHubService.SetLiveAPIStatus("LobbyJoin", "InLobby").Wait();
+
                 // 情報が更新されていない場合は何もしない
                 if (LobbyData.IsUpdateNeededLobbyPlayers(customMatch_LobbyPlayersMsg)) return;
 
@@ -144,6 +148,10 @@ namespace AndeanClass.Controllers
         {
             lock (_lock)
             {
+                // 情報が来た時点でロビーにいるとみなす
+                ControlPanelHubService.SetLiveAPIStatus("LobbyJoin", "InLobby").Wait();
+
+                // 情報が更新されていない場合は何もしない
                 if (LobbyData.IsUpdateNeededMatchSettings(customMatch_SetSettingsMsg)) return;
 
                 LobbySettings lobbySettings = new LobbySettings(customMatch_SetSettingsMsg);
