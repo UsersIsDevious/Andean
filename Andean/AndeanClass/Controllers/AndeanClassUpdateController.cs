@@ -1,12 +1,16 @@
-﻿using AndeanSystems;
+﻿using System.Text.Json;
+using AndeanSystems;
 using AndeanWebUI.Services;
 using ApexLiveAPI.Request;
+using Microsoft.Extensions.WebEncoders.Testing;
 using static AndeanClass.Controllers.AndeanClassController;
 
 namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
+        private static long test = 0;
+
         public override void Update()
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -23,14 +27,30 @@ namespace AndeanClass.Controllers
             }
             else
             {
-                if (ControlPanelHubService.IsLaunched && now - LastPollTime > 500)
+                if (ControlPanelHubService.IsLaunched)
                 {
-                    LastPollTime = now;
-                    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                    Request.GetLobbyPlayersAsync(cts.Token);
-                    Request.GetMatchSettingsAsync(cts.Token);
+                    if (now - LobbyData.LastRequestTime > 3000)
+                    {
+                        LobbyData.LastRequestTime = now;
+                        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                        Request.GetLobbyPlayersAsync(cts.Token).Wait();
+                        Request.GetMatchSettingsAsync(cts.Token).Wait();
+                        ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
+                    }
 
-                    if (LobbyData.LobbyPlayersLastPollTime - now > 3000 && LobbyData.MatchSettingsLastPollTime - now > 3000)
+                    if (now - LobbyData.LastCsvApplyTime > 100)
+                    {
+                        LobbyData.LastCsvApplyTime = now;
+                        if (LobbyData.CsvData?.Diff.Teams.Count > 0)
+                        {
+                            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+                            Request.GetLobbyPlayersAsync(cts.Token).Wait();
+                            Request.GetMatchSettingsAsync(cts.Token).Wait();
+                            ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
+                        }
+                    }
+
+                    if (LobbyData.LobbyPlayersLastPollTime - now > 10000 && LobbyData.MatchSettingsLastPollTime - now > 10000)
                     {
                         ControlPanelHubService.SetLiveAPIStatus("LobbyLeave", "Waiting for JoinLobby").Wait();
                     }
@@ -72,7 +92,7 @@ namespace AndeanClass.Controllers
 
                     // カメラをプレイヤー名に基づいて切り替え
                     var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                    Request.ChangeCameraAsync("name", player.Name, cts.Token, false);
+                    Request.ChangeCameraAsync("name", player.Name, cts.Token, false).Wait();
                 }
             }
         }
@@ -80,84 +100,69 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// lobbyにCSVデータを反映する
         /// </summary>
-        /// <param name="lobby">ロビー（CustomMatchのインスタンス）</param>
-        /// <param name="copyCSVData">CSVデータ（キー：teamId、値：CSVData）</param>
-        /// <returns>反映に成功した場合はtrue、CSVデータが空の場合はfalse</returns>
-        public static bool ApplyCSVData(CustomMatch lobby, Dictionary<int, CsvDataTeam> copyCSVData)
+        /// <param name="diff">LobbyPlayersとCSVデータの差を格納した（キー：teamId、値：CSVData）</param>
+        public static async Task<bool> ApplyCSVDataAsync(Dictionary<string, CsvDataElement> diff)
         {
-            // CSVデータが空の場合は何もせずfalseを返す
-            if (copyCSVData.Count == 0)
+            bool alreadyRequested = false;
+
+            if (diff == null || diff.Count == 0)
             {
+                Console.WriteLine("[ApplyCSVData] No differences found.");
                 return false;
             }
 
-            return false; // いったんここまで書いた。続けるときはこの行を削除すること。
+            var teamCsv = diff.FirstOrDefault();
 
-            // // 辞書の最初のキー（teamId）を取得
-            // int teamId = copyCSVData.Keys.First();
+            if (!int.TryParse(teamCsv.Key, out int teamId))
+            {
+                Console.WriteLine($"[ApplyCSVData] Invalid teamId: {teamCsv.Key}");
+                return false;
+            }
+            string csvTeamName = teamCsv.Value.TeamName;
 
-            // if (GlobalData.isPlayerSet.Success)
-            // {
-            //     // チーム情報を取得
-            //     Team team = lobby.GetTeam(teamId);
-            //     if (team != null)
-            //     {
-            //         // チーム名が異なる場合、チーム名を設定する
-            //         if (copyCSVData[teamId].TeamName != team.TeamName)
-            //         {
-            //             ApexCommon.SetTeamName(teamId, copyCSVData[teamId].TeamName);
-            //         }
-            //         // チームのロゴを設定する
-            //         team.SetTeamImg(copyCSVData[teamId].LogoUrl);
-            //     }
-            //     // 該当のCSVデータを削除する
-            //     copyCSVData.Remove(teamId);
-            //     GlobalData.isPlayerSet.Success = false;
-            //     GlobalData.isPlayerSet.Index = 0;
-            // }
-            // else
-            // {
-            //     // 現在のチームのプレイヤーリストから、指定されたインデックスのプレイヤー名を取得
-            //     CSVData csvData = copyCSVData[teamId];
-            //     // インデックスが範囲内か確認
-            //     if (GlobalData.isPlayerSet.Index < csvData.Players.Count)
-            //     {
-            //         string playerName = csvData.Players[GlobalData.isPlayerSet.Index];
-            //         if (GlobalData.PlayerNames.ContainsKey(playerName))
-            //         {
-            //             Player player = GlobalData.PlayerNames[playerName];
-            //             // チーム0のプレイヤーリストに対象プレイヤーのnucleusHashが含まれていれば処理を実行
-            //             Team team0 = lobby.GetTeam(0);
-            //             if (team0 != null && team0.Players.Contains(player.NucleusHash))
-            //             {
-            //                 ApexCommon.SetTeam(teamId, player.HardwareName, player.NucleusHash);
-            //             }
-            //         }
-            //         else if (playerName == null)
-            //         {
-            //             Console.WriteLine($"[APPLY CSV DATA] Player is empty, TEAM_ID: {teamId - 1}");
-            //         }
-            //         else
-            //         {
-            //             Console.WriteLine($"[APPLY CSV DATA] Player not found, TEAM_ID: {teamId - 1} PLAYER_NAME: {playerName}");
-            //         }
+            if (LobbyData.LobbyPlayersResponse?.Teams[teamId].Name != csvTeamName)
+            {
+                // チーム名の更新（using ブロックと例外処理付き）
+                try
+                {
+                    using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250)))
+                    {
+                        await Request.SetTeamNameAsync(teamId, csvTeamName, cts.Token);
+                        alreadyRequested = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ApplyCSVData] Error setting team name for team {teamId}: {ex.Message}");
+                }
+            }
 
-            //         // CSVのプレイヤーリストの末尾に達していれば、次はチーム設定へ切り替える
-            //         if (GlobalData.isPlayerSet.Index >= csvData.Players.Count - 1)
-            //         {
-            //             GlobalData.isPlayerSet.Success = true;
-            //         }
-            //         else
-            //         {
-            //             GlobalData.isPlayerSet.Index++;
-            //         }
-            //     }
-            //     else
-            //     {
-            //         Console.WriteLine($"[APPLY CSV DATA] Index out of range for TEAM_ID: {teamId}");
-            //     }
-            // }
-            // return true;
+            // CSVデータに登録されている各プレイヤーに対するチーム更新処理
+            foreach (var playerName in teamCsv.Value.Players)
+            {
+                if (!LobbyData.PlayerNames.TryGetValue(playerName, out Player? player))
+                {
+                    Console.WriteLine($"[ApplyCSVData] Player not found: {playerName}");
+                    continue;
+                }
+
+                if (alreadyRequested) break;
+
+                try
+                {
+                    using (var cts2 = new CancellationTokenSource(TimeSpan.FromMilliseconds(250)))
+                    {
+                        alreadyRequested = true;
+                        await Request.SetTeamAsync(teamId, player.HardwareName, player.NucleusHash, cts2.Token);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ApplyCSVData] Error setting team for player {playerName} in team {teamId}: {ex.Message}");
+                }
+            }
+            
+            return true;
         }
     }
 }

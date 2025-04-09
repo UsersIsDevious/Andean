@@ -50,6 +50,31 @@ namespace Andean.WebsocketServer
             }
         }
 
+        /// <summary>
+        /// 認定済みクライアントへメッセージを送信する（返答は不要、投げっぱなし）。
+        /// </summary>
+        public static void SendMessageViaAuthorizedClient(byte[] messageBytes, CancellationToken cancellationToken)
+        {
+            WebSocket? client;
+            lock (_authLock)
+            {
+                client = _authorizedClient;
+            }
+            if (client == null || client.State != WebSocketState.Open)
+            {
+                ControlPanelHubService.SetLiveAPIStatus("Disconnect", "Disconnected from Apex Legends.").Wait();
+                Console.Error.WriteLine("No authorized client is connected.");
+                return;
+            }
+
+            var outgoingMessage = new OutgoingMessage(client, messageBytes, WebSocketMessageType.Binary, true, cancellationToken);
+            _sendQueue.Add(outgoingMessage);
+        }
+
+        /// <summary>
+        /// クライアントからの受信処理を行うワーカー
+        /// </summary>
+
         private static async Task HandleClientAsync(WebSocket webSocket)
         {
             var clientId = StringPool.Get(Guid.NewGuid().ToString());

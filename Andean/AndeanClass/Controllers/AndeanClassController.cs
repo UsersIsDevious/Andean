@@ -46,17 +46,10 @@ namespace AndeanClass.Controllers
         /// </summary>
         public static Player WorldPlayer = new Player("World", 99, "World", "World").SetLegend("World");
         /// <summary>
-        /// CSVデータ
-        /// </summary>
-        public static CsvData? _csvData;
-        /// <summary>
         /// ロビー情報
         /// </summary>
         public static LobbyInfo LobbyData { get; set; } = new LobbyInfo();
-        /// <summary>
-        /// ロビー情報リクエストを最後に送信した時間
-        /// </summary>
-        public static long LastPollTime = 0;
+        
 
         public static void InitializeMatch(Init initMsg)
         {
