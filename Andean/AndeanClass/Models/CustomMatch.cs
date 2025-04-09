@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AndeanSystems;
 
 namespace AndeanClass
 {
@@ -147,7 +145,7 @@ namespace AndeanClass
         /// <summary>
         /// スコア設定の保存
         /// </summary>
-        public Dictionary<string, object> ScoreSettings { get; set; }
+        public ScoreSettingConfig ScoreSettings { get; set; }
 
         /// <summary>
         /// コンストラクタ
@@ -179,7 +177,7 @@ namespace AndeanClass
             PacketLists = new Dictionary<string, ShortPacket>();
             Rings = new List<Ring>();
             MapOffset = new double[] { 0, 0, 1 };
-            ScoreSettings = new Dictionary<string, object>();
+            ScoreSettings = new ScoreSettingConfig();
         }
 
         /// <summary>
@@ -311,7 +309,7 @@ namespace AndeanClass
         /// スコア設定を更新する
         /// </summary>
         /// <param name="scoreSettings">スコア設定（キーと値のペア）</param>
-        public void SetScoreSettings(Dictionary<string, object> scoreSettings)
+        public void SetScoreSettings(ScoreSettingConfig scoreSettings)
         {
             ScoreSettings = scoreSettings;
         }
