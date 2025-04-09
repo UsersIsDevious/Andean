@@ -69,6 +69,7 @@ namespace AndeanWebUI.Hubs
             LobbyJoinButtonEnabled = false;
             await BroadcastStatus();
         }
+
         /// <summary>
         /// クライアントから送信された JSON（CSV データを含む）を受け取り、ログ出力や必要な処理を行います。
         /// </summary>
@@ -107,6 +108,82 @@ namespace AndeanWebUI.Hubs
             {
                 Console.WriteLine($"Unexpected error: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// スコアを計算し結果を返す関数
+        /// </summary>
+        /// <returns>
+        /// スコアが更新されなかった場合は null、
+        /// 更新された場合はスコアボードの文字列を返す
+        /// </returns>
+        public string? CalcScore()
+        {
+            string scoreBoard = "";
+
+            CustomMatch match = AndeanClassController._match;
+
+            // matchが存在しない場合はfalseを返す
+            if (match == null)
+            {
+                return null;
+            }
+
+            // 設定情報を取得し、マッチに適用する
+            var scoreSetting = Config.Score_Setting;
+            match.SetScoreSettings(scoreSetting);
+            int killPoint = scoreSetting.Kill_Point;
+            int maxKill = scoreSetting.Max_Kill;
+
+            // チームごとにスコアを算出するループ
+            // JavaScriptでは for (let i = 2; i < match.maxTeams + 2; i++) となっているので同様に実装
+            for (uint i = 2; i < match.MaxTeams + 2; i++)
+            {
+                int teamScore = 0;
+                var team = match.GetTeam(i);
+
+                if (team == null)
+                {
+                    continue;
+                }
+
+                // teamが存在し、かつプレイヤーがいる場合
+                // ※ team.Players が List 型の場合、Count プロパティを使用
+                if (team.Players != null && team.Players.Count > 0)
+                {
+                    // ランクに応じたポイントを取得（配列のインデックスは 0 から始まるため team.rank - 1）
+                    int rankPoint = scoreSetting.Rank_Points[((int)team.Rank) - 1];
+
+                    // 各プレイヤーのキル数に基づいてチームスコアを加算
+                    foreach (var playerId in team.Players)
+                    {
+                        // プレイヤー情報を取得し、キル数を取得
+                        var player = match.GetPlayer(playerId);
+                        int kill = 0;
+                        if (player != null && player.Kills != null)
+                        {
+                            kill = (int)player.Kills.Total;
+                        }
+                        if (kill > maxKill)
+                        {
+                            teamScore += maxKill * killPoint;
+                        }
+                        else
+                        {
+                            teamScore += kill * killPoint;
+                        }
+                    }
+
+                    // チームスコアにランクポイントを加える
+                    team.Score = (uint)(teamScore + rankPoint);
+                }
+
+                // スコアボードにチームのランク、総キル数、スコアを追加
+                scoreBoard += $"{team.Rank}\t{team.TotalKills}\t{team.Score}\n";
+            }
+
+            Console.WriteLine("[GET SCORE] scoreBoard " + scoreBoard);
+            return scoreBoard;
         }
 
         /// <summary>
