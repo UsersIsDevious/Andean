@@ -14,6 +14,11 @@ namespace AndeanClass
         public string LobbyId { get; set; } = string.Empty;
 
         /// <summary>
+        /// ロビー情報リクエストを最後に送信した時間
+        /// </summary>
+        public long LastRequestTime { get; set; } = 0;
+
+        /// <summary>
         /// 最後にロビープレイヤー情報を取得した時間（Unix時間, ミリ秒）
         /// </summary>
         public long LobbyPlayersLastPollTime { get; set; } = 0;
@@ -22,6 +27,16 @@ namespace AndeanClass
         /// 最後にロビー設定情報を取得した時間（Unix時間, ミリ秒）
         /// </summary>
         public long MatchSettingsLastPollTime { get; set; } = 0;
+
+        /// <summary>
+        /// CSVデータ
+        /// </summary>
+        public CsvData? CsvData { get; set; } = null;
+
+        /// <summary>
+        /// 重複を許さないプレイヤー名のリスト(キー：プレイヤー名、値：Player型のインスタンス)
+        /// </summary>
+        public Dictionary<string, Player> PlayerNames { get; set; } = new Dictionary<string, Player>();
 
         /// <summary>
         /// CustomMatch_GetLobbyPlayersAsyncのレスポンスを保持する変数
@@ -46,13 +61,20 @@ namespace AndeanClass
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="lastPollTime">最後に情報を取得した時間（Unix時間, ミリ秒）</param>
-        /// <param name="lobbyPlayersResponse">CustomMatch_GetLobbyPlayersAsyncのレスポンス</param>
+        /// <param name="lobbyId">ロビーのID</param>
+        /// <param name="csvData">CSVデータ</param>
+        /// <param name="playerNames">プレイヤー名のリスト</param>
+        /// <param name="lastPollTime">ロビー情報リクエストを最後に送信した時間</param>
+        /// <param name="lobbyPlayersLastPollTime">最後にロビープレイヤー情報を取得した時間</param>
+        /// <param name="matchSettingsLastPollTime">最後にロビー設定情報を取得した時間</param>
         /// <param name="matchSettingsResponse">CustomMatch_GetMatchSettingsAsyncのレスポンス</param>
-        /// <param name="controlHubLobbyPlayers">コントロールパネル用のロビープレイヤー情報</param>
         /// <param name="controlHubMatchSettings">コントロールパネル用のロビー設定情報</param>
+        /// <param name="lobbyPlayersResponse">CustomMatch_GetLobbyPlayersAsyncのレスポンス</param>
+        /// <param name="controlHubLobbyPlayers">コントロールパネル用のロビープレイヤー情報</param>
         public LobbyInfo(
             string lobbyId = "",
+            CsvData? csvData = null,
+            Dictionary<string, Player>? playerNames = null,
             long lastPollTime = 0,
             long lobbyPlayersLastPollTime = 0,
             long matchSettingsLastPollTime = 0,
@@ -63,6 +85,9 @@ namespace AndeanClass
         )
         {
             LobbyId = lobbyId;
+            CsvData = csvData;
+            PlayerNames = playerNames ?? new Dictionary<string, Player>();
+            LastRequestTime = lastPollTime;
             LobbyPlayersLastPollTime = lobbyPlayersLastPollTime;
             MatchSettingsLastPollTime = matchSettingsLastPollTime;
             MatchSettingsResponse = matchSettingsResponse;
@@ -82,6 +107,7 @@ namespace AndeanClass
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             LobbyPlayersLastPollTime = now;
 
+            // ロビー情報がnullまたは新しいロビー情報と異なる場合、更新が必要
             if (LobbyPlayersResponse == null || LobbyPlayersResponse != newLobbyInfo)
             {
                 LobbyPlayersResponse = newLobbyInfo;
@@ -127,6 +153,15 @@ namespace AndeanClass
         public void SetMatchSettings(LobbySettings controlHubMatchSettings)
         {
             ControlHubMatchSettings = controlHubMatchSettings;
+        }
+
+        /// <summary>
+        /// CSVデータを設定するメソッド
+        /// </summary>
+        /// <param name="csvData">CSVデータ</param>
+        public void SetCsvData(CsvData csvData)
+        {
+            CsvData = csvData;
         }
     }
 }
