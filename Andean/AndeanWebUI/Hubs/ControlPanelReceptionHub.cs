@@ -62,6 +62,7 @@ namespace AndeanWebUI.Hubs
             catch (Exception ex)
             {
                 LastApexResponse = $"Error: {ex.Message}";
+                await Clients.Caller.SendAsync("RequestReceived", "StartApex", "リクエストを受信しました");
                 Console.WriteLine(LastApexResponse);
             }
 
