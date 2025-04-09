@@ -82,7 +82,7 @@ namespace AndeanClass.Controllers
                 }
 
                 // --- 3. CSV内プレイヤー情報の処理 ---
-                if (csvData != null && diffCSVData != null)
+                if (csvData != null && diffCSVData != null && ControlPanelHubService.AutoMovementLobbyPlayersEnabled)
                 {
                     foreach (var kvp in csvData)
                     {
@@ -101,7 +101,7 @@ namespace AndeanClass.Controllers
                             {
                                 if (LobbyPlayer == null)
                                 {
-                                    Console.WriteLine($"[APPLY CSV DATA] Player not found in lobby: {playerName}");
+                                    // Console.WriteLine($"[APPLY CSV DATA] Player not found in lobby: {playerName}");
                                 }
                                 else if (LobbyPlayer.TeamId.ToString() == "0" && LobbyPlayer.TeamId.ToString() != teamId)
                                 {
@@ -114,13 +114,15 @@ namespace AndeanClass.Controllers
                             }
                             else
                             {
-                                Console.WriteLine($"[APPLY CSV DATA] Player not found in CSV: {playerName}");
+                                // Console.WriteLine($"[APPLY CSV DATA] Player not found in CSV: {playerName}");
                             }
                         }
+
                         if (teamRename.TryGetValue(teamId, out bool renameNeeded) && renameNeeded)
                         {
                             differenceFound = true;
                         }
+
                         var returnCSVData = UpdateCopyCsvData(diffCSVData, teamId, csvEntry, differenceFound);
 
                         foreach (var setPlayer in alreadySetPlayers)

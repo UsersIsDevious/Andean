@@ -36,6 +36,7 @@ namespace AndeanWebUI.Hubs
                 AppConfig = _config,
                 LastLobbyResponse = LastLobbyResponse,
                 LastApexResponse = LastApexResponse,
+                LobbyId = LobbyData.LobbyId,
                 teamData = LobbyData.ControlHubLobbyPlayers,
                 lobbySettings = LobbyData.ControlHubMatchSettings,
                 UIStatus = new

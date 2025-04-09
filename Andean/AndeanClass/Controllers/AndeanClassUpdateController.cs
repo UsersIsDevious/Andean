@@ -146,7 +146,7 @@ namespace AndeanClass.Controllers
                     continue;
                 }
 
-                if (alreadyRequested) break;
+                if (alreadyRequested || ControlPanelHubService.AutoMovementLobbyPlayersEnabled) break;
 
                 try
                 {

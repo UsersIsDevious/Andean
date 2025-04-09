@@ -38,7 +38,7 @@ namespace AndeanWebUI.Services
         public static uint MaxTeam { get; set; } = 20;
         public static string GameStatus { get; set; } = "NoSignal";
         public static bool ObserverSwitchEnabled { get; set; } = true;
-
+        public static bool AutoMovementLobbyPlayersEnabled { get; set; } = false;
 
 public static async Task BroadcastStatusAsync()
         {
