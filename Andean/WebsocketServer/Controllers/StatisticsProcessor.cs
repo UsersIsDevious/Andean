@@ -153,7 +153,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case Response responseMsg:
                     {
-                        if (responseMsg.Result != null && StringPool.Get(responseMsg.Result.ToString()) == CustomMatchSetSettingsType)
+                        if (responseMsg.Result != null && responseMsg.Result.TypeUrl == CustomMatchSetSettingsType)                            
                         {
                             CustomMatch_SetSettings customMatch_SetSettingsMsg = responseMsg.Result.Unpack<CustomMatch_SetSettings>();
                             ProcessCustomMatch_SetSettings(customMatch_SetSettingsMsg);

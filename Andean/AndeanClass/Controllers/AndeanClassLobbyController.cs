@@ -219,7 +219,7 @@ namespace AndeanClass.Controllers
                 ControlPanelHubService.SetLiveAPIStatus("LobbyJoin", "InLobby").Wait();
 
                 // 情報が更新されていない場合は何もしない
-                if (LobbyData.IsUpdateNeededMatchSettings(customMatch_SetSettingsMsg)) return;
+                LobbyData.IsUpdateNeededMatchSettings(customMatch_SetSettingsMsg);
 
                 LobbySettings lobbySettings = new LobbySettings(customMatch_SetSettingsMsg);
 
@@ -234,9 +234,21 @@ namespace AndeanClass.Controllers
                 PlaylistResult? playlist_r5 = ApexPlaylistService.PlaylistsData;
                 if (playlist_r5 == null)
                 {
-                    Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} not found in PlaylistsData");
-                    return;
+                    Console.WriteLine($"[CustomMatch_SetSettings] PlaylistsData is null, fetching metadata...");
+
+                    ApexPlaylistService.GetPlaylistMetadataAsync().Wait();
+
+                    playlist_r5 = ApexPlaylistService.PlaylistsData;
+
+                    if (ApexPlaylistService.PlaylistsData == null || playlist_r5 == null)
+                    {
+                        Console.WriteLine($"[CustomMatch_SetSettings] PlaylistsData is still null after fetching metadata");
+                        return;
+                    }
                 }
+
+                string? categoryKey = null;
+                PlaylistEntry? entryValue = null;
 
                 foreach (var category in playlist_r5.Categories)
                 {
@@ -244,33 +256,44 @@ namespace AndeanClass.Controllers
                     {
                         if (entry.Key == playlistName)
                         {
-                            lobbySettings.SetSettings(
-                                uint.TryParse(entry.Value.MaxPlayers, out var maxPlayers) ? maxPlayers : 60,
-                                uint.TryParse(entry.Value.MaxTeams, out var maxTeams) ? maxTeams : 20,
-                                category.Key ?? "",
-                                entry.Value.Map ?? ""
-                            );
-
-                            // ロビー情報を更新
-                            _lobby.SetPlaylistInfo(
-                                playlistName,
-                                maxPlayers,
-                                maxTeams,
-                                category.Key ?? "",
-                                entry.Value.Map ?? "",
-                                entry.Value.MapName ?? "",
-                                customMatch_SetSettingsMsg.AdminChat,
-                                customMatch_SetSettingsMsg.TeamRename,
-                                customMatch_SetSettingsMsg.SelfAssign,
-                                customMatch_SetSettingsMsg.AimAssist,
-                                customMatch_SetSettingsMsg.AnonMode
-                            );
+                            categoryKey = category.Key;
+                            entryValue = entry.Value;
+                            break;
                         }
                     }
                 }
+
+                if (string.IsNullOrEmpty(categoryKey) || entryValue == null)
+                {
+                    Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} not found in PlaylistsData");
+                    return;
+                }
+
+                lobbySettings.SetSettings(
+                    uint.TryParse(entryValue.MaxPlayers, out var maxPlayers) ? maxPlayers : 60,
+                    uint.TryParse(entryValue.MaxTeams, out var maxTeams) ? maxTeams : 20,
+                    categoryKey ?? "",
+                    entryValue.Map ?? ""
+                );
+
+                // ロビー情報を更新
+                _lobby.SetPlaylistInfo(
+                    playlistName,
+                    maxPlayers,
+                    maxTeams,
+                    categoryKey ?? "",
+                    entryValue.Map ?? "",
+                    entryValue.MapName ?? "",
+                    customMatch_SetSettingsMsg.AdminChat,
+                    customMatch_SetSettingsMsg.TeamRename,
+                    customMatch_SetSettingsMsg.SelfAssign,
+                    customMatch_SetSettingsMsg.AimAssist,
+                    customMatch_SetSettingsMsg.AnonMode
+                );
 
                 LobbyData.SetMatchSettings(lobbySettings);
             }
         }
     }
 }
+

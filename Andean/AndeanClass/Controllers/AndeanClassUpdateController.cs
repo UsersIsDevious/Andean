@@ -108,7 +108,6 @@ namespace AndeanClass.Controllers
 
             if (diff == null || diff.Count == 0)
             {
-                Console.WriteLine("[ApplyCSVData] No differences found.");
                 return false;
             }
 

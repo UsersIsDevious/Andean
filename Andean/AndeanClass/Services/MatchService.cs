@@ -181,7 +181,7 @@ namespace AndeanClass.Services
 
                         if (startRing.Category == "ringStartClosing" &&
                             endRing.Category == "ringFinishedClosing" &&
-                            startRing.Data["Stage"] == endRing.Data["Stage"])
+                            startRing.Data["stage"] == endRing.Data["stage"])
                         {
                             // matchBase.PacketLists[startRing_t].Events 内の "ringStartClosing" イベントを検索し、endCenter を設定
                             if (_match.PacketLists.TryGetValue(startRing_t, out ShortPacket? packet))
