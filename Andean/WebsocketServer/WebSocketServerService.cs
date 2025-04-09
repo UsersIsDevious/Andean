@@ -32,7 +32,7 @@ namespace Andean.WebsocketServer
         public static async Task StartAsync()
         {
             _httpListener.Start();
-            Console.WriteLine($"\u2705 WebSocket Server is listening on ws://127.0.0.1:{Port}/ and ws://localhost:{Port}/");
+            Console.WriteLine($"✅ WebSocket Server is listening on ws://127.0.0.1:{Port}/ and ws://localhost:{Port}/");
 
             while (true)
             {
@@ -53,7 +53,7 @@ namespace Andean.WebsocketServer
         private static async Task HandleClientAsync(WebSocket webSocket)
         {
             var clientId = StringPool.Get(Guid.NewGuid().ToString());
-            Console.WriteLine($"\ud83d\udcf1 WebSocket client {clientId} connected.");
+            Console.WriteLine($"📡 WebSocket client {clientId} connected.");
 
             var buffer = new byte[2048];
 
@@ -71,7 +71,7 @@ namespace Andean.WebsocketServer
 
                         if (incomingEvent.GameMessage == null)
                         {
-                            Console.WriteLine("\u26a0\ufe0f Received message with null GameMessage. Skipping.");
+                            Console.WriteLine("⚠️ Received message with null GameMessage. Skipping.");
                             continue;
                         }
 
@@ -84,7 +84,7 @@ namespace Andean.WebsocketServer
                             {
                                 _authorizedClient = webSocket;
                                 _authorizedClientId = clientId;
-                                Console.WriteLine($"\u2705 Client {clientId} is set as the authorized client (Init received).");
+                                Console.WriteLine($"✅ Client {clientId} is set as the authorized client (Init received).");
                             }
                         }
 
@@ -96,7 +96,7 @@ namespace Andean.WebsocketServer
 
                         if (!isAuthorized)
                         {
-                            Console.WriteLine($"\u26a0\ufe0f Client {clientId} is not authorized. Ignoring message.");
+                            Console.WriteLine($"⚠️ Client {clientId} is not authorized. Ignoring message.");
                             continue;
                         }
 
@@ -107,23 +107,23 @@ namespace Andean.WebsocketServer
                         }
                         else
                         {
-                            Console.WriteLine($"\u26a0\ufe0f Unknown message type: {typeUrl}");
+                            Console.WriteLine($"⚠️ Unknown message type: {typeUrl}");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.Error.WriteLine($"\u274c WebSocket error from {clientId}: {ex}");
+                        Console.Error.WriteLine($"❌ WebSocket error from {clientId}: {ex}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"\u274c WebSocket error from {clientId}: {ex}");
+                Console.Error.WriteLine($"❌ WebSocket error from {clientId}: {ex}");
             }
             finally
             {
                 await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-                Console.WriteLine($"\ud83d\udd0c WebSocket client {clientId} disconnected.");
+                Console.WriteLine($"🔌 WebSocket client {clientId} disconnected.");
 
                 lock (_authLock)
                 {
@@ -132,7 +132,7 @@ namespace Andean.WebsocketServer
                         _authorizedClient = null;
                         _authorizedClientId = null;
                         ControlPanelHubService.SetLiveAPIStatus("Disconnect", "Disconnected from Apex Legends.").Wait();
-                        Console.WriteLine($"\ud83d\udd04 Authorized client {clientId} disconnected. Waiting for next Init event...");
+                        Console.WriteLine($"🔄 Authorized client {clientId} disconnected. Waiting for next Init event...");
                     }
                 }
             }
@@ -172,7 +172,7 @@ namespace Andean.WebsocketServer
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"\u274c Send error: {ex}");
+                    Console.Error.WriteLine($"❌ Send error: {ex}");
                 }
             }
         }
