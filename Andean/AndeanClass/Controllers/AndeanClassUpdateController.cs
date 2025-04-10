@@ -50,11 +50,6 @@ namespace AndeanClass.Controllers
                             ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
                         }
                     }
-
-                    if (LobbyData.LobbyPlayersLastPollTime - now > 10000 && LobbyData.MatchSettingsLastPollTime - now > 10000)
-                    {
-                        ControlPanelHubService.SetLiveAPIStatus("LobbyLeave", "Waiting for JoinLobby").Wait();
-                    }
                 }
             }
         }

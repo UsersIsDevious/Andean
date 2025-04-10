@@ -8,7 +8,7 @@ using AndeanWebUI.Services;
 using static AndeanClass.Controllers.AndeanClassController;
 using Newtonsoft.Json;
 using ApexLiveAPI.Message;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace Andean.WebsocketServer.Controllers
 {
@@ -39,6 +39,12 @@ namespace Andean.WebsocketServer.Controllers
 
         private static readonly string CustomMatchSetSettingsType = StringPool.Get("type.googleapis.com/rtech.liveapi.CustomMatch_SetSettings");
 
+        private static readonly string RequestStatusType = StringPool.Get("type.googleapis.com/rtech.liveapi.RequestStatus");
+
+        private static readonly string RequestStatusConnectedMessage = StringPool.Get("Not connected to a custom match and this request requires you to have created/joined a lobby. Send CustomMatch_CreateLobby or CustomMatch_JoinLobby first");
+
+        private static readonly string RequestStatusDisconnectedMessage = StringPool.Get("Client is not connected to a server. Ensure you are connected before proceeding.");
+
         static StatisticsProcessor()
         {
             // サーバー起動時のタイムスタンプでログファイル名を決定（例: 20250222_132800_log.txt）
@@ -67,7 +73,7 @@ namespace Andean.WebsocketServer.Controllers
 
             string logContent = JsonConvert.SerializeObject(data);
 
-            // 非同期にファイルへ追記（ファイルは ./output フォルダ配下に作成）
+            // 非同期にファイルへ追記（ファイルは log フォルダ配下に作成）
             Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, _logFileName, logContent, FileWriteMode.JsonAppend));
         }
 
@@ -101,7 +107,7 @@ namespace Andean.WebsocketServer.Controllers
                         {
                             // Init メッセージの場合、クライアントを認定済みに設定
                             ClientManagementService.SetAuthorizedClient(clientId);
-                            await ControlPanelHubService.SetLiveAPIStatus("Connect", "GameLaunched");
+                            await ControlPanelHubService.SetLiveAPIStatus("Disconnected", "Waiting for Connecting");
                             Console.WriteLine("[MatchService] Platform 指定あり: readPlaylists_r5() を実行します。");
                         }
                         break;
@@ -153,11 +159,33 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case Response responseMsg:
                     {
-                        if (responseMsg.Result != null && responseMsg.Result.TypeUrl == CustomMatchSetSettingsType)                            
+                        if (responseMsg.Result != null)
                         {
-                            CustomMatch_SetSettings customMatch_SetSettingsMsg = responseMsg.Result.Unpack<CustomMatch_SetSettings>();
-                            ProcessCustomMatch_SetSettings(customMatch_SetSettingsMsg);
+                            if (responseMsg.Result.TypeUrl == CustomMatchSetSettingsType)
+                            {
+                                CustomMatch_SetSettings customMatch_SetSettingsMsg = responseMsg.Result.Unpack<CustomMatch_SetSettings>();
+                                ProcessCustomMatch_SetSettings(customMatch_SetSettingsMsg);
+                            }
+                            else if (responseMsg.Result.TypeUrl == RequestStatusType)
+                            {
+                                RequestStatus requestStatusMsg = responseMsg.Result.Unpack<RequestStatus>();
+                                if (requestStatusMsg.Status == RequestStatusConnectedMessage)
+                                {
+                                    ControlPanelHubService.SetLiveAPIStatus("Connected", "Waiting for JoinLobby").Wait();
+                                    break;
+                                }
+
+                                if (requestStatusMsg.Status == RequestStatusDisconnectedMessage)
+                                {
+                                    ControlPanelHubService.SetLiveAPIStatus("Disconnected", "Waiting for Connecting").Wait();
+                                    break;
+                                }
+                                    
+                                Console.WriteLine($"[RequestStatus] {requestStatusMsg} のリクエストが完了しました。");
+                                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "UnkownResponse.json", requestStatusMsg.Status, FileWriteMode.JsonAppend)).Wait();
+                            }
                         }
+
                         break;
                     }
                 case MatchSetup matchSetupMsg:
@@ -357,13 +385,22 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case ObserverAnnotation observerAnnotationMsg:
                     {
-                        // 現状何も処理しない
+                        string observerAnnotationMsgStr = System.Text.Json.JsonSerializer.Serialize(observerAnnotationMsg, new JsonSerializerOptions { WriteIndented = true });
+                        Console.WriteLine($"⚠️ Unknown message type received: {observerAnnotationMsgStr}");
+                        // 非同期にファイルへ追記（ファイルは log フォルダ配下に作成）
+                        Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "ObserverAnnotation.json", observerAnnotationMsgStr, FileWriteMode.JsonAppend)).Wait();
                         break;
                     }
                 default:
                     {
                         // 未定義のイベントは、必要に応じて統計情報に更新
-                        //_currentMatch?.UpdateStatistics(message);
+                        // _currentMatch?.UpdateStatistics(message);
+
+                        string messageType = message.GetType().Name;
+                        string messageStr = System.Text.Json.JsonSerializer.Serialize(message, new JsonSerializerOptions { WriteIndented = true });
+                        Console.WriteLine($"⚠️ Unknown message type received: {messageStr}");
+                        // 非同期にファイルへ追記（ファイルは log フォルダ配下に作成）
+                        Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "UnknownMessages.json", messageStr, FileWriteMode.JsonAppend)).Wait();
                         break;
                     }
             }
