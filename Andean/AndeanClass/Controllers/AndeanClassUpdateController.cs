@@ -33,9 +33,11 @@ namespace AndeanClass.Controllers
                     if (now - LobbyData.LastRequestTime > 3000)
                     {
                         LobbyData.LastRequestTime = now;
-                        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                        Request.GetLobbyPlayersAsync(cts.Token).Wait();
-                        Request.GetMatchSettingsAsync(cts.Token).Wait();
+                        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
+                        {
+                            Request.GetLobbyPlayersAsync(cts.Token).Wait();
+                            Request.GetMatchSettingsAsync(cts.Token).Wait();
+                        }
                         ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
                     }
 
@@ -44,9 +46,11 @@ namespace AndeanClass.Controllers
                         LobbyData.LastCsvApplyTime = now;
                         if (LobbyData.CsvData?.Diff.Teams.Count > 0)
                         {
-                            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                            Request.GetLobbyPlayersAsync(cts.Token).Wait();
-                            Request.GetMatchSettingsAsync(cts.Token).Wait();
+                            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
+                            {
+                                Request.GetLobbyPlayersAsync(cts.Token).Wait();
+                                Request.GetMatchSettingsAsync(cts.Token).Wait();
+                            }
                             ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
                         }
                     }
@@ -156,7 +160,7 @@ namespace AndeanClass.Controllers
                     Console.WriteLine($"[ApplyCSVData] Error setting team for player {playerName} in team {teamId}: {ex.Message}");
                 }
             }
-            
+
             return true;
         }
     }
