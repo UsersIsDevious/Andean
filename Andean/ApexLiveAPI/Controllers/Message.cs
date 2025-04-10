@@ -62,6 +62,9 @@ namespace ApexLiveAPI.Message
             { "type.googleapis.com/rtech.liveapi.ObserverAnnotation", new Func<IMessage>(() => new ObserverAnnotation()) }
         };
 
+        // MessageParser を非ジェネリックなオブジェクトとしてキャッシュする
+        private static readonly Dictionary<string, object> _parserCache = new();
+
         /// <summary>
         /// Any 型の gameMessage を @type に応じた Protobuf メッセージへデシリアライズします。
         /// </summary>
@@ -69,33 +72,72 @@ namespace ApexLiveAPI.Message
         /// <returns>デシリアライズされた IMessage、未対応の場合は null</returns>
         public static IMessage? ParseMessage(Any gameMessage)
         {
-            if (_messageParsers.TryGetValue(gameMessage.TypeUrl, out var parserObj))
+            if (!_messageParsers.TryGetValue(gameMessage.TypeUrl, out var parserFactoryObj) || parserFactoryObj is not Func<IMessage> parserFactory)
             {
-                if (parserObj is Func<IMessage> parserFunc)
-                {
-                    // まず空のインスタンスを生成
-                    IMessage instance = parserFunc();
-                    // その型を取得
-                    System.Type messageType = instance.GetType();
-                    // MessageParser は各型に静的に定義されているので、リフレクションで Parser プロパティを取得する
-                    var parserProperty = messageType.GetProperty("Parser");
-                    if (parserProperty != null)
-                    {
-                        var parser = parserProperty.GetValue(null);
-                        // Unpack<T>() のオーバーロードが複数あるため、パラメーターが0個のものを選ぶ
-                        var unpackMethod = typeof(Any)
-                            .GetMethods()
-                            .FirstOrDefault(m => m.Name == nameof(Any.Unpack) && m.GetParameters().Length == 0);
-                        if (unpackMethod != null)
-                        {
-                            var genericMethod = unpackMethod.MakeGenericMethod(messageType);
-                            return (IMessage?)genericMethod.Invoke(gameMessage, null);
-                        }
-                    }
-                }
+                Console.WriteLine($"⚠️ Unknown message type received: {gameMessage.TypeUrl}");
+                return null;
             }
-            Console.WriteLine($"⚠️ Unknown message type received: {gameMessage.TypeUrl}");
-            return null;
+
+            // キャッシュから MessageParser を取得。無ければ生成してキャッシュする
+            if (!_parserCache.TryGetValue(gameMessage.TypeUrl, out var cachedParser))
+            {
+                IMessage instance = parserFactory();
+                var parserProperty = instance.GetType().GetProperty("Parser");
+                if (parserProperty?.GetValue(null) is not object parser)
+                {
+                    Console.WriteLine($"⚠️ Parser not found for {gameMessage.TypeUrl}");
+                    return null;
+                }
+                _parserCache[gameMessage.TypeUrl] = parser;
+                cachedParser = parser;
+            }
+
+            // dynamic を使って ParseFrom(byte[]) を呼び出す
+            try
+            {
+                return ((dynamic)cachedParser).ParseFrom(gameMessage.Value);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️ Error parsing {gameMessage.TypeUrl}: {ex}");
+                return null;
+            }
         }
+        
+        /// <summary>
+        /// Any 型の gameMessage を @type に応じた Protobuf メッセージへデシリアライズします。
+        /// </summary>
+        /// <param name="gameMessage">Any 型のメッセージ</param>
+        /// <returns>デシリアライズされた IMessage、未対応の場合は null</returns>
+        //public static IMessage? ParseMessage(Any gameMessage)
+        //{
+        //    if (_messageParsers.TryGetValue(gameMessage.TypeUrl, out var parserObj))
+        //    {
+        //        if (parserObj is Func<IMessage> parserFunc)
+        //        {
+        //            // まず空のインスタンスを生成
+        //            IMessage instance = parserFunc();
+        //            // その型を取得
+        //            System.Type messageType = instance.GetType();
+        //            // MessageParser は各型に静的に定義されているので、リフレクションで Parser プロパティを取得する
+        //            var parserProperty = messageType.GetProperty("Parser");
+        //            if (parserProperty != null)
+        //            {
+        //                var parser = parserProperty.GetValue(null);
+        //                // Unpack<T>() のオーバーロードが複数あるため、パラメーターが0個のものを選ぶ
+        //                var unpackMethod = typeof(Any)
+        //                    .GetMethods()
+        //                    .FirstOrDefault(m => m.Name == nameof(Any.Unpack) && m.GetParameters().Length == 0);
+        //                if (unpackMethod != null)
+        //                {
+        //                    var genericMethod = unpackMethod.MakeGenericMethod(messageType);
+        //                    return (IMessage?)genericMethod.Invoke(gameMessage, null);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    Console.WriteLine($"⚠️ Unknown message type received: {gameMessage.TypeUrl}");
+        //    return null;
+        //}
     }
 }

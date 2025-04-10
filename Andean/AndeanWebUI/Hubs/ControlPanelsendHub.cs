@@ -7,7 +7,7 @@ using static AndeanClass.Controllers.AndeanClassController;
 
 namespace AndeanWebUI.Hubs
 {
-    public partial class ControlPanelHub : Hub, IAndeanWebUI
+    public partial class ControlPanelHub : Hub
     {
         private readonly AppConfig _config = ConfigService.Config;
 

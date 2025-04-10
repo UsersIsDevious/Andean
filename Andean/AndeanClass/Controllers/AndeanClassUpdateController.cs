@@ -10,7 +10,8 @@ namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
-        public override void Update()
+        public override Task Update()
+
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -54,6 +55,7 @@ namespace AndeanClass.Controllers
                     }
                 }
             }
+            return Task.CompletedTask;
         }
 
 

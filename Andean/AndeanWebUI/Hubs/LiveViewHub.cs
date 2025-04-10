@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace AndeanWebUI.Hubs
 {
-    public class LiveViewHub : Hub, IAndeanWebUI
+    public class LiveViewHub : Hub
     {
         // 接続時に自身を SystemShutdownService に登録
         public override async Task OnConnectedAsync()

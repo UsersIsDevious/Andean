@@ -12,13 +12,18 @@ namespace Andean.WebsocketServer.Services
         /// </summary>
         public static string? AuthorizedClientId { get; private set; } = null;
 
+        private static readonly object _lock = new();
+
         /// <summary>
         /// クライアントを認定済みに設定します。
         /// </summary>
         public static void SetAuthorizedClient(string clientId)
         {
-            AuthorizedClientId = clientId;
-            Console.WriteLine($"Authorized client set: {clientId}");
+            lock (_lock)
+            {
+                AuthorizedClientId = clientId;
+                Console.WriteLine($"Authorized client set: {clientId}");
+            }
         }
 
         /// <summary>
@@ -26,8 +31,11 @@ namespace Andean.WebsocketServer.Services
         /// </summary>
         public static void ClearAuthorizedClient()
         {
-            AuthorizedClientId = null;
-            Console.WriteLine("Authorized client cleared.");
+            lock (_lock)
+            {
+                AuthorizedClientId = null;
+                Console.WriteLine("Authorized client cleared.");
+            }
         }
     }
 }

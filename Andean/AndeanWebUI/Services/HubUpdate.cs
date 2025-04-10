@@ -6,11 +6,11 @@ namespace Andean.AndeanWebUI.Services
 {
     public class HubUpdate : AndeanSystem
     {
-        public override async void Update()
+        public override async Task Update()
         {
             if (ControlPanelHubService.IsMatch == true)
             {
-                await LiveViewHubService.SendMatchDataUpdate();
+                //await LiveViewHubService.SendMatchDataUpdate();
             }
         }
     }

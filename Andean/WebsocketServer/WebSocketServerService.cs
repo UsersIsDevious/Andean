@@ -19,6 +19,7 @@ namespace Andean.WebsocketServer
         private static readonly object _authLock = new object();
 
         private static readonly BlockingCollection<OutgoingMessage> _sendQueue = new();
+        private static readonly CancellationTokenSource _cts = new();
 
         static WebSocketServer()
         {
@@ -26,7 +27,8 @@ namespace Andean.WebsocketServer
             _httpListener.Prefixes.Add($"http://127.0.0.1:{Port}/");
             _httpListener.Prefixes.Add($"http://localhost:{Port}/");
 
-            Task.Factory.StartNew(ProcessSendQueue, TaskCreationOptions.LongRunning);
+            //Task.Factory.StartNew(ProcessSendQueue, TaskCreationOptions.LongRunning);
+            Task.Run(() => ProcessSendQueue(_cts.Token));
         }
 
         public static async Task StartAsync()
@@ -163,11 +165,11 @@ namespace Andean.WebsocketServer
             }
         }
 
-        private static async void ProcessSendQueue()
+        private static async Task ProcessSendQueue(CancellationToken token)
         {
-            foreach (var outgoingMessage in _sendQueue.GetConsumingEnumerable())
+            try
             {
-                try
+                foreach (var outgoingMessage in _sendQueue.GetConsumingEnumerable(token))
                 {
                     await outgoingMessage.Client.SendAsync(
                         new ArraySegment<byte>(outgoingMessage.Data),
@@ -175,11 +177,17 @@ namespace Andean.WebsocketServer
                         outgoingMessage.EndOfMessage,
                         outgoingMessage.CancellationToken);
                 }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"❌ Send error: {ex}");
-                }
             }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("📤 SendQueue processor stopped.");
+            }
+        }
+        public static void Stop()
+        {
+            _cts.Cancel();
+            _sendQueue.CompleteAdding();
+            _httpListener.Stop();
         }
     }
 
