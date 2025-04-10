@@ -218,7 +218,7 @@ namespace AndeanClass.Controllers
             lock (_lock)
             {
                 // 情報が来た時点でロビーにいるとみなす
-                ControlPanelHubService.SetLiveAPIStatus("LobbyJoin", "InLobby").Wait();
+                ControlPanelHubService.SetLiveAPIStatus(StringPool.Get("LobbyJoin"), StringPool.Get("InLobby")).Wait();
 
                 // 情報を更新
                 LobbyData.IsUpdateNeededMatchSettings(customMatch_SetSettingsMsg);

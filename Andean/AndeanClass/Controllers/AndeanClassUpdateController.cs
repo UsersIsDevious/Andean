@@ -10,15 +10,15 @@ namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
-        public override Task Update()
+        public async override Task Update()
 
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             if (ControlPanelHubService.IsMatch == true && _match != null)
             {
-                if (ControlPanelHubService.ObserverSwitchEnabled && _match.State == "Playing")
-                    GetPlayerStatus(_match).Wait();
+                if (ControlPanelHubService.ObserverSwitchEnabled && _match.State == StringPool.Get("Playing"))
+                    await GetPlayerStatus(_match);
 
                 // 新たなPacketオブジェクトを生成し、_packetListに追加
                 _packetList[now] = new Packet((double)now / 1000 - _match.StartTimeStamp);
@@ -34,10 +34,13 @@ namespace AndeanClass.Controllers
                         LobbyData.LastRequestTime = now;
                         using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
                         {
-                            Request.GetLobbyPlayersAsync(cts.Token).Wait();
-                            Request.GetMatchSettingsAsync(cts.Token).Wait();
+                            await Request.GetLobbyPlayersAsync(cts.Token);
+                            await Request.GetMatchSettingsAsync(cts.Token);
                         }
-                        ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
+                        await ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>());
+
+                        // diffCSVData をクリア（もしくは null を代入）
+                        LobbyData.CsvData?.Diff.Teams?.Clear();
                     }
 
                     if (now - LobbyData.LastCsvApplyTime > 100)
@@ -47,15 +50,17 @@ namespace AndeanClass.Controllers
                         {
                             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
                             {
-                                Request.GetLobbyPlayersAsync(cts.Token).Wait();
-                                Request.GetMatchSettingsAsync(cts.Token).Wait();
+                                await Request.GetLobbyPlayersAsync(cts.Token);
+                                await Request.GetMatchSettingsAsync(cts.Token);
                             }
-                            ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
+                            await ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>());
+
+                            // diffCSVData をクリア（もしくは null を代入）
+                            LobbyData.CsvData?.Diff.Teams?.Clear();
                         }
                     }
                 }
             }
-            return Task.CompletedTask;
         }
 
 
@@ -66,7 +71,7 @@ namespace AndeanClass.Controllers
         /// <returns>非同期タスク</returns>
         /// <remarks>
         /// プレイヤーの状態を取得し、"alive" または "down" の場合にカメラを切り替える。
-        /// プレイヤーが "death" またはオンラインでない場合は、次のプレイヤーへスキップする。
+        /// プレイヤーが "death" またはオンラインでなければ次のプレイヤーへスキップする。
         /// チームが壊滅している場合は、次のチームへスキップする。
         /// </remarks>
         public async Task GetPlayerStatus(CustomMatch match)

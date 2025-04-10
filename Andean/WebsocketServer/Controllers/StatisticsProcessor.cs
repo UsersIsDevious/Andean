@@ -61,7 +61,7 @@ namespace Andean.WebsocketServer.Controllers
         {
             _queue.Add(new MessageWrapper(clientId, message));
 
-            if (message is ObserverSwitched or Response or CustomMatch_SetSettings) return; // ObserverSwitched メッセージはログに出力しない
+            if (message is ObserverSwitched or Response or CustomMatch_SetSettings or CustomMatch_LobbyPlayers) return; // ObserverSwitched メッセージはログに出力しない
 
             var data = new
             {
