@@ -69,11 +69,22 @@ export interface LobbySettings {
   map: string
 }
 
-// Import Team type from team-types to avoid duplicate definitions
-import type { Team, Player as TeamPlayer } from "./team-types"
+// Team型を直接定義
+export interface Team {
+  id?: string
+  name?: string
+  teamName: string
+  logoUrl?: string
+  spawnPoint?: number
+  players: TeamPlayer[]
+}
 
-// Re-export Team type with a different name to avoid conflicts
-export type { Team, TeamPlayer }
+// TeamPlayer型を直接定義
+export interface TeamPlayer {
+  id: string
+  name: string
+  hardwareName?: string
+}
 
 // Define ConfigPlayer type instead of Player to avoid conflict
 export interface ConfigPlayer {

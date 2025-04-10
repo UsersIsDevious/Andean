@@ -1,4 +1,9 @@
-﻿namespace AndeanWebUI.Models
+﻿using AndeanClass;
+using AndeanSystems;
+using AndeanWebUI.Services;
+using static AndeanClass.Controllers.AndeanClassController;
+
+namespace AndeanWebUI.Models
 {
     public interface IAndeanWebUI
     {
@@ -35,5 +40,31 @@
         public int Index { get; set; }
         public string Id { get; set; } = "";
         public string Name { get; set; } = "";
+    }
+
+    public class HubStatusDto
+    {
+        public string SharedData => ControlPanelHubService.SharedData;
+        public List<string> SelectedDataKeys => ControlPanelHubService.SelectedDataKeys;
+        public AppConfig AppConfig => ConfigService.Config;
+        public string LastLobbyResponse => ControlPanelHubService.LastLobbyResponse;
+        public string LastApexResponse => ControlPanelHubService.LastApexResponse;
+        public Dictionary<string, LobbyPlayersInfo> TeamData => LobbyData.ControlHubLobbyPlayers;
+        public AndeanClass.LobbySettings LobbySettings => LobbyData.ControlHubMatchSettings;
+
+        public UIStatusDto UIStatus => new();
+    }
+
+    public class UIStatusDto
+    {
+        public bool LobbyJoinButtonEnabled => ControlPanelHubService.LobbyJoinButtonEnabled;
+        public bool GameStartButtonEnabled => ControlPanelHubService.GameStartButtonEnabled;
+        public bool LeaveLobbyButtonEnabled => ControlPanelHubService.LeaveLobbyButtonEnabled;
+        public bool IsLobbyJoined => ControlPanelHubService.IsLobbyJoined;
+        public uint MaxTeamPlayer => ControlPanelHubService.MaxTeamPlayer;
+        public uint MaxTeam => ControlPanelHubService.MaxTeam;
+        public string GameStatus => ControlPanelHubService.GameStatus;
+        public List<string> SupportedLanguages => ControlPanelHubService.SupportedLanguages;
+        public bool IsMatchmaking => ControlPanelHubService.IsMatchmaking;
     }
 }

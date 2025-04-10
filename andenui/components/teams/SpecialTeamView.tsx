@@ -1,22 +1,16 @@
 import type React from "react"
 import { Users } from "lucide-react"
 import PlayerSlot from "@/components/players/PlayerSlot"
-import type { Team } from "@/lib/types"
-import type { Player } from "@/lib/types"
+import type { Team, TeamPlayer } from "@/lib/types/config-types"
 
 interface SpecialTeamViewProps {
   teamId: string
   team: Team
-  onPlayerRightClick: (e: React.MouseEvent, player: Player, teamId: string) => void // プレイヤーオブジェクト全体を渡すように変更
-  maxTeamPlayer?: number // 追加: チーム当たりの最大プレイヤー数
+  onPlayerRightClick: (e: React.MouseEvent, player: TeamPlayer, teamId: string) => void
+  maxTeamPlayer?: number
 }
 
-export default function SpecialTeamView({
-  teamId,
-  team,
-  onPlayerRightClick,
-  maxTeamPlayer = 3, // デフォルト値は3
-}: SpecialTeamViewProps) {
+export default function SpecialTeamView({ teamId, team, onPlayerRightClick, maxTeamPlayer = 3 }: SpecialTeamViewProps) {
   if (!team) return null
 
   // 少なくともmaxTeamPlayerスロットを表示、または実際のプレイヤー数がmaxTeamPlayerより大きい場合はその数
@@ -30,7 +24,9 @@ export default function SpecialTeamView({
           <div className="w-5 h-5 flex items-center justify-center bg-gray-800 rounded-full">
             <Users className="h-3 w-3 text-red-400" />
           </div>
-          <span className="font-medium text-white text-xs">{team.name}</span>
+          <span className="font-medium text-white text-xs">
+            {team.teamName ? team.teamName : team.name || "不明なチーム"}
+          </span>
         </div>
       </div>
 

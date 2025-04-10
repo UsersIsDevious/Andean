@@ -67,7 +67,7 @@ export default function TeamStandings({ matchData, onPlayerSelect }: TeamStandin
                         style={{ backgroundColor: getTeamColor(team.id) }}
                       ></div>
                       <span>
-                        {team.name} (#{team.id - 1})
+                        {team.name === "" ? `チーム ${team.id - 1}` : team.name} (#{team.id - 1})
                       </span>
                     </div>
                   </td>
@@ -101,4 +101,3 @@ export default function TeamStandings({ matchData, onPlayerSelect }: TeamStandin
     </div>
   )
 }
-

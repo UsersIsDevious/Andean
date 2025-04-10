@@ -14,6 +14,7 @@ namespace AndeanWebUI.Hubs
         private Dictionary<string, LobbyPlayerSection> lobbyPlayers = new Dictionary<string, LobbyPlayerSection>();
         private LobbySettings lobbySettings = new LobbySettings();
 
+
         // 全クライアントへ現在のステータスをブロードキャストする
         private async Task BroadcastStatus()
         {
@@ -23,35 +24,15 @@ namespace AndeanWebUI.Hubs
         // クライアント切断時に登録解除
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            Console.WriteLine($"切断: ConnectionId = {Context.ConnectionId}");
+            await base.OnDisconnectedAsync(exception);
         }
 
         // 現在の全ステータスを集約して返す（UI状態も含む）
         private object GetCurrentStatus()
         {
             Console.WriteLine(_config);
-            return new
-            {
-                SharedData = SharedData,
-                SelectedDataKeys = SelectedDataKeys,
-                AppConfig = _config,
-                LastLobbyResponse = LastLobbyResponse,
-                LastApexResponse = LastApexResponse,
-                LobbyId = LobbyData.LobbyId,
-                teamData = LobbyData.ControlHubLobbyPlayers,
-                lobbySettings = LobbyData.ControlHubMatchSettings,
-                UIStatus = new
-                {
-                    LobbyJoinButtonEnabled = LobbyJoinButtonEnabled,
-                    GameStartButtonEnabled = GameStartButtonEnabled,
-                    LeaveLobbyButtonEnabled = LeaveLobbyButtonEnabled,
-                    IsLobbyJoined = IsLobbyJoined,
-                    MaxTeamPlayer = MaxTeamPlayer,
-                    MaxTeam = MaxTeam,
-                    GameStatus = GameStatus,
-                    SupportedLanguages = SupportedLanguages,
-                    IsMatchmaking = IsMatchmaking
-                }
-            };
+            return ControlPanelHubService.SharedStatusDto;
         }
 
         public override async Task OnConnectedAsync()

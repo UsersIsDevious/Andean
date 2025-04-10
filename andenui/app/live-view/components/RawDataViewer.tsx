@@ -75,4 +75,3 @@ export default function RawDataViewer({ matchData }: RawDataViewerProps) {
     </div>
   )
 }
-

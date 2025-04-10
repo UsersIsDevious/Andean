@@ -157,4 +157,3 @@ export default function PlayerDetails({ player, onClose }: PlayerDetailsProps) {
     </div>
   )
 }
-

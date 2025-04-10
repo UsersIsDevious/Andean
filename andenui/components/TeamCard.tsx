@@ -6,8 +6,7 @@ import { useState } from "react"
 import { Edit, Save, X } from "lucide-react"
 import PlayerSlot from "@/components/players/PlayerSlot"
 import { getTeamColor } from "@/lib/utils/team-utils"
-import type { Team } from "@/lib/types"
-import type { Player } from "@/lib/types"
+import type { Team, TeamPlayer } from "@/lib/types/config-types"
 
 interface TeamCardProps {
   teamId: string
@@ -18,8 +17,8 @@ interface TeamCardProps {
   saveTeamName: (teamId: string) => void
   cancelEditingTeam: () => void
   setEditedTeamName: (name: string) => void
-  onPlayerRightClick: (e: React.MouseEvent, player: Player, teamId: string) => void // プレイヤーオブジェクト全体を渡すように変更
-  maxTeamPlayer?: number // 追加: チーム当たりの最大プレイヤー数
+  onPlayerRightClick: (e: React.MouseEvent, player: TeamPlayer, teamId: string) => void
+  maxTeamPlayer?: number
 }
 
 export default function TeamCard({
@@ -32,7 +31,7 @@ export default function TeamCard({
   cancelEditingTeam,
   setEditedTeamName,
   onPlayerRightClick,
-  maxTeamPlayer = 3, // デフォルト値は3
+  maxTeamPlayer = 3,
 }: TeamCardProps) {
   const teamNumber = Number.parseInt(teamId)
   const teamColor = getTeamColor(teamNumber)
@@ -94,7 +93,9 @@ export default function TeamCard({
               autoFocus
             />
           ) : (
-            <span className="font-medium text-white text-xs">{team.name}</span>
+            <span className="font-medium text-white text-xs">
+              {team.teamName ? team.teamName : `チーム ${teamNumber - 1}`}
+            </span>
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -117,7 +118,7 @@ export default function TeamCard({
             </>
           ) : (
             <button
-              onClick={() => startEditingTeam(teamId, team.name)}
+              onClick={() => startEditingTeam(teamId, team.teamName || "")}
               className={`p-0.5 rounded-full ${isHovered ? "bg-gray-800" : "bg-gray-800/50"} hover:bg-gray-800`}
               title="チーム名を編集"
             >
