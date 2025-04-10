@@ -115,6 +115,7 @@
     "health_pickup_combo_full": "Phoenix Kit",
     "health_pickup_ultimate": "Ultimate Accelerant",
     "Helmet": "Helmet",
+    "Mythic Helmet": "Mythic Helmet",
     "Body Shield": "Body Shield",
     "Shield Core": "Shield Core",
     "Knockdown Shield": "Knockdown Shield",
@@ -140,7 +141,10 @@
     "3x HCOG 'RANGER'": "3x HCOG 'RANGER'",
     "2x-4x VARIABLE AOG": "2x-4x VARIABLE AOG",
     "4x-8x VARIABLE SNIPER": "4x-8x VARIABLE SNIPER",
-    "Gun Shield Generator": "Gun Shield Generator"
+    "Gun Shield Generator": "Gun Shield Generator",
+    "Selectfire Receiver": "Selectfire Receiver",
+    "Boosted Loader": "Boosted Loader",
+    "Vault Key": "Vault Key"
   },
   "legends_label": {
     "Bloodhound": {
