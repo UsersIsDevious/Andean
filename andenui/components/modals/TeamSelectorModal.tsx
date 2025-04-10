@@ -3,15 +3,15 @@
 import { useState, useEffect } from "react"
 import { X, Info } from "lucide-react"
 import { getTeamColor } from "@/lib/utils/team-utils"
-import type { TeamData } from "@/lib/types"
+import type { Team } from "@/lib/types/config-types"
 
 interface TeamSelectorModalProps {
-  teamData: TeamData
+  teamData: Record<string, Team>
   sourceTeamId: string
   onSelectTeam: (teamId: string) => void
   onClose: () => void
   playerName?: string
-  playerHardwareName?: string // ハードウェア名を追加
+  playerHardwareName?: string
   maxTeamPlayer?: number
 }
 
@@ -21,7 +21,7 @@ export default function TeamSelectorModal({
   onSelectTeam,
   onClose,
   playerName = "プレイヤー",
-  playerHardwareName = "PC", // デフォルト値を設定
+  playerHardwareName = "PC",
   maxTeamPlayer = 3,
 }: TeamSelectorModalProps) {
   // クライアントサイドでのみレンダリングするための状態
@@ -55,7 +55,10 @@ export default function TeamSelectorModal({
             <div>
               <p className="text-sm text-gray-300">
                 <span className="font-medium text-white">{playerName}</span> を
-                <span className="font-medium text-white">{sourceTeam?.name || "不明なチーム"}</span> から移動
+                <span className="font-medium text-white">
+                  {sourceTeam?.teamName ? sourceTeam.teamName : sourceTeam?.name || "不明なチーム"}
+                </span>{" "}
+                から移動
               </p>
               <p className="text-xs text-gray-400">ハードウェア: {playerHardwareName}</p>
             </div>
@@ -132,7 +135,9 @@ export default function TeamSelectorModal({
                         >
                           <span className="text-xs font-medium text-white">{teamNumber - 1}</span>
                         </div>
-                        <span className="text-sm text-gray-300 truncate max-w-[80px]">{team.name}</span>
+                        <span className="text-sm text-gray-300 truncate max-w-[80px]">
+                          {team.teamName ? team.teamName : `チーム ${teamNumber - 1}`}
+                        </span>
                       </div>
                       <span className="text-xs bg-gray-900 px-2 py-0.5 rounded-full text-gray-400">
                         {team.players.length} / {teamId === "0" || teamId === "1" ? "∞" : maxTeamPlayer}

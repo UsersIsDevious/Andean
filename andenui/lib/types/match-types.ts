@@ -357,3 +357,5 @@ export function convertRawMatchData(rawData: RawCustomMatch[] | RawCustomMatch):
   }
 }
 
+// 最後に以下のエクスポート文を追加
+// 既に export interface で宣言されているものは削除し、convertRawMatchData 関数のみをエクスポート

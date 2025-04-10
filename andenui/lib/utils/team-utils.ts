@@ -1,9 +1,4 @@
-// Define the Team type
-interface Team {
-  id?: string // idをオプショナルに変更
-  name: string
-  players: { id: string; name: string; hardwareName?: string }[]
-}
+import type { Team } from "@/lib/types/config-types"
 
 // Get team color based on team ID
 export const getTeamColor = (id: number): string => {
@@ -47,7 +42,7 @@ export const getAllPlayersFromTeams = (teamData: Record<string, Team> | undefine
             name: player.name,
             hardwareName: player.hardwareName,
             teamId,
-            teamName: team.name,
+            teamName: team.teamName || team.name || `チーム ${Number(teamId) - 1}`,
           })
         }
       })

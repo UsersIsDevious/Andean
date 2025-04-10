@@ -4,28 +4,39 @@ using AndeanClass.Services;
 using Microsoft.AspNetCore.SignalR;
 using AndeanClass;
 using static AndeanClass.Controllers.AndeanClassController;
+using AndeanWebUI.Models;
 
 namespace AndeanWebUI.Services
 {
     public static class ControlPanelHubService
     {
-
-
         private static IHubContext<ControlPanelHub>? _hubContext;
+
         private static AppConfig _config => ConfigService.Config;
+
+        // ✅ 送信用 DTO はアプリ起動時に一度生成・共有する
+        public static readonly HubStatusDto SharedStatusDto = new();
 
         public static void Init(IHubContext<ControlPanelHub> hubContext)
         {
             _hubContext = hubContext;
         }
 
-        // 共有データ
+        // ✅ SignalRに状態を送信（DTOは毎回同じインスタンス）
+        public static async Task BroadcastStatusAsync()
+        {
+            if (_hubContext != null)
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveStatus", SharedStatusDto);
+            }
+        }
+
+        // ✅ 状態データ本体（DTOがこれらを参照）
         public static string SharedData { get; set; } = "Initial Data";
-        public static List<string> SelectedDataKeys { get; set; } = new List<string>();
+        public static List<string> SelectedDataKeys { get; set; } = new();
         public static string LastLobbyResponse { get; set; } = "";
         public static string LastApexResponse { get; set; } = "";
 
-        // UIステータス情報
         public static bool LobbyJoinButtonEnabled { get; set; } = false;
         public static bool LeaveLobbyButtonEnabled { get; set; } = false;
         public static bool GameStartButtonEnabled { get; set; } = true;
@@ -40,75 +51,27 @@ namespace AndeanWebUI.Services
         public static bool ObserverSwitchEnabled { get; set; } = true;
         public static bool AutoMovementLobbyPlayersEnabled { get; set; } = false;
 
-public static async Task BroadcastStatusAsync()
-        {
-            if (_hubContext != null)    
-            {
-                var status = new
-                {
-                    SharedData = SharedData,
-                    SelectedDataKeys = SelectedDataKeys,
-                    AppConfig = _config,
-                    LastLobbyResponse = LastLobbyResponse,
-                    LastApexResponse = LastApexResponse,
-                    teamData = LobbyData.ControlHubLobbyPlayers,
-                    lobbySettings = LobbyData.ControlHubMatchSettings,
-                    UIStatus = new
-                    {
-                        LobbyJoinButtonEnabled,
-                        GameStartButtonEnabled,
-                        LeaveLobbyButtonEnabled,
-                        IsLobbyJoined,
-                        MaxTeamPlayer,
-                        MaxTeam,
-                        GameStatus,
-                        SupportedLanguages,
-                        IsMatchmaking,
-                    }
-                };
-
-                await _hubContext.Clients.All.SendAsync("ReceiveStatus", status);
-            }
-        }
-
-
-        // 状態更新用の関数群
-
-        /// <summary>
-        /// 共有データの更新
-        /// </summary>
+        // ✅ 状態更新用の関数群（これらは保持値を変更するだけ）
         public static void UpdateSharedData(string newData)
         {
             SharedData = newData;
         }
 
-        /// <summary>
-        /// 共有データのリセット
-        /// </summary>
         public static void ResetSharedData()
         {
             SharedData = "Initial Data";
         }
 
-        /// <summary>
-        /// 選択データの更新
-        /// </summary>
         public static void UpdateSelectedData(List<string> newSelectedKeys)
         {
             SelectedDataKeys = newSelectedKeys;
         }
 
-        /// <summary>
-        /// ゲーム状態の更新
-        /// </summary>
         public static void UpdateGameStatus(string status)
         {
             GameStatus = status;
         }
 
-        /// <summary>
-        /// LiveAPI の接続状態に応じたUIステータスの更新
-        /// </summary>
         public static async Task SetLiveAPIStatus(string type, string gameStatus)
         {
             GameStatus = gameStatus;
@@ -143,8 +106,6 @@ public static async Task BroadcastStatusAsync()
                     LeaveLobbyButtonEnabled = false;
                     IsLobbyJoined = false;
                     IsMatch = true;
-                    break;
-                default:
                     break;
             }
             await BroadcastStatusAsync();

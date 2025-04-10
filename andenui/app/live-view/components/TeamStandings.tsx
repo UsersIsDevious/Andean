@@ -101,4 +101,3 @@ export default function TeamStandings({ matchData, onPlayerSelect }: TeamStandin
     </div>
   )
 }
-

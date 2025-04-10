@@ -7,9 +7,11 @@ export interface Player {
   hardwareName?: string // hardwareNameフィールドを追加
 }
 
+// Team インターフェースを更新
 export interface Team {
   id?: string // idをオプショナルに追加
-  name: string
+  name?: string // 古い形式との互換性のために残す
+  teamName: string // 新しいプロパティ
   logoUrl?: string
   spawnPoint?: number
   players: Player[]

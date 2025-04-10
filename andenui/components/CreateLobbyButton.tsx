@@ -44,4 +44,3 @@ export default function CreateLobbyButton({ createLobby, lobbyResponse, isLoadin
     </Card>
   )
 }
-
