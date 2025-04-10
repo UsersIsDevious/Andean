@@ -10,15 +10,13 @@ namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
-        private static long test = 0;
-
         public override void Update()
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            if (ControlPanelHubService.IsMatch == true)
+            if (ControlPanelHubService.IsMatch == true && _match != null)
             {
-                if (ControlPanelHubService.ObserverSwitchEnabled)
+                if (ControlPanelHubService.ObserverSwitchEnabled && _match.State == "Playing")
                     GetPlayerStatus(_match).Wait();
 
                 // 新たなPacketオブジェクトを生成し、_packetListに追加
@@ -91,7 +89,7 @@ namespace AndeanClass.Controllers
                     }
 
                     // カメラをプレイヤー名に基づいて切り替え
-                    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                    var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
                     await Request.ChangeCameraAsync("name", StringPool.Get(player.Name), cts.Token, false);
                 }
             }

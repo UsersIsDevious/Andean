@@ -119,6 +119,7 @@
     "Shield Core": "Shield Core",
     "Knockdown Shield": "Knockdown Shield",
     "Backpack": "Backpack",
+    "FULL EVO CACHE": "FULL EVO CACHE",
     "bullet": "Heavy Rounds",
     "highcal": "Light Rounds",
     "shotgun": "Shotgun Shells",
@@ -244,8 +245,8 @@
         },
         "2": {
           "left": {
-            "name": "Down and Away",
-            "description": "Grapple cooldown reset on knock."
+            "name": "Grapple Cooldown+",
+            "description": "Reduce Grapple cooldown by 10 seconds."
           },
           "right": {
             "name": "Zipline Zen",

@@ -526,13 +526,18 @@ namespace AndeanClass.Controllers
                 }
 
                 Player _player = CreateOrUpdatePlayer(_match, Msg.Player);
-                //_player.SetNewLevel(Msg.Level, Msg.UpgradeName, Msg.UpgradeDesc, "何かが入るらしい");
 
                 string upgradeName = Msg.UpgradeName;
                 string upgradeDesc = Msg.UpgradeDesc;
 
                 // selectedにはローカライズ用に、左右どちらのアップグレードが選択されたかが入る
-                string selected = LocalizationService.GetLegendUpgradeSide(Msg.Player.Character, Msg.Level.ToString(), upgradeName, upgradeDesc);
+                string? selected = LocalizationService.GetLegendUpgradeSide(Msg.Player.Character, Msg.Level.ToString(), upgradeName, upgradeDesc);
+
+                if (selected == null)
+                {
+                    return;
+                }
+
                 _player.SetNewLevel(Msg.Level, upgradeName, upgradeDesc, selected);
 
                 Dictionary<string, object> _eventData = EventService.CreateEventDataForPlayer(_player).Get();
@@ -647,12 +652,17 @@ namespace AndeanClass.Controllers
                 string[]? ability = ItemUtilities.ReturnSplitBracketParts(Msg.LinkedEntity);
                 if (ability == null)
                 {
-                    throw new InvalidOperationException("LinkedEntityが不正です。");
+                    return;
                 }
 
                 string character = _player.Legend;
                 string abilityType = ability[0];
-                string abilityName = LocalizationService.GetLegendAbilityName(character, abilityType, ability[1]);
+                string? abilityName = LocalizationService.GetLegendAbilityName(character, abilityType, ability[1]);
+
+                if (abilityName == null)
+                {
+                    return;
+                }
 
                 if (abilityType == "Ultimate")
                 {
