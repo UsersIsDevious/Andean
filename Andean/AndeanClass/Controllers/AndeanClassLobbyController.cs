@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Rtech.Liveapi;
 using System.Diagnostics.Eventing.Reader;
 using System.Text.Json;
+using AndeanSystems;
 
 namespace AndeanClass.Controllers
 {
@@ -18,7 +19,7 @@ namespace AndeanClass.Controllers
                 // ロビー参加状態の設定（例外処理付き）
                 try
                 {
-                    ControlPanelHubService.SetLiveAPIStatus("LobbyJoin", "InLobby").Wait();
+                    ControlPanelHubService.SetLiveAPIStatus(StringPool.Get("LobbyJoin"), StringPool.Get("InLobby")).Wait();
                 }
                 catch (Exception ex)
                 {
@@ -209,8 +210,7 @@ namespace AndeanClass.Controllers
         /// <returns>ディープコピーされたCsvDataElement、またはコピーに失敗した場合は null</returns>
         private static CsvDataElement? CloneCsvDataElement(CsvDataElement element)
         {
-            var serialized = JsonSerializer.Serialize(element);
-            return JsonSerializer.Deserialize<CsvDataElement>(serialized);
+            return element.Clone();
         }
 
         public static void ProcessCustomMatch_SetSettings(CustomMatch_SetSettings customMatch_SetSettingsMsg)

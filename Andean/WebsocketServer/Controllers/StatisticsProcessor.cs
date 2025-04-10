@@ -147,6 +147,13 @@ namespace Andean.WebsocketServer.Controllers
                         // 現状何も処理しない
                         break;
                     }
+                case LegendMatchStatus legendMatchStatusMsg:
+                    {
+                        string legendMatchStatusMsgStr = System.Text.Json.JsonSerializer.Serialize(legendMatchStatusMsg, new JsonSerializerOptions { WriteIndented = true });
+                        Console.WriteLine($"[LegendMatchStatus] {legendMatchStatusMsgStr}");
+                        await FileOutputService.WriteToFileAsync(_config.Log_Dir, "LegendMatchStatus.json", legendMatchStatusMsgStr, FileWriteMode.JsonAppend);
+                        break;
+                    }
                 case CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg:
                     {
                         ProcessCustomMatch_LobbyPlayers(customMatch_LobbyPlayersMsg);
@@ -154,7 +161,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case RequestStatus requestStatusMsg:
                     {
-                        // 今のところ何もイベント発生しない
+                        // 今のところ何も処理しない
                         break;
                     }
                 case Response responseMsg:
@@ -171,18 +178,19 @@ namespace Andean.WebsocketServer.Controllers
                                 RequestStatus requestStatusMsg = responseMsg.Result.Unpack<RequestStatus>();
                                 if (requestStatusMsg.Status == RequestStatusConnectedMessage)
                                 {
-                                    ControlPanelHubService.SetLiveAPIStatus("Connected", "Waiting for JoinLobby").Wait();
+                                    await ControlPanelHubService.SetLiveAPIStatus("Connected", "Waiting for JoinLobby");
                                     break;
                                 }
 
                                 if (requestStatusMsg.Status == RequestStatusDisconnectedMessage)
                                 {
-                                    ControlPanelHubService.SetLiveAPIStatus("Disconnected", "Waiting for Connecting").Wait();
+                                    await ControlPanelHubService.SetLiveAPIStatus("Disconnected", "Waiting for Connecting");
                                     break;
                                 }
-                                    
-                                Console.WriteLine($"[RequestStatus] {requestStatusMsg} のリクエストが完了しました。");
-                                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "UnkownResponse.json", requestStatusMsg.Status, FileWriteMode.JsonAppend)).Wait();
+                                
+                                string requestStatusMsgStr = System.Text.Json.JsonSerializer.Serialize(requestStatusMsg, new JsonSerializerOptions { WriteIndented = true });
+                                Console.WriteLine($"[RequestStatus] {requestStatusMsgStr}");
+                                await FileOutputService.WriteToFileAsync(_config.Log_Dir, "UnknownResponse.json", requestStatusMsgStr, FileWriteMode.JsonAppend);
                             }
                         }
 
@@ -388,7 +396,7 @@ namespace Andean.WebsocketServer.Controllers
                         string observerAnnotationMsgStr = System.Text.Json.JsonSerializer.Serialize(observerAnnotationMsg, new JsonSerializerOptions { WriteIndented = true });
                         Console.WriteLine($"⚠️ Unknown message type received: {observerAnnotationMsgStr}");
                         // 非同期にファイルへ追記（ファイルは log フォルダ配下に作成）
-                        Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "ObserverAnnotation.json", observerAnnotationMsgStr, FileWriteMode.JsonAppend)).Wait();
+                        await FileOutputService.WriteToFileAsync(_config.Log_Dir, "ObserverAnnotation.json", observerAnnotationMsgStr, FileWriteMode.JsonAppend);
                         break;
                     }
                 default:
@@ -396,11 +404,10 @@ namespace Andean.WebsocketServer.Controllers
                         // 未定義のイベントは、必要に応じて統計情報に更新
                         // _currentMatch?.UpdateStatistics(message);
 
-                        string messageType = message.GetType().Name;
                         string messageStr = System.Text.Json.JsonSerializer.Serialize(message, new JsonSerializerOptions { WriteIndented = true });
                         Console.WriteLine($"⚠️ Unknown message type received: {messageStr}");
                         // 非同期にファイルへ追記（ファイルは log フォルダ配下に作成）
-                        Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "UnknownMessages.json", messageStr, FileWriteMode.JsonAppend)).Wait();
+                        await FileOutputService.WriteToFileAsync(_config.Log_Dir, "UnknownMessages.json", messageStr, FileWriteMode.JsonAppend);
                         break;
                     }
             }
