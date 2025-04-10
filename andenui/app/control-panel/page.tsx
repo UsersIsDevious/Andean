@@ -13,6 +13,7 @@ import TeamSelectorModal from "@/components/modals/TeamSelectorModal"
 import Header from "@/app/control-panel/components/ui/Header"
 import { ControlPanelProvider } from "@/app/control-panel/components/context/ControlPanelProvider"
 import { useControlPanelContext } from "@/app/control-panel/hooks/useControlPanelContext"
+import type { TeamPlayer } from "@/lib/types/config-types"
 
 // メインコンテンツコンポーネント
 const ControlPanelContent = () => {
@@ -80,8 +81,8 @@ const ControlPanelContent = () => {
           onMovePlayer={handleMovePlayerOption}
           onClose={closeContextMenu}
           playerName={
-            configData?.teamData?.[contextMenu.teamId]?.players.find((p) => p.id === contextMenu.playerId)?.name ||
-            "プレイヤー"
+            configData?.teamData?.[contextMenu.teamId]?.players.find((p: TeamPlayer) => p.id === contextMenu.playerId)
+              ?.name || "プレイヤー"
           }
         />
       )}
@@ -96,8 +97,8 @@ const ControlPanelContent = () => {
             setActiveTab(activeTab) // Keep the current tab active
           }}
           playerName={
-            configData?.teamData?.[playerToMove.teamId]?.players.find((p) => p.id === playerToMove.playerId)?.name ||
-            "プレイヤー"
+            configData?.teamData?.[playerToMove.teamId]?.players.find((p: TeamPlayer) => p.id === playerToMove.playerId)
+              ?.name || "プレイヤー"
           }
           maxTeamPlayer={configData?.uiStatus?.maxTeamPlayer || 3}
         />

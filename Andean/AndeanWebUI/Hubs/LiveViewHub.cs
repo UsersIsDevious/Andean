@@ -14,6 +14,7 @@ namespace AndeanWebUI.Hubs
         // クライアント切断時に登録解除
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            await base.OnDisconnectedAsync(exception);
         }
         /// <summary>
         /// システムシャットダウンをクライアントに通知するメソッド

@@ -6,16 +6,8 @@ import { createContext, useState, useEffect, type ReactNode } from "react"
 // import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalRMock" // モック用
 import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalR" // 本番用
 import { getAllPlayersFromTeams, movePlayerBetweenTeams, removePlayerFromTeam } from "@/lib/utils/team-utils"
-import type {
-  Team,
-  LobbySettings,
-  CSVTeamData,
-  POIOption,
-  ContextMenuState,
-  PlayerMoveState,
-  ConfigData,
-  Player,
-} from "@/lib/types"
+import type { ContextMenuState, PlayerMoveState, POIOption } from "@/lib/types/ui-types"
+import type { ConfigData, Team, TeamPlayer, LobbySettings, CSVTeamData } from "@/lib/types/config-types"
 
 // コンテキストの型定義
 interface ControlPanelContextType {
@@ -61,7 +53,7 @@ interface ControlPanelContextType {
   setPlayerSearchQuery: (query: string) => void
   setSelectedPOI: (poiId: string) => void
   setPoiSearchQuery: (query: string) => void
-  handlePlayerRightClick: (e: React.MouseEvent, player: Player, teamId: string) => void
+  handlePlayerRightClick: (e: React.MouseEvent, player: TeamPlayer, teamId: string) => void
   closeContextMenu: () => void
   handleKickPlayer: () => void
   handleMovePlayerOption: () => void
@@ -289,16 +281,18 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
   // Team management handlers
   const startEditingTeam = (teamId: string, currentName: string) => {
     setEditingTeam(teamId)
-    setEditedTeamName(currentName)
+    // 空文字列の場合はデフォルト値を設定
+    setEditedTeamName(currentName || "")
   }
 
+  // saveTeamName関数を修正
   const saveTeamName = (teamId: string) => {
     if (!configData?.teamData) return
 
     const updatedTeamData = { ...configData.teamData }
     updatedTeamData[teamId] = {
       ...updatedTeamData[teamId],
-      name: editedTeamName,
+      teamName: editedTeamName,
     }
 
     // Call the SignalR setTeamName function
@@ -334,7 +328,7 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
   }
 
   // Player context menu handlers
-  const handlePlayerRightClick = (e: React.MouseEvent, player: Player, teamId: string) => {
+  const handlePlayerRightClick = (e: React.MouseEvent, player: TeamPlayer, teamId: string) => {
     e.preventDefault()
 
     setContextMenu({

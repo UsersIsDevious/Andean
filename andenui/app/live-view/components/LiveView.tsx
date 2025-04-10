@@ -8,7 +8,7 @@ import KillFeed from "./KillFeed"
 import PlayerDetails from "./PlayerDetails"
 import RawDataViewer from "./RawDataViewer"
 import MapView from "./MapView" // 新しく追加したMapViewコンポーネント
-//import { useLiveViewSignalR } from "@/lib/hooks/useLiveViewSignalRMock" // 開発用モック
+// import { useLiveViewSignalR } from "@/lib/hooks/useLiveViewSignalRMock" // 開発用モック
 import { useLiveViewSignalR } from "@/lib/hooks/useLiveViewSignalR" // 本番用
 
 export default function LiveView() {

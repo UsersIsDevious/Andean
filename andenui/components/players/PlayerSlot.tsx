@@ -1,9 +1,9 @@
 import type React from "react"
-import type { Player } from "@/lib/types"
+import type { TeamPlayer } from "@/lib/types/config-types"
 
 interface PlayerSlotProps {
   index: number
-  player: Player | null
+  player: TeamPlayer | null
   onRightClick?: (e: React.MouseEvent) => void
 }
 
@@ -19,7 +19,10 @@ export default function PlayerSlot({ index, player, onRightClick }: PlayerSlotPr
       {player ? (
         <div className="flex justify-between w-full">
           <span className="text-gray-300 text-xs">{player.name}</span>
-          <span className="ml-auto text-gray-500 text-xs">{player.id.substring(0, 6)}...</span>
+          <span className="ml-auto text-gray-500 text-xs">
+            {player.hardwareName ? `${player.hardwareName}:` : ""}
+            {player.id.substring(0, 6)}...
+          </span>
         </div>
       ) : (
         <span className="text-gray-500 italic text-xs">空きスロット</span>
@@ -27,4 +30,3 @@ export default function PlayerSlot({ index, player, onRightClick }: PlayerSlotPr
     </div>
   )
 }
-

@@ -23,6 +23,7 @@ namespace AndeanWebUI.Hubs
         // クライアント切断時に登録解除
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            await base.OnDisconnectedAsync(exception);
         }
 
         // 現在の全ステータスを集約して返す（UI状態も含む）

@@ -117,4 +117,3 @@ export default function MatchOverview({ matchData }: MatchOverviewProps) {
     </div>
   )
 }
-
