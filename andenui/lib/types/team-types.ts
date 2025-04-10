@@ -4,6 +4,7 @@ export interface Player {
   index?: number
   id: string
   name: string
+  hardwareName?: string // hardwareNameフィールドを追加
 }
 
 export interface Team {
@@ -22,7 +23,7 @@ export interface TeamData {
 export interface PlayerListItem {
   id: string
   name: string
+  hardwareName?: string // hardwareNameフィールドを追加
   teamId: string
   teamName: string
 }
-

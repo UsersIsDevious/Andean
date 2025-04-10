@@ -8,7 +8,8 @@ interface PlayerContextMenuProps {
   onKickPlayer: () => void
   onMovePlayer: () => void
   onClose: () => void
-  playerName?: string // Add player name prop
+  playerName?: string
+  playerHardwareName?: string // ハードウェア名を追加
 }
 
 const PlayerContextMenu = ({
@@ -17,7 +18,8 @@ const PlayerContextMenu = ({
   onKickPlayer,
   onMovePlayer,
   onClose,
-  playerName = "プレイヤー", // Default to "プレイヤー" if not provided
+  playerName = "プレイヤー",
+  playerHardwareName = "PC", // デフォルト値を設定
 }: PlayerContextMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null)
   // クライアントサイドでのみレンダリングするための状態
@@ -58,6 +60,7 @@ const PlayerContextMenu = ({
     >
       <div className="px-3 py-2 bg-red-900/20 border-b border-gray-800">
         <span className="text-sm font-medium text-gray-200">{playerName}</span>
+        <span className="text-xs text-gray-400 block">{playerHardwareName}</span>
       </div>
       <div className="p-1">
         <button

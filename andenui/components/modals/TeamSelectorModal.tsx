@@ -11,6 +11,7 @@ interface TeamSelectorModalProps {
   onSelectTeam: (teamId: string) => void
   onClose: () => void
   playerName?: string
+  playerHardwareName?: string // ハードウェア名を追加
   maxTeamPlayer?: number
 }
 
@@ -20,6 +21,7 @@ export default function TeamSelectorModal({
   onSelectTeam,
   onClose,
   playerName = "プレイヤー",
+  playerHardwareName = "PC", // デフォルト値を設定
   maxTeamPlayer = 3,
 }: TeamSelectorModalProps) {
   // クライアントサイドでのみレンダリングするための状態
@@ -50,10 +52,13 @@ export default function TeamSelectorModal({
         <div className="px-4 py-3 bg-black/30 border-b border-gray-800">
           <div className="flex items-center">
             <Info className="h-4 w-4 text-gray-400 mr-2" />
-            <p className="text-sm text-gray-300">
-              <span className="font-medium text-white">{playerName}</span> を
-              <span className="font-medium text-white">{sourceTeam?.name || "不明なチーム"}</span> から移動
-            </p>
+            <div>
+              <p className="text-sm text-gray-300">
+                <span className="font-medium text-white">{playerName}</span> を
+                <span className="font-medium text-white">{sourceTeam?.name || "不明なチーム"}</span> から移動
+              </p>
+              <p className="text-xs text-gray-400">ハードウェア: {playerHardwareName}</p>
+            </div>
           </div>
         </div>
 

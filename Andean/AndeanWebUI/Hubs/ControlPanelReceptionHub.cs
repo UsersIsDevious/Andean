@@ -294,12 +294,12 @@ namespace AndeanWebUI.Hubs
             // オプションの引数 lobbyInfo が渡された場合の処理（必要に応じて）
             if (!string.IsNullOrEmpty(lobbyInfo))
             {
-                Request.JoinLobbyAsync(lobbyInfo, cts.Token);
+                await Request.JoinLobbyAsync(lobbyInfo, cts.Token);
                 Console.WriteLine($"Received lobby info: {lobbyInfo}");
             }
             else
             {
-                Request.CreateLobbyAsync(cts.Token);
+                await Request.CreateLobbyAsync(cts.Token);
             }
 
 
@@ -320,7 +320,7 @@ namespace AndeanWebUI.Hubs
             await Clients.Caller.SendAsync("RequestReceived", "LeaveLobby", "リクエストを受信しました");
 
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.LeaveLobbyAsync(cts.Token);
+            await Request.LeaveLobbyAsync(cts.Token);
             LobbyJoinButtonEnabled = true;
             LeaveLobbyButtonEnabled = false;
             IsLobbyJoined = false;
@@ -336,49 +336,50 @@ namespace AndeanWebUI.Hubs
         public async Task setTeam(int teamId, string targetHardwareName, string targetNucleushash)
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.SetTeamAsync(teamId, targetHardwareName, targetNucleushash, cts.Token);
+            await Request.SetTeamAsync(teamId, targetHardwareName, targetNucleushash, cts.Token);
             await BroadcastStatus();
         }
         public async Task setTeamName(int teamId, string teamName)
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.SetTeamNameAsync(teamId, teamName, cts.Token);
+            await Request.SetTeamNameAsync(teamId, teamName, cts.Token);
             await BroadcastStatus();
         }
         public async Task setSpawnPoint(int teamId, int spawnPoint)
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.SetSpawnPointAsync(teamId, spawnPoint, cts.Token);
+            await Request.SetSpawnPointAsync(teamId, spawnPoint, cts.Token);
             await BroadcastStatus();
         }
         public async Task changeCamera(string type, string value)
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.ChangeCameraAsync(type, value, cts.Token);
+            await Request.ChangeCameraAsync(type, value, cts.Token);
             await BroadcastStatus();
         }
         public async Task sendChat(string message)
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.SendChatAsync(message, cts.Token);
+            await Request.SendChatAsync(message, cts.Token);
             await BroadcastStatus();
         }
         public async Task kickPlayer(string targetHardwareName, string targetNucleushash)
         {
+            Console.WriteLine("ここ来てる！");
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.KickPlayerAsync(targetHardwareName, targetNucleushash, cts.Token);
+            await Request.KickPlayerAsync(targetHardwareName, targetNucleushash, cts.Token);
             await BroadcastStatus();
         }
         public async Task setSettings(string matchName, bool adminChat, bool teamRename, bool selfAssign, bool aimAssist, bool anonMode)
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.SetSettingsAsync(matchName, adminChat, teamRename, selfAssign, aimAssist, anonMode, cts.Token);
+            await Request.SetSettingsAsync(matchName, adminChat, teamRename, selfAssign, aimAssist, anonMode, cts.Token);
             await BroadcastStatus();
         }
         public async Task setEndRingExclusion(int exclusion)
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.SetEndRingExclusionAsync(exclusion, cts.Token);
+            await Request.SetEndRingExclusionAsync(exclusion, cts.Token);
             await BroadcastStatus();
         }
         public async Task setMatchmaking(bool matchmaking)
@@ -399,7 +400,7 @@ namespace AndeanWebUI.Hubs
         public async Task pauseToggle(double preTimer = 0)
         {
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            Request.PauseToggleAsync(preTimer, cts.Token);
+            await Request.PauseToggleAsync(preTimer, cts.Token);
             await BroadcastStatus();
         }
     }

@@ -1,7 +1,7 @@
 {
   "ApexLegends": {
-    "Path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Apex Legends",
-    "Game_Lancher": "Steam",
+    "Path": "D:\\ea\\Apex\\",
+    "Game_Lancher": "EA",
     "Api_Port": "7777",
     "Api_Option": "\u002Bcl_liveapi_enabled 1",
     "Option": "\u002Bmiles_language english \u002Bcl_liveapi_ws_retry_count 60 \u002Bcl_liveapi_ws_retry_time 3 \u002Bcl_liveapi_ws_timeout 600"

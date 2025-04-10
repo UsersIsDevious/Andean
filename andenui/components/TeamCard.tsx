@@ -7,6 +7,7 @@ import { Edit, Save, X } from "lucide-react"
 import PlayerSlot from "@/components/players/PlayerSlot"
 import { getTeamColor } from "@/lib/utils/team-utils"
 import type { Team } from "@/lib/types"
+import type { Player } from "@/lib/types"
 
 interface TeamCardProps {
   teamId: string
@@ -17,7 +18,7 @@ interface TeamCardProps {
   saveTeamName: (teamId: string) => void
   cancelEditingTeam: () => void
   setEditedTeamName: (name: string) => void
-  onPlayerRightClick: (e: React.MouseEvent, playerId: string, teamId: string) => void
+  onPlayerRightClick: (e: React.MouseEvent, player: Player, teamId: string) => void // プレイヤーオブジェクト全体を渡すように変更
   maxTeamPlayer?: number // 追加: チーム当たりの最大プレイヤー数
 }
 
@@ -59,7 +60,7 @@ export default function TeamCard({
       key={`placeholder-${idx}`}
       index={idx}
       player={team.players[idx] || null}
-      onRightClick={team.players[idx] ? (e) => onPlayerRightClick(e, team.players[idx].id, teamId) : undefined}
+      onRightClick={team.players[idx] ? (e) => onPlayerRightClick(e, team.players[idx], teamId) : undefined}
     />
   ))
 
@@ -131,4 +132,3 @@ export default function TeamCard({
     </div>
   )
 }
-

@@ -12,12 +12,15 @@ export interface ContextMenuState {
   x: number
   y: number
   playerId: string
+  playerName: string
+  playerHardwareName: string
   teamId: string
 }
 
 // プレイヤー移動の型定義
 export interface PlayerMoveState {
   playerId: string
+  playerName: string
+  playerHardwareName: string
   teamId: string
 }
-

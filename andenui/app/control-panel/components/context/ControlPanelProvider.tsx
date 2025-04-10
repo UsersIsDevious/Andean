@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { createContext, useState, useEffect, type ReactNode } from "react"
-//import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalRMock" // モック用
+// import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalRMock" // モック用
 import { useControlPanelSignalR } from "@/lib/hooks/useControlPanelSignalR" // 本番用
 import { getAllPlayersFromTeams, movePlayerBetweenTeams, removePlayerFromTeam } from "@/lib/utils/team-utils"
 import type {
@@ -14,6 +14,7 @@ import type {
   ContextMenuState,
   PlayerMoveState,
   ConfigData,
+  Player,
 } from "@/lib/types"
 
 // コンテキストの型定義
@@ -60,7 +61,7 @@ interface ControlPanelContextType {
   setPlayerSearchQuery: (query: string) => void
   setSelectedPOI: (poiId: string) => void
   setPoiSearchQuery: (query: string) => void
-  handlePlayerRightClick: (e: React.MouseEvent, playerId: string, teamId: string) => void
+  handlePlayerRightClick: (e: React.MouseEvent, player: Player, teamId: string) => void
   closeContextMenu: () => void
   handleKickPlayer: () => void
   handleMovePlayerOption: () => void
@@ -108,7 +109,8 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
     changeCamera: signalRChangeCamera,
     setSettings,
     pauseToggle: signalRPauseToggle,
-    setMatchmaking: signalRSetMatchmaking, // SignalR フックから setMatchmaking を取得
+    setMatchmaking: signalRSetMatchmaking, // SignalR フックから setMatchmaking を取得,
+    kickPlayer,
   } = useControlPanelSignalR()
 
   // クライアントサイドでのみレンダリングするための状態
@@ -332,13 +334,15 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
   }
 
   // Player context menu handlers
-  const handlePlayerRightClick = (e: React.MouseEvent, playerId: string, teamId: string) => {
+  const handlePlayerRightClick = (e: React.MouseEvent, player: Player, teamId: string) => {
     e.preventDefault()
 
     setContextMenu({
       x: e.clientX,
       y: e.clientY,
-      playerId,
+      playerId: player.id,
+      playerName: player.name,
+      playerHardwareName: player.hardwareName || "PC", // デフォルト値としてPCを設定
       teamId,
     })
   }
@@ -350,8 +354,12 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
   const handleKickPlayer = () => {
     if (!contextMenu || !configData?.teamData) return
 
-    const { playerId, teamId } = contextMenu
+    const { playerId, playerHardwareName, teamId } = contextMenu
     const updatedTeamData = removePlayerFromTeam(configData.teamData, teamId, playerId)
+
+    // サーバーにキックリクエストを送信
+    // playerId（nucleusHash）とplayerHardwareNameを使用
+    kickPlayer(playerHardwareName, playerId)
 
     signalRUpdateConfig("teamData", updatedTeamData, "overwrite")
     closeContextMenu()
@@ -362,6 +370,8 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
 
     setPlayerToMove({
       playerId: contextMenu.playerId,
+      playerName: contextMenu.playerName,
+      playerHardwareName: contextMenu.playerHardwareName,
       teamId: contextMenu.teamId,
     })
     setShowTeamSelector(true)
@@ -370,7 +380,7 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
   const handleMovePlayerToTeam = (destinationTeamId: string) => {
     if (!playerToMove || !configData?.teamData) return
 
-    const { playerId, teamId } = playerToMove
+    const { playerId, playerHardwareName, teamId } = playerToMove
     const destinationTeam = configData.teamData[destinationTeamId]
     const maxTeamPlayer = configData?.uiStatus?.maxTeamPlayer || 3
 
@@ -382,16 +392,9 @@ export const ControlPanelProvider = ({ children }: { children: ReactNode }) => {
 
     const updatedTeamData = movePlayerBetweenTeams(configData.teamData, teamId, playerId, destinationTeamId)
 
-    // Call the SignalR setTeam function
-    const player = configData.teamData[teamId].players.find((p) => p.id === playerId)
-    if (player) {
-      // Extract hardware name and nucleus hash from player ID
-      // Assuming player ID format is "hardwareName:nucleusHash"
-      const [hardwareName, nucleusHash] = player.id.split(":")
-      if (hardwareName && nucleusHash) {
-        setTeam(Number.parseInt(destinationTeamId), hardwareName, nucleusHash)
-      }
-    }
+    // サーバーにチーム変更リクエストを送信
+    // setTeam(teamId, targetHardwareName, targetNucleushash)の形式で呼び出す
+    setTeam(Number.parseInt(destinationTeamId), playerHardwareName, playerId)
 
     signalRUpdateConfig("teamData", updatedTeamData, "overwrite")
     setShowTeamSelector(false)
