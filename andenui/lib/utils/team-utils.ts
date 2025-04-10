@@ -2,7 +2,7 @@
 interface Team {
   id?: string // idをオプショナルに変更
   name: string
-  players: { id: string; name: string }[]
+  players: { id: string; name: string; hardwareName?: string }[]
 }
 
 // Get team color based on team ID
@@ -36,7 +36,7 @@ export const getTeamColor = (id: number): string => {
 export const getAllPlayersFromTeams = (teamData: Record<string, Team> | undefined) => {
   if (!teamData) return []
 
-  const players: { id: string; name: string; teamId: string; teamName: string }[] = []
+  const players: { id: string; name: string; hardwareName?: string; teamId: string; teamName: string }[] = []
 
   Object.entries(teamData).forEach(([teamId, team]) => {
     if (teamId !== "0" && teamId !== "1" && team.players) {
@@ -45,6 +45,7 @@ export const getAllPlayersFromTeams = (teamData: Record<string, Team> | undefine
           players.push({
             id: player.id,
             name: player.name,
+            hardwareName: player.hardwareName,
             teamId,
             teamName: team.name,
           })
@@ -101,4 +102,3 @@ export const removePlayerFromTeam = (teamData: Record<string, Team> | undefined,
 
   return updatedTeamData
 }
-

@@ -2,11 +2,12 @@ import type React from "react"
 import { Users } from "lucide-react"
 import PlayerSlot from "@/components/players/PlayerSlot"
 import type { Team } from "@/lib/types"
+import type { Player } from "@/lib/types"
 
 interface SpecialTeamViewProps {
   teamId: string
   team: Team
-  onPlayerRightClick: (e: React.MouseEvent, playerId: string, teamId: string) => void
+  onPlayerRightClick: (e: React.MouseEvent, player: Player, teamId: string) => void // プレイヤーオブジェクト全体を渡すように変更
   maxTeamPlayer?: number // 追加: チーム当たりの最大プレイヤー数
 }
 
@@ -40,11 +41,10 @@ export default function SpecialTeamView({
             key={idx}
             index={idx}
             player={team.players[idx] || null}
-            onRightClick={team.players[idx] ? (e) => onPlayerRightClick(e, team.players[idx].id, teamId) : undefined}
+            onRightClick={team.players[idx] ? (e) => onPlayerRightClick(e, team.players[idx], teamId) : undefined}
           />
         ))}
       </div>
     </div>
   )
 }
-

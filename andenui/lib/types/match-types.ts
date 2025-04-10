@@ -356,3 +356,4 @@ export function convertRawMatchData(rawData: RawCustomMatch[] | RawCustomMatch):
     rawData: data, // 生データを保存
   }
 }
+
