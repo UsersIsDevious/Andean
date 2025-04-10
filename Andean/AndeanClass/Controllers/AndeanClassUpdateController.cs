@@ -12,7 +12,7 @@ namespace AndeanClass.Controllers
     {
         private static long test = 0;
 
-        public override void Update()
+        public override Task Update()
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -52,6 +52,7 @@ namespace AndeanClass.Controllers
                     }
                 }
             }
+            return Task.CompletedTask;
         }
 
 

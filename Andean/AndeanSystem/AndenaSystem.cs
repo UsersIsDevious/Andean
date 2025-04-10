@@ -17,7 +17,8 @@
         /// <summary>
         /// 60FPSで実行される処理
         /// </summary>
-        public virtual void Update() { }
+        public virtual async Task Update() { }
+
     }
 
 }

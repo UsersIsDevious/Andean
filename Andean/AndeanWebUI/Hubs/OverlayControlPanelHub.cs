@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace AndeanWebUI.Hubs
 {
-    public class OverlayControlPanelHub : Hub, IAndeanWebUI
+    public class OverlayControlPanelHub : Hub
     {
 
         // 現在選択されているデータ（全クライアント共通）

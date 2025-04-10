@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace AndeanWebUI.Hubs
 {
-    public class OverlayHub : Hub, IAndeanWebUI
+    public class OverlayHub : Hub
     {
         public override async Task OnConnectedAsync()
         {

@@ -28,5 +28,9 @@ namespace ApexLiveAPI.Services
 
             return playlists_r5;
         }
+        public static void ClearPlaylistCache()
+        {
+            PlaylistsData = null;
+        }
     }
 }

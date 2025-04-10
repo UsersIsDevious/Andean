@@ -1,6 +1,7 @@
 ﻿using AndeanSystems;
 using AndeanWebUI.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace AndeanWebUI.Services
 {
@@ -20,7 +21,7 @@ namespace AndeanWebUI.Services
         }
 
         // Update() は UpdateManager により 60FPS (約16ms毎) で呼ばれる
-        public override void Update()
+        public override async Task Update()
         {
             // 前回送信から _interval 経過しているかチェック
             if (DateTime.UtcNow - _lastSentTime >= _interval)
@@ -30,7 +31,7 @@ namespace AndeanWebUI.Services
                 {
                     var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                     // 非同期送信（Update() は同期メソッドなので fire-and-forget で実行）
-                    _hubContext.Clients.All.SendAsync("ReceiveMessage", $"Current UTC Time: {timestamp}");
+                    await _hubContext.Clients.All.SendAsync("ReceiveMessage", $"Current UTC Time: {timestamp}");
                     _logger.LogInformation("Sent timestamp: {Timestamp}", timestamp);
                 }
                 catch (Exception ex)
