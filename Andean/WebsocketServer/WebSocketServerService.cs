@@ -156,7 +156,7 @@ namespace Andean.WebsocketServer
                     {
                         _authorizedClient = null;
                         _authorizedClientId = null;
-                        ControlPanelHubService.SetLiveAPIStatus("Disconnect", "Disconnected from Apex Legends.").Wait();
+                        ControlPanelHubService.SetLiveAPIStatus("ClientDisconnected", "Disconnected from Apex Legends.").Wait();
                         Console.WriteLine($"🔄 Authorized client {clientId} disconnected. Waiting for next Init event...");
                     }
                 }

@@ -248,9 +248,19 @@ namespace AndeanClass.Controllers
                         return;
                     }
                 }
+                
+                // デバッグ用
+                // プレイリストデータをJSON形式で表示
+                // Console.WriteLine($"[CustomMatch_SetSettings] PlaylistsData {JsonSerializer.Serialize(playlist_r5, new JsonSerializerOptions { WriteIndented = true })}");
 
+                bool variantFound = false;
                 string? categoryKey = null;
+                string? entryName = null;
+                string? entryKey = null;
                 PlaylistEntry? entryValue = null;
+                string? variantKey = null;
+                string? variantName = null;
+                PlaylistEntry? variantValue = null;
 
                 foreach (var category in playlist_r5.Categories)
                 {
@@ -259,23 +269,53 @@ namespace AndeanClass.Controllers
                         if (entry.Key == playlistName)
                         {
                             categoryKey = category.Key;
+                            entryKey = entry.Key;
+                            entryName = entry.Value.Name ?? entry.Value.MapName ?? string.Empty;
                             entryValue = entry.Value;
                             break;
+                        }
+
+                        if (entry.Value.Variants != null)
+                        {
+                            foreach (var subEntry in entry.Value.Variants)
+                            {
+                                if (subEntry.Key == playlistName)
+                                {
+                                    variantFound = true;
+                                    categoryKey = category.Key;
+                                    entryKey = entry.Key;
+                                    entryName = entry.Value.Name ?? entry.Value.MapName ?? string.Empty;
+                                    entryValue = entry.Value;
+                                    variantKey = subEntry.Key;
+                                    variantName = subEntry.Value.Name ?? subEntry.Value.MapName;
+                                    variantValue = subEntry.Value;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
 
-                if (string.IsNullOrEmpty(categoryKey) || entryValue == null)
+                if (string.IsNullOrEmpty(categoryKey) || string.IsNullOrEmpty(entryKey) || string.IsNullOrEmpty(entryName) || entryValue == null)
                 {
                     Console.WriteLine($"[CustomMatch_SetSettings] Playlist {playlistName} not found in PlaylistsData");
                     return;
                 }
 
+                uint maxPlayers = (variantValue != null && variantValue.MaxPlayers != null) ? uint.Parse(variantValue.MaxPlayers) : (entryValue != null && entryValue.MaxPlayers != null ? uint.Parse(entryValue.MaxPlayers) : 60);
+                uint maxTeams = (variantValue != null && variantValue.MaxTeams != null) ? uint.Parse(variantValue.MaxTeams) : (entryValue != null && entryValue.MaxTeams != null ? uint.Parse(entryValue.MaxTeams) : 20);
+                string mapId = (variantFound && variantValue != null && variantValue.Map != null) ? variantValue.Map : ((entryValue != null && entryValue.Map != null) ? entryValue.Map : string.Empty);
+                string mapName = variantName ?? entryName;
+
                 lobbySettings.SetSettings(
-                    uint.TryParse(entryValue.MaxPlayers, out var maxPlayers) ? maxPlayers : 60,
-                    uint.TryParse(entryValue.MaxTeams, out var maxTeams) ? maxTeams : 20,
-                    categoryKey ?? "",
-                    entryValue.Map ?? ""
+                    maxPlayers,
+                    maxTeams,
+                    categoryKey,
+                    entryKey,
+                    variantKey,
+                    mapId,
+                    variantFound,
+                    new Gamemode(playlist_r5.Categories)
                 );
 
                 // ロビー情報を更新
@@ -283,9 +323,9 @@ namespace AndeanClass.Controllers
                     playlistName,
                     maxPlayers,
                     maxTeams,
-                    categoryKey ?? "",
-                    entryValue.Map ?? "",
-                    entryValue.MapName ?? "",
+                    categoryKey,
+                    mapId,
+                    mapName,
                     customMatch_SetSettingsMsg.AdminChat,
                     customMatch_SetSettingsMsg.TeamRename,
                     customMatch_SetSettingsMsg.SelfAssign,

@@ -114,12 +114,25 @@ public static async Task BroadcastStatusAsync()
             GameStatus = gameStatus;
             switch (type)
             {
-                case "Connect":
-                    IsLaunched = true;
+                case "Connected":
                     LobbyJoinButtonEnabled = true;
+                    LeaveLobbyButtonEnabled = false;
                     GameStartButtonEnabled = false;
+                    IsLaunched = true;
+                    IsMatchmaking = false;
+                    IsLobbyJoined = false;
+                    IsMatch = false;
                     break;
-                case "Disconnect":
+                case "Disconnected":
+                    LobbyJoinButtonEnabled = false;
+                    LeaveLobbyButtonEnabled = false;
+                    GameStartButtonEnabled = false;
+                    IsLaunched = true;
+                    IsMatchmaking = false;
+                    IsLobbyJoined = false;
+                    IsMatch = false;
+                    break;
+                case "ClientDisconnected":
                     LobbyJoinButtonEnabled = false;
                     LeaveLobbyButtonEnabled = false;
                     GameStartButtonEnabled = true;
@@ -133,11 +146,6 @@ public static async Task BroadcastStatusAsync()
                     LeaveLobbyButtonEnabled = true;
                     IsLobbyJoined = true;
                     IsMatch = false;
-                    break;
-                case "LobbyLeave":
-                    LobbyJoinButtonEnabled = true;
-                    LeaveLobbyButtonEnabled = false;
-                    IsLobbyJoined = false;
                     break;
                 case "Playing":
                     LeaveLobbyButtonEnabled = false;

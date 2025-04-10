@@ -1,3 +1,4 @@
+using Andean.ApexLiveAPI.Services;
 using Rtech.Liveapi;
 
 namespace AndeanClass
@@ -59,13 +60,29 @@ namespace AndeanClass
         /// 選択されたプレイリストのモード(CUSTOMMATCH_BR_TRIOSなど)
         /// </summary>
         /// <value>選択されたプレイリストのモード</value>
-        public string MapType { get; set; }
+        public string CategoryKey { get; set; }
+
+        public string EntryKey { get; set; }
+
+        public string? VariantKey { get; set; }
 
         /// <summary>
         /// マップID
         /// </summary>
         /// <value>マップID</value>
         public string MapId { get; set; }
+
+        /// <summary>
+        /// バリアントかどうか
+        /// </summary>
+        /// <value>バリアントかどうか</value>
+        public bool IsVariant { get; set; }
+
+        /// <summary>
+        /// プレイリストがゲームモードで分類されたクラスを格納するプロパティ
+        /// </summary>
+        /// <value>ゲームモード</value>
+        public Gamemode Gamemode { get; set; }
 
         /// <summary>
         /// コンストラクタ
@@ -81,16 +98,24 @@ namespace AndeanClass
             AnonMode = settings.AnonMode;
             MaxPlayers = 0;
             MaxTeams = 0;
-            MapType = string.Empty;
+            CategoryKey = string.Empty;
+            EntryKey = string.Empty;
+            VariantKey = string.Empty;
             MapId = string.Empty;
+            IsVariant = false;
+            Gamemode = new Gamemode(new Dictionary<string, PlaylistCategory>());
         }
 
-        public void SetSettings(uint maxPlayers, uint maxTeams, string mapType, string mapId)
+        public void SetSettings(uint maxPlayers, uint maxTeams, string categoryKey, string entryKey, string? variantKey, string mapId, bool isVariant, Gamemode gamemode)
         {
             MaxPlayers = maxPlayers;
             MaxTeams = maxTeams;
-            MapType = mapType;
+            CategoryKey = categoryKey;
+            EntryKey = entryKey;
+            VariantKey = variantKey;
             MapId = mapId;
+            IsVariant = isVariant;
+            Gamemode = gamemode;
         }
     }
 }
