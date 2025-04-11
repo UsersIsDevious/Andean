@@ -336,6 +336,27 @@ namespace AndeanClass.Controllers
                 LobbyData.SetMatchSettings(lobbySettings);
             }
         }
+
+        public static void ProcessCustomMatch_LegenddBanStatus(CustomMatch_LegendBanStatus customMatch_LegendBanStatusMsg)
+        {
+            lock (_lock)
+            {
+                // 情報が来た時点でロビーにいるとみなす
+                ControlPanelHubService.SetLiveAPIStatus(StringPool.Get("LobbyJoin"), StringPool.Get("InLobby")).Wait();
+
+                // 情報を更新
+                LobbyData.IsUpdateNeededLegendBanStatus(customMatch_LegendBanStatusMsg);
+
+                foreach (var legend in customMatch_LegendBanStatusMsg.Legends)
+                {
+                    string Reference = legend.Reference;
+                    bool isBanned = legend.Banned;
+
+                    LobbyData.SetLegendBanStatus(Reference, isBanned);
+                    _lobby.SetLegendBanStatus(Reference, isBanned);
+                }
+            }
+        }
     }
 }
 

@@ -58,6 +58,8 @@ namespace AndeanClass.Controllers
 
                             // diffCSVData をクリア（もしくは null を代入）
                             LobbyData.CsvData?.Diff.Teams?.Clear();
+
+                            LobbyData.PlayerNames.Clear();
                         }
                     }
                 }

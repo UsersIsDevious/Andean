@@ -113,6 +113,11 @@ namespace AndeanClass
         public bool AnonMode { get; set; }
 
         /// <summary>
+        /// レジェンドバン情報
+        /// </summary>
+        public Dictionary<string, bool> LegendBanStatus { get; set; }
+
+        /// <summary>
         /// サーバーID
         /// </summary>
         public string ServerId { get; set; }
@@ -171,6 +176,7 @@ namespace AndeanClass
             Datacenter = new Datacenter();
             Aimassist = true;
             AnonMode = false;
+            LegendBanStatus = new Dictionary<string, bool>();
             ServerId = "";
             StartingLoadout = new Inventory();
             EventLists = new List<Event>();
@@ -330,6 +336,23 @@ namespace AndeanClass
             SelfAssign = selfAssign;
             Aimassist = aimAssist;
             AnonMode = anonMode;
+        }
+
+        /// <summary>
+        /// レジェンドバンの状態を設定する
+        /// </summary>
+        /// <param name="reference">レジェンドの参照名</param>
+        /// <param name="isBanned">バン状態</param>
+        public void SetLegendBanStatus(string reference, bool isBanned)
+        {
+            if (LegendBanStatus.ContainsKey(reference))
+            {
+                LegendBanStatus[reference] = isBanned;
+            }
+            else
+            {
+                LegendBanStatus.Add(reference, isBanned);
+            }
         }
 
         /// <summary>

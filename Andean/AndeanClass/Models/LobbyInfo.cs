@@ -34,6 +34,11 @@ namespace AndeanClass
         public long MatchSettingsLastPollTime { get; set; } = 0;
 
         /// <summary>
+        /// 最後にレジェンドバン情報を取得した時間（Unix時間, ミリ秒）
+        /// </summary>
+        public long LegendBanStatusLastPollTime { get; set; } = 0;
+
+        /// <summary>
         /// CSVデータ
         /// </summary>
         public CsvData? CsvData { get; set; } = null;
@@ -54,6 +59,11 @@ namespace AndeanClass
         public CustomMatch_SetSettings? MatchSettingsResponse { get; set; } = null;
 
         /// <summary>
+        /// CustomMatch_LegendBanStatusAsyncのレスポンスを保持する変数
+        /// </summary>
+        public CustomMatch_LegendBanStatus? LegendBanStatusResponse { get; set; } = null;
+
+        /// <summary>
         /// コントロールパネル用のロビープレイヤー情報を保持する変数
         /// </summary>
         public Dictionary<string, LobbyPlayersInfo>? ControlHubLobbyPlayers { get; set; } = null;
@@ -62,6 +72,11 @@ namespace AndeanClass
         /// コントロールパネル用のロビー設定情報を保持する変数
         /// </summary>
         public LobbySettings? ControlHubMatchSettings { get; set; } = null;
+
+        /// <summary>
+        /// コントロールパネル用のレジェンドバン情報を保持する変数
+        /// </summary>
+        public Dictionary<string, bool>? ControlHubLegendBanStatus { get; set; } = null;
 
         /// <summary>
         /// コンストラクタ
@@ -73,22 +88,28 @@ namespace AndeanClass
         /// <param name="lastCsvApplyTime">CSVを適用した最後の時間</param>
         /// <param name="lobbyPlayersLastPollTime">最後にロビープレイヤー情報を取得した時間</param>
         /// <param name="matchSettingsLastPollTime">最後にロビー設定情報を取得した時間</param>
+        /// <param name="legendBanStatusLastPollTime">最後にレジェンドバン情報を取得した時間</param>
         /// <param name="matchSettingsResponse">CustomMatch_GetMatchSettingsAsyncのレスポンス</param>
         /// <param name="controlHubMatchSettings">コントロールパネル用のロビー設定情報</param>
         /// <param name="lobbyPlayersResponse">CustomMatch_GetLobbyPlayersAsyncのレスポンス</param>
         /// <param name="controlHubLobbyPlayers">コントロールパネル用のロビープレイヤー情報</param>
+        /// <param name="LegendBanStatusResponse">CustomMatch_LegendBanStatusAsyncのレスポンス</param>
+        /// <param name="controlHubLegendBanStatus">コントロールパネル用のレジェンドバン情報</param>
         public LobbyInfo(
             string lobbyId = "",
             CsvData? csvData = null,
             Dictionary<string, Player>? playerNames = null,
             long lastRequestTime = 0,
             long lastCsvApplyTime = 0,
+            long legendBanStatusLastPollTime = 0,
             long lobbyPlayersLastPollTime = 0,
             long matchSettingsLastPollTime = 0,
             CustomMatch_SetSettings? matchSettingsResponse = null,
             LobbySettings? controlHubMatchSettings = null,
             CustomMatch_LobbyPlayers? lobbyPlayersResponse = null,
-            Dictionary<string, LobbyPlayersInfo>? controlHubLobbyPlayers = null
+            Dictionary<string, LobbyPlayersInfo>? controlHubLobbyPlayers = null,
+            CustomMatch_LegendBanStatus? legendBanStatusResponse = null,
+            Dictionary<string, bool>? controlHubLegendBanStatus = null            
         )
         {
             LobbyId = lobbyId;
@@ -98,11 +119,13 @@ namespace AndeanClass
             LastCsvApplyTime = lastCsvApplyTime;
             LobbyPlayersLastPollTime = lobbyPlayersLastPollTime;
             MatchSettingsLastPollTime = matchSettingsLastPollTime;
+            LegendBanStatusLastPollTime = legendBanStatusLastPollTime;
             MatchSettingsResponse = matchSettingsResponse;
             ControlHubMatchSettings = controlHubMatchSettings;
             LobbyPlayersResponse = lobbyPlayersResponse;
             ControlHubLobbyPlayers = controlHubLobbyPlayers;
-
+            LegendBanStatusResponse = legendBanStatusResponse;
+            ControlHubLegendBanStatus = controlHubLegendBanStatus;
         }
 
         /// <summary>
@@ -146,6 +169,25 @@ namespace AndeanClass
         }
 
         /// <summary>
+        /// 現在のレジェンドバン情報と新しいレジェンドバン情報を比較し、更新が必要かどうかを判断するメソッド
+        /// </summary>
+        /// <param name="newLegendBanStatus">新しいレジェンドバン情報</param>
+        /// <returns>更新が必要な場合はtrue、そうでない場合はfalse</returns>
+        public bool IsUpdateNeededLegendBanStatus(CustomMatch_LegendBanStatus newLegendBanStatus)
+        {
+            long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            LegendBanStatusLastPollTime = now;
+
+            if (LegendBanStatusResponse == null || LegendBanStatusResponse != newLegendBanStatus)
+            {
+                LegendBanStatusResponse = newLegendBanStatus;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// ロビー情報を取得するメソッド
         /// </summary>
         /// <param name="controlHubLobbyPlayers">コントロールパネル用のロビープレイヤー情報</param>
@@ -161,6 +203,21 @@ namespace AndeanClass
         public void SetMatchSettings(LobbySettings controlHubMatchSettings)
         {
             ControlHubMatchSettings = controlHubMatchSettings;
+        }
+
+        /// <summary>
+        /// レジェンドバン情報を取得するメソッド
+        /// </summary>
+        /// <param name="reference">レジェンドのID</param>
+        /// <param name="banned">バン状態</param>
+        public void SetLegendBanStatus(string reference, bool banned)
+        {
+            if (ControlHubLegendBanStatus == null)
+            {
+                ControlHubLegendBanStatus = new Dictionary<string, bool>();
+            }
+
+            ControlHubLegendBanStatus[reference] = banned;
         }
 
         /// <summary>
