@@ -51,6 +51,7 @@ namespace AndeanWebUI.Models
 
         public Dictionary<string, LobbyPlayersInfo> TeamData => LobbyData.ControlHubLobbyPlayers;
         public AndeanClass.LobbySettings LobbySettings => LobbyData.ControlHubMatchSettings;
+        public Dictionary<string, bool> LegendBanStatus => LobbyData.ControlHubLegendBanStatus;
 
         public UIStatusDto UIStatus => new();
     }

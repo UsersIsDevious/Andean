@@ -159,9 +159,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_LegendBanStatus customMatch_LegendBanStatusMsg:
                     {
-                        string customMatch_LegendBanStatusMsgStr = System.Text.Json.JsonSerializer.Serialize(customMatch_LegendBanStatusMsg, new JsonSerializerOptions { WriteIndented = true });
-                        Console.WriteLine($"[CustomMatch_LegendBanStatus] {customMatch_LegendBanStatusMsgStr}");
-                        await FileOutputService.WriteToFileAsync(_config.Log_Dir, "CustomMatch_LegendBanStatus.json", customMatch_LegendBanStatusMsgStr, FileWriteMode.Overwrite);
+                        ProcessCustomMatch_LegenddBanStatus(customMatch_LegendBanStatusMsg);
                         break;
                     }
                 case RequestStatus requestStatusMsg:
