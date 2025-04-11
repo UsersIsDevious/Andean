@@ -337,7 +337,7 @@ namespace AndeanClass.Controllers
             }
         }
 
-        public static void ProcessCustomMatch_LegenddBanStatus(CustomMatch_LegendBanStatus customMatch_LegendBanStatusMsg)
+        public static void ProcessCustomMatch_LegendBanStatus(CustomMatch_LegendBanStatus customMatch_LegendBanStatusMsg)
         {
             lock (_lock)
             {

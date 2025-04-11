@@ -159,7 +159,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_LegendBanStatus customMatch_LegendBanStatusMsg:
                     {
-                        ProcessCustomMatch_LegenddBanStatus(customMatch_LegendBanStatusMsg);
+                        ProcessCustomMatch_LegendBanStatus(customMatch_LegendBanStatusMsg);
                         break;
                     }
                 case RequestStatus requestStatusMsg:
