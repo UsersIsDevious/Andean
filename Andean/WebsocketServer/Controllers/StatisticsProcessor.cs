@@ -61,7 +61,12 @@ namespace Andean.WebsocketServer.Controllers
         {
             _queue.Add(new MessageWrapper(clientId, message));
 
-            if (message is ObserverSwitched or Response or CustomMatch_SetSettings or CustomMatch_LobbyPlayers) return; // ObserverSwitched メッセージはログに出力しない
+            if (message is
+                ObserverSwitched or
+                Response or
+                CustomMatch_SetSettings or
+                CustomMatch_LobbyPlayers or
+                CustomMatch_LegendBanStatus) return;
 
             var data = new
             {
@@ -154,9 +159,7 @@ namespace Andean.WebsocketServer.Controllers
                     }
                 case CustomMatch_LegendBanStatus customMatch_LegendBanStatusMsg:
                     {
-                        string customMatch_LegendBanStatusMsgStr = System.Text.Json.JsonSerializer.Serialize(customMatch_LegendBanStatusMsg, new JsonSerializerOptions { WriteIndented = true });
-                        Console.WriteLine($"[CustomMatch_LegendBanStatus] {customMatch_LegendBanStatusMsgStr}");
-                        await FileOutputService.WriteToFileAsync(_config.Log_Dir, "CustomMatch_LegendBanStatus.json", customMatch_LegendBanStatusMsgStr, FileWriteMode.JsonAppend);
+                        ProcessCustomMatch_LegendBanStatus(customMatch_LegendBanStatusMsg);
                         break;
                     }
                 case RequestStatus requestStatusMsg:
@@ -396,7 +399,7 @@ namespace Andean.WebsocketServer.Controllers
                         string observerAnnotationMsgStr = System.Text.Json.JsonSerializer.Serialize(observerAnnotationMsg, new JsonSerializerOptions { WriteIndented = true });
                         Console.WriteLine($"⚠️ Unknown message type received: {observerAnnotationMsgStr}");
                         // 非同期にファイルへ追記（ファイルは log フォルダ配下に作成）
-                        await FileOutputService.WriteToFileAsync(_config.Log_Dir, "ObserverAnnotation.json", observerAnnotationMsgStr, FileWriteMode.JsonAppend);
+                        await FileOutputService.WriteToFileAsync(_config.Log_Dir, "ObserverAnnotation.json", observerAnnotationMsgStr, FileWriteMode.Overwrite);
                         break;
                     }
                 default:

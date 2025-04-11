@@ -80,7 +80,7 @@ namespace AndeanClass.Services
                             throw new KeyNotFoundException($"value '{value}' が items_label に存在しません。");
                         }
 
-                    case "legend_label":
+                    case "legends_label":
                         if (LocalizedData.Legends != null)
                         {
                             foreach (var legend in LocalizedData.Legends)
@@ -124,19 +124,25 @@ namespace AndeanClass.Services
         /// <summary>
         /// レジェンドのアビリティ名を取得します。
         /// </summary>
-        /// <param name="legendId">対象のレジェンドID</param>
+        /// <param name="legendName">対象のレジェンドID</param>
         /// <param name="type">対象アビリティの種別</param>
         /// <param name="abilityName">アビリティ名</param>
         /// <returns>対象のレジェンドのローカライズされたアビリティ名</returns>
         /// <exception cref="KeyNotFoundException">指定のレジェンドIDが見つからなかった場合</exception>
         /// <exception cref="Exception">その他のエラー発生時</exception>
-        public static string? GetLegendAbilityName(string legendId, string type, string abilityName)
+        public static string? GetLegendAbilityName(string legendName, string type, string abilityName)
         {
             try
             {
-                if (LocalizedData.Legends != null &&
-                    LocalizedData.Legends.TryGetValue(legendId, out var legend))
+                if (LocalizedData.Legends != null)
                 {
+                    if (GetOriginalKey("legends_label", legendName) == null)
+                    {
+                        throw new KeyNotFoundException($"LegendID '{legendName}' が見つかりません。");
+                    }
+
+                    var legend = LocalizedData.Legends[legendName];
+
                     string result = type switch
                     {
                         "Passive" => legend.Passive,
@@ -156,7 +162,7 @@ namespace AndeanClass.Services
                 }
                 else
                 {
-                    throw new KeyNotFoundException($"LegendID '{legendId}' が見つかりません。");
+                    throw new KeyNotFoundException($"LegendID '{legendName}' が見つかりません。");
                 }
             }
             catch (System.Exception ex)
@@ -164,7 +170,7 @@ namespace AndeanClass.Services
                 // エラーログ出力などを適宜実施
                 // throw new System.Exception($"レジェンド '{legendId}' のアビリティ名取得中にエラーが発生しました: {ex.Message}", ex);
                 // 非同期にファイルへ追記（ファイルは config.Log_Dir フォルダ配下に作成）
-                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "GetLegendAbilityName_Exception.txt", $"レジェンド '{legendId}' のアビリティ名取得中にエラーが発生しました: {ex.Message}{Environment.NewLine}", FileWriteMode.Append)).Wait();
+                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "GetLegendAbilityName_Exception.txt", $"レジェンド '{legendName}' のアビリティ名取得中にエラーが発生しました: {ex.Message}{Environment.NewLine}", FileWriteMode.Append)).Wait();
                 return null;
             }
         }
@@ -183,9 +189,15 @@ namespace AndeanClass.Services
         {
             try
             {
-                if (LocalizedData.Legends != null &&
-                    LocalizedData.Legends.TryGetValue(legendName, out var legend))
+                if (LocalizedData.Legends != null)
                 {
+                    if (GetOriginalKey("legends_label", legendName) == null)
+                    {
+                        throw new KeyNotFoundException($"legendName '{legendName}' が見つかりません。");
+                    }
+
+                    var legend = LocalizedData.Legends[legendName];
+
                     if (legend.Upgrade != null &&
                         legend.Upgrade.TryGetValue(level, out var upgrades))
                     {
