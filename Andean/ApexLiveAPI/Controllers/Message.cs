@@ -18,6 +18,7 @@ namespace ApexLiveAPI.Message
             { "type.googleapis.com/rtech.liveapi.InventoryItem", new Func<IMessage>(() => new InventoryItem()) },
             { "type.googleapis.com/rtech.liveapi.LoadoutConfiguration", new Func<IMessage>(() => new LoadoutConfiguration()) },
             { "type.googleapis.com/rtech.liveapi.CustomMatch_LobbyPlayers", new Func<IMessage>(() => new CustomMatch_LobbyPlayers()) },
+            { "type.googleapis.com/rtech.liveapi.CustomMatch_LegendBanStatus", new Func<IMessage>(() => new CustomMatch_LegendBanStatus()) },
             { "type.googleapis.com/rtech.liveapi.RequestStatus", new Func<IMessage>(() => new RequestStatus()) },
             { "type.googleapis.com/rtech.liveapi.Response", new Func<IMessage>(() => new Response()) },
             { "type.googleapis.com/rtech.liveapi.MatchSetup", new Func<IMessage>(() => new MatchSetup()) },

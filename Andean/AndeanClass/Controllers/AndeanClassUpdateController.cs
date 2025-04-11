@@ -36,6 +36,7 @@ namespace AndeanClass.Controllers
                         {
                             await Request.GetLobbyPlayersAsync(cts.Token);
                             await Request.GetMatchSettingsAsync(cts.Token);
+                            await Request.GetLegendBanStatusAsync(cts.Token);
                         }
                         await ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>());
 

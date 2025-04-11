@@ -252,5 +252,28 @@ namespace ApexLiveAPI.Request
             };
             await SendRequestAsync(req, cancellationToken);
         }
+
+        /// <summary>
+        /// Banしたレジェンドのリストを取得するリクエスト
+        /// </summary>
+        public static async Task GetLegendBanStatusAsync(CancellationToken cancellationToken)
+        {
+            var req = new Rtech.Liveapi.Request();
+            req.CustomMatchGetLegendBanStatus = new CustomMatch_GetLegendBanStatus();
+            await SendRequestAsync(req, cancellationToken);
+        }
+
+        /// <summary>
+        /// Banするレジェンドを設定するリクエスト
+        /// </summary>
+        public static async Task SetLegendBanAsync(string[] legendRefs, CancellationToken cancellationToken)
+        {
+            var req = new Rtech.Liveapi.Request();
+            req.CustomMatchSetLegendBan = new CustomMatch_SetLegendBan
+            {
+                LegendRefs = { legendRefs }
+            };
+            await SendRequestAsync(req, cancellationToken);
+        }
     }
 }

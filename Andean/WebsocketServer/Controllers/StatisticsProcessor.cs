@@ -147,16 +147,16 @@ namespace Andean.WebsocketServer.Controllers
                         // 現状何も処理しない
                         break;
                     }
-                case LegendMatchStatus legendMatchStatusMsg:
-                    {
-                        string legendMatchStatusMsgStr = System.Text.Json.JsonSerializer.Serialize(legendMatchStatusMsg, new JsonSerializerOptions { WriteIndented = true });
-                        Console.WriteLine($"[LegendMatchStatus] {legendMatchStatusMsgStr}");
-                        await FileOutputService.WriteToFileAsync(_config.Log_Dir, "LegendMatchStatus.json", legendMatchStatusMsgStr, FileWriteMode.JsonAppend);
-                        break;
-                    }
                 case CustomMatch_LobbyPlayers customMatch_LobbyPlayersMsg:
                     {
                         ProcessCustomMatch_LobbyPlayers(customMatch_LobbyPlayersMsg);
+                        break;
+                    }
+                case CustomMatch_LegendBanStatus customMatch_LegendBanStatusMsg:
+                    {
+                        string customMatch_LegendBanStatusMsgStr = System.Text.Json.JsonSerializer.Serialize(customMatch_LegendBanStatusMsg, new JsonSerializerOptions { WriteIndented = true });
+                        Console.WriteLine($"[CustomMatch_LegendBanStatus] {customMatch_LegendBanStatusMsgStr}");
+                        await FileOutputService.WriteToFileAsync(_config.Log_Dir, "CustomMatch_LegendBanStatus.json", customMatch_LegendBanStatusMsgStr, FileWriteMode.JsonAppend);
                         break;
                     }
                 case RequestStatus requestStatusMsg:

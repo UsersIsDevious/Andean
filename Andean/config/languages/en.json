@@ -147,7 +147,7 @@
     "Vault Key": "Vault Key"
   },
   "legends_label": {
-    "Bloodhound": {
+    "bloodhound": {
       "name": "Bloodhound",
       "passive": "Tracker",
       "tactical": "Eye of the Allfather",
@@ -175,7 +175,7 @@
         }
       }
     },
-    "Gibraltar": {
+    "gibraltar": {
       "name": "Gibraltar",
       "passive": "Gun Shield",
       "tactical": "Dome of Protection",
@@ -203,7 +203,7 @@
         }
       }
     },
-    "Lifeline": {
+    "lifeline": {
       "name": "Lifeline",
       "passive": "Combat Glide",
       "tactical": "D.O.C. Heal Drone",
@@ -231,7 +231,7 @@
         }
       }
     },
-    "Pathfinder": {
+    "pathfinder": {
       "name": "Pathfinder",
       "passive": "Insider Knowledge",
       "tactical": "Grappling Hook",
@@ -259,7 +259,7 @@
         }
       }
     },
-    "Wraith": {
+    "wraith": {
       "name": "Wraith",
       "passive": "Voices from the Void",
       "tactical": "Into the Void",
@@ -287,7 +287,7 @@
         }
       }
     },
-    "Bangalore": {
+    "bangalore": {
       "name": "Bangalore",
       "passive": "Double Time",
       "tactical": "#WPN_GRENADE_ELECTRIC_SMOKE_SHORT",
@@ -315,7 +315,7 @@
         }
       }
     },
-    "Caustic": {
+    "caustic": {
       "name": "Caustic",
       "passive": "Nox Vision",
       "tactical": "Nox Gas Trap",
@@ -343,7 +343,7 @@
         }
       }
     },
-    "Mirage": {
+    "mirage": {
       "name": "Mirage",
       "passive": "Now You See Me...",
       "tactical": "Psyche Out",
@@ -371,7 +371,7 @@
         }
       }
     },
-    "Octane": {
+    "octane": {
       "name": "Octane",
       "passive": "Swift Mend",
       "tactical": "Stim",
@@ -399,7 +399,7 @@
         }
       }
     },
-    "Wattson": {
+    "wattson": {
       "name": "Wattson",
       "passive": "Spark of Genius",
       "tactical": "Perimeter Security",
@@ -427,7 +427,7 @@
         }
       }
     },
-    "Crypto": {
+    "crypto": {
       "name": "Crypto",
       "passive": "Neurolink",
       "tactical": "Surveillance Drone",
@@ -455,7 +455,7 @@
         }
       }
     },
-    "Revenant": {
+    "revenant": {
       "name": "Revenant",
       "passive": "Assassin's Instinct",
       "tactical": "Shadow Pounce",
@@ -483,7 +483,7 @@
         }
       }
     },
-    "Loba": {
+    "loba": {
       "name": "Loba",
       "passive": "Eye for Quality",
       "tactical": "Burglar's Best Friend",
@@ -511,7 +511,7 @@
         }
       }
     },
-    "Rampart": {
+    "rampart": {
       "name": "Rampart",
       "passive": "Modded Loader",
       "tactical": "Amped Cover",
@@ -539,7 +539,7 @@
         }
       }
     },
-    "Horizon": {
+    "horizon": {
       "name": "Horizon",
       "passive": "Spacewalk",
       "tactical": "Gravity Lift",
@@ -567,7 +567,7 @@
         }
       }
     },
-    "Fuse": {
+    "fuse": {
       "name": "Fuse",
       "passive": "Grenadier",
       "tactical": "Knuckle Cluster",
@@ -595,7 +595,7 @@
         }
       }
     },
-    "Valkyrie": {
+    "valkyrie": {
       "name": "Valkyrie",
       "passive": "VTOL Jets",
       "tactical": "Missile Swarm",
@@ -623,7 +623,7 @@
         }
       }
     },
-    "Seer": {
+    "seer": {
       "name": "Seer",
       "passive": "Heart Seeker",
       "tactical": "Focus of Attention",
@@ -651,7 +651,7 @@
         }
       }
     },
-    "Ash": {
+    "ash": {
       "name": "Ash",
       "passive": "Predator's Pursuit",
       "tactical": "Arc Snare",
@@ -679,7 +679,7 @@
         }
       }
     },
-    "Mad Maggie": {
+    "madmaggie": {
       "name": "Mad Maggie",
       "passive": "Warlord's Ire",
       "tactical": "Riot Drill",
@@ -707,7 +707,7 @@
         }
       }
     },
-    "Newcastle": {
+    "newcastle": {
       "name": "Newcastle",
       "passive": "Retrieve the Wounded",
       "tactical": "Mobile Shield",
@@ -735,7 +735,7 @@
         }
       }
     },
-    "Vantage": {
+    "vantage": {
       "name": "Vantage",
       "passive": "Spotter's Lens",
       "tactical": "Echo Relocation",
@@ -763,7 +763,7 @@
         }
       }
     },
-    "Catalyst": {
+    "catalyst": {
       "name": "Catalyst",
       "passive": "Barricade",
       "tactical": "Piercing Spikes",
@@ -791,7 +791,7 @@
         }
       }
     },
-    "Conduit": {
+    "conduit": {
       "name": "Conduit",
       "passive": "Savior's Speed",
       "tactical": "Radiant Transfer",
@@ -819,7 +819,7 @@
         }
       }
     },
-    "Alter": {
+    "alter": {
       "name": "Alter",
       "passive": "Gift from the Rift",
       "tactical": "Void Passage",
@@ -847,7 +847,7 @@
         }
       }
     },
-    "Ballistic": {
+    "ballistic": {
       "name": "Ballistic",
       "passive": "Sling",
       "tactical": "Whistler",
