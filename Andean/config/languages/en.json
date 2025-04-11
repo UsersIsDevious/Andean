@@ -115,10 +115,12 @@
     "health_pickup_combo_full": "Phoenix Kit",
     "health_pickup_ultimate": "Ultimate Accelerant",
     "Helmet": "Helmet",
+    "Mythic Helmet": "Mythic Helmet",
     "Body Shield": "Body Shield",
     "Shield Core": "Shield Core",
     "Knockdown Shield": "Knockdown Shield",
     "Backpack": "Backpack",
+    "FULL EVO CACHE": "FULL EVO CACHE",
     "bullet": "Heavy Rounds",
     "highcal": "Light Rounds",
     "shotgun": "Shotgun Shells",
@@ -139,7 +141,10 @@
     "3x HCOG 'RANGER'": "3x HCOG 'RANGER'",
     "2x-4x VARIABLE AOG": "2x-4x VARIABLE AOG",
     "4x-8x VARIABLE SNIPER": "4x-8x VARIABLE SNIPER",
-    "Gun Shield Generator": "Gun Shield Generator"
+    "Gun Shield Generator": "Gun Shield Generator",
+    "Selectfire Receiver": "Selectfire Receiver",
+    "Boosted Loader": "Boosted Loader",
+    "Vault Key": "Vault Key"
   },
   "legends_label": {
     "Bloodhound": {
@@ -244,8 +249,8 @@
         },
         "2": {
           "left": {
-            "name": "Down and Away",
-            "description": "Grapple cooldown reset on knock."
+            "name": "Grapple Cooldown+",
+            "description": "Reduce Grapple cooldown by 10 seconds."
           },
           "right": {
             "name": "Zipline Zen",

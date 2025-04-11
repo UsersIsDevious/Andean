@@ -10,16 +10,15 @@ namespace AndeanClass.Controllers
 {
     public class AndeanClassUpdateController : AndeanSystem
     {
-        private static long test = 0;
+        public async override Task Update()
 
-        public override Task Update()
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            if (ControlPanelHubService.IsMatch == true)
+            if (ControlPanelHubService.IsMatch == true && _match != null)
             {
-                if (ControlPanelHubService.ObserverSwitchEnabled)
-                    GetPlayerStatus(_match).Wait();
+                if (ControlPanelHubService.ObserverSwitchEnabled && _match.State == StringPool.Get("Playing"))
+                    await GetPlayerStatus(_match);
 
                 // 新たなPacketオブジェクトを生成し、_packetListに追加
                 _packetList[now] = new Packet((double)now / 1000 - _match.StartTimeStamp);
@@ -33,10 +32,15 @@ namespace AndeanClass.Controllers
                     if (now - LobbyData.LastRequestTime > 3000)
                     {
                         LobbyData.LastRequestTime = now;
-                        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                        Request.GetLobbyPlayersAsync(cts.Token).Wait();
-                        Request.GetMatchSettingsAsync(cts.Token).Wait();
-                        ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
+                        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
+                        {
+                            await Request.GetLobbyPlayersAsync(cts.Token);
+                            await Request.GetMatchSettingsAsync(cts.Token);
+                        }
+                        await ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>());
+
+                        // diffCSVData をクリア（もしくは null を代入）
+                        LobbyData.CsvData?.Diff.Teams?.Clear();
                     }
 
                     if (now - LobbyData.LastCsvApplyTime > 100)
@@ -44,15 +48,19 @@ namespace AndeanClass.Controllers
                         LobbyData.LastCsvApplyTime = now;
                         if (LobbyData.CsvData?.Diff.Teams.Count > 0)
                         {
-                            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                            Request.GetLobbyPlayersAsync(cts.Token).Wait();
-                            Request.GetMatchSettingsAsync(cts.Token).Wait();
-                            ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>()).Wait();
+                            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
+                            {
+                                await Request.GetLobbyPlayersAsync(cts.Token);
+                                await Request.GetMatchSettingsAsync(cts.Token);
+                            }
+                            await ApplyCSVDataAsync(LobbyData.CsvData?.Diff.Teams ?? new Dictionary<string, CsvDataElement>());
+
+                            // diffCSVData をクリア（もしくは null を代入）
+                            LobbyData.CsvData?.Diff.Teams?.Clear();
                         }
                     }
                 }
             }
-            return Task.CompletedTask;
         }
 
 
@@ -63,7 +71,7 @@ namespace AndeanClass.Controllers
         /// <returns>非同期タスク</returns>
         /// <remarks>
         /// プレイヤーの状態を取得し、"alive" または "down" の場合にカメラを切り替える。
-        /// プレイヤーが "death" またはオンラインでない場合は、次のプレイヤーへスキップする。
+        /// プレイヤーが "death" またはオンラインでなければ次のプレイヤーへスキップする。
         /// チームが壊滅している場合は、次のチームへスキップする。
         /// </remarks>
         public async Task GetPlayerStatus(CustomMatch match)
@@ -88,7 +96,7 @@ namespace AndeanClass.Controllers
                     }
 
                     // カメラをプレイヤー名に基づいて切り替え
-                    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                    var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
                     await Request.ChangeCameraAsync("name", StringPool.Get(player.Name), cts.Token, false);
                 }
             }
@@ -157,7 +165,7 @@ namespace AndeanClass.Controllers
                     Console.WriteLine($"[ApplyCSVData] Error setting team for player {playerName} in team {teamId}: {ex.Message}");
                 }
             }
-            
+
             return true;
         }
     }

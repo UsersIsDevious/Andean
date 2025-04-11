@@ -100,5 +100,15 @@ namespace AndeanClass
             LogoUrl = logoUrl;
             Players = players;
         }
+
+        /// <summary>
+        /// ディープコピーを作成するメソッド
+        /// </summary>
+        /// <returns>ディープコピーされたCsvDataElement</returns>
+        public CsvDataElement Clone()
+        {
+            // Players リストも新しくする
+            return new CsvDataElement(TeamName, LogoUrl, new List<string>(Players));
+        }
     }
 }

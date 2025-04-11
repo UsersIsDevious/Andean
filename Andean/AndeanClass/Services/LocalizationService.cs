@@ -130,7 +130,7 @@ namespace AndeanClass.Services
         /// <returns>対象のレジェンドのローカライズされたアビリティ名</returns>
         /// <exception cref="KeyNotFoundException">指定のレジェンドIDが見つからなかった場合</exception>
         /// <exception cref="Exception">その他のエラー発生時</exception>
-        public static string GetLegendAbilityName(string legendId, string type, string abilityName)
+        public static string? GetLegendAbilityName(string legendId, string type, string abilityName)
         {
             try
             {
@@ -162,7 +162,10 @@ namespace AndeanClass.Services
             catch (System.Exception ex)
             {
                 // エラーログ出力などを適宜実施
-                throw new System.Exception($"レジェンド '{legendId}' のアビリティ名取得中にエラーが発生しました: {ex.Message}", ex);
+                // throw new System.Exception($"レジェンド '{legendId}' のアビリティ名取得中にエラーが発生しました: {ex.Message}", ex);
+                // 非同期にファイルへ追記（ファイルは config.Log_Dir フォルダ配下に作成）
+                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "GetLegendAbilityName_Exception.txt", $"レジェンド '{legendId}' のアビリティ名取得中にエラーが発生しました: {ex.Message}{Environment.NewLine}", FileWriteMode.Append)).Wait();
+                return null;
             }
         }
 
@@ -176,7 +179,7 @@ namespace AndeanClass.Services
         /// <returns>対象のレジェンドのアップグレード関連ローカライズデータ</returns>
         /// <exception cref="KeyNotFoundException">指定のレジェンド名が見つからなかった場合</exception>
         /// <exception cref="Exception">その他のエラー発生時</exception>
-        public static string GetLegendUpgradeSide(string legendName, string level, string upgradeName, string upgradeDesc)
+        public static string? GetLegendUpgradeSide(string legendName, string level, string upgradeName, string upgradeDesc)
         {
             try
             {
@@ -215,7 +218,10 @@ namespace AndeanClass.Services
             catch (System.Exception ex)
             {
                 // エラーログ出力などを適宜実施
-                throw new System.Exception($"レジェンド '{legendName}' のレベル '{level}' アップグレード '{upgradeName}' : '{upgradeDesc}' のサイド取得中にエラーが発生しました: {ex.Message}", ex);
+                // throw new System.Exception($"レジェンド '{legendName}' のレベル '{level}' アップグレード '{upgradeName}' : '{upgradeDesc}' のサイド取得中にエラーが発生しました: {ex.Message}", ex);
+                // 非同期にファイルへ追記（ファイルは config.Log_Dir フォルダ配下に作成）
+                Task.Run(() => FileOutputService.WriteToFileAsync(_config.Log_Dir, "GetLegendUpgradeSide_Exception.txt", $"レジェンド '{legendName}' のレベル '{level}' アップグレード '{upgradeName}' : '{upgradeDesc}' のサイド取得中にエラーが発生しました: {ex.Message}{Environment.NewLine}", FileWriteMode.Append)).Wait();
+                return null;
             }
         }
 
