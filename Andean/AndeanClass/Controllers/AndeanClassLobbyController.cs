@@ -345,7 +345,7 @@ namespace AndeanClass.Controllers
                 ControlPanelHubService.SetLiveAPIStatus(StringPool.Get("LobbyJoin"), StringPool.Get("InLobby")).Wait();
 
                 // 情報を更新
-                if (LobbyData.IsUpdateNeededLegendBanStatus(customMatch_LegendBanStatusMsg)) return;
+                LobbyData.IsUpdateNeededLegendBanStatus(customMatch_LegendBanStatusMsg);
 
                 foreach (var legend in customMatch_LegendBanStatusMsg.Legends)
                 {
