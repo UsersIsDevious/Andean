@@ -30,29 +30,7 @@ namespace AndeanWebUI.Hubs
         private object GetCurrentStatus()
         {
             Console.WriteLine(_config);
-            return new
-            {
-                SharedData = SharedData,
-                SelectedDataKeys = SelectedDataKeys,
-                AppConfig = _config,
-                LastLobbyResponse = LastLobbyResponse,
-                LastApexResponse = LastApexResponse,
-                LobbyId = LobbyData.LobbyId,
-                teamData = LobbyData.ControlHubLobbyPlayers,
-                lobbySettings = LobbyData.ControlHubMatchSettings,
-                UIStatus = new
-                {
-                    LobbyJoinButtonEnabled = LobbyJoinButtonEnabled,
-                    GameStartButtonEnabled = GameStartButtonEnabled,
-                    LeaveLobbyButtonEnabled = LeaveLobbyButtonEnabled,
-                    IsLobbyJoined = IsLobbyJoined,
-                    MaxTeamPlayer = MaxTeamPlayer,
-                    MaxTeam = MaxTeam,
-                    GameStatus = GameStatus,
-                    SupportedLanguages = SupportedLanguages,
-                    IsMatchmaking = IsMatchmaking
-                }
-            };
+            return SharedStatusDto;
         }
 
         public override async Task OnConnectedAsync()
