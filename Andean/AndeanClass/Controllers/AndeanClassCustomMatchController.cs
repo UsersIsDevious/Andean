@@ -14,12 +14,12 @@ namespace AndeanClass.Controllers
                     throw new InvalidOperationException("CustomMatchが初期化されていません。");
                 }
 
-                if (_packetList.Count == 0)
+                if (packetList.Count == 0)
                 {
                     return;
                 }
 
-                Packet packet = _packetList[_updateTime];
+                Packet packet = packetList[_updateTime];
 
                 var targetPlayerList = observerSwitchedMsg.TargetTeam;
                 Dictionary<string, int> keepedIds = new Dictionary<string, int>();

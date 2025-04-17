@@ -25,11 +25,6 @@ namespace AndeanClass.Services
             _match = new CustomMatch(formattedDate);
             _match.SetGameVersion(initMsg.GameVersion);
             Console.WriteLine($"[MatchService] CustomMatch 初期化完了：{formattedDate}");
-
-            // パケットリストを初期化
-            _packetList = new Dictionary<double, Packet>();
-            // プレイヤーデータを初期化
-            _playerData = new Dictionary<string, EventPlayer>();
         }
 
         // 共通のマッチセットアップ処理
@@ -142,8 +137,11 @@ namespace AndeanClass.Services
             {
                 ControlPanelHubService.SetLiveAPIStatus("LobbyJoin", "InLobby").Wait();
 
+                // プレイヤーのPOSデータを一時的に保存するためのリストを作成
+                Dictionary<string, EventPlayer> playerData = new Dictionary<string, EventPlayer>();
+
                 // Packetを確認し、整形して保存する
-                foreach (var packet in _packetList.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value))
+                foreach (var packet in packetList.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value))
                 {
                     // パケットを更新する
                     if ((packet.Data.Count + packet.Events.Count) != 0 && packet.T > 2)
@@ -155,7 +153,7 @@ namespace AndeanClass.Services
                         //     {
                         //         // 最初のイベントのtimestampから試合開始時刻を引く
                         //         packet.T = packet.Events[0].Timestamp - _match.StartTimeStamp;
-                        //         CheckPacketData(packet, _playerData);
+                        //         CheckPacketData(packet, playerData);
                         //         _match.AddPacketElement(packet.T.ToString(), (JObject)packet.ToJson());
                         //     }
                         //     else
@@ -165,14 +163,19 @@ namespace AndeanClass.Services
                         // }
                         // else
                         // {
-                        //     CheckPacketData(packet, _playerData);
+                        //     CheckPacketData(packet, playerData);
                         //     _match.AddPacketElement(packet.T.ToString(), (JObject)packet.ToJson());
                         // }
 
-                        MatchUtilities.CheckPacketData(packet, _playerData);
+                        MatchUtilities.CheckPacketData(packet, playerData);
                         _match.AddPacketElement(packet.T.ToString(), packet.ToShortPacket());
                     }
                 }
+
+                // パケットリストを初期化
+                packetList.Clear();
+                // プレイヤーデータを初期化
+                playerData.Clear();
 
                 // _ringEvents を 2 つずつ処理する
                 for (int i = 0; i < _ringEvents.Count; i += 2)
@@ -266,7 +269,7 @@ namespace AndeanClass.Services
 
             Event _event = new Event(matchStateEndMsg.Timestamp, matchStateEndMsg.Category, _eventData);
             _match.AddEventElement(_event);
-            _packetList[_updateTime].AddEvent(_event);
+            packetList[_updateTime].AddEvent(_event);
         }
 
         public static void ProcessTeamEliminated(SquadEliminated squadEliminatedMsg)
@@ -303,7 +306,7 @@ namespace AndeanClass.Services
             };
             Event _event = new Event(squadEliminatedMsg.Timestamp, squadEliminatedMsg.Category, _eventData);
             _match.AddEventElement(_event);
-            _packetList[_updateTime].AddEvent(_event);
+            packetList[_updateTime].AddEvent(_event);
         }
         public static void ProcessRingStartClosing(RingStartClosing ringStartClosingMsg)
         {
@@ -337,7 +340,7 @@ namespace AndeanClass.Services
             Event _event = new Event(ringStartClosingMsg.Timestamp, ringStartClosingMsg.Category, _eventData);
             _match.AddEventElement(_event);
 
-            Packet packet = _packetList[_updateTime];
+            Packet packet = packetList[_updateTime];
 
             // AndeanのPacketクラスに追加する
             packet.AddEvent(_event);
@@ -378,7 +381,7 @@ namespace AndeanClass.Services
             Event _event = new Event(ringFinishedClosingMsg.Timestamp, ringFinishedClosingMsg.Category, _eventData);
             _match.AddEventElement(_event);
 
-            Packet packet = _packetList[_updateTime];
+            Packet packet = packetList[_updateTime];
 
             // AndeanのPacketクラスに追加する
             packet.AddEvent(_event);

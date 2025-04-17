@@ -45,7 +45,7 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, eventData);
 
                 _match.AddEventElement(_event);
-                _packetList[_updateTime].AddEvent(_event);
+                packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessInventoryDrop(Rtech.Liveapi.InventoryDrop Msg)
@@ -67,7 +67,7 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, eventData);
 
                 _match.AddEventElement(_event);
-                _packetList[_updateTime].AddEvent(_event);
+                packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessInventoryUse(Rtech.Liveapi.InventoryUse Msg)
@@ -133,7 +133,7 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, eventData);
 
                 _match.AddEventElement(_event);
-                _packetList[_updateTime].AddEvent(_event);
+                packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessGrenadeThrown(Rtech.Liveapi.GrenadeThrown Msg)
@@ -163,7 +163,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packetList[_updateTime].AddEvent(_event);
+                packetList[_updateTime].AddEvent(_event);
             }
         }
         public static void ProcessBlackMarketAction(Rtech.Liveapi.BlackMarketAction Msg)
@@ -197,7 +197,7 @@ namespace AndeanClass.Controllers
 
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
                 _match.AddEventElement(_event);
-                _packetList[_updateTime].AddEvent(_event);
+                packetList[_updateTime].AddEvent(_event);
             }
         }
 
@@ -226,7 +226,7 @@ namespace AndeanClass.Controllers
                 Event _event = new Event(Msg.Timestamp, Msg.Category, _eventData);
 
                 _match.AddEventElement(_event);
-                _packetList[_updateTime].AddEvent(_event);
+                packetList[_updateTime].AddEvent(_event);
             }
         }
     }

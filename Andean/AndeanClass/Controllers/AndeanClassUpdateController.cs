@@ -23,7 +23,7 @@ namespace AndeanClass.Controllers
                 _updateTime = (double)now / 1000 - _match.StartTimeStamp;
 
                 // 新たなPacketオブジェクトを生成し、_packetListに追加
-                _packetList[_updateTime] = new Packet(_updateTime);
+                packetList[_updateTime] = new Packet(_updateTime);
             }
             else
             {

@@ -24,11 +24,7 @@ namespace AndeanClass.Controllers
         /// <summary>
         /// パケット情報
         /// </summary>
-        public static Dictionary<double, Packet> _packetList = new Dictionary<double, Packet>();
-        /// <summary>
-        /// プレイヤー情報を保持する変数
-        /// </summary>
-        public static Dictionary<string, EventPlayer> _playerData = new Dictionary<string, EventPlayer>();
+        public static Dictionary<double, Packet> packetList = new Dictionary<double, Packet>();
         /// <summary>
         /// チーム順位のリスト
         /// </summary>
