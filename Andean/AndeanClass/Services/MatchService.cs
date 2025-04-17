@@ -25,6 +25,9 @@ namespace AndeanClass.Services
             _match = new CustomMatch(formattedDate);
             _match.SetGameVersion(initMsg.GameVersion);
             Console.WriteLine($"[MatchService] CustomMatch 初期化完了：{formattedDate}");
+
+            // パケットリストを初期化
+            _packetList = new Dictionary<double, Packet>();
         }
 
         // 共通のマッチセットアップ処理
