@@ -20,10 +20,10 @@ namespace AndeanClass.Controllers
                 if (ControlPanelHubService.ObserverSwitchEnabled && _match.State == StringPool.Get("Playing"))
                     await GetPlayerStatus(_match);
 
-                // 新たなPacketオブジェクトを生成し、_packetListに追加
-                _packetList[now] = new Packet((double)now / 1000 - _match.StartTimeStamp);
+                _updateTime = (double)now / 1000 - _match.StartTimeStamp;
 
-                _updateTime = now;
+                // 新たなPacketオブジェクトを生成し、_packetListに追加
+                _packetList[_updateTime] = new Packet(_updateTime);
             }
             else
             {

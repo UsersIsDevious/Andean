@@ -28,6 +28,8 @@ namespace AndeanClass.Services
 
             // パケットリストを初期化
             _packetList = new Dictionary<double, Packet>();
+            // プレイヤーデータを初期化
+            _playerData = new Dictionary<string, EventPlayer>();
         }
 
         // 共通のマッチセットアップ処理
